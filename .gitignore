@@ -33,3 +33,9 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# SQLite databases
+*.sqlite
+
+# Eclipse
+.settings

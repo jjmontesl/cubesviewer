@@ -1,5 +1,5 @@
-CubesViewer - Viewer and Explore Tool for the Cubes OLAP Framework
-==================================================================
+CubesViewer - OLAP Visual Viewer and Explore Tool
+=================================================
 
 About
 -----
@@ -9,7 +9,7 @@ OLAP databases served by the Cubes OLAP Framework.
 
 This tool allow to inspect the diferent dimensions, measures and
 aggregate data in different ways. It is a frontend for the
-open-source "Cubes" server (an OLAP server in Python). 
+open-source ["Cubes" server](http://databrewery.org/cubes.html) (an OLAP server in Python). 
 Purpose is to keep it simple and modular, leveraging the data model 
 provided by Cubes. 
 
@@ -29,7 +29,7 @@ Features:
 Source
 ------
 
-Github source repository: [https://github.com/jjmontesl/cubesviewer]
+Github source repository: https://github.com/jjmontesl/cubesviewer
 
 Requirements
 ------------
@@ -37,7 +37,7 @@ Requirements
 *CubesViewer library is HTML5/Javascript* and should work on most modern browsers
 (it may even work on older browsers). 
 
-CubesViewer requires *Cubes Server* 0.11 or later, configured and running, able to serve 
+CubesViewer requires *[Cubes Server](http://databrewery.org/cubes.html)* 0.11 or later, configured and running, able to serve 
 data cubes. 
 
 The full *Cubes Viewer application* (which includes all features including sharing/saving
@@ -50,8 +50,9 @@ CubesViewer has been tested on Ubuntu Server 12.04.
 Support
 =======
 
-If you have questions, problems or suggestions, you can contact the author and
-users via the Cubes project mailing list:
+If you have questions, problems or suggestions, get in touch. CubesViewer doesn't
+have a list on its own. Instead, you can contact the author and users via the 
+Cubes project mailing list:
 
 * Google group: http://groups.google.com/group/cubes-discuss
 

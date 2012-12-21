@@ -1,0 +1,10 @@
+HEAD
+    + TODO:
+0.2
+    + Initial import into repository. 
+    + Initial separation of components.
+    + Introduced a plugin/events architecture.
+    + Refactored Javascript code to be mode object-oriented.
+    + Added wiki-notes support.
+    + Added basic saving/sharing capabilities.
+    + Finished functional application prototype (exploration, tables and charts). 
