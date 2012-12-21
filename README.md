@@ -50,12 +50,12 @@ CubesViewer has been tested on Ubuntu Server 12.04.
 Screenshots
 -----------
 
-![CubesViewer Chart Screenshot](/doc/screenshots/view-chart-1.png "CubesViewer Chart")
-![CubesViewer Chart Screenshot](/doc/screenshots/view-chart-2.png "CubesViewer Chart")
-![CubesViewer Chart Screenshot](/doc/screenshots/view-chart-3-notes.png "CubesViewer Chart")
-![CubesViewer Explore Screenshot](/doc/screenshots/view-explore-1.png "CubesViewer Explore")
-![CubesViewer Explore Screenshot](/doc/screenshots/view-explore-2.png "CubesViewer Explore")
-![CubesViewer Series Screenshot](/doc/screenshots/view-series-1.png "CubesViewer Series")
+![CubesViewer Chart Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-chart-1.png "CubesViewer Chart")
+![CubesViewer Chart Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-chart-2.png "CubesViewer Chart")
+![CubesViewer Chart Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-chart-3-notes.png "CubesViewer Chart")
+![CubesViewer Explore Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-explore-1.png "CubesViewer Explore")
+![CubesViewer Explore Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-explore-2.png "CubesViewer Explore")
+![CubesViewer Series Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-series-1.png "CubesViewer Series")
 
 Support
 =======
