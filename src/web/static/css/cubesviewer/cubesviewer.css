@@ -1,0 +1,57 @@
+/*
+ * Cubesviewer CSS
+ * Note that the application is also based on blueprint CSS framework, which is included separately.
+ */
+
+th {
+    white-space: nowrap;
+}
+
+.nobreak {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.ui-icon {
+    display: inline-block;
+    vertical-align: middle;
+}
+.ui-widget-header {
+    padding: 2px 4px 2px 4px;   
+}
+
+.ui-jqgrid tr.jqgrow td {
+    white-space: nowrap !important;
+    /*overflow: hidden;*/
+}
+
+a.ui-state-disabled {
+	margin-top: 0px !important;
+	margin-bottom: 0px !important;
+}
+a.ui-state-focus {
+    margin-top: -1px !important;
+    margin-bottom: -1px !important;
+}
+
+/* GUI Elements */
+
+#cubesviewer {
+	margin-top: 5px;
+}
+
+.cv-gui-panel {
+    width: 200px; 
+    float: left; 
+    padding: 8px;
+}
+
+.cv-gui-workspace {
+    margin-left: 230px;
+    min-height: 320px;
+}
+
+.cv-gui-viewcontainer {
+	margin-bottom: 10px; 
+}
+

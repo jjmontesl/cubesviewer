@@ -1,0 +1,62 @@
+{% extends "cvapp/base_site.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+
+<link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/cubesviewer/cubesviewer.css" />    
+<link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}js/wiky/wiky.math.css" />    
+    
+<script type="text/javascript" src="{{ STATIC_URL }}js/wiky/wiky.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/wiky/wiky.math.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/flotr2/flotr2.min.js"></script>
+
+<script type="text/javascript" src="{{ STATIC_URL }}js/cubesviewer/cubesviewer.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/cubesviewer/cubesviewer.views.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/cubesviewer/cubesviewer.views.cube.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/cubesviewer/cubesviewer.views.cube.explore.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/cubesviewer/cubesviewer.views.cube.series.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/cubesviewer/cubesviewer.views.cube.chart.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/cubesviewer/cubesviewer.views.cube.export.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/cubesviewer/cubesviewer.gui.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/cubesviewer/cubesviewer.gui.reststore.js"></script>
+
+<script type="text/javascript">
+	
+	// Initialize CubesViewer when document is ready
+	$(document).ready(function() {
+	    
+		cubesviewer.init({
+	        cubesUrl: "{{ cubesviewer_cubes_url }}",
+	        ajaxLoaderUrl: "/static/img/ajax-loader.gif"
+	    });
+		
+		cubesviewer.gui.init({
+	        user: "{{ user.id }}",
+	        container: $('#cubesviewer').get(0),
+	        backendUrl: "{{ cubesviewer_backend_url }}"
+		});
+		
+	    // Start Cubesviewer system
+        cubesviewer.refresh();
+		
+	});
+	
+</script>
+  
+
+{% endblock %}  
+
+{% block content %}
+
+<div id="cubesviewer">
+
+    <div class="cv-gui-panel ui-widget ui-widget-content ui-corner-all" >
+    </div>
+    
+    <div class="cv-gui-workspace">
+    </div>
+
+</div>
+
+{% endblock %}
+
