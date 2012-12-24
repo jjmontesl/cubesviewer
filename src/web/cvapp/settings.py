@@ -23,23 +23,21 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import os.path
 
+CURRENT_DIR=os.path.dirname(os.path.abspath(__file__))
 
-# Django settings for Cubesviewer.
+##
+# 1. Configuration of application database for storing reports
+##
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
-ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
-)
-
-MANAGERS = ADMINS
-
+# Note: Default database uses sqlite and places the database file in the same
+# directory as this configuration file. Change the database connection to
+# match your needs.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/opt/cubesviewer/cubesviewer.sqlite',                      # Or path to database file if using sqlite3.
+        'NAME': os.path.join(CURRENT_DIR, 'cubesviewer.sqlite'), # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -48,7 +46,9 @@ DATABASES = {
 }
 
 
-# Cubesviewer  App Settings
+##
+# 2. Configuration of Slicer OLAP Server
+##
 
 # Base Cubes Server URL. 
 CUBESVIEWER_CUBES_URL="http://localhost:5000"
@@ -56,6 +56,23 @@ CUBESVIEWER_CUBES_URL="http://localhost:5000"
 # CubesViewer Store backend URL. It should point to this application.
 CUBESVIEWER_BACKEND_URL="http://localhost:8000/cubesviewer"
 
+##
+# 3. Other Django application settings
+##
+
+# Path to static files
+STATIC_DIR=os.path.join(CURRENT_DIR, os.path.pardir, 'static')
+TEMPLATE_DIR=os.path.join(CURRENT_DIR, os.path.pardir, 'templates')
+
+ADMINS = (
+    # ('Your Name', 'your_email@example.com'),
+)
+
+MANAGERS = ADMINS
+
+# Django settings for Cubesviewer.
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -109,7 +126,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/opt/cubesviewer/web/static',
+    STATIC_DIR,
 )
 
 # List of finder classes that know how to find static files in
@@ -144,7 +161,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/opt/cubesviewer/web/templates'
+    TEMPLATE_DIR
 )
 
 INSTALLED_APPS = (
@@ -154,10 +171,10 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     'django.contrib.admin',
     'django.contrib.admindocs',
-    
+
     'cubesviewer',
 )
 
@@ -186,7 +203,7 @@ LOGGING = {
             'level':'DEBUG',
             'class':'logging.StreamHandler',
             'formatter': 'simple',
-        },     
+        },
     },
     'loggers': {
         'django': {
@@ -205,5 +222,4 @@ LOGGING = {
             'propagate': True,
         },
     },
-         
 }
