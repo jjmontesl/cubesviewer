@@ -34,23 +34,28 @@ Github source repository: https://github.com/jjmontesl/cubesviewer
 Requirements
 ------------
 
-*CubesViewer library is HTML5/Javascript* and should work on most modern browsers
-(it may even work on older browsers). 
-
-CubesViewer requires *[Cubes Server](http://databrewery.org/cubes.html)* 0.11 or later, configured and running, able to serve 
+CubesViewer requires **[Cubes Server](http://databrewery.org/cubes.html)** 0.11 or later, configured and running, able to serve 
 data cubes. 
 
-The full *Cubes Viewer application* (which includes all features including sharing/saving
-support) is a Python Django application. In order to run it,
-follow the usual procedure to set up a Djanjo application (creation of database and launching
-the server). 
+The **full CubesViewer application** (which includes all features including sharing/saving
+support) is a Python Django application. You need Django 1.3 in order to run it. 
+
+**CubesViewer library is HTML5/Javascript** and should work on most modern browsers
+(it may even work on older browsers). 
+
+For further information, see the Documentation section below.
+
+Documentation
+-------------
+
+* [CubesViewer Documentation](cubesviewer/blob/master/doc/guide/index.md)
 
 Screenshots
 -----------
 
-![CubesViewer Chart Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-chart-1.png "CubesViewer Chart")
 ![CubesViewer Chart Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-chart-2.png "CubesViewer Chart")
 ![CubesViewer Chart Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-chart-3-notes.png "CubesViewer Chart")
+![CubesViewer Chart Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-chart-1.png "CubesViewer Chart")
 ![CubesViewer Explore Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-explore-1.png "CubesViewer Explore")
 ![CubesViewer Explore Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-explore-2.png "CubesViewer Explore")
 ![CubesViewer Series Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-series-1.png "CubesViewer Series")

@@ -39,7 +39,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/home/jjmontes/git/cubesviewer/cubesviewer.sqlite',                      # Or path to database file if using sqlite3.
+        'NAME': '/opt/cubesviewer/cubesviewer.sqlite',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -49,7 +49,11 @@ DATABASES = {
 
 
 # Cubesviewer  App Settings
+
+# Base Cubes Server URL. 
 CUBESVIEWER_CUBES_URL="http://localhost:5000"
+
+# CubesViewer Store backend URL. It should point to this application.
 CUBESVIEWER_BACKEND_URL="http://localhost:8000/cubesviewer"
 
 
@@ -105,7 +109,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/home/jjmontes/git/cubesviewer/src/web/static',
+    '/opt/cubesviewer/web/static',
 )
 
 # List of finder classes that know how to find static files in
@@ -140,7 +144,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/home/jjmontes/git/cubesviewer/src/web/templates'
+    '/opt/cubesviewer/web/templates'
 )
 
 INSTALLED_APPS = (
