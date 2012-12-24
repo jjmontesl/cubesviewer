@@ -4,6 +4,7 @@
 
     <title>{% block title %}{% endblock %}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}    
 
 	<link rel="stylesheet" href="{{ STATIC_URL }}css/blueprint/screen.css" type="text/css" media="screen, projection">
 	<link rel="stylesheet" href="{{ STATIC_URL }}css/blueprint/print.css" type="text/css" media="print">
@@ -30,10 +31,7 @@
 
     <script type="text/javascript" src="{{ STATIC_URL }}js/cvapp.js"></script>      
 
-	
 	{% block extrahead %}{% endblock %}
-	
-	{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 	
 </head>
 
