@@ -171,7 +171,7 @@ function cubesviewerViewCubeChart() {
 		// Check if we can produce a table
 		if (view.params.yaxis == null) {
 			$('#' + view.id).find('.cv-view-viewdata').empty().append(
-					'<h3>Series Chart</h3><div><i>Cannot present chart no <b>measure dimension</b> has been selected in the <b>table view</b>.</i></div>'
+					'<h3>Series Chart</h3><div><i>Cannot present chart: no <b>measure</b> has been selected.</i></div>'
 			);
 			return;
 		} 

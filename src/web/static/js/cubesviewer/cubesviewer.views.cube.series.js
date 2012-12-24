@@ -133,7 +133,7 @@ function cubesviewerViewCubeSeries() {
 		  		drillElements +
 		  		'<div></div>' +
 		  		'<li><a href="#" class="cv-view-series-setxaxis" data-dimension="">None</a></li>' +
-		  '</ul><li><a href="#"><span class="ui-icon ui-icon-zoomin"></span>Measure Dimension</a><ul style="width: 180px;">' +
+		  '</ul><li><a href="#"><span class="ui-icon ui-icon-zoomin"></span>Measure</a><ul style="width: 180px;">' +
 	  	  		measuresElements +
 	  	  '</ul></li>'
 		);
@@ -185,7 +185,7 @@ function cubesviewerViewCubeSeries() {
 		// Check if we can produce a table
 		if (view.params.yaxis == null) {
 			$(view.container).find('.cv-view-viewdata').empty().append(
-					'<h3>Series Table</h3><div><i>Cannot present series table as no <b>measure dimension</b> has been selected.</i></div>'
+					'<h3>Series Table</h3><div><i>Cannot present series table: no <b>measure</b> has been selected.</i></div>'
 			);
 			return;
 		} 
@@ -222,7 +222,7 @@ function cubesviewerViewCubeSeries() {
 		
 		cubesviewer.views.cube.explore.drawInfoPiece(
 			$(view.container).find('.cv-view-viewinfo-extra'), "#ccccff", 350, true,
-			'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Measure dimension:</b> ' + ( (view.params.yaxis != null) ? view.params.yaxis : "<i>None</i>") 
+			'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Measure:</b> ' + ( (view.params.yaxis != null) ? view.params.yaxis : "<i>None</i>") 
 		);
 		
 		if (view.params.xaxis != null) {
