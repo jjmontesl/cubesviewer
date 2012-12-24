@@ -23,6 +23,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 import os.path
 
 CURRENT_DIR=os.path.dirname(os.path.abspath(__file__))
@@ -51,6 +52,8 @@ DATABASES = {
 ##
 
 # Base Cubes Server URL. 
+# Your Cubes Server needs to be running and listening on this URL, and it needs
+# to be accessible to clients of the application.
 CUBESVIEWER_CUBES_URL="http://localhost:5000"
 
 # CubesViewer Store backend URL. It should point to this application.
@@ -64,16 +67,6 @@ CUBESVIEWER_BACKEND_URL="http://localhost:8000/cubesviewer"
 STATIC_DIR=os.path.join(CURRENT_DIR, os.path.pardir, 'static')
 TEMPLATE_DIR=os.path.join(CURRENT_DIR, os.path.pardir, 'templates')
 
-ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
-)
-
-MANAGERS = ADMINS
-
-# Django settings for Cubesviewer.
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -86,6 +79,17 @@ TIME_ZONE = 'Europe/Madrid'
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
+
+
+ADMINS = (
+    # ('Your Name', 'your_email@example.com'),
+)
+
+MANAGERS = ADMINS
+
+# Django settings for Cubesviewer.
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
 SITE_ID = 1
 

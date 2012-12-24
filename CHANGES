@@ -1,5 +1,7 @@
 HEAD
-    + Added wiki-notes support.
+    + Added installation documentation.
+    + Application settings now have default values that work out of the box.
+    + Added support for measures with no aggregations.
 0.2
     + Initial import into repository. 
     + Added basic saving/sharing capabilities.

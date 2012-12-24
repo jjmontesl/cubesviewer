@@ -76,7 +76,7 @@ Development
 
 Any suggestion, idea, patch, improvement or bug report would be very welcome.
 
-Also please let me know if you are using CubesViewer.
+Also please let me know if you are using CubesViewer. It's encouraging :-). 
 
 Authors
 =======
