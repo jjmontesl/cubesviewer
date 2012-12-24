@@ -50,6 +50,7 @@ function cubesviewerViewCube () {
 			
 		});
 		
+		// Get a reference to the cube
 		view.cube = cubesviewer.getCube(view.params.cubename);
 		
 	}
@@ -87,6 +88,14 @@ function cubesviewerViewCube () {
 		$(view.container).append('<div class="cv-view-viewinfo"></div>');
 		$(view.container).append('<div class="cv-view-viewdata" style="clear: both;"></div>');
 		$(view.container).append('<div class="cv-view-viewfooter" style="clear: both;"></div>');
+		
+		// Check if the model/cube is loaded.
+		if (view.cube == null) {
+			$(view.container).find('.cv-view-viewdata').empty().append(
+					'<h3>Cube View</h3><div><i>Cannot present cube view: could not load model or cube <b>' + view.params.cubename + '</b>.</i></div>'
+			);
+			return;
+		}
 		
 		// Menu toolbar
 		$(view.container).find('.cv-view-viewmenu').append(

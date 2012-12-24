@@ -1,4 +1,5 @@
 HEAD
+    + Added (draft) examples of local HTML usage.
     + Added installation documentation.
     + Application settings now have default values that work out of the box.
     + Added support for measures with no aggregations.

@@ -71,6 +71,8 @@ function cubesviewerViewCubeChart() {
 	 */
 	this.onViewDraw = function(event, view) {
 		
+		if (view.cube == null) return;
+		
 		// Series Mode button
 		$(view.container).find('.cv-view-toolbar').find(".cv-view-button-series").after(
 			'<button class="cv-view-button-chart" title="Chart" style="margin-right: 15px;"><span class="ui-icon ui-icon-calculator"></span></button>'

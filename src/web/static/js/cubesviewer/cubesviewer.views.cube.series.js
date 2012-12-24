@@ -47,6 +47,8 @@ function cubesviewerViewCubeSeries() {
 	 */
 	this.onViewDraw = function(event, view) {
 		
+		if (view.cube == null) return;
+		
 		// Series Mode button
 		$(view.container).find('.cv-view-toolbar').find(".explorebutton").after(
 			'<button class="cv-view-button-series" title="Series Table" style="margin-right: 5px;"><span class="ui-icon ui-icon-clock"></span></button>'

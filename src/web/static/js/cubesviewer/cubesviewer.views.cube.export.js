@@ -50,6 +50,8 @@ function cubesviewerViewCubeExporter() {
 	 */
 	this.drawMenu = function(view) {
 		
+		if (view.cube == null) return;
+		
 		var menu = $(".cv-view-menu-view", $(view.container));
 		var cube = view.cube;
 		

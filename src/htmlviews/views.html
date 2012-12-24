@@ -72,11 +72,13 @@
 	
     // Add views
     $(document).bind("cubesviewerModelLoaded", { }, function() {
-    	var view1 = cubesviewer.views.createView("olapview1", $('#olap-view1'), "cube", { "cubename": "support_issues" });	
+    	
+    	var view1 = cubesviewer.views.createView("olapview1", $('#olap-view1'), "cube", { "cubename": "somecube" });	
     	cubesviewer.views.redrawView (view1);
     	
-    	var view2 = cubesviewer.views.createView("olapview2", $('#olap-view2'), "cube", { "cubename": "support_issues" }); 
+    	var view2 = cubesviewer.views.createView("olapview2", $('#olap-view2'), "cube", { "cubename": "somecube" }); 
         cubesviewer.views.redrawView (view2);
+        
     });
     
 
@@ -88,6 +90,12 @@
 td {
     vertical-align: top;
 }
+
+.olapview {
+    min-width: 400px;
+    margin: 10px;
+}
+
 </style>
 
 	
@@ -130,7 +138,7 @@ td {
 <td>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras et arcu ut augue porta elementum eget vitae tellus. Curabitur in libero vel mauris luctus lobortis. Duis ornare erat at arcu dignissim rhoncus. Sed eget est ac risus egestas egestas. Nullam sapien arcu, molestie non aliquam in, eleifend id magna. Donec convallis vulputate cursus. Praesent tempus semper gravida.
 </td><td colspan="2">
-    <div id="olap-view1" style="margin: 10px;" ></div>
+    <div id="olap-view1" class="olapview"></div>
 </td></tr></table>
 
 <table><tr>             
@@ -144,7 +152,7 @@ td {
 
 <table><tr>             
 <td>
-    <div id="olap-view2" style="margin: 10px; "></div>
+    <div id="olap-view2" class="olapview"></div>
 </td><td colspan="2">
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras et arcu ut augue porta elementum eget vitae tellus. Curabitur in libero vel mauris luctus lobortis. Duis ornare erat at arcu dignissim rhoncus. Sed eget est ac risus egestas egestas. Nullam sapien arcu, molestie non aliquam in, eleifend id magna. Donec convallis vulputate cursus. Praesent tempus semper gravida.
 </td></tr></table>

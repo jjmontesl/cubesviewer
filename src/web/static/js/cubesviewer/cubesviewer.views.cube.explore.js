@@ -34,6 +34,8 @@ function cubesviewerViewCubeExplore() {
 	 */
 	this.onViewDraw = function(event, view) {
 		
+		if (view.cube == null) return;
+		
 		// Add icon to toolbar
 		$(view.container).find('.cv-view-toolbar').prepend(
 			'<button class="explorebutton" title="Explore" style="margin-right: 10px;"><span class="ui-icon ui-icon-circle-arrow-s"></span></button>'
