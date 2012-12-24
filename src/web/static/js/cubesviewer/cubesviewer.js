@@ -32,6 +32,9 @@
  */
 function cubesviewer () {
 	
+	// CubesViewer version
+	this.version = "0.3";
+	
 	// Default options
 	this.options = {
 		cubesUrl : null,
@@ -45,7 +48,7 @@ function cubesviewer () {
 	 * Show a global alert
 	 */
 	this.alert = function (message) {
-		alert ("CubesViewer\n\n" + message);
+		alert ("CubesViewer " + this.version + "\n\n" + message);
 	}
 	
 	/*
@@ -127,7 +130,7 @@ function cubesviewer () {
 		// Global AJAX error handler
 		$(document).ajaxError(
 			function myErrorHandler(event, xhr, ajaxOptions, thrownError) {
-				alert("An error occurred while accessing the server. Please try again or\n"
+				cubesviewer.alert("An error occurred while accessing the server. Please try again or\n"
 						+ "contact the server administrator if the problem persists.");
 				$('.ajaxloader').hide();
 				$('#refreshButton').button('enable');

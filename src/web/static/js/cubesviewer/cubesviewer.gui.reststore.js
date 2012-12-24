@@ -140,7 +140,7 @@ function cubesviewerGuiRestStore() {
 	this.saveView = function (view) {
 		
 		if (view.params.owner != view.cubesviewer.gui.options.user) {
-			alert ('Cannot save a view that belongs to other user (try cloning the view).');
+			view.cubesviewer.alert ('Cannot save a view that belongs to other user (try cloning the view).');
 			return;
 		}
 		
@@ -161,11 +161,11 @@ function cubesviewerGuiRestStore() {
 	this.deleteView = function (view) {
 		
 		if (view.params.savedId == 0) {
-			alert ("Cannot delete this view as it hasn't been saved.");
+			view.cubesviewer.alert ("Cannot delete this view as it hasn't been saved.");
 			return;
 		}
 		if (view.params.owner != view.cubesviewer.gui.options.user) {
-			alert ('Cannot delete a view that belongs to other user.');
+			view.cubesviewer.alert ('Cannot delete a view that belongs to other user.');
 			return;
 		}
 		

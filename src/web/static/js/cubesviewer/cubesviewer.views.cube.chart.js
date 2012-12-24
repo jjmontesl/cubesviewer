@@ -52,12 +52,12 @@ function cubesviewerViewCubeChart() {
 	this.exportChart = function(view) {
 		 
 	     if (Flotr.isIE && Flotr.isIE < 9) {
-            this.cubesviewer.alert("Your browser doesn't allow you to get a bitmap image from the plot.");
+            view.cubesviewer.alert("Your browser doesn't allow you to get a bitmap image from the plot.");
             return;
          }
 	     
 	     if (view.flotrDraw == null) {
-	    	 this.cubesviewer.alert("Cannot export: there is no chart configured.");
+	    	 view.cubesviewer.alert("Cannot export: there is no chart configured.");
 	         return;
 	     }
 

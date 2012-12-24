@@ -650,8 +650,7 @@ function cubesviewerViewCubeExplore() {
 					return e.dimension == dimension;
 				});
 				if (existing_cut.length > 0) {
-					view.cubesviewer.alert("Cannot cut dataset. Dimension '" + dimension
-							+ "' is already filtered.");
+					view.cubesviewer.alert("Cannot cut dataset. Dimension '" + dimension + "' is already filtered.");
 					return;
 				} else {
 					view.params.cuts.push({
