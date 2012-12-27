@@ -7,7 +7,7 @@ Installing the full CubesViewer application
 CubesViewer full application includes the complete of user interface features to explore and navigate
 a Cubes Server.
 
-The full CubesViewer application, includes a server-side Python/Django application which serves as backend for some
+The full CubesViewer application includes a server-side Python/Django application which serves as backend for some
 of the operations (ie. saving / sharing).
 
 The CubesViewer application is a web application and as such it must be served by an HTTP server.
@@ -16,7 +16,7 @@ be fronted by a real web server like Apache.
 
 As a side note, it should be pointed that CubesViewer is, however, mainly a client-side Javascript library, 
 which means that you don't need to use any particular server side technology as long as there is a running
-CUbes server accessible to the client browser. This makes it (or parts of it) easily integrable in existing 
+Cubes server accessible to the client browser. This makes it (or parts of it) easily integrable in existing 
 web applications.
 
 The installation workflow is as follows:
@@ -129,7 +129,7 @@ Once the application is configured, we need to initialize the backend database. 
 Move into your INSTALLATION_PATH/web/cvapp directory and run the manage script with the "syncdb" option:
 
 ```
-python manage syncdb
+python manage.py syncdb
 ```
 
 You will be prompted for an "admin" user and password. This is the user that will have access to the administration section.
@@ -140,7 +140,7 @@ Finally, let's run the application. As mentioned above, you should think of usin
 However, Django provides a convenient way to spawn a server for testing purposes. Run the manage script with the following parameters:
 
 ```
-python manage runserver
+python manage.py runserver
 ```
 
 Now, the application should be available from your browser, using the following URL:
