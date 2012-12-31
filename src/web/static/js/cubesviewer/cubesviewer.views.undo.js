@@ -32,6 +32,8 @@ function cubesviewerViewsUndo () {
 
 this.cubesviewer = cubesviewer; 
 	
+	this.maxUndo = 32;
+
 	/*
 	 * Prepares the view. 
 	 */
@@ -101,13 +103,16 @@ this.cubesviewer = cubesviewer;
 		var menu = $(".cv-view-menu-view", $(view.container));
 		var cube = view.cube;
 		
-		menu.prepend(
-	  		'<li><a href="#" class="cv-view-undo"><span class="ui-icon ui-icon-arrowreturnthick-1-w"></span> Undo</a></li>' +
+		/*
+		menu.append(
+	  		'<div></div>' +
+			'<li><a href="#" class="cv-view-undo"><span class="ui-icon ui-icon-arrowreturnthick-1-w"></span> Undo</a></li>' +
 	  		'<li><a href="#" class="cv-view-redo"><span class="ui-icon ui-icon-arrowreturnthick-1-e"></span> Redo</a></li>'
 	  	);
 		
 		$(menu).menu( "refresh" );
 		$(menu).addClass("ui-menu-icons");
+		*/
 
 		// Events are added by the drawView method
 		
@@ -130,6 +135,11 @@ this.cubesviewer = cubesviewer;
 			view.undoList.splice(view.undoPos, view.undoList.length - view.undoPos);
 		}
 		view.undoList.push(state);
+		
+		if (view.undoList.length > this.maxUndo) {
+			view.undoList.splice(0, view.undoList.length - this.maxUndo);
+			view.undoPos = view.undoList.length - 1;
+		}
 	}
 	
 	this.getCurrentUndoState = function (view) {
