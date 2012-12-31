@@ -111,22 +111,24 @@ function cubesviewerViewCubeChart() {
 	 */
 	this.drawChartMenu = function (view) {
 		
-		this.cubesviewer.views.cube.series.drawSeriesMenu(view);
+		this.cubesviewer.views.cube.series.drawSeriesMenu(view);	
 		
 		var menu = $(".cv-view-menu-view", $(view.container));
 		var cube = view.cube;
 		
-		menu.append(
-				'<div></div>' +
-				'<li><a href="#"><span class="ui-icon ui-icon-calculator"></span>Chart Type</a><ul style="width: 180px;">' +
-		  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="pie">Pie</a></li>' +
-		  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="bars-vertical">Bars Vertical</a></li>' +
-		  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="bars-vertical-stacked">Bars Vertical (Stacked)</a></li>' +
-		  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines">Lines</a></li>' +
-		  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines-stacked">Lines (Stacked)</a></li>' +
-		  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="radar">Radar</a></li>' +
+		menu.prepend(
+			'<li><a href="#"><span class="ui-icon ui-icon-calculator"></span>Chart Type</a><ul style="width: 180px;">' +
+	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="pie">Pie</a></li>' +
+	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="bars-vertical">Bars Vertical</a></li>' +
+	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="bars-vertical-stacked">Bars Vertical (Stacked)</a></li>' +
+	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines">Lines</a></li>' +
+	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines-stacked">Areas (Stacked)</a></li>' +
+	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="radar">Radar</a></li>' +
 	  	  '</ul></li>' +
-  		  '<div></div>' +
+  		  '<div></div>'
+	  	);
+	  	menu.append(
+	  	  '<div></div>' +
   		  '<li><a href="#" class="cv-view-chart-export"><span class="ui-icon ui-icon-script"></span>Export image</a></li>'
 		);
 		
