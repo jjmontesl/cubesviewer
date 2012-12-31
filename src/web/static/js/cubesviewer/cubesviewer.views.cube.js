@@ -102,7 +102,7 @@ function cubesviewerViewCube () {
 		
 		// Menu toolbar
 		$(view.container).find('.cv-view-viewmenu').append(
-			'<div style="float: right; z-index: 9990; "><div class="cv-view-toolbar ui-widget-header ui-corner-all">' +
+			'<div style="float: right; z-index: 9990; "><div class="cv-view-toolbar ui-widget-header ui-corner-all" style="display: inline-block;">' +
 			'</div></div>'
 		);
 		

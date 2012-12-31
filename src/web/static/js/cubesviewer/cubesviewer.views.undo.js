@@ -29,6 +29,142 @@
  * Undo/Redo plugin.
  */
 function cubesviewerViewsUndo () {
+
+this.cubesviewer = cubesviewer; 
+	
+	/*
+	 * Prepares the view. 
+	 */
+	this.onViewCreate = function(event, view) {
+
+		$.extend(view.params, {
+			//"showUndo" : true,
+		});
+		
+		view.undoList = [];
+		view.undoPos = -1;
+	};	
+	
+	/*
+	 * Draw cube view structure.
+	 */
+	this.onViewDraw = function(event, view) {
+		
+		if (view.cube == null) return;
+		
+		// Undo/Redo buttons
+		$(view.container).find('.cv-view-toolbar').before(
+			'<div style="margin-right: 15px; display: inline-block;">' + 
+			'<button class="cv-view-undo cv-view-button-undo" title="Undo" style="margin-right: 5px;"><span class="ui-icon ui-icon-arrowreturnthick-1-w"></span></button>' +
+			'<button class="cv-view-redo cv-view-button-redo" title="Redo" style=""><span class="ui-icon ui-icon-arrowreturnthick-1-e"></span></button>' +
+			'</div>'
+		);
+		
+		// Undo menu
+		view.cubesviewer.views.undo.drawUndoMenu(view);		
+		
+		// Buttonize and events 
+		$(view.container).find('.cv-view-button-undo').button();
+		$(view.container).find('.cv-view-undo').click(function() { 
+			view.cubesviewer.views.undo.undo(view);
+			return false;
+		});
+		$(view.container).find('.cv-view-button-redo').button();
+		$(view.container).find('.cv-view-redo').click(function() { 
+			view.cubesviewer.views.undo.redo(view);
+			return false;
+		});
+
+		// Process undo operations
+		view.cubesviewer.views.undo._processDrawState(view);
+		
+		// Disable
+		//$(view.container).find('.cv-view-button-chart').button("option", "disabled", "true").addClass('ui-state-active');
+		if (view.undoPos <= 0) {
+			$(view.container).find('.cv-view-button-undo').button("option", "disabled", "true")
+			$(view.container).find('.cv-view-undo').addClass('disabled');
+		}
+		if (view.undoPos >= view.undoList.length - 1) {
+			$(view.container).find('.cv-view-button-redo').button("option", "disabled", "true")
+			$(view.container).find('.cv-view-redo').addClass('disabled');
+		}		
+		
+		
+		
+	};	
+
+	/*
+	 * Updates view options menus.
+	 */
+	this.drawUndoMenu = function (view) {
+		
+		var menu = $(".cv-view-menu-view", $(view.container));
+		var cube = view.cube;
+		
+		menu.prepend(
+	  		'<li><a href="#" class="cv-view-undo"><span class="ui-icon ui-icon-arrowreturnthick-1-w"></span> Undo</a></li>' +
+	  		'<li><a href="#" class="cv-view-redo"><span class="ui-icon ui-icon-arrowreturnthick-1-e"></span> Redo</a></li>'
+	  	);
+		
+		$(menu).menu( "refresh" );
+		$(menu).addClass("ui-menu-icons");
+
+		// Events are added by the drawView method
+		
+	};
+	
+	this._processDrawState = function(view) {
+		
+		var drawn = view.cubesviewer.views.serialize(view);
+		var current = this.getCurrentUndoState(view);
+		 
+		if (drawn != current) {
+			this.pushUndo(view, drawn);
+		}
+		
+	}
+	
+	this.pushUndo = function (view, state) {
+		view.undoPos = view.undoPos + 1;
+		if (view.undoPos + 1 <= view.undoList.length) {
+			view.undoList.splice(view.undoPos, view.undoList.length - view.undoPos);
+		}
+		view.undoList.push(state);
+	}
+	
+	this.getCurrentUndoState = function (view) {
+		if (view.undoList.length == 0) return "{}";
+		return view.undoList[view.undoPos];
+	};
+	
+	this.undo = function (view) {
+		view.undoPos = view.undoPos - 1;
+		if (view.undoPos < 0) view.undoPos = 0;
+		this.applyCurrentUndoState (view);
+	};
+	
+	this.redo = function (view) {
+		view.undoPos = view.undoPos + 1;
+		this.applyCurrentUndoState (view);
+	};
+	
+	this.applyCurrentUndoState = function(view) {
+		var current = this.getCurrentUndoState(view);
+		view.params = $.parseJSON(current);
+		view.cubesviewer.views.redrawView(view);
+	};
+
 	
 };
+
+/*
+ * Create object.
+ */
+cubesviewer.views.undo = new cubesviewerViewsUndo();
+
+/*
+ * Bind events.
+ */
+$(document).bind("cubesviewerViewCreate", { }, cubesviewer.views.undo.onViewCreate);
+$(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.undo.onViewDraw);
 
