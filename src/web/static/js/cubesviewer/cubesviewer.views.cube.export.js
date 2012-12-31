@@ -108,24 +108,24 @@ function cubesviewerViewCubeExporter() {
 		}
 		
 		var values = [];
-		for (var i = 0; i < grid.jqGrid('getGridParam','colNames').length; i++) {
+		for (var i = ((view.params.mode == "explore") ? 1 : 0); i < grid.jqGrid('getGridParam','colNames').length; i++) {
 			values.push ('"' + grid.jqGrid('getGridParam','colNames')[i] + '"');
 		}
 		content = content + (values.join(",")) + "\n";
 		
-		var m = grid.getDataIDs();
+		//var m = grid.getDataIDs();
+		var m = grid.jqGrid('getGridParam', 'data');
+		
 		for (var i = 0; i < m.length; i++) {
-		    var record = grid.getRowData(m[i]);
+		    var record = m[i];
 		    values = [];
-		    for (key in record) {
-		    	//if (key == "key") {
-		    	// TODO: Fix this incorrect way of resolving what value to use 
-		    	if (record[key].indexOf('<a') >= 0) {
-		    		values.push ('"' + m[i] + '"');
-		    	} else {
-		    		values.push ('"' + record[key] + '"');
-		    	}
-		    }
+		    values.push ('"' + $('<div>' + record.key + '</div>').text() + '"');
+			for (var j = ((view.params.mode == "explore") ? 2 : 1); j < grid.jqGrid('getGridParam','colNames').length; j++) {
+				var columnname = grid.jqGrid('getGridParam','colNames')[j];
+				var colval = record[columnname];
+				if (colval == undefined) colval = 0;
+				values.push ('"' + colval + '"');
+			}
 		    content = content + (values.join(",")) + "\n";
 		}
 		
