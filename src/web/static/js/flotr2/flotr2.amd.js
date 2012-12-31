@@ -907,8 +907,8 @@ Text.prototype = {
     style = style || {};
 
     var
-      cubesviewer = this.measureText(text, style),
-      width = cubesviewer.width,
+      metrics = this.measureText(text, style),
+      width = metrics.width,
       height = style.size || F.defaultOptions.fontSize,
       angle = style.angle || 0,
       cosAngle = Math.cos(angle),
@@ -940,7 +940,7 @@ Text.prototype = {
 
     var
       context = this.o.ctx,
-      cubesviewer;
+      metrics;
 
     if (!context.fillText || (F.isIphone && context.measure)) {
       return { width : context.measure(text, style)};
@@ -954,10 +954,10 @@ Text.prototype = {
 
     context.save();
     context.font = (style.weight > 1 ? "bold " : "") + (style.size*1.3) + "px sans-serif";
-    cubesviewer = context.measureText(text);
+    metrics = context.measureText(text);
     context.restore();
 
-    return cubesviewer;
+    return metrics;
   }
 };
 

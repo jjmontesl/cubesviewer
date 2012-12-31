@@ -364,7 +364,8 @@ function cubesviewerViewCubeChart() {
 	        lines: {
 	        	lineWidth: 1, 
 	        	shadow: false,
-	        	stacked: (view.params.charttype == "lines-stacked")
+	        	stacked: (view.params.charttype == "lines-stacked"),
+	        	fill: (view.params.charttype == "lines-stacked")
 	        },
 	        mouse: {
 	            track: true,
