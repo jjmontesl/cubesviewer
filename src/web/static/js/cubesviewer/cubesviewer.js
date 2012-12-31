@@ -67,39 +67,6 @@ function cubesviewer () {
 	}
 
 	/*
-	 * Return a cube by name.
-	 */
-	this.getCube = function(cubename) {
-		var cube = $.grep(this.model.cubes, function(e) {
-			return e.name == cubename;
-		})[0];
-		
-		return cube;
-	};
-	
-	/*
-	 * Inform if a dimension is a date dimension and can be used as a date
-	 * filter (i.e. with range selection tool).
-	 */ 
-	this.isDateDimension = function(dimension) {
-		// TODO: For now, we search for "date" in the name.
-		return (dimension.name.toLowerCase().indexOf('date') >= 0);
-	};
-	
-	/*
-	 * Get a dimension by name.
-	 * Accepts dimension level in the input string.
-	 */ 
-	this.getDimension = function(dimension) {
-		var dimname = dimension.split(":")[0]
-		var dim = $.grep(this.model.dimensions, function(ed) {
-			return ed.name == dimname;
-		})[0];
-		
-		return dim;
-	},
-	
-	/*
 	 * Load model (cube list, dimensions...)
 	 */ 
 	this.loadModel = function() {
@@ -110,8 +77,8 @@ function cubesviewer () {
 		var cubesviewer = this;
 		return function(data, status) {
 			// Set new model
-			cubesviewer.model = data;
-			$(document).trigger("cubesviewerModelLoaded", [ data ] )
+			cubesviewer.model = cubesviewer.buildModel(data);
+			$(document).trigger("cubesviewerModelLoaded", [ cubesviewer.model ] )
 		}
 	};		
 	

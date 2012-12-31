@@ -55,3 +55,8 @@ a.ui-state-focus {
 	margin-bottom: 10px; 
 }
 
+a.cv-grid-link {
+    text-decoration: none;
+    color: blue;
+}
+

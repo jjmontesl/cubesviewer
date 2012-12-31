@@ -51,7 +51,7 @@ function cubesviewerViewCube () {
 		});
 		
 		// Get a reference to the cube
-		view.cube = cubesviewer.getCube(view.params.cubename);
+		view.cube = cubesviewer.model.getCube(view.params.cubename);
 		
 	}
 	
@@ -67,7 +67,10 @@ function cubesviewerViewCube () {
 		);
 		
 		$(view.container).find('.cv-view-viewmenu').append(
-			'<ul class="cv-view-menu cv-view-menu-view" style="float: right; width: 180px;"></ul>'
+			'<ul class="cv-view-menu cv-view-menu-view" style="float: right; width: 180px;">' + 
+			//'<li><a href="#" class="aboutBox">About CubesViewer...</a></li>' +
+			//'<div></div>' +
+			'</ul>'
 		);
 		
 		// Buttonize
@@ -159,8 +162,6 @@ function cubesviewerViewCube () {
 	/*
 	 * Composes a filter with appropriate syntax and time grain from a
 	 * datefilter
-	 * TODO: Improve this, now using date/month only, not real mapping to
-	 * dimension grain.
 	 */ 
 	this.datefilterValue = function(datefilter) {
 
@@ -199,11 +200,11 @@ function cubesviewerViewCube () {
 			var datefiltervalue = "";
 			if (date_from != null)
 				datefiltervalue = datefiltervalue
-						+ this._datefiltercell(date_from);
+						+ this._datefiltercell(datefilter, date_from);
 			datefiltervalue = datefiltervalue + "-";
 			if (date_to != null)
 				datefiltervalue = datefiltervalue
-						+ this._datefiltercell(date_to);
+						+ this._datefiltercell(datefilter, date_to);
 			return datefiltervalue;
 		} else {
 			return null;
@@ -211,10 +212,46 @@ function cubesviewerViewCube () {
 
 	};
 
-	this._datefiltercell = function(tdate) {
+	this._datefiltercell = function(datefilter, tdate) {
+
+		var values = [];
+		
+		var dimensionparts = cubesviewer.model.getDimensionParts(datefilter.dimension);
+		for (var i = 0; i < dimensionparts.hierarchy.levels.length; i++) {
+			var levelname = dimensionparts.hierarchy.levels[i];
+			var level = dimensionparts.dimension.getLevel(levelname);
+			
+			var field = level.getInfo("cv-datefilter-field");
+			if (field == "year") {
+				values.push(tdate.getFullYear());
+			} else if (field == "month") {
+				values.push(tdate.getMonth() + 1);
+			} else if (field == "quarter") {
+				values.push((Math.floor(tdate.getMonth() / 3) + 1));
+			} else if (field == "week") {
+				values.push(this._weekNumber(tdate));
+			} else {
+				cubesviewer.alert ("Wrong configuration of model: datefilter field '" + field + "' is invalid.");
+			}
+		}
+		
+		return values.join(',');
+		
 		return tdate.getFullYear() + ","
 				+ (Math.floor(tdate.getMonth() / 3) + 1) + ","
 				+ (tdate.getMonth() + 1);
+	};	
+	
+	this._weekNumber = function(d) {
+	    // Copy date so don't modify original
+	    d = new Date(d);
+	    d.setHours(0,0,0);
+	    // Get first day of year
+	    var yearStart = new Date(d.getFullYear(),0,1);
+	    // Calculate full weeks to nearest Thursday
+	    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7)
+	    // Return array of year and week number
+	    return weekNo;
 	};	
 	
 	/*

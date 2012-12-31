@@ -7,7 +7,7 @@ About
 CubesViewer is a visual, web-based tool application for exploring and analyzing
 OLAP databases served by the Cubes OLAP Framework.
 
-This tool allows users to inspect the diferent dimensions, measures and
+This tool allows users to inspect the different dimensions, measures and
 aggregated data in different ways. It is a frontend for the
 open-source ["Cubes" server](http://databrewery.org/cubes.html) (an OLAP server in Python). 
 Purpose is to keep it simple and modular, leveraging the data model 
@@ -20,11 +20,13 @@ OLAP Explorer is the main focus of the project.
 
 Features:
 
+* Date filtering.
 * User Interface allowing for multiple cube views on-screen. 
 * Cube explorer providing drilldown and cut operations.
-* Several types of charts.
+* Different types of charts and diagrams.
 * View management, sharing and saving.
 * Modular and extensible.
+
 
 Source
 ------
@@ -36,6 +38,9 @@ Requirements
 
 CubesViewer requires **[Cubes Server](http://databrewery.org/cubes.html)** 0.11 or later, configured and running, able to serve 
 data cubes. 
+
+Note that **your cubes model should be configured** to add support for CubesViewer features like date filters and descriptions
+(see Documentation below). 
 
 The **full CubesViewer application** (which includes all features including sharing/saving
 support) is a Python Django application. You need Django 1.3 in order to run it. 

@@ -41,6 +41,18 @@ function cubesviewerViewCubeExplore() {
 			'<button class="explorebutton" title="Explore" style="margin-right: 10px;"><span class="ui-icon ui-icon-circle-arrow-s"></span></button>'
 		);
 			
+		// Add view menu options button
+		$(view.container).find('.viewbutton').before(
+			'<button class="drilldownbutton" title="Drilldown" style="margin-right: 5px;"><span class="ui-icon ui-icon-arrowthick-1-s"></span> Drilldown</button>' +
+			'<button class="cutbutton" title="Filter" style="margin-right: 15px;"><span class="ui-icon ui-icon-zoomin"></span> Filter</button>'
+		);		
+		$(view.container).find('.cv-view-viewmenu').append(
+			'<ul class="cv-view-menu cv-view-menu-drilldown" style="float: right; width: 180px;"></ul>'
+		);
+		$(view.container).find('.cv-view-viewmenu').append(
+			'<ul class="cv-view-menu cv-view-menu-cut" style="float: right; width: 180px;"></ul>'
+		);
+		
 		// Buttonize
 		$(view.container).find('.explorebutton').button();
 		$(view.container).find('.explorebutton').click(function() { 
@@ -50,6 +62,9 @@ function cubesviewerViewCubeExplore() {
 		$(view.container).find('.explorebutton').mouseenter(function() {
 			$('.cv-view-menu').hide();
 		});
+		
+		// Explore menu
+		view.cubesviewer.views.cube.explore.drawExploreMenu(view);
 		
 		if (view.params.mode != "explore") return;
 		
@@ -61,29 +76,21 @@ function cubesviewerViewCubeExplore() {
 		// Highlight
 		$(view.container).find('.explorebutton').button("option", "disabled", "true").addClass('ui-state-active');
 		
-		// Explore menu
-		view.cubesviewer.views.cube.explore.drawExploreMenu(view);
-		
 		// Load data
 		view.cubesviewer.views.cube.explore.loadData(view);
 		
 	};
 
-	/*
-	 * Builds the explore menu drilldown options.
-	 */
-	this.drawExploreMenuDrilldown = function(view) {
-		
-		var menu = $(".cv-view-menu-view", $(view.container));
+	this.getDrillElementsList = function(view, cssclass) {
+
+		var menu = $(".cv-view-menu-drilldown", $(view.container));
 		var cube = view.cube;
 		
 		var drillElements = "";
 
 		$(cube.dimensions).each( function(idx, e) {
 			
-			var dimension = $.grep(cubesviewer.model.dimensions, function(ed) {
-				return ed.name == e;
-			})[0];
+			var dimension = view.cubesviewer.model.getDimension(e);
 
 			if (dimension.is_flat) {
 				// Don't show drilldown option if dimension is
@@ -95,35 +102,66 @@ function cubesviewerViewCubeExplore() {
 				}
 				drillElements = 
 					drillElements + 
-					'<li><a href="#" class="selectDrill ' + disabled + '" data-dimension="' + dimension.name + '" data-value="1">' +
-					dimension.label + '</a></li>';
+					'<li><a href="#" class="' + cssclass + ' ' + disabled + '" data-dimension="' + dimension.name + '" data-value="1">' + dimension.label + '</a></li>';
 			} else {
 				drillElements = drillElements + '<li><a href="#">' + dimension.label + 
-					'</a><ul class="drillList" style="width: 180px; z-index: 9999;">';
+					'</a><ul class="drillList" style="width: 170px; z-index: 9999;">';
 				
-				$(dimension.levels).each(function(idx, el) { 
-					drillElements = drillElements + '<li><a href="#" class="selectDrill" data-dimension="' + dimension.name + ':'+ 
-						el.name + '" data-value="1">' + el.label + '</a></li>';
-				});
+				if (dimension.hierarchies.length > 1) {
+					$(dimension.hierarchies).each(function(idx,hi) {
+						drillElements = drillElements + '<li><a href="#">' + hi.label + 
+						'</a><ul class="drillList" style="width: 160px; z-index: 9999;">';
+						$(hi.levels).each(function(idx, el) { 
+							var level = dimension.getLevel(el);
+							drillElements = drillElements + '<li><a href="#" class="' + cssclass + '" data-dimension="' + 
+								dimension.name + '@' + hi.name + ':'+ level.name + '" data-value="1">' + level.label + '</a></li>';
+						});
+						drillElements = drillElements + '</ul></li>';
+					});
+				} else {
+					$(dimension.hierarchies[0].levels).each(function(idx, el) { 
+						var level = dimension.getLevel(el);
+						drillElements = drillElements + '<li><a href="#" class="' + cssclass + '" data-dimension="' + dimension.name + ':'+ 
+						level.name + '" data-value="1">' + level.label + '</a></li>';
+					});
+				}
+				
 				drillElements = drillElements + '</ul></li>';
 			}
 
 		});
 		
+		return drillElements;
+		
+	}
+	
+	/*
+	 * Builds the explore menu drilldown options.
+	 */
+	this.drawExploreMenuDrilldown = function(view) {
+		
+		var menu = $(".cv-view-menu-drilldown", $(view.container));
+		var cube = view.cube;
+		
+		var drillElements = this.getDrillElementsList(view, "selectDrill");
+		
 		menu.append(
-			'<li><a href="#"><span class="ui-icon ui-icon-arrowthick-1-s"></span>Drill down</a><ul class="drillList" style="width: 180px;">' + 
+			'' + 
 			drillElements + '<div></div>' + '<li><a href="#" class="selectDrill" data-dimension=""><span class="ui-icon ui-icon-arrowthick-1-n" >' +
-			'</span><i>None</i></a></li>' + '</ul></li>'
+			'</span><i>None</i></a></li>' + ''
 		);
+		
+		// Menu functionality
+		view.cubesviewer.views.cube._initMenu(view, '.drilldownbutton', '.cv-view-menu-drilldown');		
 		
 	}	
 	
 	/*
 	 * Builds the explore menu drilldown options.
 	 */
-	this.drawExploreMenuDatefilter = function(view) {
+	this.drawExploreMenuFilter = function(view) {
 		
-		var menu = $(".cv-view-menu-view", $(view.container));
+		var menu = $(".cv-view-menu-cut", $(view.container));
 		var cube = view.cube;	
 	
 		var dateFilterElements = "";
@@ -133,23 +171,32 @@ function cubesviewerViewCubeExplore() {
 				return ed.name == e;
 			})[0];
 			
-			if (cubesviewer.isDateDimension(dimension)) {
+			if (dimension.isDateDimension()) {
 
 				var disabled = "";
 				dateFilterElements = dateFilterElements + '<li><a href="#" class="selectDateFilter '  + disabled + 
-					'" data-dimension="' + dimension.name + '" data-value="1">' + dimension.label + '</a></li>';
+					'" data-dimension="' + dimension.name + ((dimension.getInfo("cv-datefilter-hierarchy") != null) ? "@" + dimension.getInfo("cv-datefilter-hierarchy") : "") +  
+					'" data-value="1">' + dimension.label + ((dimension.getInfo("cv-datefilter-hierarchy") != null) ? " / " + dimension.getHierarchy(dimension.getInfo("cv-datefilter-hierarchy")).label : "") +
+					'</a></li>';
 			}
 
 		});
 		
+		if (view.params.mode == "explore") {
+			menu.append('<li><a href="#" class="explore-filterselected" ><span class="ui-icon ui-icon-zoomin"></span>Filter selected</a></li>');
+		}
+		
 		menu.append(
+				'<li><a href="#" class="selectCut" data-dimension="" data-value="" ><span class="ui-icon ui-icon-close"></span>Clear filters</a></li>' +
 				'<div></div>' + 
-				'<li><a href="#" class="selectCut" data-dimension="" data-value="" ><span class="ui-icon ui-icon-close"></span>Clear all filters</a></li>' +
-				'<li><a href="#" class="explore-filterselected" ><span class="ui-icon ui-icon-zoomin"></span>Filter selected</a></li>' + 
 				'<li><a href="#"><span class="ui-icon ui-icon-zoomin"></span>Add date filter</a><ul class="dateFilterList" style="width: 180px;">' + 
 				dateFilterElements + 
 				'</ul></li>'
 		);
+		
+		// Menu functionality
+		view.cubesviewer.views.cube._initMenu(view, '.cutbutton', '.cv-view-menu-cut');		
+
 		
 	}
 	
@@ -162,7 +209,7 @@ function cubesviewerViewCubeExplore() {
 		var cube = view.cube;
 
 		this.drawExploreMenuDrilldown (view);
-		this.drawExploreMenuDatefilter (view);
+		this.drawExploreMenuFilter (view);
 
 		$(menu).menu("refresh");
 		$(menu).addClass("ui-menu-icons");
@@ -248,7 +295,7 @@ function cubesviewerViewCubeExplore() {
 			for ( var i = 0; i < drilldown.length; i++) {
 
 				// Get dimension
-				var dimension = view.cubesviewer.getDimension(drilldown[i]);
+				var dimension = view.cubesviewer.model.getDimension(drilldown[i]);
 
 				// row["key"] = ((e[view.params.drilldown_field] != null) &&
 				// (e[view.params.drilldown] != "")) ? e[view.params.drilldown] : "Undefined";
@@ -290,46 +337,25 @@ function cubesviewerViewCubeExplore() {
 			for ( var i = 0; i < view.params.drilldown.length; i++) {
 
 				// Get dimension
-				var dimension = cubesviewer.getDimension(view.params.drilldown[i]);
-
-				// row["key"] = ((e[view.params.drilldown_field] !=
-				// null) && (e[view.params.drilldown] != "")) ?
-				// e[view.params.drilldown] : "Undefined";
-				if (dimension.is_flat == true) {
-					nid.push(e[dimension.name]);
-					key
-							.push('<a href="#" onclick="'
-									+ "cubesviewer.views.cube.explore.selectCut(cubesviewer.views.getParentView(this), $(this).attr('data-dimension'), $(this).attr('data-value')); return false;"
-									+ '" class="selectCut" data-dimension="'
-									+ dimension.name
-									+ '" data-value="'
-									+ e[dimension.name] + '">'
-									+ e[dimension.name]
-									+ '</a>');
-				} else {
-					var drilldown_level_value = [];
-					for ( var j = 0; j < dimension.levels.length; j++) {
-						var fieldname = dimension.name + "."
-								+ dimension.levels[j].name;
-						if (fieldname in e) {
-							drilldown_level_value
-									.push(e[fieldname]);
-						} else {
-							break;
-						}
-					}
-					nid.push(drilldown_level_value.join("-"));
-					key.push('<a href="#"  onclick="' + "cubesviewer.selectCut(cubesviewer.views.getParentView(this), $(this).attr('data-dimension'), $(this).attr('data-value')); return false;"
-							+ '" class="selectCut" data-dimension="'
-							+ dimension.name
-							+ '" data-value="'
-							+ drilldown_level_value
-									.join(",")
-							+ '">'
-							+ drilldown_level_value
-									.join(" / ")
-							+ '</a>');
-				}
+				var parts = cubesviewer.model.getDimensionParts(view.params.drilldown[i]);
+				var infos = parts.hierarchy.readCell(e);
+				
+				// Values and Labels
+				var drilldown_level_values = [];
+				var drilldown_level_labels = [];
+				
+				$(infos).each(function(idx, info) {
+					drilldown_level_values.push (info.key);
+					drilldown_level_labels.push (info.label);
+				});	
+				
+				nid.push(drilldown_level_values.join("-"));
+				
+				var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+				key.push('<a href="#" class="cv-grid-link" onclick="' + "cubesviewer.views.cube.explore.selectCut(cubesviewer.views.getParentView(this), $(this).attr('data-dimension'), $(this).attr('data-value')); return false;" +
+						 '" class="selectCut" data-dimension="' + cutDimension + '" ' +
+						 'data-value="' + drilldown_level_values.join(",") + '">' +
+						 drilldown_level_labels.join(" / ") + '</a>');
 			}
 
 			// Set key
@@ -399,7 +425,7 @@ function cubesviewerViewCubeExplore() {
 
 		var label = [];
 		$(view.params.drilldown).each(function(idx, e) {
-			label.push(cubesviewer.getDimension(e).label);
+			label.push(cubesviewer.model.getDimension(e).label);
 		})
 		colNames.splice(0, 0, label.join(' / '));
 
@@ -488,7 +514,7 @@ function cubesviewerViewCubeExplore() {
 
 		$(container)
 				.append(
-						'Mode: '
+						' '
 								+ '<select name="date_mode" >'
 								+ '<option value="custom">Custom</option>'
 								//+ '<option value="linked" disabled="true">Linked to main</option>'
@@ -553,7 +579,7 @@ function cubesviewerViewCubeExplore() {
 		return selector.children().last();
 	};
 	
-	// Draw cuts
+	// Draw information bubbles
 	this.drawInfo = function(view, readonly) {
 
 		var drawHeader = ((view.params.cuts.length > 0) || (view.params.drilldown.length > 0)
@@ -569,16 +595,17 @@ function cubesviewerViewCubeExplore() {
 			'<div class="cv-view-viewinfo-extra"></div></div>' 
 		);
 		
-		var piece = cubesviewer.views.cube.explore.drawInfoPiece(
+		var piece = view.cubesviewer.views.cube.explore.drawInfoPiece(
 			$(view.container).find('.cv-view-viewinfo-drill'), "#000000", 200, true,
-			'<span class="ui-icon ui-icon-info"></span> <span style="color: white;"><b>Cube:</b> ' + view.params.cubename + '</span>' 
+			'<span class="ui-icon ui-icon-info"></span> <span style="color: white;"><b>Cube:</b> ' + view.cube.label + '</span>' 
 		);
 	
 		$(view.params.drilldown).each(function(idx, e) {
 			
+			var dimparts = view.cubesviewer.model.getDimensionParts(e);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-drill'), "#ccffcc", 300, readonly,
-				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Drilldown:</b> ' + e 
+				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Drilldown:</b> ' + dimparts.label 
 			);
 			piece.find('.cv-view-infopiece-close').click(function() {
 				view.cubesviewer.views.cube.explore.selectDrill(view, e, "");
@@ -587,9 +614,10 @@ function cubesviewerViewCubeExplore() {
 		});
 		
 		$(view.params.cuts).each(function(idx, e) { 
+			var dimparts = view.cubesviewer.model.getDimensionParts(e.dimension);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-cut'), "#ffcccc", 450, readonly,
-				'<span class="ui-icon ui-icon-zoomin"></span> <b>Cut: </b> ' + e.dimension + ' = ' + 
+				'<span class="ui-icon ui-icon-zoomin"></span> <b>Cut: </b> ' + dimparts.label  + ' = ' + 
 				'<span title="' + e.value + '">' + e.value + '</span>'
 			);
 			piece.find('.cv-view-infopiece-close').click(function() {
@@ -598,9 +626,12 @@ function cubesviewerViewCubeExplore() {
 		});
 
 		$(view.params.datefilters).each( function(idx, e) {
+			var dimparts = view.cubesviewer.model.getDimensionParts(e.dimension);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 					$(view.container).find('.cv-view-viewinfo-date'), "#ffdddd", null, readonly,
-					'<span class="ui-icon ui-icon-zoomin"></span> <b>Cut: </b> ' + e.dimension + ' = <span class="datefilter"></span>')
+					'<span class="ui-icon ui-icon-zoomin"></span> <b>Cut: </b> ' +  
+					dimparts.label +   
+					': <span class="datefilter"></span>')
 			var container = $('.datefilter', piece);
 			view.cubesviewer.views.cube.explore.drawDateFilter(view, e, container);
 			

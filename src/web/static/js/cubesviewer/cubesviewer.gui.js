@@ -63,7 +63,8 @@ function cubesviewerGui () {
 		var viewId = "view" + this.lastViewId;
 
 		var container = this.createContainer(viewId);
-		var view = this.cubesviewer.views.createView(viewId, $('.cv-gui-viewcontent', container), "cube", { "cubename": cubename, "name": "Cube View - " + cubename });
+		var cube = this.cubesviewer.model.getCube(cubename);
+		var view = this.cubesviewer.views.createView(viewId, $('.cv-gui-viewcontent', container), "cube", { "cubename": cube.name, "name": "Cube View - " + cube.label });
 		this.views.push (view);
 		
 		// Bind close button
@@ -210,7 +211,7 @@ function cubesviewerGui () {
 	this.cloneView = function(view) {
 		
 		viewobject = $.parseJSON(view.cubesviewer.views.serialize(view));
-		viewobject.name = viewobject.name + " (Cloned)";
+		viewobject.name = "Clone of " + viewobject.name;
 
 		// TODO: These belong to plugins 
 		viewobject.savedId = 0;
@@ -232,7 +233,7 @@ function cubesviewerGui () {
 		$(cubesviewer.model["cubes"]).each(
 			function(idx, cube) {
 				$('.cv-gui-cubeslist', $(cubesviewer.gui.options.container)).append(
-						'<div><a href="#" data-cubename="' + cube.name + '" class="cv-gui-addviewcube">' + cube.name + '</a></div>'
+						'<div><a href="#" data-cubename="' + cube.name + '" class="cv-gui-addviewcube">' + cube.label + '</a></div>'
 				);
 			}
 		);
