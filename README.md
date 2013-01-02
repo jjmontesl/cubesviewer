@@ -20,7 +20,7 @@ OLAP Explorer is the main focus of the project.
 
 Features:
 
-* Date filtering.
+* Supports dimension hierarchies and date filtering.
 * User Interface allowing for multiple cube views on-screen. 
 * Cube explorer providing drilldown and cut operations.
 * Different types of charts and diagrams.
