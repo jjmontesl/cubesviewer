@@ -36,12 +36,6 @@ function cubesviewerViewCube () {
 		
 		$.extend(view.params, {
 	
-			//"savedId" : 0,
-			//"notes" : "",
-			
-			//"owner" : null
-			//"shared" : false,
-	
 			"mode" : "explore",
 			
 			"drilldown" : [],

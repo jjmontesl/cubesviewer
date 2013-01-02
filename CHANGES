@@ -1,4 +1,11 @@
 HEAD
+    + Added undo/redo plugin.
+    + Improved export plugin (now exports all pages of tables).
+    + Updated Flotr2 library to support stacked lines.
+    + Date dimensions are now correctly configured at model level. 
+    + Added support for dimension hierarchies.
+    + Added some Cubes model javascript support classes.
+    + Added support for labels and label attributes.
     + Added (draft) examples of local HTML usage.
     + Added installation documentation.
     + Application settings now have default values that work out of the box.

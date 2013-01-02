@@ -44,14 +44,9 @@ function cubesviewerGuiRestStore() {
 	 */
 	this.onViewCreate = function(event, view) {
 		
-		$.extend(view.params, {
-	
-			"savedId" : 0,
-			"owner" : view.cubesviewer.gui.options.user,
-
-			"shared" : false
-			
-		});
+		view.savedId = 0;
+		view.owner = view.cubesviewer.gui.options.user;
+		view.shard = false;
 		
 	};
 	
@@ -75,9 +70,9 @@ function cubesviewerGuiRestStore() {
 		
 		// Show viewstate
 		var viewstate = "";
-		if (view.params.savedId > 0) {
+		if (view.savedId > 0) {
 			
-			if (view.params.owner == view.cubesviewer.gui.options.user) {
+			if (view.owner == view.cubesviewer.gui.options.user) {
 				viewstate += ('<span style="color: white; font-size: 10px; border: 1px solid white; padding: 1px;">Owner</span> ');
 			
 				var changed = view.cubesviewer.gui.reststore.isViewChanged(view);
@@ -89,7 +84,7 @@ function cubesviewerGuiRestStore() {
 			}
 		}
 		
-		if (view.params.shared) {
+		if (view.shared) {
 			viewstate += ('<span style="color: yellow; margin-left: 10px; font-size: 10px; border: 1px solid yellow; padding: 1px;">Shared</span> ');
 		}
 		
@@ -109,7 +104,7 @@ function cubesviewerGuiRestStore() {
 		// Draw menu options (depending on mode)
 		menu.find (".cv-gui-renameview").parent().after(
 			'<div></div>' +
-			'<li><a class="cv-gui-shareview" data-sharedstate="' + (view.params.shared ? "0" : "1") + '" href="#"><span class="ui-icon ui-icon-rss"></span>' + (view.params.shared ? "Unshare" : "Share") + '</a></li>' +
+			'<li><a class="cv-gui-shareview" data-sharedstate="' + (view.shared ? "0" : "1") + '" href="#"><span class="ui-icon ui-icon-rss"></span>' + (view.params.shared ? "Unshare" : "Share") + '</a></li>' +
 			'<div></div>' +
 			'<li><a class="cv-gui-saveview" href="#"><span class="ui-icon ui-icon-disk"></span>Save</a></li>' +
 			'<li><a class="cv-gui-deleteview" href="#"><span class="ui-icon ui-icon-disk"></span>Delete</a></li>' 
@@ -139,15 +134,15 @@ function cubesviewerGuiRestStore() {
 	 */
 	this.saveView = function (view) {
 		
-		if (view.params.owner != view.cubesviewer.gui.options.user) {
+		if (view.owner != view.cubesviewer.gui.options.user) {
 			view.cubesviewer.alert ('Cannot save a view that belongs to other user (try cloning the view).');
 			return;
 		}
 		
 		var data = {
-			"id": view.params.savedId,
+			"id": view.savedId,
 			"name": view.params.name,
-			"shared": view.params.shared,
+			"shared": view.shared,
 			"data":  view.cubesviewer.views.serialize(view)
 		};
 				
@@ -160,11 +155,11 @@ function cubesviewerGuiRestStore() {
 	 */
 	this.deleteView = function (view) {
 		
-		if (view.params.savedId == 0) {
+		if (view.savedId == 0) {
 			view.cubesviewer.alert ("Cannot delete this view as it hasn't been saved.");
 			return;
 		}
-		if (view.params.owner != view.cubesviewer.gui.options.user) {
+		if (view.owner != view.cubesviewer.gui.options.user) {
 			view.cubesviewer.alert ('Cannot delete a view that belongs to other user.');
 			return;
 		}
@@ -174,7 +169,7 @@ function cubesviewerGuiRestStore() {
 		}
 		
 		var data = {
-			"id": view.params.savedId,
+			"id": view.savedId,
 			"data": ""
 		};
 				
@@ -193,13 +188,13 @@ function cubesviewerGuiRestStore() {
 		
 		return function(data, status) {
 			if (view != null) {
-				view.params.savedId = data.id;
+				view.savedId = data.id;
 				
 				// Manually update saved list to avoid detecting differences as the list hasn't been reloaded
-				var sview = view.cubesviewer.gui.reststore.getSavedView	(view.params.savedId);
+				var sview = view.cubesviewer.gui.reststore.getSavedView	(view.savedId);
 				if (sview != null) { 
 					sview.name = view.params.name;
-					sview.shared = view.params.shared;
+					sview.shared = view.shared;
 					sview.data = view.cubesviewer.views.serialize(view)
 				}
 				
@@ -285,7 +280,7 @@ function cubesviewerGuiRestStore() {
 	 * Change shared mode
 	 */ 
 	this.shareView = function(view, sharedstate) {
-		view.params.shared = ( sharedstate == 1 ? true : false );
+		view.shared = ( sharedstate == 1 ? true : false );
 		view.cubesviewer.views.redrawView(view);
 	};
 	
@@ -296,27 +291,29 @@ function cubesviewerGuiRestStore() {
 	 * the storage backend. 
 	 */
 	this.addViewSaved = function(savedViewId) {
-		var view = this.getSavedView(savedViewId);
-		var viewobject = $.parseJSON(view.data);
-		viewobject.savedId = view.id
-		viewobject.owner = view.owner_id;
-		viewobject.shared = view.shared;
-		cubesviewer.gui.addViewObject(viewobject);
+		var savedview = this.getSavedView(savedViewId);
+		var viewobject = $.parseJSON(savedview.data);
+		var view = cubesviewer.gui.addViewObject(viewobject);
+		view.savedId = savedview.id
+		view.owner = savedview.owner_id;
+		view.shared = savedview.shared;
+		
+		this.cubesviewer.views.redrawView (view);
 	};
 
 	// Calculate if there are unsaved changes 
 	this.isViewChanged = function(view) {
 		
-		if (view.params.savedId == 0) return false;
+		if (view.savedId == 0) return false;
 
 		// Find saved copy
-		var sview = view.cubesviewer.gui.reststore.getSavedView	(view.params.savedId);
+		var sview = view.cubesviewer.gui.reststore.getSavedView	(view.savedId);
 		
 		// Find differences
 		if (sview != null) {
 			if (view.params.name != sview.name) return true;
-			if (view.params.shared != sview.shared) return true; 
-			// TODO: This may have issues if datefilters change automatically over time, not the best idea 
+			if (view.shared != sview.shared) return true; 
+
 			if (view.cubesviewer.views.serialize(view) != sview.data) return true;
 		}
 		

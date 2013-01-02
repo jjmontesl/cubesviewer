@@ -73,8 +73,8 @@ function cubesviewerGui () {
 			return false;
 		});
 		
-		// Trigger refresh event
-		this.cubesviewer.views.redrawView (view);
+		return view;
+		
 	};
 
 	/*
@@ -95,9 +95,7 @@ function cubesviewerGui () {
 			return false;
 		});
 		
-		// Trigger refresh event
-		this.cubesviewer.views.redrawView (view);
-		
+		return view;
 
 	};	
 	
@@ -213,12 +211,14 @@ function cubesviewerGui () {
 		viewobject = $.parseJSON(view.cubesviewer.views.serialize(view));
 		viewobject.name = "Clone of " + viewobject.name;
 
+		var view = this.addViewObject(viewobject);
+
 		// TODO: These belong to plugins 
-		viewobject.savedId = 0;
-		viewobject.owner = this.options.user;
-		viewobject.shared = false;
+		view.savedId = 0;
+		view.owner = this.options.user;
+		view.shared = false;
 		
-		this.addViewObject(viewobject);
+		this.cubesviewer.views.redrawView (view);
 	};
 
 	// Model Loaded Event (redraws cubes list)
@@ -240,7 +240,8 @@ function cubesviewerGui () {
 		
 		// Add handlers for clicks
 		$('.cv-gui-cubeslist', $(cubesviewer.gui.options.container)).find('.cv-gui-addviewcube').click(function() {
-			cubesviewer.gui.addViewCube(  $(this).attr('data-cubename') );
+			var view = cubesviewer.gui.addViewCube(  $(this).attr('data-cubename') );
+			view.cubesviewer.views.redrawView (view);
 			return false;
 		});
 		
