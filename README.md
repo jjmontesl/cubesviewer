@@ -69,7 +69,7 @@ Support
 =======
 
 If you have questions, problems or suggestions, get in touch. CubesViewer doesn't
-have a list on its own. Instead, you can contact the author and users via the 
+have a list on its own. Instead, please get in touch through the 
 Cubes project mailing list:
 
 * Google group: http://groups.google.com/group/cubes-discuss
@@ -79,9 +79,7 @@ Report bugs using github issue tracking: https://github.com/jjmontesl/cubesviewe
 Development
 -----------
 
-Any suggestion, idea, patch, improvement or bug report would be very welcome.
-
-Also please let me know if you are using CubesViewer. It's encouraging :-). 
+Suggestion, ideas, plugins, patches and bug reports are very welcome :-).   
 
 Authors
 =======

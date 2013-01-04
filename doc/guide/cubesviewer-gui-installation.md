@@ -40,15 +40,14 @@ CubesViewer application runs on Python/Django. You need to have the following pa
 * Django 1.3
 
 Django applications can run on local SQLite files, but if you plan to run on a different database system, you may
-need to install also the Python connectors for the appropriate database backend (i. python-mysqldb).   
+need to install also the Python connectors for the appropriate database backend (ie. python-mysqldb).   
 
 ## 3 - Download and install CubesViewer
 
 Download CubesViewer project from GitHub (https://github.com/jjmontesl/cubesviewer). You can use 'git' or [download the ZIP 
 version](https://github.com/jjmontesl/cubesviewer/archive/master.zip) of the project. 
 
-Put the content of the /src directory of the project, in the target directory of your choice (ie../opt/cubesviewer in a Linux
-environment).
+Put the content of the /src directory of the project, in the target directory of your choice.
 
 ## 4 - Configure the application.
 
@@ -100,7 +99,7 @@ CUBESVIEWER_BACKEND_URL="http://localhost:8000/cubesviewer"
 
 ```python
 ##
-# 3. Other Django application settings (should work by default)
+# 3. Other Django application settings
 ##
 
 # Path to static files
