@@ -38,7 +38,7 @@ function cubesviewerViewCubeSeries() {
 	this.onViewCreate = function(event, view) {
 		$.extend(view.params, {
 			"xaxis" : null,
-			"yaxis" : null
+			"yaxis" : "record_count"
 		});
 	}	
 	
