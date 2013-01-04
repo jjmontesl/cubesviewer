@@ -251,7 +251,7 @@ function cubesviewerViewCubeExplore() {
 
 		$(view.container).find('.cv-view-viewdata').empty().append(
 				'<h3>Aggregated Data</h3>' +
-				'<img style="vertical-align: middle;" src="' + cubesviewer.options.ajaxLoaderUrl + '" title="Loading..." /> <i>Loading</i>'
+				'<span class="ajaxloader" title="Loading..."></span> <i>Loading</i>'
 		);
 		
 		$.get(this.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/aggregate",
@@ -439,7 +439,7 @@ function cubesviewerViewCubeExplore() {
 				name : "key" + i,
 				index : "key" + i,
 				align : "left",
-				width: 90
+				width: 130
 			});
 		}
 		if (view.params.drilldown.length == 0) {

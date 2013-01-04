@@ -186,7 +186,7 @@ function cubesviewerViewCubeChart() {
 		// Build params and include xaxis if present
 		var params = view.cubesviewer.views.cube.buildQueryParams(view, view.params.xaxis != null ? true : false, false);
 		
-		$('#' + view.id).find('.cv-view-viewdata').empty().append('<h3>Chart</h3><img src="' + view.cubesviewer.options.ajaxLoaderUrl + '" title="Loading..." /> Loading');
+		$('#' + view.id).find('.cv-view-viewdata').empty().append('<h3>Chart</h3><span class="ajaxloader" title="Loading..." ></span> Loading');
 		$.get(view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/aggregate", params, 
 				view.cubesviewer.views.cube.chart._loadDataCallback(view), "json");
 		

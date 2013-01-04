@@ -37,8 +37,7 @@ function cubesviewer () {
 	
 	// Default options
 	this.options = {
-		cubesUrl : null,
-		ajaxLoaderUrl : null
+		cubesUrl : null
 	};
 
 	// Model data as obtained from Cubes

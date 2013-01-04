@@ -200,7 +200,7 @@ function cubesviewerViewCubeSeries() {
 		var params = view.cubesviewer.views.cube.buildQueryParams(view, view.params.xaxis != null ? true : false, false);
 		
 		$(view.container).find('.cv-view-viewdata').empty().append(
-			'<h3>Series Table</h3><img src="' + view.cubesviewer.options.ajaxLoaderUrl + '" title="Loading" /> <i>Loading</i>'
+			'<h3>Series Table</h3><span class="ajaxloader" title="Loading..."></span> <i>Loading</i>'
 		);
 		$.get(view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/aggregate", params, 
 				view.cubesviewer.views.cube.series._loadDataCallback(view), "json");
