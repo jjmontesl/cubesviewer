@@ -684,7 +684,7 @@ function cubesviewerViewCubeExplore() {
 		for (i = 0, count = $('#summaryTable-' + view.id).get(0).idsOfSelectedRows.length; i < count; i++) {
 			var data = $('#summaryTable-' + view.id).getRowData(
 					$('#summaryTable-' + view.id).get(0).idsOfSelectedRows[i]);
-			var dom = $(data["key"]);
+			var dom = $(data["key0"]);
 			filterValues.push($(dom).attr("data-value"));
 		}
 		this.selectCut(view, $(dom).attr("data-dimension"), filterValues.join(";"));
