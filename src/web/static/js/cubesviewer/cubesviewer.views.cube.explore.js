@@ -359,7 +359,11 @@ function cubesviewerViewCubeExplore() {
 			}
 
 			// Set key
-			row["key"] = key.join(' / ');
+			row["key"] = key.join (" / ");
+			for (var i = 0; i < key.length; i++) {
+				row["key" + i] = key[i];
+			}
+			//row["key"] = key.join(' / ');
 
 			for ( var column in data.summary) {
 				row[column] = e[column];
@@ -373,7 +377,7 @@ function cubesviewerViewCubeExplore() {
 		// This allows a scrollbar to appear in jqGrid when only the summary row is shown. 
 		if (rows.length == 0) {
 			var row = [];
-			row["key"] = "Summary";
+			row["key0"] = "Summary";
 			for ( var column in data.summary) {
 				row[column] = data.summary[column];
 			}
@@ -427,15 +431,28 @@ function cubesviewerViewCubeExplore() {
 		$(view.params.drilldown).each(function(idx, e) {
 			label.push(cubesviewer.model.getDimension(e).label);
 		})
-		colNames.splice(0, 0, label.join(' / '));
-
-		colModel.splice(0, 0, {
-			name : "key",
-			index : "key",
-			align : "left",
-			width: 130 + (80 * view.params.drilldown.length)
-		});
-		dataTotals["key"] = ((view.params.cuts.length == 0) && (view.params.datefilters.length == 0)) ? "<b>Summary</b>"
+		for (var i = 0; i < view.params.drilldown.length; i++) {
+		
+			colNames.splice(i, 0, label[i]);
+	
+			colModel.splice(i, 0, {
+				name : "key" + i,
+				index : "key" + i,
+				align : "left",
+				width: 90
+			});
+		}
+		if (view.params.drilldown.length == 0) {
+			colNames.splice(0, 0, "");
+			colModel.splice(0, 0, {
+				name : "key" + 0,
+				index : "key" + 0,
+				align : "left",
+				width: 110
+			});
+		}
+		
+		dataTotals["key0"] = ((view.params.cuts.length == 0) && (view.params.datefilters.length == 0)) ? "<b>Summary</b>"
 				: "<b>Summary <i>(Filtered)</i></b>";
 
 		$('#summaryTable-' + view.id).get(0).updateIdsOfSelectedRows = function(

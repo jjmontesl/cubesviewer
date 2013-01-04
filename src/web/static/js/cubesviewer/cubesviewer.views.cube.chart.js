@@ -233,6 +233,9 @@ function cubesviewerViewCubeChart() {
 		view.cubesviewer.views.cube.explore._sortData (view, data.cells, view.params.xaxis != null ? true : false);
 		view.cubesviewer.views.cube.series._addRows (view, dataRows, dataTotals, colNames, colModel, data);
 		
+		// Join keys
+		colNames.splice (0, view.params.drilldown.length, colNames.slice(0, view.params.drilldown.length).join (" / "));
+		
 		if (view.params.charttype == "bars-vertical") {
 			view.cubesviewer.views.cube.chart.drawChartBarsVertical(view, colNames, dataRows, dataTotals);
 		} else if (view.params.charttype == "bars-vertical-stacked") {
@@ -281,7 +284,7 @@ function cubesviewerViewCubeChart() {
 	    			serie.push( [ (view.params.charttype == "bars-vertical-stacked") ? (i * 10) : (i*10 + ((idx / numRows) * 9)), value] );
 	    		}
 	    	}
-	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : "UNDEF" });
+	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : "" });
 	    });
 	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
 	    

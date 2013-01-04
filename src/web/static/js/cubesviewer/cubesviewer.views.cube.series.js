@@ -280,7 +280,7 @@ function cubesviewerViewCubeSeries() {
 		
 		$('#seriesTable-' + view.id).jqGrid({ 
 			data: dataRows,
-			userData: dataTotals,
+			//userData: dataTotals,
 			datatype: "local", 
 			height: 'auto', 
 			rowNum: 15, 
@@ -319,6 +319,7 @@ function cubesviewerViewCubeSeries() {
 		if (view.params.xaxis != null) {
 			drilldown.splice(0,0, view.params.xaxis);
 		}
+		var baseidx = ((view.params.xaxis == null) ? 0 : 1);
 
 		$(data.cells).each(function (idx, e) {
 			
@@ -358,6 +359,11 @@ function cubesviewerViewCubeSeries() {
 				var newrow = {};
 				newrow["key"] = rowKey;
 				newrow[colKey] = value;
+				
+				for (var i = baseidx ; i < key.length; i++) {
+					newrow["key" + (i - baseidx)] = key[i];
+				}
+				
 				rows.push ( newrow );
 			}
 
@@ -373,15 +379,19 @@ function cubesviewerViewCubeSeries() {
 			
 		});
 
-		var label = [];
-		$(view.params.drilldown).each (function (idx, e) { label.push (view.cubesviewer.model.getDimension(e).label); })
-		colNames.splice(0, 0, label.join (' / '));
-
-		colModel.splice(0, 0, { name: "key", index: "key", align: "left", width: 180 });
+		//var label = [];
+		$(view.params.drilldown).each (function (idx, e) { 
+			//label.push (view.cubesviewer.model.getDimension(e).label);
+			colNames.splice(idx, 0, view.cubesviewer.model.getDimension(e).label);
+			colModel.splice(idx, 0, { name: "key" + idx , index: "key" + idx , align: "left", width: 130 });
+		});
+		
 		dataTotals["key"] = "<b>Summary</b>";
 		
 		if (rows.length == 1) {
-			rows[0]["key"] = view.params.yaxis;
+			rows[0]["key0"] = view.params.yaxis;
+			colNames.splice(0, 0, "");
+			colModel.splice(0, 0, { name: "key0", index: "key0", align: "left", width: 130 });
 		}
 		
 	};

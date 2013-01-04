@@ -119,10 +119,12 @@ function cubesviewerViewCubeExporter() {
 		for (var i = 0; i < m.length; i++) {
 		    var record = m[i];
 		    values = [];
-		    values.push ('"' + $('<div>' + record.key + '</div>').text() + '"');
-			for (var j = ((view.params.mode == "explore") ? 2 : 1); j < grid.jqGrid('getGridParam','colNames').length; j++) {
-				var columnname = grid.jqGrid('getGridParam','colNames')[j];
+		    //values.push ('"' + $('<div>' + record.key + '</div>').text() + '"');
+			//for (var j = ((view.params.mode == "explore") ? 2 : 1); j < grid.jqGrid('getGridParam','colNames').length; j++) {
+		    for (var j = ((view.params.mode == "explore") ? 1 : 0); j < grid.jqGrid('getGridParam','colModel').length; j++) {
+				var columnname = grid.jqGrid('getGridParam','colModel')[j].name;
 				var colval = record[columnname];
+				colval = $('<div>' + colval + '</div>').text();
 				if (colval == undefined) colval = 0;
 				values.push ('"' + colval + '"');
 			}

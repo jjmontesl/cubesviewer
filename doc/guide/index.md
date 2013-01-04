@@ -10,7 +10,7 @@ CubesViewer Documentation
 **For developers and integrators**:
 
 * [Installing the full CubesViewer application](cubesviewer-gui-installation.md)
-* [Configuring the Cubes data model](cubesviewer-model.md)
+* [Configuring your Cubes data model](cubesviewer-model.md)
 * Integrating CubesViewer views in other web applications - _to be done_
 
 * Extending/customizing CubesViewer - _to be done_
