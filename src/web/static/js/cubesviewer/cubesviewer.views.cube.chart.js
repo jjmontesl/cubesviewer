@@ -305,10 +305,14 @@ function cubesviewerViewCubeChart() {
 	        },
 	        mouse: {
 	            track: true,
-	            relative: true
+	            relative: true,
+            	trackFormatter:function(obj) {
+            		return (obj.series.label + ' -> ' + obj.series.xaxis.ticks[(Math.floor(obj.x / 10)) - 1].label + " = " + parseFloat(obj.y));
+            	}	            
 	        },
 	        yaxis: {
-	            //min: 0,
+	            // TODO: Check if this is applying correctly (null seems to be taken as 0)
+	        	min: (view.params.charttype == "bars-vertical-stacked" ? 0 : null),
 	            autoscaleMargin: 1
 	        },
 	        legend: {
@@ -321,8 +325,7 @@ function cubesviewerViewCubeChart() {
 	        },
 	        xaxis: {
 	            ticks: xticks
-	        }
-
+	        }	        
 	        
 	    });
 	    
@@ -374,7 +377,10 @@ function cubesviewerViewCubeChart() {
 	        },
 	        mouse: {
 	            track: true,
-	            relative: true
+	            relative: true,
+            	trackFormatter:function(obj) {
+            		return (obj.series.label + ' -> ' + obj.series.xaxis.ticks[(obj.x / 10) - 1].label + " = " + parseFloat(obj.y));
+            	}
 	        },
 	        legend: {
 	            position: "nw",
@@ -412,7 +418,7 @@ function cubesviewerViewCubeChart() {
 	    			serie.push( [0, value] );
 	    		}
 	    	}
-	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : "UNDEF" });
+	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : colNames[0] });
 	    });
 	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
 	    
@@ -423,10 +429,19 @@ function cubesviewerViewCubeChart() {
 	    
 	    view.flotrDraw = Flotr.draw(container, d, {
 	    	HtmlText: ! view.doExport,
-	        mouse: {
-	            track: true,
-	            relative: true
-	        },
+            xaxis: {
+                showLabels: false
+            },
+            yaxis: {
+                showLabels: false
+            }, 	        
+            mouse: {
+            	track: true,
+            	relative: true,
+            	trackFormatter:function(obj) {
+            		return (obj.series.label + ' -> ' + colNames[1] + " = " + parseFloat(obj.y));
+            	}
+            },
 	        grid: {
 	            verticalLines: false,
 	            horizontalLines: false
