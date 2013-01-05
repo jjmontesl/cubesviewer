@@ -46,7 +46,7 @@ function cubesviewerGuiRestStore() {
 		
 		view.savedId = 0;
 		view.owner = view.cubesviewer.gui.options.user;
-		view.shard = false;
+		view.shared = false;
 		
 	};
 	
