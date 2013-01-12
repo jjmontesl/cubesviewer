@@ -624,7 +624,7 @@ function cubesviewerViewCubeExplore() {
 			
 			var dimparts = view.cubesviewer.model.getDimensionParts(e);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
-				$(view.container).find('.cv-view-viewinfo-drill'), "#ccffcc", 300, readonly,
+				$(view.container).find('.cv-view-viewinfo-drill'), "#ccffcc", 360, readonly,
 				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Drilldown:</b> ' + dimparts.label 
 			);
 			piece.find('.cv-view-infopiece-close').click(function() {
@@ -636,7 +636,7 @@ function cubesviewerViewCubeExplore() {
 		$(view.params.cuts).each(function(idx, e) { 
 			var dimparts = view.cubesviewer.model.getDimensionParts(e.dimension);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
-				$(view.container).find('.cv-view-viewinfo-cut'), "#ffcccc", 450, readonly,
+				$(view.container).find('.cv-view-viewinfo-cut'), "#ffcccc", 480, readonly,
 				'<span class="ui-icon ui-icon-zoomin"></span> <b>Cut: </b> ' + dimparts.label  + ' = ' + 
 				'<span title="' + e.value + '">' + e.value + '</span>'
 			);
@@ -699,20 +699,26 @@ function cubesviewerViewCubeExplore() {
 
 		if (dimension != "") {
 			if (value != "") {
+				/*
 				var existing_cut = $.grep(view.params.cuts, function(e) {
 					return e.dimension == dimension;
 				});
 				if (existing_cut.length > 0) {
-					view.cubesviewer.alert("Cannot cut dataset. Dimension '" + dimension + "' is already filtered.");
-					return;
-				} else {
+					//view.cubesviewer.alert("Cannot cut dataset. Dimension '" + dimension + "' is already filtered.");
+					//return;
+				}  else {*/
+					view.params.cuts = $.grep(view.params.cuts, function(e) {
+						return e.dimension == dimension;
+					}, true);
 					view.params.cuts.push({
 						"dimension" : dimension,
 						"value" : value
 					});
 					// Don't drill cut dimension
-					cubesviewer.views.cube.explore.removeDrill(view, dimension);
-				}
+					if (value.indexOf(";") < 0) {
+						cubesviewer.views.cube.explore.removeDrill(view, dimension);
+					}
+				/*}*/
 			} else {
 				view.params.cuts = $.grep(view.params.cuts, function(e) {
 					return e.dimension == dimension;
