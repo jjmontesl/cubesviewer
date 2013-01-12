@@ -97,7 +97,7 @@ function cubesviewerGui () {
 		
 		return view;
 
-	};	
+	};
 	
 	/*
 	 * Creates a container for a view.
@@ -113,7 +113,7 @@ function cubesviewerGui () {
 			'<div class="cv-gui-cubesview" ><h3 class="sorthandle">' +
 			'<span style="float: right; margin-left: 20px;" class="cv-gui-closeview ui-icon ui-icon-close"></span>' +
 			'<span class="cv-gui-container-name" style="margin-left: 30px; margin-right: 20px;">' + /* view.name + */ '</span> <span style="float: right;" class="cv-gui-container-state"></span>' + /* viewstate + */ 
-			'</h3><div class="cv-gui-viewcontent" style="padding: 1em;"></div></div>'
+			'</h3><div class="cv-gui-viewcontent" style="padding: 1em; overflow: hidden;"></div></div>'
 		);
 		
 		// Configure collapsible
@@ -151,7 +151,7 @@ function cubesviewerGui () {
 		);
 		
 		// Buttonize
-		$(view.container).find('.cv-view-toolbar').find('button').button();
+		$(view.container).find('.panelbutton').button();
 		
 		
 		var menu = $(".cv-view-menu-panel", $(view.container));
@@ -247,16 +247,50 @@ function cubesviewerGui () {
 		
 	};
 	
-	// Render initial (constant) elements for the GUI
+	/*
+	 * Draw About info box.
+	 */
+	this.showAbout = function() {
+		this.cubesviewer.alert(
+				"CubesViewer - Version " + this.cubesviewer.version + "\n" +
+				"\n" +
+				"Created by José Juan Montes\n" +
+				"Powered by Cubes by Stefan Urbanek\n"
+		);
+	};
+	
+	/*
+	 * Draws a section in the main GUI menu.
+	 */
+	this.drawSection = function(gui, title, cssClass) {
+		$(gui.options.container).children('.cv-gui-panel').append(
+			'<div class="cv-gui-panelsection"><h3>' + title + '</h3>' +
+			'<div class="' + cssClass + '"></div></div>'
+        );
+		
+		$("." + cssClass, gui.options.container).prev().click(function() {
+			$("." + cssClass).toggle("slow");
+		});
+	};
+	
+	/*
+	 * Render initial (constant) elements for the GUI
+	 */ 
 	this.onGuiDraw = function(event, gui) {
 		
-		$(gui.options.container).children('.cv-gui-panel').append(
-			'<h3>Cubesviewer</h3>' +
-			'<div class="cv-gui-cubeslist"></div>'
-			//'<h3>Saved Views</h3>' +
-			//'<div class="cv-gui-savedviewlist">' +
-			//'</div>'
-        );
+		// Draw cubes section
+		gui.drawSection (gui, "Cubes", "cv-gui-cubeslist");
+		gui.drawSection (gui, "Tools", "cv-gui-tools");
+		
+		$(gui.options.container).find('.cv-gui-tools').append(
+			'<div style="margin-top: 4px;">' +
+			'<a href="#" class="cv-gui-about">About Cubesviewer...</a>' +
+			'</div>'
+	    );
+		$('.cv-gui-about', gui.options.container).click(function() {
+			gui.showAbout();
+		});
+		
 		
 		// Configure sortable panel
 		$(gui.options.container).children('.cv-gui-workspace').sortable({

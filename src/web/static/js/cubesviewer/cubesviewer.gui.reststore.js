@@ -51,13 +51,13 @@ function cubesviewerGuiRestStore() {
 	};
 	
 	this.onGuiDraw = function(event, gui) {
-		$('.cv-gui-panel', $(gui.options.container)).append(
-			'<h3>Saved Views</h3>' + 
-	        '<div class="savedviews-list">' +
-	        '</div>'
-        );
+		
+		gui.drawSection (gui, "Saved Views", "cv-gui-savedviews-list");
+		var cubeslistsection = $('.cv-gui-cubeslist', gui.options.container).parent();
+		$('.cv-gui-savedviews-list', gui.options.container).parent().insertAfter(cubeslistsection);
 		
 		gui.reststore.viewList();
+		
 	}
 	
 	/*
@@ -216,7 +216,7 @@ function cubesviewerGuiRestStore() {
 		
 		cubesviewer.gui.savedViews = data;
 		
-		container = $(cubesviewer.gui.options.container).find(".savedviews-list");
+		container = $(cubesviewer.gui.options.container).find(".cv-gui-savedviews-list");
 		container.empty();
 		container.append (
 				'<div class="savedviews-personal" style="margin-top: 8px; overflow: hidden;"><b>Personal</b><br /></div>' +

@@ -34,9 +34,23 @@ function cubesviewerViews () {
 	
 	/*
 	 * Adds a new clean view for a cube. 
+	 * This accepts parameters as an object or as a serialized string.
 	 */
-	this.createView = function(id, container, type, params) {
+	this.createView = function(id, container, type, data) {
 
+		var params = {};
+		
+		if (typeof data == "string") {
+			try {
+				params = $.parseJSON(data);
+			} catch (err) {
+				this.cubesviewer.alert ('Error: could not process serialized data (JSON parse error).');
+				params["name"] = "Undefined view";
+			}
+		} else {
+			params = data;
+		}
+		
 		var view = {
 			"id": id,
 			"cubesviewer": this.cubesviewer,

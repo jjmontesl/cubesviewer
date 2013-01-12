@@ -37,7 +37,8 @@ function cubesviewer () {
 	
 	// Default options
 	this.options = {
-		cubesUrl : null
+		cubesUrl : null,
+		cubesLang : null
 	};
 
 	// Model data as obtained from Cubes
@@ -69,7 +70,7 @@ function cubesviewer () {
 	 * Load model (cube list, dimensions...)
 	 */ 
 	this.loadModel = function() {
-		$.get(this.options["cubesUrl"] + "/model", null, this._loadModelCallback(), "json");
+		$.get(this.options["cubesUrl"] + "/model", { "lang": this.options.cubesLang }, this._loadModelCallback(), "json");
 	};
 
 	this._loadModelCallback = function() {

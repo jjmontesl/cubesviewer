@@ -50,52 +50,56 @@
 
 <script type="text/javascript">
 	
+	// Reference to the created view
+	var view1 = null;
+	
 	// Initialize CubesViewer when document is ready
 	$(document).ready(function() {
 	    
-		cubesviewer.init({
-	        cubesUrl: "http://localhost:5000"
+	    // Get user Cubes information for the example
+	    var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
+	    
+	    // Initialize CubesViewer system
+	    cubesviewer.init({
+	        cubesUrl: cubesUrl
 	    });
-		
-		/*
-		cubesviewer.gui.init({
-	        user: "1",
-	        container: $('#cubesviewer').get(0),
-	        backendUrl: "http://localhost:8000/cubesviewer"
-		});
-		*/
-		
+	    
+	    // Sample serialized view (Based on cubes-examples project data)
+	    var serializedView = 
+	        '{"cubename":"contracts","name":"Cube View - Contracts","mode":"chart","drilldown":["geography:kraj"],"cuts":[],' +
+	        '"datefilters":[],"xaxis":"date:year","yaxis":"record_count","charttype":"lines-stacked"}';
+	    
+	    // Add views
+	    $(document).bind("cubesviewerModelLoaded", { }, function() {
+	        
+	    	// You can use a Javascript object with view arguments (ie. "cubename")
+	        //view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", { "cubename": "contracts" });
+	    	
+	    	// You can use a serialized JSON string of the object with view arguments
+	        view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", serializedView);
+	        
+	        cubesviewer.views.redrawView (view1);
+	        
+	    });
+	    
+	    // Scripting example for the "switch mode" link
+	    $('#switchToSeriesTable').click(function() {
+	        cubesviewer.views.cube.series.modeSeries(view1);
+	        return false;
+	    });
+	    
 	    // Start Cubesviewer system
-        cubesviewer.refresh();
-		
+	    cubesviewer.refresh();
+	    
 	});
-	
-    // Add views
-    $(document).bind("cubesviewerModelLoaded", { }, function() {
-    	
-    	var view1 = cubesviewer.views.createView("olapview1", $('#olap-view1'), "cube", { "cubename": "somecube" });	
-    	cubesviewer.views.redrawView (view1);
-    	
-    	var view2 = cubesviewer.views.createView("olapview2", $('#olap-view2'), "cube", { "cubename": "somecube" }); 
-        cubesviewer.views.redrawView (view2);
-        
-    });
-    
-
 	
 </script>
   
 	
 <style type="text/css">
-td {
-    vertical-align: top;
-}
-
 .olapview {
     min-width: 400px;
-    margin: 10px;
 }
-
 </style>
 
 	
@@ -114,7 +118,7 @@ td {
         <img id="cv-logo" title="CubesViewer" src="../web/static/img/cubesviewer-logo.png" />
     </div>
 
-    <h1 id="site-name">CubesViewer Embedded Views Example</h1>
+    <h1 id="site-name">CubesViewer Static View Sample</h1>
 
     <div style="clear: both;"></div>
 </div>
@@ -124,63 +128,94 @@ td {
             </tr>
             <tr>
                 <td style="width: 100%; vertical-align: top;">
-                    
-<table><tr>             
-<td>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras et arcu ut augue porta elementum eget vitae tellus. Curabitur in libero vel mauris luctus lobortis. Duis ornare erat at arcu dignissim rhoncus. Sed eget est ac risus egestas egestas. Nullam sapien arcu, molestie non aliquam in, eleifend id magna. Donec convallis vulputate cursus. Praesent tempus semper gravida.
-</td><td>
-    Quisque eu ligula eu nibh ultricies condimentum. Integer ac nisl massa. Nam malesuada pellentesque tellus ac vehicula. Maecenas auctor condimentum luctus. Fusce sed vehicula eros. Proin eu ipsum eu leo hendrerit blandit. Mauris dignissim sem id libero fringilla mattis. Nam gravida neque ac tellus lacinia dictum. Morbi sed felis diam. Suspendisse volutpat odio non leo dignissim eu vehicula arcu consectetur. In auctor nibh non neque rutrum vitae faucibus elit posuere.
-</td><td>
-    Ut congue accumsan ornare. Integer vehicula feugiat risus iaculis facilisis. Nulla sodales enim mi. In porta, nunc nec tristique lacinia, leo magna fringilla tellus, a viverra eros metus consectetur neque. Proin sem tortor, tempus a malesuada sit amet, facilisis sed dolor. Duis eros justo, auctor eu rhoncus et, pretium at nibh. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut lacus dolor, dictum vel dignissim vel, mattis tempus leo. Cras feugiat rutrum dolor ac eleifend. Donec tempus purus id sapien convallis semper facilisis ante vulputate. Vestibulum lacinia risus pharetra orci sollicitudin ac laoreet libero pellentesque.
-</td></tr></table>
 
-<table><tr>             
-<td>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras et arcu ut augue porta elementum eget vitae tellus. Curabitur in libero vel mauris luctus lobortis. Duis ornare erat at arcu dignissim rhoncus. Sed eget est ac risus egestas egestas. Nullam sapien arcu, molestie non aliquam in, eleifend id magna. Donec convallis vulputate cursus. Praesent tempus semper gravida.
-</td><td colspan="2">
-    <div id="olap-view1" class="olapview"></div>
-</td></tr></table>
+<h2>Example Embedded View</h2>
 
-<table><tr>             
-<td>
-    Nullam venenatis, purus sed fermentum dictum, lorem sem euismod sem, sit amet sagittis massa lectus nec metus. Suspendisse nec diam ante, in sodales felis. Nullam in purus id nunc auctor fringilla non in sem. Vestibulum in felis nulla. Nullam urna est, cursus ac feugiat at, sagittis vel erat. Duis a lacus turpis, ut laoreet ante. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean pharetra condimentum sagittis. Maecenas id orci vel libero commodo lacinia. Sed magna tellus, lobortis vel dignissim eu, tristique in mauris. Etiam fringilla, velit eu aliquet aliquet, erat nisi tincidunt massa, ac accumsan dolor magna quis tellus. Aenean nulla ipsum, pulvinar ut rhoncus laoreet, porttitor at arcu. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse ac arcu turpis.
-</td><td>
-    Nunc eget quam ante, id tempus enim. Aenean dignissim est a est scelerisque aliquam sed ut nunc. Curabitur rutrum ultrices luctus. Maecenas tincidunt tortor ac nisi hendrerit at eleifend nunc placerat. Nunc feugiat velit nec sem placerat venenatis. Nunc feugiat varius metus eu suscipit. Praesent feugiat enim nec erat sollicitudin viverra. In et dolor sem, at imperdiet dui. Proin pretium volutpat nunc id vestibulum. Integer viverra sem nisl, a tincidunt nisi. Donec sem ligula, accumsan ut sodales quis, sollicitudin nec diam. Phasellus eu dui nisi.
-</td><td>
-    Nam nulla elit, viverra porttitor lobortis ut, porta at leo. Etiam tristique ipsum in nibh scelerisque aliquet. Duis dictum lobortis eros, et iaculis ipsum mollis id. Quisque eu eleifend eros. Quisque volutpat, ante non egestas molestie, diam elit congue massa, at hendrerit risus massa quis felis. Donec non vestibulum arcu. Nam vehicula neque at dui hendrerit fermentum. Aliquam felis odio, accumsan at volutpat a, dapibus nec mauris. Donec feugiat vulputate arcu, ut viverra est dapibus nec.
-</td></tr></table>
+<p>
+This is an example CubesView inserted in this page. The current version loads a serialized view which uses the
+cubes-examples project data (<a href="https://github.com/Stiivi/cubes-examples/">https://github.com/Stiivi/cubes-examples/</a>).
+</p>
 
-<table><tr>             
-<td>
-    <div id="olap-view2" class="olapview"></div>
-</td><td colspan="2">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras et arcu ut augue porta elementum eget vitae tellus. Curabitur in libero vel mauris luctus lobortis. Duis ornare erat at arcu dignissim rhoncus. Sed eget est ac risus egestas egestas. Nullam sapien arcu, molestie non aliquam in, eleifend id magna. Donec convallis vulputate cursus. Praesent tempus semper gravida.
-</td></tr></table>
+<p>
+Initialization of the view uses the following code. Note the following points:
+</p>
 
+<ul>
+    <li>CubesViewer system needs to be initialized only once (cubesviewer.init).</li>
+    <li>Views can only be added after the model has been loaded. Use the 'cubesviewerModelLoaded' event as shown below.</li>
+    <li>This sample page contains code that asks for the Cubes server to use.</li>
+</ul>
 
+<div style="border: 2px solid gray; padding: 4px; margin-bottom: 22px;">
+    <div id="cv-view1" class="olapview"></div>
+</div>
 
-<table><tr>             
-<td>
-    Nam tristique lectus vel sem consectetur dignissim. Cras consectetur mauris adipiscing mi tempor commodo. Sed mollis urna ut lectus condimentum lobortis. Nunc tristique varius dui et laoreet. Sed adipiscing turpis quis dolor sodales quis interdum urna volutpat. Quisque condimentum fringilla massa. Maecenas imperdiet adipiscing faucibus. Fusce bibendum, arcu id viverra vestibulum, neque orci bibendum massa, sed malesuada massa justo quis dui. Integer metus nibh, rutrum ut tempor eu, tempus ut diam. Aenean aliquam, sapien at auctor tempus, est turpis hendrerit elit, at hendrerit lectus nisl sit amet sem. Praesent aliquet lacinia mauris quis scelerisque.
-</td><td>
-    Donec sollicitudin facilisis enim, in adipiscing quam blandit molestie. Nulla laoreet aliquet posuere. Phasellus eget orci sit amet orci iaculis scelerisque. Nulla facilisi. Mauris magna eros, tempus eu auctor vitae, suscipit quis sapien. Integer eu nisl nulla, non auctor quam. Cras sed ligula ut dui facilisis imperdiet. Curabitur lorem neque, elementum vel pellentesque quis, volutpat eget urna. Sed at fermentum augue. Donec facilisis felis eu tortor varius sit amet consequat lorem convallis.
-</td><td>
-    Nam eget lorem augue, at rutrum ligula. Aliquam sodales luctus elit, sit amet auctor nibh dapibus vel. Cras aliquam interdum enim, vitae luctus enim ultrices a. Vivamus quis libero eu leo imperdiet scelerisque et sit amet augue. Donec suscipit semper justo ac pulvinar. Nullam sagittis cursus vehicula. Nulla facilisi. Donec enim lectus, aliquet sed condimentum non, dictum id nisi. Nulla facilisi. Quisque congue tristique risus, at semper dui volutpat et. Donec ullamcorper mauris ligula. Aliquam varius nibh vitae nisi ultrices imperdiet. Proin ornare, purus quis placerat fringilla, dolor nisl scelerisque eros, a aliquam ligula felis quis orci.
-</td></tr></table>
+<h2>Scripting</h2>
 
-<table><tr>             
-<td>
-Nam tristique lectus vel sem consectetur dignissim. Cras consectetur mauris adipiscing mi tempor commodo. Sed mollis urna ut lectus condimentum lobortis. Nunc tristique varius dui et laoreet. Sed adipiscing turpis quis dolor sodales quis interdum urna volutpat. Quisque condimentum fringilla massa. Maecenas imperdiet adipiscing faucibus. Fusce bibendum, arcu id viverra vestibulum, neque orci bibendum massa, sed malesuada massa justo quis dui. Integer metus nibh, rutrum ut tempor eu, tempus ut diam. Aenean aliquam, sapien at auctor tempus, est turpis hendrerit elit, at hendrerit lectus nisl sit amet sem. Praesent aliquet lacinia mauris quis scelerisque.
-</td><td>
-Donec sollicitudin facilisis enim, in adipiscing quam blandit molestie. Nulla laoreet aliquet posuere. Phasellus eget orci sit amet orci iaculis scelerisque. Nulla facilisi. Mauris magna eros, tempus eu auctor vitae, suscipit quis sapien. Integer eu nisl nulla, non auctor quam. Cras sed ligula ut dui facilisis imperdiet. Curabitur lorem neque, elementum vel pellentesque quis, volutpat eget urna. Sed at fermentum augue. Donec facilisis felis eu tortor varius sit amet consequat lorem convallis.
-</td><td>
-Nam eget lorem augue, at rutrum ligula. Aliquam sodales luctus elit, sit amet auctor nibh dapibus vel. Cras aliquam interdum enim, vitae luctus enim ultrices a. Vivamus quis libero eu leo imperdiet scelerisque et sit amet augue. Donec suscipit semper justo ac pulvinar. Nullam sagittis cursus vehicula. Nulla facilisi. Donec enim lectus, aliquet sed condimentum non, dictum id nisi. Nulla facilisi. Quisque congue tristique risus, at semper dui volutpat et. Donec ullamcorper mauris ligula. Aliquam varius nibh vitae nisi ultrices imperdiet. Proin ornare, purus quis placerat fringilla, dolor nisl scelerisque eros, a aliquam ligula felis quis orci.
-</td></tr></table>
+<p>
+Note that the view above can be scripted using CubesViewer View API. 
+</p>   
+<p>
+For example, <a id="switchToSeriesTable" href="">click here</a> to switch to Series Table mode.
+</p>
+
+<h2>Code</h2>
+
+<p>This is the code used to initialize this CubesViewer view:</p>
+
+<pre style="background-color: #dddddd;">
+
+    // Reference to the created view
+    var view1 = null;
+    
+    // Initialize CubesViewer when document is ready
+    $(document).ready(function() {
+        
+        // Get user Cubes information for the example
+        var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
+        
+        // Initialize CubesViewer system
+        cubesviewer.init({
+            cubesUrl: cubesUrl
+        });
+        
+        // Sample serialized view (Based on cubes-examples project data)
+        var serializedView = 
+            '{"cubename":"contracts","name":"Cube View - Contracts","mode":"chart","drilldown":["geography:kraj"],"cuts":[],' +
+            '"datefilters":[],"xaxis":"date:year","yaxis":"record_count","charttype":"lines-stacked"}';
+        
+        // Add views
+        $(document).bind("cubesviewerModelLoaded", { }, function() {
+            
+            // You can use a Javascript object with view arguments (ie. "cubename")
+            //view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", { "cubename": "contracts" });
+            
+            // You can use a serialized JSON string of the object with view arguments
+            view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", serializedView);
+            
+            cubesviewer.views.redrawView (view1);
+            
+        });
+        
+        // Scripting example for the "switch mode" link
+        $('#switchToSeriesTable').click(function() {
+            cubesviewer.views.cube.series.modeSeries(view1);
+            return false;
+        });
+        
+        // Start Cubesviewer system
+        cubesviewer.refresh();
+        
+    });
+    
+</pre>
 
                 </td>
             </tr>
         </table>
         <div>
+
+     
         
         
 <div id="footer" style="clear: both; padding-top: 20px;">

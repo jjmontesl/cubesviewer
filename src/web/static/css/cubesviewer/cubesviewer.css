@@ -60,6 +60,10 @@ a.cv-grid-link {
     color: blue;
 }
 
+.cv-gui-viewcontent {
+	overflow: hidden;
+}
+
 .ajaxloader {
 	background-image: url(ajax-loader.gif);
 	background-repeat: no-repeat;

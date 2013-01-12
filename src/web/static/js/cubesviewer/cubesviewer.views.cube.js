@@ -68,7 +68,7 @@ function cubesviewerViewCube () {
 		);
 		
 		// Buttonize
-		$(view.container).find('.cv-view-toolbar').find('button').button();
+		$(view.container).find('.viewbutton').button();
 		
 		// Menu functionality
 		view.cubesviewer.views.cube._initMenu(view, '.viewbutton', '.cv-view-menu-view');
@@ -253,7 +253,9 @@ function cubesviewerViewCube () {
 	 */
 	this.buildQueryParams = function(view, includeXAxis, onlyCuts) {
 
-		var params = {};
+		var params = {
+			"lang": view.cubesviewer.options.cubesLang
+		};
 
 		if (!onlyCuts) {
 			var drilldown = view.params.drilldown.slice(0);

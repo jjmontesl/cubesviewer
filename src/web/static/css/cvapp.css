@@ -13,7 +13,7 @@ img#cv-logo {
 h2 {
 	font-variant: small-caps;
 	font-weight: bold;
-	margin: 12px 2px 16px 2px;
+	margin: 12px 2px 12px 2px;
 	color: #8686BF;
 	font-size: 16pt;
 }
@@ -24,6 +24,10 @@ h3 {
 	margin: 12px 2px 8px 2px;
 	color: #8686BF;
 	font-size: 12pt;
+}
+
+p {
+	margin-bottom: 8px;
 }
 
 div#body {

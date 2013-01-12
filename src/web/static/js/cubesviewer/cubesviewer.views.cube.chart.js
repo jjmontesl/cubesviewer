@@ -218,7 +218,7 @@ function cubesviewerViewCubeChart() {
 			return;
 		}
 		
-		$(view.container).find('.cv-view-viewdata').css("width", "95%");
+		$(view.container).find('.cv-view-viewdata').css("width", "99%");
 		$(view.container).find('.cv-view-viewdata').append(
 			'<h3>Series Chart</h3>' +
 			'<div id="seriesChart-' + view.id + '" style="height: 380px; "></div>'

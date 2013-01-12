@@ -54,6 +54,9 @@ function cubesviewerViewCubeExplore() {
 		);
 		
 		// Buttonize
+		$(view.container).find('.drilldownbutton').button();
+		$(view.container).find('.cutbutton').button();
+		
 		$(view.container).find('.explorebutton').button();
 		$(view.container).find('.explorebutton').click(function() { 
 			view.cubesviewer.views.cube.explore.modeExplore(view);
@@ -602,7 +605,7 @@ function cubesviewerViewCubeExplore() {
 		var drawHeader = ((view.params.cuts.length > 0) || (view.params.drilldown.length > 0)
 				|| (view.params.datefilters.length > 0));
 		if (drawHeader) {
-			$(view.container).find('.cv-view-viewinfo').append('<div><h3>Current slice</h3></div>');
+			$(view.container).find('.cv-view-viewinfo').append('<div><h3 style="margin-top: 0px;">Current slice</h3></div>');
 		} 
 		
 		$(view.container).find('.cv-view-viewinfo').append(
