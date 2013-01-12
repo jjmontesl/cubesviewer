@@ -113,17 +113,17 @@
                 <td>
                     <div>
 
-<div id="header"  class="ui-widget ui-widget-content ui-corner-all">
-    <div style="float: left;">
-        <img id="cv-logo" title="CubesViewer" src="../web/static/img/cubesviewer-logo.png" />
-    </div>
+						<div id="header"  class="ui-widget ui-widget-content ui-corner-all">
+						    <div style="float: left;">
+						        <img id="cv-logo" title="CubesViewer" src="../web/static/img/cubesviewer-logo.png" />
+						    </div>
+						
+						    <h1 id="site-name">CubesViewer Static View Sample</h1>
+						
+						    <div style="clear: both;"></div>
+						</div>
 
-    <h1 id="site-name">CubesViewer Static View Sample</h1>
-
-    <div style="clear: both;"></div>
-</div>
-
-</div>
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -161,62 +161,18 @@ For example, <a id="switchToSeriesTable" href="">click here</a> to switch to Ser
 
 <h2>Code</h2>
 
-<p>This is the code used to initialize this CubesViewer view:</p>
+<p>Check the source code of this page to see how this CubesViewer view is initialized.</p>
 
-<pre style="background-color: #dddddd;">
+<p>More information can be found at 
+<a href="https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-model.md">https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-model.md</a>
+</p>
 
-    // Reference to the created view
-    var view1 = null;
-    
-    // Initialize CubesViewer when document is ready
-    $(document).ready(function() {
-        
-        // Get user Cubes information for the example
-        var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
-        
-        // Initialize CubesViewer system
-        cubesviewer.init({
-            cubesUrl: cubesUrl
-        });
-        
-        // Sample serialized view (Based on cubes-examples project data)
-        var serializedView = 
-            '{"cubename":"contracts","name":"Cube View - Contracts","mode":"chart","drilldown":["geography:kraj"],"cuts":[],' +
-            '"datefilters":[],"xaxis":"date:year","yaxis":"record_count","charttype":"lines-stacked"}';
-        
-        // Add views
-        $(document).bind("cubesviewerModelLoaded", { }, function() {
-            
-            // You can use a Javascript object with view arguments (ie. "cubename")
-            //view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", { "cubename": "contracts" });
-            
-            // You can use a serialized JSON string of the object with view arguments
-            view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", serializedView);
-            
-            cubesviewer.views.redrawView (view1);
-            
-        });
-        
-        // Scripting example for the "switch mode" link
-        $('#switchToSeriesTable').click(function() {
-            cubesviewer.views.cube.series.modeSeries(view1);
-            return false;
-        });
-        
-        // Start Cubesviewer system
-        cubesviewer.refresh();
-        
-    });
-    
-</pre>
 
                 </td>
             </tr>
         </table>
         <div>
 
-     
-        
         
 <div id="footer" style="clear: both; padding-top: 20px;">
 	<div style="height: 1px; border-top: 1px solid #DDDDDD; padding-top: 4px;"></div> 

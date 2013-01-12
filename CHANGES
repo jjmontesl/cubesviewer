@@ -1,5 +1,7 @@
-HEAD
-    + Nothing yet.
+0.4-devel
+    + Added documentation and examples for embedding views 
+      in other web applications.
+    + Added the serialization plugin.
 0.3
     + Added undo/redo plugin.
     + Improved export plugin (now exports all pages of tables).
