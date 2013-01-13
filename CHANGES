@@ -1,4 +1,5 @@
-0.4-devel
+0.4
+    + Added a locale switcher plugin.
     + Added documentation and examples for embedding views 
       in other web applications.
     + Added the serialization plugin.
