@@ -20,7 +20,7 @@ OLAP Explorer is the main focus of the project.
 
 Features:
 
-* User Interface allowing for multiple cube views on-screen. 
+* User Interface allowing for multiple views on-screen. 
 * Cube explorer providing drilldown and cut operations.
 * Supports dimension hierarchies and date filtering.
 * Different types of charts and diagrams.
@@ -72,14 +72,8 @@ If you have questions, problems or suggestions, get in touch. CubesViewer doesn'
 have a list on its own. Instead, please get in touch through the 
 Cubes project mailing list:
 
-* Google group: http://groups.google.com/group/cubes-discuss
-
-Report bugs using github issue tracking: https://github.com/jjmontesl/cubesviewer/issues
-
-Development
------------
-
-Suggestion, ideas, plugins, patches and bug reports are very welcome :-).   
+* Report bugs: https://github.com/jjmontesl/cubesviewer/issues
+* Discussion at Google Groups: http://groups.google.com/group/cubes-discuss
 
 Authors
 =======

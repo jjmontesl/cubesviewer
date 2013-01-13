@@ -254,8 +254,8 @@ function cubesviewerGui () {
 		this.cubesviewer.alert(
 				"CubesViewer - Version " + this.cubesviewer.version + "\n" +
 				"\n" +
-				"Created by José Juan Montes\n" +
-				"Powered by Cubes by Stefan Urbanek\n"
+				"Written by José Juan Montes\n" +
+				"2012-2013\n"
 		);
 	};
 	
@@ -283,7 +283,7 @@ function cubesviewerGui () {
 		gui.drawSection (gui, "Tools", "cv-gui-tools");
 		
 		$(gui.options.container).find('.cv-gui-tools').append(
-			'<div style="margin-top: 4px;">' +
+			'<div style="margin-top: 8px;">' +
 			'<a href="#" class="cv-gui-about">About Cubesviewer...</a>' +
 			'</div>'
 	    );

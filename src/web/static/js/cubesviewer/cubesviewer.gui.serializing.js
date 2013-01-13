@@ -46,9 +46,12 @@ function cubesviewerGuiSerializing() {
 	this.onGuiDraw = function(event, gui) {
 		
 		$(gui.options.container).find('.cv-gui-tools').prepend(
-			'<div></div>' +
-			'<a href="#" class="cv-gui-addserialized">Add view from JSON</a>'
+			'<div style="margin-bottom: 4px;">' +
+			'<a href="#" class="cv-gui-addserialized">Add view from JSON</a>' +
+			'</div>'
+			
 	    );
+		//$('.cv-gui-addserialized', gui.options.container).button();
 		$('.cv-gui-addserialized', gui.options.container).click(function() {
 			cubesviewer.gui.serializing.addSerializedView(gui);
 		});
