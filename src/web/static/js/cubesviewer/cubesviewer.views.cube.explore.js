@@ -107,7 +107,7 @@ function cubesviewerViewCubeExplore() {
 					drillElements + 
 					'<li><a href="#" class="' + cssclass + ' ' + disabled + '" data-dimension="' + dimension.name + '" data-value="1">' + dimension.label + '</a></li>';
 			} else {
-				drillElements = drillElements + '<li><a href="#">' + dimension.label + 
+				drillElements = drillElements + '<li><a href="#" onclick="return false;">' + dimension.label + 
 					'</a><ul class="drillList" style="width: 170px; z-index: 9999;">';
 				
 				if (dimension.hierarchies.length > 1) {
@@ -192,7 +192,7 @@ function cubesviewerViewCubeExplore() {
 		menu.append(
 				'<li><a href="#" class="selectCut" data-dimension="" data-value="" ><span class="ui-icon ui-icon-close"></span>Clear filters</a></li>' +
 				'<div></div>' + 
-				'<li><a href="#"><span class="ui-icon ui-icon-zoomin"></span>Add date filter</a><ul class="dateFilterList" style="width: 180px;">' + 
+				'<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-zoomin"></span>Add date filter</a><ul class="dateFilterList" style="width: 180px;">' + 
 				dateFilterElements + 
 				'</ul></li>'
 		);

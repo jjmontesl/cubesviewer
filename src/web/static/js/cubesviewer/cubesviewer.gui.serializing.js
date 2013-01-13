@@ -54,6 +54,7 @@ function cubesviewerGuiSerializing() {
 		//$('.cv-gui-addserialized', gui.options.container).button();
 		$('.cv-gui-addserialized', gui.options.container).click(function() {
 			cubesviewer.gui.serializing.addSerializedView(gui);
+			return false;
 		});
 		
 	}

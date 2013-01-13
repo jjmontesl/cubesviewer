@@ -289,6 +289,7 @@ function cubesviewerGui () {
 	    );
 		$('.cv-gui-about', gui.options.container).click(function() {
 			gui.showAbout();
+			return false;
 		});
 		
 		
