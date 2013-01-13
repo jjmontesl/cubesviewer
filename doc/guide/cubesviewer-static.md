@@ -21,6 +21,10 @@ Examples of static (Javascript only) views and GUI can be found in the
 [src/htmlviews](https://github.com/jjmontesl/cubesviewer/tree/master/src/htmlviews) folder
 of the project.
 
+This includes a static HTML file (gui.html) that features a complete static version of
+CubesViewer interface, great for quickly testing the app on your favourite Cubes server.
+Just open the file on your web browser.
+
 Files
 ---------------------
 
