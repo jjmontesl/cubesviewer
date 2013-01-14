@@ -228,6 +228,8 @@ function cubesviewerViewCube () {
 				values.push((Math.floor(tdate.getMonth() / 3) + 1));
 			} else if (field == "week") {
 				values.push(this._weekNumber(tdate));
+			} else if (field == "day") {
+				values.push(tdate.getDate());
 			} else {
 				cubesviewer.alert ("Wrong configuration of model: datefilter field '" + field + "' is invalid.");
 			}
