@@ -36,7 +36,8 @@ Including CubesViewer
 
 In order to run CubesViewer, you need to include a number Javascript and CSS dependencies, listed below.
 
-Note that the paths may vary in your application, depending on where you put CubesViewer file.
+Note that the paths may vary in your application, depending on where you put CubesViewer file. Also,
+note that **the order of inclusion of Javascript files is critical** (  though you could remove optional components).
 
 (Note: the first CSS link, *screen.css*, is not required. It applies default fonts and styles and may be ignored
 if you already have applied styles to your site. This may be changed in the future.)  

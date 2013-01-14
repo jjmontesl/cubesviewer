@@ -47,7 +47,7 @@ function cubesviewerGuiLocaleSwitcher() {
 		    );
 		
 		$('[name=cv-gui-localeswitcher]', $(cubesviewer.gui.options.container)).change(function() {
-			cubesviewer.gui.localeswitcher.selectCubesLocale(gui, $(this).val());
+			cubesviewer.gui.localeswitcher.selectLocale(gui, $(this).val());
 		});
 		
 	}	
@@ -76,33 +76,17 @@ function cubesviewerGuiLocaleSwitcher() {
 		// Selected langusage
 		$('[name=cv-gui-localeswitcher]', $(cubesviewer.gui.options.container)).val(gui.cubesviewer.options.cubesLang);
 		
-		// Redraw views
-		$(cubesviewer.gui.views).each(function(idx, view) {
-			view.cubesviewer.views.redrawView(view);
-		});
-		
 	}
 	
 
 	/*
-	 * Draw export menu options.
+	 * Select cubes locale (at the time just changes .
 	 */
-	this.selectCubesLocale = function(gui, locale) {
+	this.selectLocale = function(gui, locale) {
 		
-		gui.cubesviewer.options.cubesLang = (locale == "" ? null : locale);
-
-		// Reinitialize system
-		gui.cubesviewer.refresh();
+		gui.cubesviewer.changeCubesLang (locale);
 		
 	};	
-	
-	/*
-	 * Change shared mode
-	 */ 
-	this.shareView = function(view, sharedstate) {
-		view.shared = ( sharedstate == 1 ? true : false );
-		view.cubesviewer.views.redrawView(view);
-	};
 	
 };
 

@@ -90,7 +90,6 @@ function cubesviewerViewCubeChart() {
 		
 		if (view.params.mode != "chart") return;
 		
-		$(view.container).find('.cv-view-viewdata').append('<h3>Chart</h3>');
 		
 		// Draw areas
 		view.cubesviewer.views.cube.chart.drawInfo(view);
@@ -100,6 +99,11 @@ function cubesviewerViewCubeChart() {
 		
 		// Explore menu
 		view.cubesviewer.views.cube.chart.drawChartMenu(view);
+
+		// Only if data section is empty
+		if ($(view.container).find('.cv-view-viewdata').children().size() == 0) {
+			$(view.container).find('.cv-view-viewdata').append('<h3>Series Chart</h3>');
+		}
 		
 		// Load data
 		view.cubesviewer.views.cube.chart.loadData(view);
@@ -186,15 +190,19 @@ function cubesviewerViewCubeChart() {
 		// Build params and include xaxis if present
 		var params = view.cubesviewer.views.cube.buildQueryParams(view, view.params.xaxis != null ? true : false, false);
 		
-		$('#' + view.id).find('.cv-view-viewdata').empty().append('<h3>Chart</h3><span class="ajaxloader" title="Loading..." ></span> Loading');
-		$.get(view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/aggregate", params, 
+		view.cubesviewer.views.blockViewLoading(view);
+		var jqxhr = $.get(view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/aggregate", params, 
 				view.cubesviewer.views.cube.chart._loadDataCallback(view), "json");
+		jqxhr.complete (function() {
+			view.cubesviewer.views.unblockView(view);
+		});
 		
 	};
 	
 	this._loadDataCallback = function(view) {
 
 		var view = view;
+		
 		
 		return function (data, status) {
 			$(view.container).find('.cv-view-viewdata').empty();
@@ -234,7 +242,14 @@ function cubesviewerViewCubeChart() {
 		view.cubesviewer.views.cube.series._addRows (view, dataRows, dataTotals, colNames, colModel, data);
 		
 		// Join keys
-		colNames.splice (0, view.params.drilldown.length, colNames.slice(0, view.params.drilldown.length).join (" / "));
+		if (view.params.drilldown.length > 0) {
+			colNames.splice (0, view.params.drilldown.length, "key");
+			$(dataRows).each(function(idx, e) {
+				var jointkey = [];
+				for (i = 0; i < view.params.drilldown.length; i++) jointkey.push(e["key" + i]);
+				e["key"] = jointkey.join(" / ");
+			});
+		}
 		
 		if (view.params.charttype == "bars-vertical") {
 			view.cubesviewer.views.cube.chart.drawChartBarsVertical(view, colNames, dataRows, dataTotals);
@@ -353,7 +368,7 @@ function cubesviewerViewCubeChart() {
 	    			serie.push( [i*10, 0] );
 	    		}
 	    	}
-	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : "UNDEF" });
+	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : view.params.yaxis });
 	    	//d.push({ data: serie, label: e["key"], lines: { /*fill: (view.params.charttype == "lines-stacked")*/ } });
 	    });
 	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
@@ -485,7 +500,7 @@ function cubesviewerViewCubeChart() {
 	    			serie.push( [i-1, 0] );
 	    		}
 	    	}
-	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : "UNDEF" });
+	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : view.params.yaxis });
 	    });
 	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
 	    

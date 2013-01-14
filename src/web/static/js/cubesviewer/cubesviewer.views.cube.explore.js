@@ -71,13 +71,16 @@ function cubesviewerViewCubeExplore() {
 		
 		if (view.params.mode != "explore") return;
 		
-		$(view.container).find('.cv-view-viewdata').append('<h3>Aggregated Data</h3>');
-		
 		// Draw areas
 		view.cubesviewer.views.cube.explore.drawInfo(view);
 
 		// Highlight
 		$(view.container).find('.explorebutton').button("option", "disabled", "true").addClass('ui-state-active');
+
+		// Only if data section is empty
+		if ($(view.container).find('.cv-view-viewdata').children().size() == 0) {
+			$(view.container).find('.cv-view-viewdata').append('<h3>Aggregated Data</h3>');
+		}
 		
 		// Load data
 		view.cubesviewer.views.cube.explore.loadData(view);
@@ -252,13 +255,13 @@ function cubesviewerViewCubeExplore() {
 
 		var params = this.cubesviewer.views.cube.buildQueryParams(view, false, false);
 
-		$(view.container).find('.cv-view-viewdata').empty().append(
-				'<h3>Aggregated Data</h3>' +
-				'<span class="ajaxloader" title="Loading..."></span> <i>Loading</i>'
-		);
+		view.cubesviewer.views.blockViewLoading(view);
 		
-		$.get(this.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/aggregate",
+		var jqxhr = $.get(this.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/aggregate",
 				params, this.cubesviewer.views.cube.explore._loadDataCallback(view), "json");
+		jqxhr.complete (function() {
+			view.cubesviewer.views.unblockView(view);
+		});
 
 	};
 
@@ -582,6 +585,7 @@ function cubesviewerViewCubeExplore() {
 	};
 
 	this.drawInfoPiece = function(selector, color, maxwidth, readonly, content) {
+
 		var maxwidthStyle = "";
 		if (maxwidth != null) {
 			maxwidthStyle = "max-width: " + maxwidth + "px;";
@@ -602,10 +606,12 @@ function cubesviewerViewCubeExplore() {
 	// Draw information bubbles
 	this.drawInfo = function(view, readonly) {
 
+		$(view.container).find('.cv-view-viewinfo').empty();
+		
 		var drawHeader = ((view.params.cuts.length > 0) || (view.params.drilldown.length > 0)
 				|| (view.params.datefilters.length > 0));
 		if (drawHeader) {
-			$(view.container).find('.cv-view-viewinfo').append('<div><h3 style="margin-top: 0px;">Current slice</h3></div>');
+			//$(view.container).find('.cv-view-viewinfo').append('<div><h3 style="margin-top: 0px;">Current slice</h3></div>');
 		} 
 		
 		$(view.container).find('.cv-view-viewinfo').append(

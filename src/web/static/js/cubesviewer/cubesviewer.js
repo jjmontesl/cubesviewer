@@ -33,7 +33,7 @@
 function cubesviewer () {
 	
 	// CubesViewer version
-	this.version = "0.4";
+	this.version = "0.5-devel";
 	
 	// Default options
 	this.options = {
@@ -83,6 +83,19 @@ function cubesviewer () {
 	};		
 	
 	/*
+	 * Change language for Cubes operations 
+	 * (locale must be one of the possible languages for the model).
+	 */
+	this.changeCubesLang = function(lang) {
+		
+		this.options.cubesLang = (lang == "" ? null : lang);
+
+		// Reinitialize system
+		this.refresh();
+		
+	};	
+	
+	/*
 	 * Initialize CubesViewer library.
 	 */ 
 	this.init = function (options) {
@@ -97,10 +110,9 @@ function cubesviewer () {
 		// Global AJAX error handler
 		$(document).ajaxError(
 			function myErrorHandler(event, xhr, ajaxOptions, thrownError) {
-				cubesviewer.alert("An error occurred while accessing the server. Please try again or\n"
+				cubesviewer.alert("An error occurred while accessing the data server. Please try again or\n"
 						+ "contact the server administrator if the problem persists.");
-				$('.ajaxloader').hide();
-				$('#refreshButton').button('enable');
+				//$('.ajaxloader').hide();
 			}
 		);		
 		

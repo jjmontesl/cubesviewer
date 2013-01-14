@@ -80,11 +80,15 @@ function cubesviewerViewCube () {
 	 */
 	this.onViewDraw = function(event, view) {
 		
-		$(view.container).empty();
-		$(view.container).append('<div class="cv-view-viewmenu"></div>');
-		$(view.container).append('<div class="cv-view-viewinfo"></div>');
-		$(view.container).append('<div class="cv-view-viewdata" style="clear: both;"></div>');
-		$(view.container).append('<div class="cv-view-viewfooter" style="clear: both;"></div>');
+		if ($(".cv-view-viewdata", $(view.container)).size() == 0) {
+
+			$(view.container).empty();
+			$(view.container).append('<div class="cv-view-viewmenu"></div>');
+			$(view.container).append('<div class="cv-view-viewinfo"></div>');
+			$(view.container).append('<div class="cv-view-viewdata" style="clear: both;"></div>');
+			$(view.container).append('<div class="cv-view-viewfooter" style="clear: both;"></div>');
+			
+		}
 		
 		// Check if the model/cube is loaded.
 		if (view.cube == null) {
@@ -95,7 +99,7 @@ function cubesviewerViewCube () {
 		}
 		
 		// Menu toolbar
-		$(view.container).find('.cv-view-viewmenu').append(
+		$(view.container).find('.cv-view-viewmenu').empty().append(
 			'<div style="float: right; z-index: 9990; "><div class="cv-view-toolbar ui-widget-header ui-corner-all" style="display: inline-block;">' +
 			'</div></div>'
 		);

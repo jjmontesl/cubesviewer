@@ -64,6 +64,6 @@ cubesviewer.views.cube.columns = new cubesviewerViewColumns();
 /*
  * Bind events.
  */
-$(document).bind("cubesviewerViewCreate", { }, cubesviewer.views.cube.onViewCreate);
-$(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.cube.onViewDraw);
+$(document).bind("cubesviewerViewCreate", { }, cubesviewer.views.cube.columns.onViewCreate);
+$(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.cube.columns.onViewDraw);
 

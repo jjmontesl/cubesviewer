@@ -66,8 +66,6 @@ function cubesviewerViewCubeSeries() {
 		
 		if (view.params.mode != "series") return;
 		
-		$(view.container).find('.cv-view-viewdata').append('<h3>Series Table</h3>');
-		
 		// Draw areas
 		view.cubesviewer.views.cube.series.drawInfo(view);
 
@@ -76,6 +74,11 @@ function cubesviewerViewCubeSeries() {
 		
 		// Explore menu
 		view.cubesviewer.views.cube.series.drawSeriesMenu(view);
+		
+		// Only if data is empty
+		if ($(view.container).find('.cv-view-viewdata').children().size() == 0) {
+			$(view.container).find('.cv-view-viewdata').empty().append('<h3>Series Table</h3>');
+		}
 		
 		// Load data
 		view.cubesviewer.views.cube.series.loadData(view);
@@ -199,11 +202,12 @@ function cubesviewerViewCubeSeries() {
 		// Build params and include xaxis if present
 		var params = view.cubesviewer.views.cube.buildQueryParams(view, view.params.xaxis != null ? true : false, false);
 		
-		$(view.container).find('.cv-view-viewdata').empty().append(
-			'<h3>Series Table</h3><span class="ajaxloader" title="Loading..."></span> <i>Loading</i>'
-		);
-		$.get(view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/aggregate", params, 
+		view.cubesviewer.views.blockViewLoading(view);
+		var jqxhr = $.get(view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/aggregate", params, 
 				view.cubesviewer.views.cube.series._loadDataCallback(view), "json");
+		jqxhr.complete (function() {
+			view.cubesviewer.views.unblockView(view);
+		});
 		
 	};
 	
@@ -386,11 +390,11 @@ function cubesviewerViewCubeSeries() {
 			colModel.splice(idx, 0, { name: "key" + idx , index: "key" + idx , align: "left", width: 130 });
 		});
 		
-		dataTotals["key"] = "<b>Summary</b>";
+		dataTotals["key0"] = "<b>Summary</b>";
 		
-		if (rows.length == 1) {
+		if (view.params.drilldown.length == 0) {
 			rows[0]["key0"] = view.params.yaxis;
-			colNames.splice(0, 0, "");
+			colNames.splice(0, 0, "Measure");
 			colModel.splice(0, 0, { name: "key0", index: "key0", align: "left", width: 130 });
 		}
 		

@@ -245,6 +245,11 @@ function cubesviewerGui () {
 			return false;
 		});
 		
+		// Redraw views
+		$(cubesviewer.gui.views).each(function(idx, view) {
+			view.cubesviewer.views.redrawView(view);
+		});		
+		
 	};
 	
 	/*

@@ -1,3 +1,8 @@
+0.5-devel
+    + Changed "loading" approach, now blocks the interface.
+    + Changed redraw strategy trying to minimize size changes. 
+    + Fixed wrong extra columns in some charts.
+    + Fixed multiple drill dimensions that were ignored in charts.
 0.4
     + Added a locale switcher plugin.
     + Added documentation and examples for embedding views 
@@ -21,3 +26,5 @@
     + Initial separation of components.
     + Refactored Javascript code to be more object-oriented.
     + Finished functional application prototype (exploration, tables and charts). 
+0.1
+    + Application prototype and proof of concept.
