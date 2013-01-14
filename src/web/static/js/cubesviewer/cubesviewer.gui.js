@@ -289,7 +289,7 @@ function cubesviewerGui () {
 		
 		$(gui.options.container).find('.cv-gui-tools').append(
 			'<div style="margin-top: 8px;">' +
-			'<a href="#" class="cv-gui-about">About Cubesviewer...</a>' +
+			'<a href="#" class="cv-gui-about">About CubesViewer...</a>' +
 			'</div>'
 	    );
 		$('.cv-gui-about', gui.options.container).click(function() {
