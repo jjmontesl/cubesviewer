@@ -126,13 +126,15 @@ function cubesviewerViewCubeSeries() {
 		measuresElements = measuresElements + '<div></div>';
 		$(view.cube.measures).each(function(idx, e) {
 			
-			if ("aggregations" in e) {			
+			measuresElements = measuresElements + '<li><a href="#">' + e.name + '</a><ul style="width: 170px; z-index: 9999;">';
+			if ("aggregations" in e) {
 				$(e.aggregations).each(function(idx, ea) {
-					measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + e.name + '_' + ea + '">' + e.name + ' / ' + ea + '</a></li>';
+					measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + e.name + '_' + ea + '">' + ea + '</a></li>';
 				});
 			} else {
-				measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + e.name + '_' + "sum" + '">' + e.name + ' / ' + "sum" + '</a></li>';
+				measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + e.name + '_' + "sum" + '">' + "sum" + '</a></li>';
 			}
+			measuresElements = measuresElements + '</ul></li>';
 			
 		});
 		
