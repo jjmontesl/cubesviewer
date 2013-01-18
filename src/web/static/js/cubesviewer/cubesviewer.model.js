@@ -249,8 +249,8 @@ $.extend (cubesHierarchy.prototype, {
 			if (info != null) result.push(info);
 			
 			// Stop if we reach level_limit
-			if (level_limit != undefined) {
-				if (level_limit == levname) break;  
+			if ((level_limit != undefined) && (level_limit != null)) {
+				if (level_limit.name == levname) break;  
 			}
 		}
 		return result;

@@ -341,7 +341,7 @@ function cubesviewerViewCubeSeries() {
 
 				// Get dimension
 				var parts = cubesviewer.model.getDimensionParts(drilldown[i]);
-				var infos = parts.hierarchy.readCell(e, parts.level.name);
+				var infos = parts.hierarchy.readCell(e, parts.level);
 				
 				// Values and Labels
 				var drilldown_level_values = [];
