@@ -191,11 +191,23 @@ function cubesviewerViewCubeChart() {
 		var params = view.cubesviewer.views.cube.buildQueryParams(view, view.params.xaxis != null ? true : false, false);
 		
 		view.cubesviewer.views.blockViewLoading(view);
+		
+		view.cubesviewer.cubesRequest(
+				"/cube/" + view.cube.name + "/aggregate",
+				params,
+				view.cubesviewer.views.cube.chart._loadDataCallback(view),
+				function() {
+					view.cubesviewer.views.unblockView(view);
+				}
+		);
+		
+		/*
 		var jqxhr = $.get(view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/aggregate", params, 
 				view.cubesviewer.views.cube.chart._loadDataCallback(view), "json");
 		jqxhr.complete (function() {
 			view.cubesviewer.views.unblockView(view);
 		});
+		*/
 		
 	};
 	

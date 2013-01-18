@@ -257,12 +257,15 @@ function cubesviewerViewCubeExplore() {
 
 		view.cubesviewer.views.blockViewLoading(view);
 		
-		var jqxhr = $.get(this.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/aggregate",
-				params, this.cubesviewer.views.cube.explore._loadDataCallback(view), "json");
-		jqxhr.complete (function() {
-			view.cubesviewer.views.unblockView(view);
-		});
-
+		view.cubesviewer.cubesRequest(
+				"/cube/" + view.cube.name + "/aggregate",
+				params,
+				view.cubesviewer.views.cube.explore._loadDataCallback(view),
+				function() {
+					view.cubesviewer.views.unblockView(view);
+				}
+		);
+		
 	};
 
 	/*
@@ -344,7 +347,7 @@ function cubesviewerViewCubeExplore() {
 
 				// Get dimension
 				var parts = cubesviewer.model.getDimensionParts(view.params.drilldown[i]);
-				var infos = parts.hierarchy.readCell(e);
+				var infos = parts.hierarchy.readCell(e, parts.level.name);
 				
 				// Values and Labels
 				var drilldown_level_values = [];

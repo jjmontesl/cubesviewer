@@ -203,11 +203,15 @@ function cubesviewerViewCubeSeries() {
 		var params = view.cubesviewer.views.cube.buildQueryParams(view, view.params.xaxis != null ? true : false, false);
 		
 		view.cubesviewer.views.blockViewLoading(view);
-		var jqxhr = $.get(view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/aggregate", params, 
-				view.cubesviewer.views.cube.series._loadDataCallback(view), "json");
-		jqxhr.complete (function() {
-			view.cubesviewer.views.unblockView(view);
-		});
+		
+		view.cubesviewer.cubesRequest(
+				"/cube/" + view.cube.name + "/aggregate",
+				params,
+				view.cubesviewer.views.cube.series._loadDataCallback(view),
+				function() {
+					view.cubesviewer.views.unblockView(view);
+				}
+		);
 		
 	};
 	
@@ -330,12 +334,12 @@ function cubesviewerViewCubeSeries() {
 			var row = [];
 			var key = [];
 			
-			// For the horizontal axis drilldown level, if present
+			// For the drilldown level, if present
 			for (var i = 0; i < drilldown.length; i++) {
 
 				// Get dimension
 				var parts = cubesviewer.model.getDimensionParts(drilldown[i]);
-				var infos = parts.hierarchy.readCell(e);
+				var infos = parts.hierarchy.readCell(e, parts.level.name);
 				
 				// Values and Labels
 				var drilldown_level_values = [];

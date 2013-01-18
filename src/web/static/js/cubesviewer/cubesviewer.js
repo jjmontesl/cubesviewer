@@ -67,15 +67,44 @@ function cubesviewer () {
 	}
 
 	/*
+	 * Cubes centralized request 
+	 */
+	this.cubesRequest = function(path, params, successCallback, completeCallback, errorCallback) {
+		
+		var jqxhr = $.get(this.options["cubesUrl"] + path, params, this._cubesRequestCallback(successCallback), "json");
+		
+		if (completeCallback != undefined && completeCallback != null) {
+			jqxhr.complete (function() {
+				completeCallback();
+			});
+		}
+		
+		if (errorCallback != undefined && errorCallback != null) {
+			jqxhr.error (function() {
+				errorCallback();
+			});
+		}
+		
+	}
+	
+	this._cubesRequestCallback = function(pCallback) {
+		var callback = pCallback;
+		return function(data, status) {
+			pCallback(data);
+		}
+	}
+	
+	/*
 	 * Load model (cube list, dimensions...)
 	 */ 
 	this.loadModel = function() {
-		$.get(this.options["cubesUrl"] + "/model", { "lang": this.options.cubesLang }, this._loadModelCallback(), "json");
+		this.cubesRequest ("/model", { "lang": this.options.cubesLang }, this._loadModelCallback())
+		//$.get(this.options["cubesUrl"] + "/model", { "lang": this.options.cubesLang }, this._loadModelCallback());
 	};
 
 	this._loadModelCallback = function() {
 		var cubesviewer = this;
-		return function(data, status) {
+		return function(data) {
 			// Set new model
 			cubesviewer.model = cubesviewer.buildModel(data);
 			$(document).trigger("cubesviewerModelLoaded", [ cubesviewer.model ] )
