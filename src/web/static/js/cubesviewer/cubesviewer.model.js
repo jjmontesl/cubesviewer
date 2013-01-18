@@ -237,14 +237,22 @@ $.extend (cubesHierarchy.prototype, {
 	/*
 	 * Processes a cell and returns an array of objects with info and label.
 	 */
-	readCell: function(cell) {
+	readCell: function(cell, level_limit) {
+		
 		var result = [];
 		var hie = this;
-		$(this.levels).each(function(idx, levname) {
+		
+		for (var i = 0; i < this.levels.length; i ++) {
+			var levname = this.levels[i];
 			var level = hie.dimension.getLevel(levname);
 			info = level.readCell(cell);
 			if (info != null) result.push(info);
-		});		
+			
+			// Stop if we reach level_limit
+			if (level_limit != undefined) {
+				if (level_limit == levname) break;  
+			}
+		}
 		return result;
 	},		
 
