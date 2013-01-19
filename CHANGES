@@ -1,4 +1,7 @@
 0.5-devel
+    + Experimental version of cache system.
+    + Measure aggregations are now shown in submenus.
+    + Fixed bug causing drilldowns to incorrectly drill to latest level.
     + Changed "loading" approach, now blocks the interface.
     + Changed redraw strategy trying to minimize size changes. 
     + Fixed wrong extra columns in some charts.
