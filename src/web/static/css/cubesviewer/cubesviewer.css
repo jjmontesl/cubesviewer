@@ -72,3 +72,7 @@ a.cv-grid-link {
 	margin: 8px;
 	display: inline-block;
 }
+
+.fixed {
+   position: fixed;
+}
