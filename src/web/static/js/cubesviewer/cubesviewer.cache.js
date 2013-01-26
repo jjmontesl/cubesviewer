@@ -104,6 +104,37 @@ cubesviewer.cubesRequest = function(path, params, successCallback, completeCallb
  */
 cubesviewer._cacheCleanup = function() {
 	
+	var cacheMinutes = 60;
+	var cacheSize = 32;
+		
+	if ("cacheMinutes" in cubesviewer.options) {
+		cacheMinutes = cubesviewer.options.cacheMinutes;
+	}
+	if ("cacheSize" in cubesviewer.options) {
+		cacheSize = cubesviewer.options.cacheSize;
+	}
+
+	var oldestTime = new Date().getTime() - (1000 * 60 * cacheMinutes);
+	 
+	var elements = [];
+	for (element in this.cache) {
+		if (this.cache[element].time < oldestTime) {
+			delete this.cache[element];
+		} else {
+			elements.push (element);
+		}
+	}
+	
+	elements.sort(function(a, b) {
+		return (cubesviewer.cache[a].time - cubesviewer.cache[b].time);
+	});
+	if (elements.length >= cacheSize) {
+		for (var i = 0; i < elements.length - cacheSize; i++) {
+			delete this.cache[elements[i]];
+		}
+	}
+	
+	
 }
 
 cubesviewer.cacheCubesRequestSuccess = function(pCallback, pRequestHash) {

@@ -15,7 +15,7 @@ provided by Cubes.
 
 CubesViewer is mainly an HTML5 application which can be embedded
 completely or partially in other sites. Widgets can be inserted
-separately in order to show a particular view to users, but the full
+separately in order to show a particular view to users. The full
 OLAP Explorer is the main focus of the project.
 
 Features:
@@ -23,7 +23,7 @@ Features:
 * User Interface allowing for multiple views on-screen. 
 * Cube explorer providing drilldown and cut operations.
 * Supports dimension hierarchies and date filtering.
-* Different types of charts and diagrams.
+* Several charts and diagrams.
 * View management, sharing and saving.
 * Modular and extensible.
 
