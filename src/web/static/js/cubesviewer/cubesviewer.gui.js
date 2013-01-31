@@ -287,15 +287,18 @@ function cubesviewerGui () {
 		gui.drawSection (gui, "Cubes", "cv-gui-cubeslist");
 		gui.drawSection (gui, "Tools", "cv-gui-tools");
 		
-		$(gui.options.container).find('.cv-gui-tools').append(
-			'<div style="margin-top: 8px;">' +
-			'<a href="#" class="cv-gui-about">About CubesViewer...</a>' +
-			'</div>'
-	    );
-		$('.cv-gui-about', gui.options.container).click(function() {
-			gui.showAbout();
-			return false;
-		});
+		
+		if (! ((gui.options.showAbout != undefined) && (gui.options.showAbout == false))) {
+			$(gui.options.container).find('.cv-gui-tools').append(
+				'<div style="margin-top: 8px;">' +
+				'<a href="#" class="cv-gui-about">About CubesViewer...</a>' +
+				'</div>'
+		    );
+			$('.cv-gui-about', gui.options.container).click(function() {
+				gui.showAbout();
+				return false;
+			});
+		}
 		
 		
 		// Configure sortable panel
