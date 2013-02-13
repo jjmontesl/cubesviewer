@@ -74,13 +74,13 @@ function cubesviewer () {
 		var jqxhr = $.get(this.options["cubesUrl"] + path, params, this._cubesRequestCallback(successCallback), "json");
 		
 		if (completeCallback != undefined && completeCallback != null) {
-			jqxhr.complete (function() {
+			jqxhr.always (function() {
 				completeCallback();
 			});
 		}
-		
+
 		if (errorCallback != undefined && errorCallback != null) {
-			jqxhr.error (function() {
+			jqxhr.fail (function() {
 				errorCallback();
 			});
 		}
@@ -137,10 +137,17 @@ function cubesviewer () {
 		});
 
 		// Global AJAX error handler
+		// TODO: This should probably not be a global handler!
 		$(document).ajaxError(
 			function myErrorHandler(event, xhr, ajaxOptions, thrownError) {
-				cubesviewer.alert("An error occurred while accessing the data server. Please try again or\n"
-						+ "contact the server administrator if the problem persists.");
+				if (xhr.status == 401) {
+					cubesviewer.alert("Unauthorized.");
+				} else if (xhr.status == 403) {
+					cubesviewer.alert("Forbidden.");
+				} else {
+					cubesviewer.alert("An error occurred while accessing the data server. Please try again or "
+							+ "contact the server administrator if the problem persists.");
+				}
 				//$('.ajaxloader').hide();
 			}
 		);		
