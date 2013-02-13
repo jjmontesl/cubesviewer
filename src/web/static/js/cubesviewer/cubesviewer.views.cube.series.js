@@ -144,7 +144,7 @@ function cubesviewerViewCubeSeries() {
 		  		drillElements +
 		  		'<div></div>' +
 		  		'<li><a href="#" class="cv-view-series-setxaxis" data-dimension="">None</a></li>' +
-		  '</ul><li><a href="#"><span class="ui-icon ui-icon-zoomin"></span>Measure</a><ul style="width: 180px;">' +
+		  '</ul><li><a href="#"><span class="ui-icon ui-icon-zoomin"></span>Measure</a><ul style="min-width: 180px;">' +
 	  	  		measuresElements +
 	  	  '</ul></li>'
 		);
