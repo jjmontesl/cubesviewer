@@ -59,6 +59,17 @@ CUBESVIEWER_CUBES_URL="http://localhost:5000"
 # CubesViewer Store backend URL. It should point to this application.
 CUBESVIEWER_BACKEND_URL="http://localhost:8000/cubesviewer"
 
+# Optional user and password tuple to access the backend, or False
+# (only meaningful when CubesViewer Cubes proxy is used)
+#CUBESVIEWER_CUBES_PROXY_USER = ('user', 'password') 
+CUBESVIEWER_CUBES_PROXY_USER = None
+
+# CubesViewer Proxy ACL
+# (only meaningful when CubesViewer Cubes proxy is used)
+# ie. CUBESVIEWER_PROXY_ACL = [ { "cube": "my_cube", "group": "my_group" } ]
+CUBESVIEWER_PROXY_ACL = [
+                         ]
+
 ##
 # 3. Other Django application settings
 ##

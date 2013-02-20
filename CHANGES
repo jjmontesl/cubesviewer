@@ -1,5 +1,6 @@
 0.5-devel
-    + Experimental version of cache system.
+    + Experimental Cubes proxy (with ACLs).
+    + Initial version of cache system.
     + Measure aggregations are now shown in submenus.
     + Fixed bug causing drilldowns to incorrectly drill to latest level.
     + Changed "loading" approach, now blocks the interface.

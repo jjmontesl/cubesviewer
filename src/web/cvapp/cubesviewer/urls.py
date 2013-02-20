@@ -33,6 +33,7 @@ from django.contrib.auth.decorators import login_required
 from cubesviewer.views.cubesviewer import CubesViewerView
 from cubesviewer.api.view import ViewSaveHandler
 from cubesviewer.api.view import ViewListHandler
+from cubesviewer.api import proxy
 
 
 # Enable admin
@@ -44,5 +45,7 @@ urlpatterns = patterns('',
     
     url(r'^view/list/$', login_required( Resource(ViewListHandler) )),
     url(r'^view/save/$', login_required( Resource(ViewSaveHandler) )),
+    
+    url(r'^cubes/', login_required(proxy.connection))
     
 )
