@@ -181,8 +181,8 @@ function cubesviewerViewCubeExplore() {
 
 				var disabled = "";
 				dateFilterElements = dateFilterElements + '<li><a href="#" class="selectDateFilter '  + disabled + 
-					'" data-dimension="' + dimension.name + ((dimension.getInfo("cv-datefilter-hierarchy") != null) ? "@" + dimension.getInfo("cv-datefilter-hierarchy") : "") +  
-					'" data-value="1">' + dimension.label + ((dimension.getInfo("cv-datefilter-hierarchy") != null) ? " / " + dimension.getHierarchy(dimension.getInfo("cv-datefilter-hierarchy")).label : "") +
+					'" data-dimension="' + dimension.name + ((dimension.getInfo("cv-datefilter-hierarchy")) ? "@" + dimension.getInfo("cv-datefilter-hierarchy") : "") +  
+				'" data-value="1">' + dimension.label + ((dimension.getHierarchy(dimension.getInfo("cv-datefilter-hierarchy"))) ? " / " + dimension.getHierarchy(dimension.getInfo("cv-datefilter-hierarchy")).label : "") +
 					'</a></li>';
 			}
 
