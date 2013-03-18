@@ -550,6 +550,7 @@ function cubesviewerViewCubeExplore() {
 								+ '<option value="auto-last6m">Last 6 months</option>'
 								+ '<option value="auto-last12m">Last year</option>'
 								+ '<option value="auto-january1st">From January 1st</option>'
+								+ '<option value="auto-yesterday">Yesterday</option>'
 								+ '</optgroup>' + '</select> ' + 'Range: '
 								+ '<input name="date_start" /> - '
 								+ '<input name="date_end" /> ');

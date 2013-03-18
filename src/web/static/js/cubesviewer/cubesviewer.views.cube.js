@@ -183,6 +183,11 @@ function cubesviewerViewCube () {
 				date_from = new Date();
 				date_from.setMonth(0);
 				date_from.setDate(1);
+			} else if (datefilter.mode == "auto-yesterday") {
+				date_from = new Date();
+				date_from.setDate(date_from.getDate() - 1);
+				date_to = new Date();
+                date_to.setDate(date_from.getDate());
 			}
 
 		} else if (datefilter.mode == "custom") {
