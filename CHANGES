@@ -1,22 +1,23 @@
 0.5-devel
+    + Removed the "global shared views" concept.
     + Experimental Cubes proxy (with ACLs).
     + Initial version of cache system.
     + Measure aggregations are now shown in submenus.
     + Fixed bug causing drilldowns to incorrectly drill to latest level.
-    + Changed "loading" approach, now blocks the interface.
-    + Changed redraw strategy trying to minimize size changes. 
+    + Changed "loading" approach, now blocks the interface where appropriate.
+    + Changed redraw strategy trying to minimize size changes.
     + Fixed wrong extra columns in some charts.
     + Fixed multiple drill dimensions that were ignored in charts.
 0.4
     + Added a locale switcher plugin.
-    + Added documentation and examples for embedding views 
+    + Added documentation and examples for embedding views
       in other web applications.
     + Added the serialization plugin.
 0.3
     + Added undo/redo plugin.
     + Improved export plugin (now exports all pages of tables).
     + Updated Flotr2 library to support stacked lines.
-    + Date dimensions are now correctly configured at model level. 
+    + Date dimensions are now correctly configured at model level.
     + Added support for dimension hierarchies.
     + Added some Cubes model javascript support classes.
     + Added support for labels and label attributes.
@@ -25,10 +26,10 @@
     + Application settings now have default values that work out of the box.
     + Added support for measures with no aggregations.
 0.2
-    + Initial import into repository. 
+    + Initial import into repository.
     + Added basic saving/sharing capabilities.
     + Initial separation of components.
     + Refactored Javascript code to be more object-oriented.
-    + Finished functional application prototype (exploration, tables and charts). 
+    + Finished functional application prototype (exploration, tables and charts).
 0.1
     + Application prototype and proof of concept.

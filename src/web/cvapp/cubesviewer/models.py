@@ -1,4 +1,4 @@
-# CubesViewer  
+# CubesViewer
 #
 # Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
 #
@@ -11,11 +11,11 @@
 #
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # If your version of the Software supports interaction with it remotely through
 # a computer network, the above copyright notice and this permission notice
 # shall be accessible to all users.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,13 +32,13 @@ from django.conf import settings
 
 class CubesViewerModel(models.Model):
     """
-    Base class for Cubes Viewer stored objects. 
+    Base class for Cubes Viewer stored objects.
     """
     create_date = models.DateTimeField(auto_now_add = True)
     update_date = models.DateTimeField(auto_now = True)
     #create_user = models.ForeignKey(User)
     #update_user = models.ForeignKey(User)
-    
+
     class Meta:
         abstract = True
 
@@ -46,15 +46,14 @@ class CubesView(CubesViewerModel):
     """
     Saved Cubes View
     """
-    name = models.CharField("Name", max_length=200)    
+    name = models.CharField("Name", max_length=200)
     data = models.TextField()
     owner = models.ForeignKey(User)
     shared = models.BooleanField(default = False)
-    common = models.BooleanField(default = False)
-    
+
     def __unicode__(self):
         return str(self.id) + " " + self.name
-    
+
     class Meta:
         ordering = ['name']
 

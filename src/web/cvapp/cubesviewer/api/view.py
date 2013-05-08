@@ -1,4 +1,4 @@
-# CubesViewer  
+# CubesViewer
 #
 # Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
 #
@@ -11,11 +11,11 @@
 #
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # If your version of the Software supports interaction with it remotely through
 # a computer network, the above copyright notice and this permission notice
 # shall be accessible to all users.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,11 +31,11 @@ from django.db.models import Q
 from cubesviewer.models import CubesView
 
 class ViewSaveHandler(BaseHandler):
-    
+
     allowed_methods = ('POST')
-    
+
     def create(self, request, *args, **kwargs):
-        
+
         #tview = None
         if (int(request.POST["id"]) > 0):
             tview = CubesView.objects.get(pk = request.POST["id"])
@@ -51,24 +51,24 @@ class ViewSaveHandler(BaseHandler):
             tview.name = request.POST["name"]
             tview.data = request.POST["data"]
             tview.owner = request.user
-            if (request.POST["shared"] == "true"): 
+            if (request.POST["shared"] == "true"):
                 tview.shared = True
             else:
-                tview.shared = False 
+                tview.shared = False
 
             tview.save()
 
-        
+
         return tview
 
-        
+
 class ViewListHandler(BaseHandler):
-    
+
     allowed_methods = ('GET')
     exclude = ()
-    
+
     def read(self, request, *args, **kwargs):
-        
-        return CubesView.objects.filter(Q(owner=request.user) | Q(shared=True) | Q(common=True))
-        
-        
+
+        return CubesView.objects.filter(Q(owner=request.user) | Q(shared=True))
+
+
