@@ -30,7 +30,7 @@ from django.contrib import admin
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.views.generic.simple import redirect_to
+from django.views.generic import RedirectView
 
 
 # Enable admininstration
@@ -39,7 +39,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
 
     #url(r'^$', login_required( IndexView.as_view() )),
-    url(r'^$', redirect_to, {'url': '/cubesviewer/'}),
+    url(r'^$', RedirectView.as_view(url='/cubesviewer/')),
     
     url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'cvapp/login.html'} ),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'} ),
