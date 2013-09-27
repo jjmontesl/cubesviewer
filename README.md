@@ -53,7 +53,7 @@ For further information, see the Documentation section below.
 Documentation
 -------------
 
-* [CubesViewer Documentation](cubesviewer/blob/master/doc/guide/index.md)
+* [CubesViewer Documentation](https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/index.md)
 
 Screenshots
 -----------
