@@ -420,7 +420,7 @@ function cubesviewerViewCubeExplore() {
 		var dataTotals = [];
 
 		for ( var column in data.summary) {
-			colNames.push('<span title="'+ column + '">' + column + '</span>');
+			colNames.push(column);
 			colModel.push({
 				name : column,
 				index : column,
