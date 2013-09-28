@@ -395,6 +395,12 @@ function cubesviewerViewCubeExplore() {
 		
 	},
 
+	this.columnTooltipAttr = function(column) {
+		return function (rowId, val, rawObject) {
+			return 'title="' + column + ' = ' + val + '"';
+		}; 
+	};
+	
 	/*
 	 * Show received summary
 	 */ 
@@ -422,6 +428,7 @@ function cubesviewerViewCubeExplore() {
 				sorttype : "number",
 				width : 105,
 				formatter: 'number',  
+				cellattr: this.columnTooltipAttr(column),
 				formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
 			});
 			dataTotals[column] = data.summary[column];
@@ -484,8 +491,8 @@ function cubesviewerViewCubeExplore() {
 							userData : dataTotals,
 							datatype : "local",
 							height : 'auto',
-							rowNum : 15,
-							rowList : [ 15, 30, 50, 100 ],
+							rowNum : 20,
+							rowList : [ 20, 50, 100, 500 ],
 							colNames : colNames,
 							colModel : colModel,
 							pager : "#summaryPager-" + view.id,
