@@ -44,6 +44,9 @@ function cubesviewerGui () {
 
 	// View counter (used to assign different ids to each spawned view)
 	this.lastViewId = 0;
+	
+	// Track sorting state
+	this._sorting = false;
 
 	/*
 	 * Closes a view. 
@@ -120,6 +123,12 @@ function cubesviewerGui () {
 		$('#' + viewId + " .cv-gui-cubesview").accordion({
 			collapsible : true,
 			autoHeight : false
+		});
+		$('#' + viewId + " .cv-gui-cubesview").on("accordionbeforeactivate", function (evt, ui) {
+			if (cubesviewer.gui._sorting == true) {
+				evt.preventDefault();
+				evt.stopImmediatePropagation();
+			}
 		});
 		
 		return $('#' + viewId);
@@ -310,14 +319,13 @@ function cubesviewerGui () {
 			handle : ".sorthandle",
 
 			start : function(evt, ui) {
-				$(".cubesView", ui.item).accordion("option",
-						"disabled", true);
+				cubesviewer.gui._sorting = true;
 			},
 			stop : function(evt, ui) {
 				setTimeout(function() {
-					$(".cubesView", ui.item).accordion("option",
-							"disabled", false);
-				}, 200)
+					cubesviewer.gui._sorting = false;
+				}, 200);
+				
 			}
 		// forcePlaceholderSize: true,
 		// forceHlperSize: true,
