@@ -114,7 +114,7 @@ function cubesviewerViewCube () {
 	 */
 	this._initMenu = function (view, buttonSelector, menuSelector) {
 		//view.cubesviewer.views.initMenu('.panelbutton', '.cv-view-menu-panel');
-		$('.cv-view-toolbar', $(view.container)).find(buttonSelector).mouseenter(function() {
+		$('.cv-view-toolbar', $(view.container)).find(buttonSelector).click(function() {
 
 			$('.cv-view-menu').hide();
 
@@ -129,15 +129,27 @@ function cubesviewerViewCube () {
 				at : "right bottom",
 				of : this
 			});
-			$(document).one("click", function() {
-				menu.fadeOut();
-			});
+			$(document).one("click", cubesviewer.views.cube._hideMenu(menu));
+
 			return false;
 		});
 
 		$(menuSelector, $(view.container)).menu({}).hide();
 		
-	}
+	};
+	
+	/**
+	 * Hide menus when mouse clicks outside them, but not when inside.
+	 */
+	this._hideMenu = function (menu) {
+		return function(evt) {
+			if ($(menu).find(evt.target).size() == 0) {
+				menu.fadeOut();
+			} else {
+				$(document).one("click", cubesviewer.views.cube._hideMenu(menu));
+			}
+		}
+	};
 	
 	/*
 	 * Adjusts grids size
