@@ -115,7 +115,7 @@ function cubesviewerViewCubeExplore() {
 				
 				if (dimension.hierarchies.length > 1) {
 					$(dimension.hierarchies).each(function(idx,hi) {
-						drillElements = drillElements + '<li><a href="#">' + hi.label + 
+						drillElements = drillElements + '<li><a href="#" onclick="return false;">' + hi.label + 
 						'</a><ul class="drillList" style="width: 160px; z-index: 9999;">';
 						$(hi.levels).each(function(idx, el) { 
 							var level = dimension.getLevel(el);
@@ -627,7 +627,7 @@ function cubesviewerViewCubeExplore() {
 		
 		var piece = view.cubesviewer.views.cube.explore.drawInfoPiece(
 			$(view.container).find('.cv-view-viewinfo-drill'), "#000000", 200, true,
-			'<span class="ui-icon ui-icon-info"></span> <span style="color: white;"><b>Cube:</b> ' + view.cube.label + '</span>' 
+			'<span class="ui-icon ui-icon-info"></span> <span style="color: white;" class="cv-view-viewinfo-cubename"><b>Cube:</b> ' + view.cube.label + '</span>' 
 		);
 	
 		$(view.params.drilldown).each(function(idx, e) {
