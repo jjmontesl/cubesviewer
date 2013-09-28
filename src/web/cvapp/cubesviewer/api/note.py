@@ -25,49 +25,45 @@
 # SOFTWARE.
 
 
-from django.db import models
-from django.contrib.auth.models import User
+from piston.handler import BaseHandler
+from django.db.models import Q
 
-from django.conf import settings
+from cubesviewer.models import Note
 
-class CubesViewerModel(models.Model):
-    """
-    Base class for Cubes Viewer stored objects.
-    """
-    create_date = models.DateTimeField(auto_now_add = True)
-    update_date = models.DateTimeField(auto_now = True)
-    #create_user = models.ForeignKey(User)
-    #update_user = models.ForeignKey(User)
+class NoteSaveHandler(BaseHandler):
 
-    class Meta:
-        abstract = True
+    allowed_methods = ('POST')
 
-class CubesView(CubesViewerModel):
-    """
-    Saved Cubes View
-    """
-    name = models.CharField("Name", max_length=200)
-    data = models.TextField()
-    owner = models.ForeignKey(User)
-    shared = models.BooleanField(default = False)
+    def create(self, request, *args, **kwargs):
 
-    def __unicode__(self):
-        return str(self.id) + " " + self.name
+        tnote = None
+        
+        tnotes = Note.objects.filter(pk = request.POST["key"])
+        if (len(tnotes) > 0):
+            tnote = tnotes[0]
+        else:
+            tnote = Note()
+            tnote.key = request.POST["key"]
+        
+        tnote.data = request.POST["data"]
+        tnote.update_user = request.user
+        
+        # Update or delete as necessary
+        if (str(request.POST["data"]) == ""):
+            tnote.delete()
+        else:
+            tnote.save()
 
-    class Meta:
-        ordering = ['name']
+        return tnote
 
-class Note(CubesViewerModel):
-    """
-    Saved Cubes View
-    """
-    key = models.CharField("Key", primary_key=True, max_length=200)
-    data = models.TextField()
-    update_user = models.ForeignKey(User)
 
-    def __unicode__(self):
-        return str(self.id) + " " + self.name
+class NoteViewHandler(BaseHandler):
 
-    class Meta:
-        ordering = ['key']
+    allowed_methods = ('GET')
+    exclude = ()
+
+    def read(self, request, *args, **kwargs):
+
+        note = Note.objects.filter(pk=kwargs['pk'])
+        return note
 

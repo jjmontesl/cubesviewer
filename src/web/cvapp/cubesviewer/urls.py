@@ -34,6 +34,7 @@ from cubesviewer.views.cubesviewer import CubesViewerView
 from cubesviewer.api.view import ViewSaveHandler
 from cubesviewer.api.view import ViewListHandler
 from cubesviewer.api import proxy
+from cubesviewer.api.note import NoteViewHandler, NoteSaveHandler
 
 
 # Enable admin
@@ -45,6 +46,9 @@ urlpatterns = patterns('',
     
     url(r'^view/list/$', login_required( Resource(ViewListHandler) )),
     url(r'^view/save/$', login_required( Resource(ViewSaveHandler) )),
+
+    url(r'^note/save/$', login_required( Resource(NoteSaveHandler) )),
+    url(r'^note/get/(?P<pk>.+)$', login_required( Resource(NoteViewHandler) )),
     
     url(r'^cubes/', login_required(proxy.connection))
     

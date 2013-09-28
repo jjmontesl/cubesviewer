@@ -59,7 +59,7 @@ function cubesviewerViewCubeColumns () {
 /*
  * Create object.
  */
-cubesviewer.views.cube.columns = new cubesviewerViewColumns();
+cubesviewer.views.cube.columns = new cubesviewerViewCubeColumns();
 
 /*
  * Bind events.
