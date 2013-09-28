@@ -158,14 +158,14 @@ function cubesviewerViewCube () {
 
 		// TODO: use appropriate container width!
 		var newWidth = $(window).width() - 350;
-
+		
 		$(".ui-jqgrid-btable").each(function(idx, el) {
 			var currentWidth = $(el).width();
-			if (newWidth < 600)
-				newWidth = 600;
-			if (currentWidth > newWidth) {
+			if (newWidth < 700) newWidth = 700;
+
+			//if ((currentWidth > newWidth) /*|| (currentWidth < newWidth - 50) */ ) {
 				$(el).setGridWidth(newWidth);
-			}
+			//}
 		});
 	};
 	
