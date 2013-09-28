@@ -288,6 +288,9 @@ function cubesviewerGuiRestStore() {
      * the storage backend.
      */
     this.addViewSaved = function(savedViewId) {
+    	
+    	if (cubesviewer.model == null) return;
+    	
         var savedview = this.getSavedView(savedViewId);
         var viewobject = $.parseJSON(savedview.data);
         var view = cubesviewer.gui.addViewObject(viewobject);
