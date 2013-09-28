@@ -393,7 +393,7 @@ function cubesviewerViewCubeSeries() {
 		$(view.params.drilldown).each (function (idx, e) { 
 			//label.push (view.cubesviewer.model.getDimension(e).label);
 			colNames.splice(idx, 0, view.cubesviewer.model.getDimension(e).label);
-			colModel.splice(idx, 0, { name: "key" + idx , index: "key" + idx , align: "left", width: 130 });
+			colModel.splice(idx, 0, { name: "key" + idx , index: "key" + idx , align: "left", width: 190 });
 		});
 		
 		dataTotals["key0"] = "<b>Summary</b>";
@@ -401,7 +401,7 @@ function cubesviewerViewCubeSeries() {
 		if (view.params.drilldown.length == 0) {
 			rows[0]["key0"] = view.params.yaxis;
 			colNames.splice(0, 0, "Measure");
-			colModel.splice(0, 0, { name: "key0", index: "key0", align: "left", width: 130 });
+			colModel.splice(0, 0, { name: "key0", index: "key0", align: "left", width: 190 });
 		}
 		
 	};
