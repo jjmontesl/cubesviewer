@@ -46,6 +46,7 @@ function cubesviewerViewNotes () {
 			"view": ""
 		}
 		
+		// Add the notes view to the list of notes views to be updated
 		cubesviewer.views.notes.noteViews.push(view);
 		
 	}
