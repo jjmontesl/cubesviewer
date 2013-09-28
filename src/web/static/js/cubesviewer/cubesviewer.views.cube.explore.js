@@ -426,7 +426,7 @@ function cubesviewerViewCubeExplore() {
 				index : column,
 				align : "right",
 				sorttype : "number",
-				width : 105,
+				width : cubesviewer.views.cube.explore.defineColumnWidth(view, column, 95),
 				formatter: 'number',  
 				cellattr: this.columnTooltipAttr(column),
 				formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
@@ -455,7 +455,7 @@ function cubesviewerViewCubeExplore() {
 				name : "key" + i,
 				index : "key" + i,
 				align : "left",
-				width: 130
+				width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + i, 130)
 			});
 		}
 		if (view.params.drilldown.length == 0) {
@@ -464,7 +464,7 @@ function cubesviewerViewCubeExplore() {
 				name : "key" + 0,
 				index : "key" + 0,
 				align : "left",
-				width: 110
+				width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + 0, 110)
 			});
 		}
 		
@@ -491,14 +491,14 @@ function cubesviewerViewCubeExplore() {
 							userData : dataTotals,
 							datatype : "local",
 							height : 'auto',
-							rowNum : 20,
-							rowList : [ 20, 50, 100, 500 ],
+							rowNum : cubesviewer.options.pagingOptions[0],
+							rowList : cubesviewer.options.pagingOptions,
 							colNames : colNames,
 							colModel : colModel,
 							pager : "#summaryPager-" + view.id,
-							sortname : 'key',
+							sortname : cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[0],
 							viewrecords : true,
-							sortorder : "desc",
+							sortorder : cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[1],
 							footerrow : true,
 							userDataOnFooter : true,
 							forceFit : false,
@@ -533,15 +533,51 @@ function cubesviewerViewCubeExplore() {
 															.get(0).idsOfSelectedRows[i],
 													false);
 								}
-							}
+								// Call hook
+								view.cubesviewer.views.cube.explore.onTableLoaded (view);
+							},
+							resizeStop: view.cubesviewer.views.cube.explore._onTableResize (view),
+							onSortCol: view.cubesviewer.views.cube.explore._onTableSort (view), 
 
 						});
 
 		this.cubesviewer.views.cube._adjustGridSize(); // remember to copy also the window.bind-resize init
 
+		
 	};
 
-
+	this._onTableSort = function (view) {
+		return function (index, iCol, sortorder) {
+			view.cubesviewer.views.cube.explore.onTableSort (view, index, iCol, sortorder);
+		}
+	}
+	
+	this._onTableResize = function (view) {
+		return function(width, index) {
+			view.cubesviewer.views.cube.explore.onTableResize (view, width, index);
+		};
+	};
+	
+	this.onTableResize = function (view, width, index) {
+		// Empty implementation, to be overrided
+		//alert("resize column " + index + " to " + width + " pixels");
+	};
+	this.onTableLoaded = function (view) {
+		// Empty implementation, to be overrided
+	};
+	this.onTableSort = function (view, key, index, iCol, sortorder) {
+		// Empty implementation, to be overrided
+	};
+	
+	this.defineColumnWidth = function (view, column, vdefault) {
+		// Simple implementation. Overrided by the columns plugin.
+		return vdefault;
+	};
+	this.defineColumnSort = function (view, vdefault) {
+		// Simple implementation. Overrided by the columns plugin.
+		return vdefault;
+	};
+		
 
 	this.drawDateFilter = function(view, datefilter, container) {
 

@@ -112,6 +112,8 @@ function cubesviewerViewNotes () {
         return function(data, status) {
         	if (data.length > 0) {
         		view.notes["view"] = data[0].data;
+        		// Enable tab
+        		$(view.container).find('.cv-view-notes-menu').tabs({active: 1});
         	} else {
         		view.notes["view"] = "No View notes";
         	}

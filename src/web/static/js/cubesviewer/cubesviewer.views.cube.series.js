@@ -293,14 +293,14 @@ function cubesviewerViewCubeSeries() {
 			//userData: dataTotals,
 			datatype: "local", 
 			height: 'auto', 
-			rowNum: 20, 
-			rowList: [ 20, 50, 100, 500 ], 
+			rowNum: cubesviewer.options.pagingOptions[0], 
+			rowList: cubesviewer.options.pagingOptions, 
 			colNames: colNames, 
 			colModel: colModel, 
 	        pager: "#seriesPager-" + view.id, 
-	        sortname: 'key', 
+	        sortname: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[0], 
 	        viewrecords: true, 
-	        sortorder: "desc", 
+	        sortorder: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[1], 
 	        footerrow: true,
 	        userDataOnFooter: true,
 	        forceFit: false,
@@ -309,7 +309,16 @@ function cubesviewerViewCubeSeries() {
 	        //multiboxonly: true,
 			
 	        //caption: "Current selection data" ,
-	        beforeSelectRow : function () { return false; }
+	        beforeSelectRow : function () { return false; },
+	        
+			loadComplete : function() {
+				// Call hook
+				view.cubesviewer.views.cube.explore.onTableLoaded (view);
+			},
+	        
+	        resizeStop: view.cubesviewer.views.cube.explore._onTableResize (view),
+			onSortCol: view.cubesviewer.views.cube.explore._onTableSort (view), 
+	        
 	    } );
 		
 		this.cubesviewer.views.cube._adjustGridSize();
@@ -380,7 +389,7 @@ function cubesviewerViewCubeSeries() {
 			if (colNames.indexOf(colKey) < 0) {
 				colNames.push (colKey);
 				colModel.push ({ 
-					name: colKey, index: colKey, align: "right", sorttype: "number", width: 100,
+					name: colKey, index: colKey, align: "right", sorttype: "number", width: cubesviewer.views.cube.explore.defineColumnWidth(view, colKey, 100),
 			        formatter: 'number', 
 			        formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }	
 				});
@@ -393,7 +402,7 @@ function cubesviewerViewCubeSeries() {
 		$(view.params.drilldown).each (function (idx, e) { 
 			//label.push (view.cubesviewer.model.getDimension(e).label);
 			colNames.splice(idx, 0, view.cubesviewer.model.getDimension(e).label);
-			colModel.splice(idx, 0, { name: "key" + idx , index: "key" + idx , align: "left", width: 190 });
+			colModel.splice(idx, 0, { name: "key" + idx , index: "key" + idx , align: "left", width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + idx, 190) });
 		});
 		
 		dataTotals["key0"] = "<b>Summary</b>";
@@ -401,7 +410,7 @@ function cubesviewerViewCubeSeries() {
 		if (view.params.drilldown.length == 0) {
 			rows[0]["key0"] = view.params.yaxis;
 			colNames.splice(0, 0, "Measure");
-			colModel.splice(0, 0, { name: "key0", index: "key0", align: "left", width: 190 });
+			colModel.splice(0, 0, { name: "key0", index: "key0", align: "left", width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key0", 190) });
 		}
 		
 	};

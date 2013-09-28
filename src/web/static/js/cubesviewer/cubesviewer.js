@@ -33,12 +33,13 @@
 function cubesviewer () {
 	
 	// CubesViewer version
-	this.version = "0.5-devel";
+	this.version = "0.6-devel";
 	
 	// Default options
 	this.options = {
 		cubesUrl : null,
-		cubesLang : null
+		cubesLang : null,
+		pagingOptions: [15, 30, 100, 250],
 	};
 
 	// Model data as obtained from Cubes
