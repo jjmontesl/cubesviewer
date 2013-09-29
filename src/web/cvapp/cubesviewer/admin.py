@@ -29,10 +29,9 @@ from django.contrib import admin
 
 
 from django.contrib import admin
-from cvapp.cubesviewer.models import CubesView
+from cubesviewer.models import CubesView, Note
 
 # Admin interface customization
-
 class CubesViewAdmin(admin.ModelAdmin):
     model = CubesView
     extra = 1
@@ -40,6 +39,11 @@ class CubesViewAdmin(admin.ModelAdmin):
     # list_filter = ['var'] # seems that foreignkeys don't work for list filters
     #inlines = [ClientHostMappingInline, InfrastructureHostMappingInline]
 
+class NoteAdmin(admin.ModelAdmin):
+    model = Note
+    
+
 # Register models with the administration interface
 admin.site.register(CubesView)
+admin.site.register(Note)
 

@@ -38,7 +38,7 @@ class NoteSaveHandler(BaseHandler):
 
         tnote = None
         
-        tnotes = Note.objects.filter(pk = request.POST["key"])
+        tnotes = Note.objects.filter(key = request.POST["key"])
         if (len(tnotes) > 0):
             tnote = tnotes[0]
         else:
@@ -64,6 +64,6 @@ class NoteViewHandler(BaseHandler):
 
     def read(self, request, *args, **kwargs):
 
-        note = Note.objects.filter(pk=kwargs['pk'])
+        note = Note.objects.filter(key=kwargs['pk'])
         return note
 
