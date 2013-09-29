@@ -25,6 +25,8 @@ Features:
 * Supports dimension hierarchies and date filtering.
 * Several charts and diagrams.
 * View management, sharing and saving.
+* Can run purely in the browser, without using the web services.
+* Views can be embedded in other web sites.
 * Modular and extensible.
 
 
@@ -43,10 +45,10 @@ Note that **your cubes model should be configured** to add support for CubesView
 (see Documentation below). 
 
 The **full CubesViewer application** (which includes all features including sharing/saving
-support) is a Python Django application. You need Django 1.3 in order to run it. 
+support) includes a Python Django application. You need Django 1.3 in order to run it. 
 
 **CubesViewer library is HTML5/Javascript** and should work on most modern browsers
-(it may even work on older browsers). 
+(it may even work on older browsers). Views can be embedded in other websites.
 
 For further information, see the Documentation section below.
 
@@ -68,12 +70,15 @@ Screenshots
 Support
 =======
 
-If you have questions, problems or suggestions, get in touch. CubesViewer doesn't
-have a list on its own. Instead, please get in touch through the 
-Cubes project mailing list:
+If you have questions, problems or suggestions, please get in touch. 
+CubesViewer doesn't have a list on its own. Instead, please get in touch 
+through the Cubes project mailing list:
 
 * Report bugs: https://github.com/jjmontesl/cubesviewer/issues
 * Discussion at Google Groups: http://groups.google.com/group/cubes-discuss
+
+If you are using CubesViewer, we'd love to hear from you. Suggestions
+are welcome. 
 
 Authors
 =======

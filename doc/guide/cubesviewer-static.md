@@ -18,12 +18,13 @@ Embedded views examples
 -----------------------
 
 Examples of static (Javascript only) views and GUI can be found in the 
-[src/htmlviews](https://github.com/jjmontesl/cubesviewer/tree/master/src/htmlviews) folder
-of the project.
+[src/htmlviews](https://github.com/jjmontesl/cubesviewer/tree/master/src/htmlviews) directory.
 
 This includes a static HTML file (gui.html) that features a complete static version of
 CubesViewer interface, great for quickly testing the app on your favourite Cubes server.
 Just open the file on your web browser.
+
+Theh same directory includes an example of a view embedded into a web page (views.html). 
 
 Files
 ---------------------
@@ -40,7 +41,7 @@ Note that the paths may vary in your application, depending on where you put Cub
 note that **the order of inclusion of Javascript files is critical** (  though you could remove optional components).
 
 (Note: the first CSS link, *screen.css*, is not required. It applies default fonts and styles and may be ignored
-if you already have applied styles to your site. This may be changed in the future.)  
+if you already have applied styles to your site.)  
  
 ```
     <link rel="stylesheet" href="../web/static/css/blueprint/screen.css" type="text/css" media="screen, projection">
