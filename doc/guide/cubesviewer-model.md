@@ -10,13 +10,13 @@ in order to identify date dimensions so CubesViewer knows which dimensions can b
 Labels
 ------
 
-Cubes supports the "label" attribute on every object. CubesViewer shows this attribute when refering to
-Cubes, Dimensions, Hierarchies, Levels and other Cubes objects.
+Cubes supports the "label" attribute on every object. If available, CubesViewer will show this attribute 
+when refering to Cubes, Dimensions, Hierarchies, Levels and other Cubes objects.
 
 Date Filtering
 --------------
 
-CubesViewer has a "Add Date Filter" option that shows a cut filter for date dimensions. In order for this
+CubesViewer has an "Add Date Filter" option that shows a special cut filter for date dimensions. In order for it
 to work, you need to add information to your model.  
 
 1. For each date dimension, add an "info" attribute called "cv-datefilter" with "true" value.
