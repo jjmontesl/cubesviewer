@@ -14,12 +14,11 @@ The CubesViewer application is a web application and as such it must be served b
 It can be run using Python Django local webserver, but for more serious/production environments, it should
 be fronted by a real web server like Apache. 
 
-As a side note, it should be pointed that CubesViewer is, however, mainly a client-side Javascript library, 
-which means that you don't need to use any particular server side technology as long as there is a running
-Cubes server accessible to the client browser. This makes it (or parts of it) easily integrable in existing 
-web applications.
+    As a side note, it should be pointed that CubesViewer is, however, mainly a client-side Javascript application, 
+    which means that although the full application is a Python Django Server-Side app, you can use a subset
+    of the GUI features running the tool directly from your browser (as long as the Cubes server is accessible).
 
-The installation workflow is as follows:
+The installation steps are:
 
 ## 1 - Python Cubes Requisite
 
@@ -37,7 +36,7 @@ It is not required that the Cubes server runs on the same host as the CubesViewe
 CubesViewer application runs on Python/Django. You need to have the following packages available in your system:
 
 * Python 2.7
-* Django 1.3
+* Django 1.3 or Django 1.4 (possibly 1.5 works)
 
 You will also need the following Python packages:
 * requests
@@ -61,8 +60,8 @@ Besides of the OLAP database served by Cubes, the CubesViewer application requir
 to support save/load operations. You can use a local SQLite file or any other database system supported by Django.
 
 By default, CubesViewer uses a SQLite database located in the same directory as the "settings.py" file (web/cvapp).
-
-See [Django Database configuration](https://docs.djangoproject.com/en/dev/ref/settings/#databases) documents for more information. 
+See [Django Database configuration](https://docs.djangoproject.com/en/dev/ref/settings/#databases) documents for more information
+on the database configuration.
 
 **Edit the web/cvapp/settings.py file**, and review the following sections according to your Cubes URL, database config and 
 installation path.  
@@ -164,5 +163,9 @@ http://localhost:8000/
 If the data model can be loaded from Cubes server and contains any cube definitions, you should be able to see them and inspect 
 them using CubesViewer.
  
- 
+Note that you can benefit from extra features if you configure your Cubes model. Check the
+[Configuring your Cubes data model](cubesviewer-model.md) section of the documentation.
+
+If you are using CubesViewer, share your experience in the [discussion list](http://groups.google.com/group/cubes-discuss) 
+or tweet #cubesviewer !
 
