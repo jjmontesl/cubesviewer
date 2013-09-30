@@ -126,7 +126,7 @@ function cubesviewerViewCubeSeries() {
 		measuresElements = measuresElements + '<div></div>';
 		$(view.cube.measures).each(function(idx, e) {
 			
-			measuresElements = measuresElements + '<li><a href="#">' + e.name + '</a><ul style="width: 170px; z-index: 9999;">';
+			measuresElements = measuresElements + '<li><a href="#" onclick="return false;">' + e.name + '</a><ul style="width: 170px; z-index: 9999;">';
 			if ("aggregations" in e) {
 				$(e.aggregations).each(function(idx, ea) {
 					measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + e.name + '_' + ea + '">' + ea + '</a></li>';
@@ -140,11 +140,11 @@ function cubesviewerViewCubeSeries() {
 		
 		
 		menu.append(
-		  '<li><a href="#"><span class="ui-icon ui-icon-arrowthick-1-s"></span>Horizontal Dimension</a><ul style="width: 180px;">' +
+		  '<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-arrowthick-1-s"></span>Horizontal Dimension</a><ul style="width: 180px;">' +
 		  		drillElements +
 		  		'<div></div>' +
 		  		'<li><a href="#" class="cv-view-series-setxaxis" data-dimension="">None</a></li>' +
-		  '</ul><li><a href="#"><span class="ui-icon ui-icon-zoomin"></span>Measure</a><ul style="min-width: 180px;">' +
+		  '</ul><li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-zoomin"></span>Measure</a><ul style="min-width: 180px;">' +
 	  	  		measuresElements +
 	  	  '</ul></li>'
 		);

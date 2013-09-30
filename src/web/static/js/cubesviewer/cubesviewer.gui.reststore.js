@@ -74,14 +74,14 @@ function cubesviewerGuiRestStore() {
 
             if (view.owner == view.cubesviewer.gui.options.user) {
                 viewstate += ('<span style="color: white; font-size: 10px; border: 1px solid white; padding: 1px;">Owner</span> ');
-
-                var changed = view.cubesviewer.gui.reststore.isViewChanged(view);
-                if (changed)
-                    viewstate += ('<span style="color: lightgray; font-size: 10px; border: 1px solid lightgray; padding: 1px;">Modified</span> ');
-                if (!changed)
-                    viewstate += ('<span style="color: white; font-size: 10px; border: 1px solid white; padding: 1px;">Saved</span> ');
-
             }
+            
+            var changed = view.cubesviewer.gui.reststore.isViewChanged(view);
+        
+            if (changed)
+                viewstate += ('<span style="color: lightgray; font-size: 10px; border: 1px solid lightgray; padding: 1px;">Modified</span> ');
+            if (!changed)
+                viewstate += ('<span style="color: white; font-size: 10px; border: 1px solid white; padding: 1px;">Saved</span> ');
         }
 
         if (view.shared) {
@@ -175,12 +175,12 @@ function cubesviewerGuiRestStore() {
 
         view.cubesviewer.gui.closeView(view);
 
-        $.post(view.cubesviewer.gui.options.backendUrl + "/view/save/", data, view.cubesviewer.gui.reststore._viewSaveCallback(view), "json");
+        $.post(view.cubesviewer.gui.options.backendUrl + "/view/save/", data, view.cubesviewer.gui.reststore._viewDeleteCallback(view.cubesviewer.gui), "json");
 
     };
 
     /*
-     * Save callback (note: for both delete and save)
+     * Save callback
      */
     this._viewSaveCallback = function(view) {
 
@@ -205,6 +205,19 @@ function cubesviewerGuiRestStore() {
 
     };
 
+    /*
+     * Delete callback 
+     */
+    this._viewDeleteCallback = function(gui) {
+
+        var gui = gui;
+
+        return function(data, status) {
+            gui.reststore.viewList();
+        }
+
+    };
+    
     /*
      * Get view list.
      */
@@ -277,8 +290,15 @@ function cubesviewerGuiRestStore() {
      * Change shared mode
      */
     this.shareView = function(view, sharedstate) {
+    	
+        if (view.owner != view.cubesviewer.gui.options.user) {
+            view.cubesviewer.alert ('Cannot share/unshare a view that belongs to other user (try cloning the view).');
+            return;
+        }
+    	
         view.shared = ( sharedstate == 1 ? true : false );
-        view.cubesviewer.views.redrawView(view);
+        this.saveView(view);
+        
     };
 
     /*
