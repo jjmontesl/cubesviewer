@@ -389,7 +389,7 @@ function cubesviewerViewCubeSeries() {
 			if (colNames.indexOf(colKey) < 0) {
 				colNames.push (colKey);
 				colModel.push ({ 
-					name: colKey, index: colKey, align: "right", sorttype: "number", width: cubesviewer.views.cube.explore.defineColumnWidth(view, colKey, 100),
+					name: colKey, index: colKey, align: "right", sorttype: "number", width: cubesviewer.views.cube.explore.defineColumnWidth(view, colKey, 75),
 			        formatter: 'number', 
 			        formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }	
 				});
