@@ -162,9 +162,12 @@ http://localhost:8000/
 
 If the data model can be loaded from Cubes server and contains any cube definitions, you should be able to see them and inspect 
 them using CubesViewer.
+
+## 7 - Configure your model for CubesViewer
  
 Note that you can benefit from extra features if you configure your Cubes model. Check the
 [Configuring your Cubes data model](cubesviewer-model.md) section of the documentation.
+
 
 If you are using CubesViewer, share your experience in the [discussion list](http://groups.google.com/group/cubes-discuss) 
 or tweet #cubesviewer !
