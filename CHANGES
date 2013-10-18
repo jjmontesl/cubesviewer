@@ -1,4 +1,8 @@
 0.6-devel
+    + Added dimension filter icons (shortcuts) to info pieces.
+    + Fixed bug causing wrong hierarchy name to be displayed
+    + Added the dimensionfilter plugin, which introduces a
+      more advanced filtering interface.
     + Sort order in tables is now preserved.
     + Added column chooser for Explore mode, saved with view.
     + Column widths saved with view via new plugin.

@@ -3,6 +3,10 @@
  * Note that the application is also based on blueprint CSS framework, which is included separately.
  */
 
+h3 {
+	margin-top: 5px;
+}
+
 th {
     white-space: nowrap;
 }
@@ -43,7 +47,7 @@ a.ui-state-focus {
 .cv-gui-panel {
     width: 200px; 
     float: left; 
-    padding: 8px;
+    padding: 6px;
 }
 
 .cv-gui-workspace {
@@ -61,7 +65,16 @@ a.cv-grid-link {
 }
 
 .cv-gui-viewcontent {
+	padding: 6px !important; 
 	overflow: hidden;
+}
+
+.cv-gui-panelsection {
+	margin-bottom: 10px;
+}
+
+.cv-view-viewinfo {
+	margin-bottom: 10px;
 }
 
 .ajaxloader {
@@ -75,4 +88,23 @@ a.cv-grid-link {
 
 .fixed {
    position: fixed;
+}
+
+.cv-view-info-panel {
+	clear: both;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid rgb(221, 221, 221);
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.cv-view-dimensionfilter-item {
+    white-space: nowrap;
+    display: inline-block; 
+    width: 46%; 
+    overflow: hidden;
+    margin-right: 5px;
 }

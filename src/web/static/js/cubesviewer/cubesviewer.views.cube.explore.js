@@ -87,7 +87,7 @@ function cubesviewerViewCubeExplore() {
 		
 	};
 
-	this.getDrillElementsList = function(view, cssclass) {
+	this.getDrillElementsList = function(view, cssclass, grayout_drill) {
 
 		var menu = $(".cv-view-menu-drilldown", $(view.container));
 		var cube = view.cube;
@@ -103,7 +103,7 @@ function cubesviewerViewCubeExplore() {
 				// filtered (besides, this query causes a server error)
 				// TODO: Handle this for non-flat dimensions too
 				var disabled = "";
-				if ((($.grep(view.params.drilldown, function(ed) { return ed == dimension.name; })).length > 0)) {
+				if ((grayout_drill) && ((($.grep(view.params.drilldown, function(ed) { return ed == dimension.name; })).length > 0))) {
 					disabled = "ui-state-disabled";
 				}
 				drillElements = 
@@ -149,7 +149,7 @@ function cubesviewerViewCubeExplore() {
 		var menu = $(".cv-view-menu-drilldown", $(view.container));
 		var cube = view.cube;
 		
-		var drillElements = this.getDrillElementsList(view, "selectDrill");
+		var drillElements = this.getDrillElementsList(view, "selectDrill", true);
 		
 		menu.append(
 			'' + 
@@ -188,16 +188,17 @@ function cubesviewerViewCubeExplore() {
 
 		});
 		
+		menu.append(
+				'<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-zoomin"></span>Date filter</a><ul class="dateFilterList" style="width: 180px;">' + 
+				dateFilterElements + 
+				'</ul></li>'
+		);
 		if (view.params.mode == "explore") {
 			menu.append('<li><a href="#" class="explore-filterselected" ><span class="ui-icon ui-icon-zoomin"></span>Filter selected</a></li>');
 		}
-		
 		menu.append(
-				'<li><a href="#" class="selectCut" data-dimension="" data-value="" ><span class="ui-icon ui-icon-close"></span>Clear filters</a></li>' +
 				'<div></div>' + 
-				'<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-zoomin"></span>Add date filter</a><ul class="dateFilterList" style="width: 180px;">' + 
-				dateFilterElements + 
-				'</ul></li>'
+				'<li><a href="#" class="selectCut" data-dimension="" data-value="" ><span class="ui-icon ui-icon-close"></span>Clear filters</a></li>'
 		);
 		
 		// Menu functionality
@@ -680,6 +681,8 @@ function cubesviewerViewCubeExplore() {
 				$(view.container).find('.cv-view-viewinfo-drill'), "#ccffcc", 360, readonly,
 				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Drilldown:</b> ' + dimparts.label 
 			);
+			piece.addClass("cv-view-infopiece-drilldown");
+			piece.attr("data-dimension", e);
 			piece.find('.cv-view-infopiece-close').click(function() {
 				view.cubesviewer.views.cube.explore.selectDrill(view, e, "");
 			});
@@ -687,12 +690,15 @@ function cubesviewerViewCubeExplore() {
 		});
 		
 		$(view.params.cuts).each(function(idx, e) { 
-			var dimparts = view.cubesviewer.model.getDimensionParts(e.dimension);
+			var dimparts = view.cubesviewer.model.getDimensionParts(e.dimension.replace(":",  "@"));
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-cut'), "#ffcccc", 480, readonly,
 				'<span class="ui-icon ui-icon-zoomin"></span> <b>Cut: </b> ' + dimparts.label  + ' = ' + 
 				'<span title="' + e.value + '">' + e.value + '</span>'
 			);
+			piece.addClass("cv-view-infopiece-cut");
+			piece.attr("data-dimension", e.dimension);
+			piece.attr("data-value", e.value);
 			piece.find('.cv-view-infopiece-close').click(function() {
 				view.cubesviewer.views.cube.explore.selectCut(view, e.dimension, "");
 			});
