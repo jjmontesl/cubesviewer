@@ -95,7 +95,7 @@ function cubesviewerViewCubeSeries() {
 		
 		// Add drill menu
 		
-		var drillElements = cubesviewer.views.cube.explore.getDrillElementsList(view, "cv-view-series-setxaxis");
+		var drillElements = cubesviewer.views.cube.explore.getDrillElementsList(view, "cv-view-series-setxaxis", true);
 		
 		/*
 		$(cube.dimensions).each(function(idx, e) {

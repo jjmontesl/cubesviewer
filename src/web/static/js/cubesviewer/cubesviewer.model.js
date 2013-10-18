@@ -111,23 +111,35 @@ $.extend (cubesModel.prototype, {
 		
 		var dim = this.getDimension(dimensionString);
 		
-		var lev = null;
-		if (dimensionString.indexOf(":") > 0) {
-			var levelname = dimensionString.split(":")[1];
-			lev = dim.getLevel(levelname);
-		}
-
 		var hie = dim.hierarchies[0];
 		if (dimensionString.indexOf("@") > 0) {
 			var hierarchyName = dimensionString.split("@")[1].split(":")[0];
 			hie = dim.getHierarchy(hierarchyName);
+		} 
+
+		var lev = null;
+		if (dimensionString.indexOf(":") > 0) {
+			var levelname = dimensionString.split(":")[1];
+			lev = dim.getLevel(levelname);
+		} else {
+			lev = dim.getLevel(hie.levels[0]);
 		}
+		
+		var depth = null;
+		for (var i = 0; i < hie.levels.length; i++) {
+			if (lev.getName() == hie.levels[i]) {
+				depth = i + 1;
+				break;
+			}
+		}
+			
 		
 		return {
 			dimension: dim,
 			level: lev,
+			depth: depth,
 			hierarchy: hie,
-			label: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ) + ( lev != null ? (": " + lev.label) : "" )
+			label: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ) + ( hie.levels.length > 1 ? (": " + lev.label) : "" )
 		};
 		
 	},		
