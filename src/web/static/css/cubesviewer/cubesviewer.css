@@ -11,6 +11,10 @@ th {
     white-space: nowrap;
 }
 
+label {
+	font-weight: inherit;
+}
+
 .nobreak {
     overflow: hidden;
     white-space: nowrap;
@@ -108,3 +112,4 @@ a.cv-grid-link {
     overflow: hidden;
     margin-right: 5px;
 }
+

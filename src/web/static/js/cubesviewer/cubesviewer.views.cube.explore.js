@@ -394,7 +394,7 @@ function cubesviewerViewCubeExplore() {
 			rows.push(row);
 		}
 		
-	},
+	};
 
 	this.columnTooltipAttr = function(column) {
 		return function (rowId, val, rawObject) {

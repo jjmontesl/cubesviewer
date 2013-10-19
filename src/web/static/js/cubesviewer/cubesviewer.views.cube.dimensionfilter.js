@@ -44,6 +44,8 @@ function cubesviewerViewCubeDimensionFilter () {
 		});
 		*/
 		
+		view.dimensionFilter = null;
+		
 	}
 	
 	
@@ -60,6 +62,11 @@ function cubesviewerViewCubeDimensionFilter () {
 		
 		// Update info boxes to include edition
 		view.cubesviewer.views.cube.dimensionfilter.addFilterLinksToInfo(view);
+		
+		if (view.dimensionFilter != null) {
+			view.cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, view.dimensionFilter);
+		}
+		
 	};
 
 	
@@ -130,11 +137,13 @@ function cubesviewerViewCubeDimensionFilter () {
 	 */
 	this.drawDimensionFilter = function (view, dimension) {
 
+		var parts = cubesviewer.model.getDimensionParts(dimension);
+		
 		// Clean interface if a filter was already open
 		$(view.container).find('.cv-view-dimensionfilter').remove();
 
 		
-		$(view.container).find(".cv-view-viewinfo").append('<div class="cv-view-dimensionfilter cv-view-info-panel"><h3>Dimension filter: ' + dimension + '</h3><div class="cv-view-dimensionfilter-cont"></div></div>');
+		$(view.container).find(".cv-view-viewinfo").append('<div class="cv-view-dimensionfilter cv-view-info-panel"><h3>Dimension filter: ' + parts.label + '</h3><div class="cv-view-dimensionfilter-cont"></div></div>');
 		
 		// Draw value container
 		
@@ -163,6 +172,7 @@ function cubesviewerViewCubeDimensionFilter () {
 			view.cubesviewer.views.cube.dimensionfilter.applyFilter( view, dimension );
 		});
 		$(view.container).find(".cv-views-dimensionfilter-cancel").button().click(function() {
+			view.dimensionFilter = null;
 			$(view.container).find('.cv-view-dimensionfilter').remove();
 		});
 		
@@ -185,6 +195,8 @@ function cubesviewerViewCubeDimensionFilter () {
 	 */
 	this.loadDimensionValues = function(view, tdimension) {
 
+		view.dimensionFilter = tdimension;
+		
 		var parts = cubesviewer.model.getDimensionParts(tdimension);
 		
 		var params = {
@@ -228,7 +240,7 @@ function cubesviewerViewCubeDimensionFilter () {
 		$(view.container).find(".cv-view-dimensionfilter-list").find("input").each (function (idx, e) {
 			if (cols == 1) {
 				$(e).parents('.cv-view-dimensionfilter-item').first().css("display", "block");
-				$(e).parents('.cv-view-dimensionfilter-item').first().css("width", "");
+				$(e).parents('.cv-view-dimensionfilter-item').first().css("width", "98%");
 			} else {
 				$(e).parents('.cv-view-dimensionfilter-item').first().css("display", "inline-block");
 				$(e).parents('.cv-view-dimensionfilter-item').first().css("width", "48%");
