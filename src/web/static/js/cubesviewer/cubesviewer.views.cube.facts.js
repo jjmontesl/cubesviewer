@@ -171,6 +171,7 @@ function cubesviewerViewCubeFacts() {
 		var dataTotals = [];
 		
 		var dimensions = view.cube.dimensions;
+		var measures = view.cube.measures;
 		
 		colNames.push("ID");
 		colModel.push({
@@ -201,6 +202,23 @@ function cubesviewerViewCubeFacts() {
 				});
 			}
 		}
+		
+		for (var measureIndex in measures) {
+			var measure = measures[measureIndex];
+			
+			colNames.push(measure.name);
+			colModel.push({
+				name : measure.full_name,
+				index : measure.full_name,
+				align : "right",
+				sorttype : "number",
+				width : cubesviewer.views.cube.explore.defineColumnWidth(view, measure.full_name, 75),
+				formatter: 'number',  
+				//cellattr: this.columnTooltipAttr(column),
+				formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
+			});
+		}
+		
 		
 		// Process cells
 		view.cubesviewer.views.cube.facts._addRows (view, dataRows, data);
@@ -250,6 +268,7 @@ function cubesviewerViewCubeFacts() {
 
 		var counter = 0;
 		var dimensions = view.cube.dimensions;
+		var measures = view.cube.measures;
 		
 		$(data).each( function(idx, e) {
 
@@ -269,6 +288,11 @@ function cubesviewerViewCubeFacts() {
 					row[level.getAttribute(level.key).full_name] = levelData.label;
 					
 				}
+			}
+			
+			for (var measureIndex in measures) {
+				var measure = measures[measureIndex];
+				row[measure.full_name] = e[measure.full_name];
 			}
 			
 

@@ -24,15 +24,15 @@ inserted on other web pages.
 
 Features:
 
-* User Interface allowing for multiple views on-screen. 
 * Cube explorer providing drilldown and cut operations.
 * Supports dimension hierarchies and date filtering.
 * Several charts and diagrams can be created.
-* View management, sharing and saving.
+* View management, cloning, saving and sharing.
+* User Interface allows for multiple views on-screen. 
 * Multiple modes: explore, data series, chart, facts. 
 * Undo / Redo.
 * Multi-user.
-* Shared notes system to annotate cubes and views.
+* Shared wiki notes system to annotate cubes and views.
 * Views can be embedded in other web sites.
 * Modular and extensible.
 
@@ -45,7 +45,7 @@ Github source repository: https://github.com/jjmontesl/cubesviewer
 Requirements
 ------------
 
-CubesViewer requires **[Cubes Server](http://databrewery.org/cubes.html)** 0.11 or later, configured and running, able to serve 
+CubesViewer requires **[Cubes Server](http://databrewery.org/cubes.html)** 0.10.2 or later, configured and running, able to serve 
 data cubes. 
 
 Note that **your cubes model should be configured** to add support for CubesViewer features like date filters and descriptions

@@ -121,7 +121,7 @@ function cubesviewerViewCubeChart() {
 		var cube = view.cube;
 		
 		menu.prepend(
-			'<li><a href="#"><span class="ui-icon ui-icon-calculator"></span>Chart Type</a><ul style="width: 180px;">' +
+			'<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-calculator"></span>Chart Type</a><ul style="width: 180px;">' +
 	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="pie">Pie</a></li>' +
 	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="bars-vertical">Bars Vertical</a></li>' +
 	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="bars-vertical-stacked">Bars Vertical (Stacked)</a></li>' +
