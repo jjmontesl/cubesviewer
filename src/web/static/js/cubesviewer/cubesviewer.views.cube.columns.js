@@ -161,7 +161,7 @@ cubesviewer.views.cube.explore.onTableResize = function (view, width, index) {
 		var grid = $('#summaryTable-' + view.id);
 	} else if (view.params.mode == "series") {
 		var grid = $('#seriesTable-' + view.id);
-	} else if (view.paramsWidths.mode == "facts") {
+	} else if (view.params.mode == "facts") {
 		var grid = $('#factsTable-' + view.id);
 	} else {
 		return;
