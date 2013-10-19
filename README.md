@@ -27,9 +27,11 @@ Features:
 * User Interface allowing for multiple views on-screen. 
 * Cube explorer providing drilldown and cut operations.
 * Supports dimension hierarchies and date filtering.
-* Several charts and diagrams.
-* Multi-user.
+* Several charts and diagrams can be created.
 * View management, sharing and saving.
+* Multiple modes: explore, data series, chart, facts. 
+* Undo / Redo.
+* Multi-user.
 * Shared notes system to annotate cubes and views.
 * Views can be embedded in other web sites.
 * Modular and extensible.
