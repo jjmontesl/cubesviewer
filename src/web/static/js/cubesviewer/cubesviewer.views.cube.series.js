@@ -301,7 +301,7 @@ function cubesviewerViewCubeSeries() {
 	        sortname: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[0], 
 	        viewrecords: true, 
 	        sortorder: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[1], 
-	        footerrow: true,
+	        //footerrow: true,
 	        userDataOnFooter: true,
 	        forceFit: false,
 	        shrinkToFit: false,

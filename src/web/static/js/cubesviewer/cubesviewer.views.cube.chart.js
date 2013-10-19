@@ -75,7 +75,7 @@ function cubesviewerViewCubeChart() {
 		
 		// Series Mode button
 		$(view.container).find('.cv-view-toolbar').find(".cv-view-button-series").after(
-			'<button class="cv-view-button-chart" title="Chart" style="margin-right: 15px;"><span class="ui-icon ui-icon-calculator"></span></button>'
+			'<button class="cv-view-button-chart" title="Chart" style="margin-right: 15px;"><span class="ui-icon ui-icon-image"></span></button>'
 		);
 		
 		// Buttonize and event
