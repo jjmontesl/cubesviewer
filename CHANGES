@@ -1,4 +1,6 @@
 0.7-devel
+    
+    + Updated the pure-html examples (embedded views).  
     + Ajax global error handler is no longer used.
     + More user friendly error handling if server not available.
     + Fixed table resizing not fitting parent.

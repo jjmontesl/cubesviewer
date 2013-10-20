@@ -64,6 +64,12 @@ Documentation
 
 * [CubesViewer Documentation](https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/index.md)
 
+Demo Pages
+----------
+
+* [CubesViewer Demo page](http://jjmontesl.github.io/cubesviewer/index.html) with one embedded view
+* [CubesViewer Explorer](http://jjmontesl.github.io/cubesviewer/cv.html) with the full application
+
 Screenshots
 -----------
 
