@@ -1,3 +1,4 @@
+0.8-devel
 0.7
     + Always send dimension level for drilldown (solves
       issue about single-point cut + drilldown combination)
