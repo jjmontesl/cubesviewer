@@ -83,10 +83,14 @@ function cubesviewerViewCube () {
 		if ($(".cv-view-viewdata", $(view.container)).size() == 0) {
 
 			$(view.container).empty();
-			$(view.container).append('<div class="cv-view-viewmenu"></div>');
-			$(view.container).append('<div class="cv-view-viewinfo"></div>');
-			$(view.container).append('<div class="cv-view-viewdata" style="clear: both;"></div>');
-			$(view.container).append('<div class="cv-view-viewfooter" style="clear: both;"></div>');
+			$(view.container).append(
+					'<div class="cv-view-panel">' + 
+					'<div class="cv-view-viewmenu"></div>' +
+					'<div class="cv-view-viewinfo"></div>' +
+					'<div class="cv-view-viewdata" style="clear: both;"></div>' +
+					'<div class="cv-view-viewfooter" style="clear: both;"></div>' +
+					'</div>'
+			);
 			
 		}
 		

@@ -3,11 +3,15 @@
 
 {% block extrahead %}
 
-<link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/cubesviewer/cubesviewer.css" />    
-<link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}js/wiky/wiky.math.css" />    
+<!-- CubesViewer CSS resources -->
 <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/jqgrid/ui.jqgrid.css" />
 <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}js/qtip/jquery.qtip.css" />
-    
+<link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}js/wiky/wiky.math.css" />    
+
+<link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/cubesviewer/cubesviewer.css" />  
+
+<!-- CubesViewer JS dependencies -->
+
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery/jquery.blockUI.js"></script>
 
 <script type="text/javascript" src="{{ STATIC_URL }}js/wiky/wiky.js"></script>
@@ -18,6 +22,8 @@
 
 <script type="text/javascript" src="{{ STATIC_URL }}js/jqgrid/i18n/grid.locale-en.js" ></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jqgrid/jquery.jqGrid.min.js" ></script>
+ 
+<!-- Cubesviewer modules -->
 
 <script type="text/javascript" src="{{ STATIC_URL }}js/cubesviewer/cubesviewer.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/cubesviewer/cubesviewer.cache.js"></script> 
@@ -37,6 +43,7 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/cubesviewer/cubesviewer.gui.reststore.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/cubesviewer/cubesviewer.gui.serializing.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/cubesviewer/cubesviewer.gui.localeswitcher.js"></script>
+
 
 <script type="text/javascript">
 	
