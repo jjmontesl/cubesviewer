@@ -146,7 +146,8 @@ function cubesviewerGuiRestStore() {
             "data":  view.cubesviewer.views.serialize(view)
         };
 
-        $.post(view.cubesviewer.gui.options.backendUrl + "/view/save/", data, view.cubesviewer.gui.reststore._viewSaveCallback(view), "json");
+        $.post(view.cubesviewer.gui.options.backendUrl + "/view/save/", data, view.cubesviewer.gui.reststore._viewSaveCallback(view), "json")
+         .fail(cubesviewer.defaultRequestErrorHandler);
 
     };
 
@@ -175,7 +176,8 @@ function cubesviewerGuiRestStore() {
 
         view.cubesviewer.gui.closeView(view);
 
-        $.post(view.cubesviewer.gui.options.backendUrl + "/view/save/", data, view.cubesviewer.gui.reststore._viewDeleteCallback(view.cubesviewer.gui), "json");
+        $.post(view.cubesviewer.gui.options.backendUrl + "/view/save/", data, view.cubesviewer.gui.reststore._viewDeleteCallback(view.cubesviewer.gui), "json")
+         .fail(cubesviewer.defaultRequestErrorHandler);
 
     };
 
@@ -201,6 +203,8 @@ function cubesviewerGuiRestStore() {
                 view.cubesviewer.views.redrawView(view);
             }
             view.cubesviewer.gui.reststore.viewList();
+            
+            cubesviewer.showInfoMessage("View saved.", 3000);
         }
 
     };
@@ -222,7 +226,8 @@ function cubesviewerGuiRestStore() {
      * Get view list.
      */
     this.viewList = function () {
-        $.get(this.cubesviewer.gui.options.backendUrl + "/view/list/", null, this.cubesviewer.gui.reststore._viewListCallback, "json");
+        $.get(this.cubesviewer.gui.options.backendUrl + "/view/list/", null, this.cubesviewer.gui.reststore._viewListCallback, "json")
+         .fail(cubesviewer.defaultRequestErrorHandler);
     };
 
     this._viewListCallback = function(data, status) {

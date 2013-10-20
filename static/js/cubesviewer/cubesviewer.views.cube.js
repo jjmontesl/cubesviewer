@@ -96,9 +96,7 @@ function cubesviewerViewCube () {
 		
 		// Check if the model/cube is loaded.
 		if (view.cube == null) {
-			$(view.container).find('.cv-view-viewdata').empty().append(
-					'<h3>Cube View</h3><div><i>Cannot present cube view: could not load model or cube <b>' + view.params.cubename + '</b>.</i></div>'
-			);
+			cubesviewer.views.showFatal (view.container, 'Cannot present cube view: could not load model or cube <b>' + view.params.cubename + '</b>.');
 			return;
 		}
 		

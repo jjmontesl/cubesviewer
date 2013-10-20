@@ -40,6 +40,8 @@ cubesviewer.cubesRequest = function(path, params, successCallback, completeCallb
 	
 	// TODO: Check if cache is enabled
 	
+	var cacheNoticeAfterMinutes = 10;
+	
 	cubesviewer._cacheCleanup();
 	
 	var requestHash = path + "?" + $.param(params);
@@ -51,7 +53,9 @@ cubesviewer.cubesRequest = function(path, params, successCallback, completeCallb
 		
 		// Warn that data comes from cache (QTip can do this?)
 		var timediff = Math.round ((new Date().getTime() - this.cache[requestHash].time) / 1000 / 60);
-		cubesviewer.showInfoMessage("Data loaded from cache<br/>(" + timediff + " minutes old)", 1000);
+		if (timediff > cubesviewer.options.cacheNoticeAfterMinutes) {
+			cubesviewer.showInfoMessage("Data loaded from cache<br/>(" + timediff + " minutes old)", 1000);
+		}
 		
 	} else {
 		// Do request
@@ -65,7 +69,7 @@ cubesviewer.cubesRequest = function(path, params, successCallback, completeCallb
  */
 cubesviewer._cacheCleanup = function() {
 	
-	var cacheMinutes = 60;
+	var cacheMinutes = 30;
 	var cacheSize = 32;
 		
 	if ("cacheMinutes" in cubesviewer.options) {
