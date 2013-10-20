@@ -141,6 +141,7 @@ $.extend (cubesModel.prototype, {
 			hierarchy: hie,
 			label: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ) + ( hie.levels.length > 1 ? (": " + lev.label) : "" ),
 			labelNoLevel: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ),
+			fullDrilldownValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" ) + ":" + lev.name
 		};
 		
 	},		
