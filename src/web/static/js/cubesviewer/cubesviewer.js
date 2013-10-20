@@ -88,7 +88,7 @@ function cubesviewer () {
 		if (errorCallback != undefined && errorCallback != null) {
 			jqxhr.fail (errorCallback);
 		} else {
-			jqxhr.fail (cubesviewer._myErrorHandler);
+			jqxhr.fail (cubesviewer.defaultRequestErrorHandler);
 		}
 		
 	}
@@ -103,7 +103,7 @@ function cubesviewer () {
 	/*
 	 * Default XHR error handler for CubesRequests
 	 */
-	this._myErrorHandler = function(xhr, textStatus, errorThrown) {
+	this.defaultRequestErrorHandler = function(xhr, textStatus, errorThrown) {
 		if (xhr.status == 401) {
 			cubesviewer.alert("Unauthorized.");
 		} else if (xhr.status == 403) {
@@ -164,9 +164,9 @@ function cubesviewer () {
 
 		// Global AJAX error handler
 		// TODO: This should probably not be a global handler!
-		$(document).ajaxError(
-				// Nothing, remove
-		);		
+		//$(document).ajaxError(
+			// Nothing, remove
+		//);		
 		
 		// Bind events
 		$(document).bind ("cubesviewerRefresh", this.onRefresh);

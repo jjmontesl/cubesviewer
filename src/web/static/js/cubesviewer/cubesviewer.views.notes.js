@@ -82,7 +82,8 @@ function cubesviewerViewNotes () {
 		$('#view-' + view.id + '-notes-menu-cube').find('.cubes-notes-html').empty().append("<i>Loading...</i>");
 		$('#view-' + view.id + '-notes-menu-view').find('.cubes-notes-html').empty().append("<i>Loading...</i>");
 		
-		$.get(view.cubesviewer.gui.options.backendUrl + "/note/get/" + "cube" + ":" + view.cube.name, null, view.cubesviewer.views.notes._loadNotesCallbackCube(view), "json");
+		$.get(view.cubesviewer.gui.options.backendUrl + "/note/get/" + "cube" + ":" + view.cube.name, null, view.cubesviewer.views.notes._loadNotesCallbackCube(view), "json")
+		 .fail(cubesviewer.defaultRequestErrorHandler);
 	};
 	
     this._loadNotesCallbackCube = function(view) {
@@ -97,7 +98,8 @@ function cubesviewerViewNotes () {
         	
             
         	if (view.savedId > 0) {
-        		$.get(view.cubesviewer.gui.options.backendUrl + "/note/get/" + "view" + ":" + view.savedId, null, view.cubesviewer.views.notes._loadNotesCallbackView(view), "json");
+        		$.get(view.cubesviewer.gui.options.backendUrl + "/note/get/" + "view" + ":" + view.savedId, null, view.cubesviewer.views.notes._loadNotesCallbackView(view), "json")
+        		 .fail(cubesviewer.defaultRequestErrorHandler);
             } else {
             	view.cubesviewer.views.notes.drawNotes(view);
             }
@@ -180,12 +182,13 @@ function cubesviewerViewNotes () {
 			}
 		});
 		
-        $.post(view.cubesviewer.gui.options.backendUrl + "/note/save/", data, view.cubesviewer.views.notes._noteSaveCallback, "json");
+        $.post(view.cubesviewer.gui.options.backendUrl + "/note/save/", data, view.cubesviewer.views.notes._noteSaveCallback, "json")
+        	.fail(cubesviewer.defaultRequestErrorHandler);
 
 	};
 	
 	this._noteSaveCallback = function(data, status) {
-		alert ('Note saved');
+		cubesviewer.showInfoMessage("Note saved correctly.", 3000);
 	}
 	
 	this.onNoteSave = function(event, view) {

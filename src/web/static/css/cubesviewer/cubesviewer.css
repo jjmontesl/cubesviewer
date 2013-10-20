@@ -35,6 +35,8 @@ Ported from blueprint to make sure embedded views work without blueprint:
 
 .cv-view-panel td, th {
     vertical-align: middle;
+    text-align: inherit; 
+    padding: 2px 2px 2px 2px;
 }
 
 .cv-view-panel input[type=checkbox] {

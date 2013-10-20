@@ -1,4 +1,5 @@
 0.7-devel
+    + Ajax global error handler is no longer used.
     + More user friendly error handling if server not available.
     + Fixed table resizing not fitting parent.
     + Added week information to datepickers.
