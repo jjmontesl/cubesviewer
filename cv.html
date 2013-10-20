@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="static/css/gh/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="static/css/gh/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="static/css/gh/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    
+    <!-- CubesViewer CSS resources -->
+    <link type="text/css" rel="stylesheet" href="static/css/jqueryui-cupertino/jquery-ui-1.9.2.custom.css" />
+    <link type="text/css" rel="stylesheet" href="static/css/jqgrid/ui.jqgrid.css" media="screen" />
+    <link type="text/css" rel="stylesheet" href="static/js/qtip/jquery.qtip.css"  />    
+    <link type="text/css" rel="stylesheet" href="static/js/wiky/wiky.math.css" />
+    
+    <link type="text/css" rel="stylesheet" href="static/css/cubesviewer/cubesviewer.css" />
+
+    <!-- CubesViewer JS dependencies -->
+    
+    <script type="text/javascript" src="static/js/jquery/jquery-1.8.3.js"></script>
+    <script type="text/javascript" src="static/js/jquery/jquery-ui-1.9.2.custom.min.js"></script>
+    <script type="text/javascript" src="static/js/jquery/jquery.cookie.js"></script> 
+    
+    <script type="text/javascript" src="static/js/dateformat/dateformat.js"></script>
+
+    <script type="text/javascript" src="static/js/jquery/jquery.blockUI.js"></script>
+
+    <script type="text/javascript" src="static/js/wiky/wiky.js"></script>
+    <script type="text/javascript" src="static/js/wiky/wiky.math.js"></script>
+    <script type="text/javascript" src="static/js/flotr2/flotr2.min.js"></script>
+
+    <script type="text/javascript" src="static/js/qtip/jquery.qtip.js"></script>
+
+    <script type="text/javascript" src="static/js/jqgrid/i18n/grid.locale-en.js" ></script>
+    <script type="text/javascript" src="static/js/jqgrid/jquery.jqGrid.min.js" ></script>
+    
+    <!-- Cubesviewer modules -->
+    
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.cache.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.model.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.explore.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.series.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.chart.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.facts.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.dimensionfilter.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.columns.js"></script> 
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.export.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.undo.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.gui.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.gui.serializing.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.gui.localeswitcher.js"></script>
+    
+    <title>CubesViewer - Visual OLAP analysis and reporting tool</title>
+    
+<script type="text/javascript">
+    
+    // Initialize CubesViewer when document is ready
+    $(document).ready(function() {
+        
+        //var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
+        var cubesUrl = "http://slicer.databrewery.org/webshop-example";
+        
+        cubesviewer.init({
+            cubesUrl: cubesUrl
+        });
+        
+        cubesviewer.gui.init({
+            container: $('#cubesviewer').get(0)
+        });
+        
+        // Start Cubesviewer system
+        cubesviewer.refresh();
+        
+    });
+    
+</script>
+    
+    
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner" style="width: 96%;">
+
+        <header>
+          <div style="float: right;"><img alt="CubesViewer" src="static/img/cubesviewer-logo.png" style="width: 70%; height: 70%;" /></div>
+          <h1>CubesViewer</h1>
+          <h2>Visual data analysis and explore tool</h2>
+        </header>
+
+        <section id="main_content">
+            <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a> 
+            is a visual, web-based tool application for exploring and analyzing
+            OLAP databases served by the open source 
+            <a href="http://cubes.databrewery.org/">Cubes</a> OLAP Framework.
+            
+            This version contains all major feaures (except for Save/Share 
+            or Notes, which require a server backend and authentication).</p>
+        </section>
+
+        <p><b>Learn more! </b>
+            <a style="margin-left: 20px;" href="https://github.com/jjmontesl/cubesviewer/">CubesViewer Main Site</a> at Github
+            <a style="margin-left: 20px;" href="index.html">CubesViewer Demo Site</a>
+            <a style="margin-left: 20px;" href="http://cubes.databrewery.org/">Cubes OLAP Server</a>
+        </p>
+
+        <hr>
+        
+        <!-- Cubes Viewer GUI container -->
+        <div id="cubesviewer">
+        
+            <div class="cv-gui-panel ui-widget ui-widget-content ui-corner-all" >
+            </div>
+            
+            <div class="cv-gui-workspace">
+            </div>
+        
+        </div>        
+
+        <footer>
+          <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a> is maintained by <a href="https://github.com/jjmontesl">jjmontesl</a><br>
+        </footer>
+        
+      </div>
+    </div>
+  </body>
+</html>
