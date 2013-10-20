@@ -343,10 +343,12 @@ function cubesviewerViewCubeDimensionFilter () {
 		checked = $(view.container).find(".cv-view-dimensionfilter-list").find("input:checked");
 		
 		// Empty selection would yield no result
+		/*
 		if (checked.size() == 0) {
 			view.cubesviewer.alert('Cannot filter. No values are selected.');
 			return;
 		}
+		*/
 		
 		var filterValues = [];
 		// If all values are selected, the filter is empty and therefore removed by selectCut
