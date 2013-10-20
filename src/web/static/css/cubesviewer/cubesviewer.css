@@ -26,9 +26,13 @@ Ported from blueprint to make sure embedded views work without blueprint:
     font-weight: bold;
 }
 
-cv-view-panel div {
+.cv-view-panel div {
 	margin: 0px;
 	padding: 0px;
+}
+
+.cv-view-panel td, th {
+    vertical-align: middle;
 }
 
 /*
