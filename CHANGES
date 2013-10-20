@@ -1,4 +1,5 @@
 0.7-devel
+    + Fixed table resizing not fitting parent.
     + Added week information to datepickers.
     + Added measures to facts view.
 0.6

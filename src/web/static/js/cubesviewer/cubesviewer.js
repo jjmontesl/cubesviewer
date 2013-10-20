@@ -41,7 +41,8 @@ function cubesviewer () {
 		cubesLang : null,
 		pagingOptions: [15, 30, 100, 250],
 		datepickerShowWeek: true,
-		datepickerFirstDay: 1
+		datepickerFirstDay: 1,
+		tableResizeHackMinWidth: 350 
 	};
 
 	// Model data as obtained from Cubes

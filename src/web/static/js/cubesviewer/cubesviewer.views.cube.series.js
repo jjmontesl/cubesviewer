@@ -305,6 +305,7 @@ function cubesviewerViewCubeSeries() {
 	        userDataOnFooter: true,
 	        forceFit: false,
 	        shrinkToFit: false,
+	        width: cubesviewer.options.tableResizeHackMinWidth,
 	        //multiselect: true,
 	        //multiboxonly: true,
 			

@@ -161,16 +161,24 @@ function cubesviewerViewCube () {
 	this._adjustGridSize = function() {
 
 		// TODO: use appropriate container width!
-		var newWidth = $(window).width() - 350;
+		//var newWidth = $(window).width() - 350;
 		
-		$(".ui-jqgrid-btable").each(function(idx, el) {
-			var currentWidth = $(el).width();
-			if (newWidth < 700) newWidth = 700;
+		$(".cv-view-panel").each(function (idx, e) {
+		
+			$(".ui-jqgrid-btable", e).each(function(idx, el) {
+				
+				$(el).setGridWidth(cubesviewer.options.tableResizeHackMinWidth);
+				
+				var newWidth = $( e ).innerWidth() - 20;
+				//var newWidth = $( el ).parents(".ui-jqgrid").first().innerWidth();
+				if (newWidth < cubesviewer.options.tableResizeHackMinWidth) newWidth = cubesviewer.options.tableResizeHackMinWidth;
 
-			//if ((currentWidth > newWidth) /*|| (currentWidth < newWidth - 50) */ ) {
 				$(el).setGridWidth(newWidth);
-			//}
+				
+			});
+			
 		});
+		
 	};
 	
 	/*

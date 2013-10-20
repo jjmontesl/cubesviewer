@@ -504,6 +504,7 @@ function cubesviewerViewCubeExplore() {
 							userDataOnFooter : true,
 							forceFit : false,
 							shrinkToFit : false,
+							width: cubesviewer.options.tableResizeHackMinWidth,
 							// autowidth: true,
 							multiselect : true,
 							multiboxonly : true,
