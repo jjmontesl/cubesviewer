@@ -1,17 +1,77 @@
 /*
  * Cubesviewer CSS
- * Note that the application is also based on blueprint CSS framework, which is included separately.
  */
 
-h3 {
-	margin-top: 5px;
+/*
+Ported from blueprint to make sure embedded views work without blueprint:
+*/
+.cv-view-panel {
+	font-size: 13px;
+	color: #222;
+	/*background: #fff;*/
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	vertical-align: middle;
 }
 
-th {
+.cv-view-panel li.ui-menu-item {
+  list-style: none;
+  /*padding-left: 20px;*/
+}
+
+.ui-widget {
+    font-size: 13px;
+}
+
+.cv-view-panel label {
+    font-weight: bold;
+}
+
+/*
+.cv-view-panel div {
+	margin: 0px;
+	padding: 0px;
+}
+*/
+
+.cv-view-panel td, th {
+    vertical-align: middle;
+}
+
+.cv-view-panel input[type=checkbox] {
+    margin: 0px;
+}
+
+/*
+Custom Cubesviewer styles
+*/
+
+.cv-view-panel input {
+    vertical-align: middle;
+}
+
+.cv-view-panel h2 {
+    font-variant: small-caps;
+    font-weight: bold;
+    margin-top: 0px;
+    margin-bottom: 5px;
+    color: #8686BF;
+    font-size: 16pt;
+}
+
+.cv-view-panel h3 {
+    font-variant: small-caps;
+    font-weight: bold;
+    margin-top: 0px;
+    margin-bottom: 5px;
+    color: #8686BF;
+    font-size: 12pt;
+}
+
+.cv-view-panel th {
     white-space: nowrap;
 }
 
-label {
+.cv-view-panel label {
 	font-weight: inherit;
 }
 
@@ -59,7 +119,7 @@ a.ui-state-focus {
     min-height: 320px;
 }
 
-.cv-gui-viewcontainer {
+div.cv-gui-viewcontainer {
 	margin-bottom: 10px; 
 }
 
@@ -68,16 +128,16 @@ a.cv-grid-link {
     color: blue;
 }
 
-.cv-gui-viewcontent {
+div.cv-gui-viewcontent {
 	padding: 6px !important; 
 	overflow: hidden;
 }
 
-.cv-gui-panelsection {
+div.cv-gui-panelsection {
 	margin-bottom: 10px;
 }
 
-.cv-view-viewinfo {
+div.cv-view-viewinfo {
 	margin-bottom: 10px;
 }
 
@@ -94,7 +154,7 @@ a.cv-grid-link {
    position: fixed;
 }
 
-.cv-view-info-panel {
+div.cv-view-info-panel {
 	clear: both;
     margin-top: 10px;
     margin-bottom: 10px;
@@ -105,7 +165,7 @@ a.cv-grid-link {
     padding-right: 5px;
 }
 
-.cv-view-dimensionfilter-item {
+div.cv-view-dimensionfilter-item {
     white-space: nowrap;
     display: inline-block; 
     width: 46%; 

@@ -139,7 +139,8 @@ $.extend (cubesModel.prototype, {
 			level: lev,
 			depth: depth,
 			hierarchy: hie,
-			label: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ) + ( hie.levels.length > 1 ? (": " + lev.label) : "" )
+			label: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ) + ( hie.levels.length > 1 ? (": " + lev.label) : "" ),
+			labelNoLevel: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ),
 		};
 		
 	},		

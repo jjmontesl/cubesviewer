@@ -80,13 +80,17 @@ function cubesviewerViewCube () {
 	 */
 	this.onViewDraw = function(event, view) {
 		
-		if ($(".cv-view-viewdata", $(view.container)).size() == 0) {
+		if ($(".cv-view-viewdata", view.container).size() == 0) {
 
 			$(view.container).empty();
-			$(view.container).append('<div class="cv-view-viewmenu"></div>');
-			$(view.container).append('<div class="cv-view-viewinfo"></div>');
-			$(view.container).append('<div class="cv-view-viewdata" style="clear: both;"></div>');
-			$(view.container).append('<div class="cv-view-viewfooter" style="clear: both;"></div>');
+			$(view.container).append(
+					'<div class="cv-view-panel">' + 
+					'<div class="cv-view-viewmenu"></div>' +
+					'<div class="cv-view-viewinfo"></div>' +
+					'<div class="cv-view-viewdata" style="clear: both;"></div>' +
+					'<div class="cv-view-viewfooter" style="clear: both;"></div>' +
+					'</div>'
+			);
 			
 		}
 		
@@ -157,16 +161,24 @@ function cubesviewerViewCube () {
 	this._adjustGridSize = function() {
 
 		// TODO: use appropriate container width!
-		var newWidth = $(window).width() - 350;
+		//var newWidth = $(window).width() - 350;
 		
-		$(".ui-jqgrid-btable").each(function(idx, el) {
-			var currentWidth = $(el).width();
-			if (newWidth < 700) newWidth = 700;
+		$(".cv-view-panel").each(function (idx, e) {
+		
+			$(".ui-jqgrid-btable", e).each(function(idx, el) {
+				
+				$(el).setGridWidth(cubesviewer.options.tableResizeHackMinWidth);
+				
+				var newWidth = $( e ).innerWidth() - 20;
+				//var newWidth = $( el ).parents(".ui-jqgrid").first().innerWidth();
+				if (newWidth < cubesviewer.options.tableResizeHackMinWidth) newWidth = cubesviewer.options.tableResizeHackMinWidth;
 
-			//if ((currentWidth > newWidth) /*|| (currentWidth < newWidth - 50) */ ) {
 				$(el).setGridWidth(newWidth);
-			//}
+				
+			});
+			
 		});
+		
 	};
 	
 	/*

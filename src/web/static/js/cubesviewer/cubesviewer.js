@@ -40,10 +40,17 @@ function cubesviewer () {
 		cubesUrl : null,
 		cubesLang : null,
 		pagingOptions: [15, 30, 100, 250],
+		datepickerShowWeek: true,
+		datepickerFirstDay: 1,
+		tableResizeHackMinWidth: 350 ,
+		jsonRequestType: "json" // "json | jsonp"
 	};
 
 	// Model data as obtained from Cubes
 	this.model = null;
+	
+	// Error state (failed to load model)
+	this.state = "Not initialized";
 	
 	/*
 	 * Show a global alert
@@ -72,18 +79,16 @@ function cubesviewer () {
 	 */
 	this.cubesRequest = function(path, params, successCallback, completeCallback, errorCallback) {
 		
-		var jqxhr = $.get(this.options["cubesUrl"] + path, params, this._cubesRequestCallback(successCallback), "json");
+		var jqxhr = $.get(this.options["cubesUrl"] + path, params, this._cubesRequestCallback(successCallback), cubesviewer.options.jsonRequestType);
 		
 		if (completeCallback != undefined && completeCallback != null) {
-			jqxhr.always (function() {
-				completeCallback();
-			});
+			jqxhr.always (completeCallback);
 		}
 
 		if (errorCallback != undefined && errorCallback != null) {
-			jqxhr.fail (function() {
-				errorCallback();
-			});
+			jqxhr.fail (errorCallback);
+		} else {
+			jqxhr.fail (cubesviewer._myErrorHandler);
 		}
 		
 	}
@@ -93,13 +98,32 @@ function cubesviewer () {
 		return function(data, status) {
 			pCallback(data);
 		}
-	}
+	};
+	
+	/*
+	 * Default XHR error handler for CubesRequests
+	 */
+	this._myErrorHandler = function(xhr, textStatus, errorThrown) {
+		if (xhr.status == 401) {
+			cubesviewer.alert("Unauthorized.");
+		} else if (xhr.status == 403) {
+			cubesviewer.alert("Forbidden.");
+		} else {
+			cubesviewer.alert("An error occurred while accessing the data server. Please try again or "
+					+ "contact the server administrator if the problem persists.");
+		}
+		//$('.ajaxloader').hide();
+	};
 	
 	/*
 	 * Load model (cube list, dimensions...)
 	 */ 
 	this.loadModel = function() {
-		this.cubesRequest ("/model", { "lang": this.options.cubesLang }, this._loadModelCallback())
+		this.cubesRequest ("/model", { "lang": this.options.cubesLang }, this._loadModelCallback(), function() {}, function (xhr, textStatus, errorThrown) {
+			cubesviewer.state = "Failed to load model";
+			cubesviewer.showInfoMessage ('CubesViewer could not load model from Cubes server. CubesViewer will not work. Try reloading.<br /><br>Status: ' + xhr.status);
+			$(document).trigger("cubesviewerModelLoaded", null );
+		});
 		//$.get(this.options["cubesUrl"] + "/model", { "lang": this.options.cubesLang }, this._loadModelCallback());
 	};
 
@@ -108,6 +132,7 @@ function cubesviewer () {
 		return function(data) {
 			// Set new model
 			cubesviewer.model = cubesviewer.buildModel(data);
+			cubesviewer.state = "Initialized";
 			$(document).trigger("cubesviewerModelLoaded", [ cubesviewer.model ] )
 		}
 	};		
@@ -140,22 +165,53 @@ function cubesviewer () {
 		// Global AJAX error handler
 		// TODO: This should probably not be a global handler!
 		$(document).ajaxError(
-			function myErrorHandler(event, xhr, ajaxOptions, thrownError) {
-				if (xhr.status == 401) {
-					cubesviewer.alert("Unauthorized.");
-				} else if (xhr.status == 403) {
-					cubesviewer.alert("Forbidden.");
-				} else {
-					cubesviewer.alert("An error occurred while accessing the data server. Please try again or "
-							+ "contact the server administrator if the problem persists.");
-				}
-				//$('.ajaxloader').hide();
-			}
+				// Nothing, remove
 		);		
 		
 		// Bind events
 		$(document).bind ("cubesviewerRefresh", this.onRefresh);
 		
+	};
+	
+	/*
+	 * Show quick tip message.
+	 */
+	this.showInfoMessage = function(message, delay) {
+		
+		if (delay == undefined) delay = 5000;
+		
+		if ($('#cv-cache-indicator').size() < 1) {
+				
+			$("body").append('<div id="cv-cache-indicator" class="cv-view-panel" style="display: none;"></div>')
+			$('#cv-cache-indicator').qtip({
+				   content: 'NO MESSAGE DEFINED',
+				   position: {
+					   my: 'bottom right',
+					   at: 'bottom right',
+					   target: $(window),
+					   adjust: {
+						   x: -10,
+						   y: -10
+					   }
+				   },
+				   style: {
+					   classes: 'fixed',
+					   tip: {
+						   corner: false
+					   }
+				   },
+				   show: {
+					   delay: 0,
+					   event: ''
+				   },
+				   hide: {
+					   inactive: delay
+				   }
+			});
+		}
+
+		$('#cv-cache-indicator').qtip('option', 'content.text', message);
+		$('#cv-cache-indicator').qtip('toggle', true);
 	};
 	
 };

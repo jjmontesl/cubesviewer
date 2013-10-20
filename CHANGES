@@ -1,4 +1,7 @@
 0.7-devel
+    + More user friendly error handling if server not available.
+    + Fixed table resizing not fitting parent.
+    + Added week information to datepickers.
     + Added measures to facts view.
 0.6
     + Added facts view (and support for column size saving).

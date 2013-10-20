@@ -35,45 +35,6 @@ cubesviewer.cache = {};
  */
 cubesviewer._cacheOverridedCubesRequest = cubesviewer.cubesRequest;
 
-/*
- * Show "loaded from cache" message.
- */
-cubesviewer._showCachedMessage = function(message) {
-	
-	if ($('#cv-cache-indicator').size() < 1) {
-			
-		$(body).append('<div id="cv-cache-indicator" style="display: none;"></div>')
-		$('#cv-cache-indicator').qtip({
-			   content: 'NO MESSAGE DEFINED',
-			   position: {
-				   my: 'bottom right',
-				   at: 'bottom right',
-				   target: $(window),
-				   adjust: {
-					   x: -10,
-					   y: -10
-				   }
-			   },
-			   style: {
-				   classes: 'fixed',
-				   tip: {
-					   corner: false
-				   }
-			   },
-			   show: {
-				   delay: 0,
-				   event: ''
-			   },
-			   hide: {
-				   inactive: 1000
-			   }
-		});
-	}
-
-	$('#cv-cache-indicator').qtip('option', 'content.text', message);
-	$('#cv-cache-indicator').qtip('toggle', true);
-}
-
 
 cubesviewer.cubesRequest = function(path, params, successCallback, completeCallback, errorCallback) {
 	
@@ -90,7 +51,7 @@ cubesviewer.cubesRequest = function(path, params, successCallback, completeCallb
 		
 		// Warn that data comes from cache (QTip can do this?)
 		var timediff = Math.round ((new Date().getTime() - this.cache[requestHash].time) / 1000 / 60);
-		cubesviewer._showCachedMessage("Data loaded from cache<br/>(" + timediff + " minutes old)");
+		cubesviewer.showInfoMessage("Data loaded from cache<br/>(" + timediff + " minutes old)", 1000);
 		
 	} else {
 		// Do request
