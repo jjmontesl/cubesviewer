@@ -12,39 +12,47 @@
     <![endif]-->
     
     
-    <link type="text/css" href="static/css/jqueryui-cupertino/jquery-ui-1.9.2.custom.css" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" media="screen" href="static/css/jqgrid/ui.jqgrid.css" />
-    <link type="text/css" href="static/js/qtip/jquery.qtip.css" rel="stylesheet" />
+    <!-- CubesViewer CSS resources -->
+    <link type="text/css" rel="stylesheet" href="static/css/jqueryui-cupertino/jquery-ui-1.9.2.custom.css" />
+    <link type="text/css" rel="stylesheet" href="static/css/jqgrid/ui.jqgrid.css" media="screen" />
+    <link type="text/css" rel="stylesheet" href="static/js/qtip/jquery.qtip.css"  />    
+    <link type="text/css" rel="stylesheet" href="static/js/wiky/wiky.math.css" />
+    
+    <link type="text/css" rel="stylesheet" href="static/css/cubesviewer/cubesviewer.css" />
 
-    <script type="text/javascript" src="static/js/dateformat/dateformat.js"></script>
-
+    <!-- CubesViewer JS dependencies -->
+    
     <script type="text/javascript" src="static/js/jquery/jquery-1.8.3.js"></script>
     <script type="text/javascript" src="static/js/jquery/jquery-ui-1.9.2.custom.min.js"></script>
-    <script type="text/javascript" src="static/js/jquery/jquery.cookie.js"></script>
+    <script type="text/javascript" src="static/js/jquery/jquery.cookie.js"></script> 
     
-    <script type="text/javascript" src="static/js/qtip/jquery.qtip.js"></script>
+    <script type="text/javascript" src="static/js/dateformat/dateformat.js"></script>
 
-    <script src="static/js/jqgrid/i18n/grid.locale-en.js" type="text/javascript"></script>
-    <script src="static/js/jqgrid/jquery.jqGrid.min.js" type="text/javascript"></script>
-
-    <script type="text/javascript" src="static/js/cvapp.js"></script>      
-
-    <link type="text/css" rel="stylesheet" href="static/css/cubesviewer/cubesviewer.css" />    
-    <link type="text/css" rel="stylesheet" href="static/js/wiky/wiky.math.css" />    
-    
     <script type="text/javascript" src="static/js/jquery/jquery.blockUI.js"></script>
-        
+
     <script type="text/javascript" src="static/js/wiky/wiky.js"></script>
     <script type="text/javascript" src="static/js/wiky/wiky.math.js"></script>
     <script type="text/javascript" src="static/js/flotr2/flotr2.min.js"></script>
+
+    <script type="text/javascript" src="static/js/qtip/jquery.qtip.js"></script>
+
+    <script type="text/javascript" src="static/js/jqgrid/i18n/grid.locale-en.js" ></script>
+    <script type="text/javascript" src="static/js/jqgrid/jquery.jqGrid.min.js" ></script>
+    
+    <!-- Cubesviewer modules -->
     
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.cache.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.model.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.explore.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.series.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.chart.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.facts.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.dimensionfilter.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.columns.js"></script> 
+
     
     <title>CubesViewer - Visual OLAP analysis and reporting tool</title>
     
@@ -105,8 +113,10 @@
         <header>
           <div style="float: right;"><img alt="CubesViewer" src="static/img/cubesviewer-logo.png" /></div>
           <h1>CubesViewer</h1>
-          <h2>Visual tool for exploring and analyzing OLAP databases</h2>
+          <h2>Visual data analysis<br/> and explore tool</h2>
         </header>
+
+
 
         <section id="downloads" class="clearfix">
           <a href="https://github.com/jjmontesl/cubesviewer/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
@@ -158,7 +168,11 @@
             
             <h3>Full application live simple</h3>
             
-            
+            <p>
+                A demo of the full CubesViewer Designer application is also available, although
+                some of the features of the complete application, like save/share and notes,
+                are not available.   
+            </p>
             
             <h3>More information</h3>
             

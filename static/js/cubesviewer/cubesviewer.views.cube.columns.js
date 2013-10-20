@@ -109,7 +109,7 @@ function cubesviewerViewCubeColumns () {
 			
 			var checkedon = (! grid.jqGrid('getGridParam','colModel')[i].hidden) ? 'checked="on"' : '';
 			$(view.container).find(".cv-view-columns-chooser-cols").append (
-					'<span style="margin-right: 15px;"><label><input type="checkbox" ' + checkedon + ' style="vertical-align: middle;" data-col="' + colname + '" class="cv-view-columns-chooser-col" /> ' + colname.substring(newPrefix.length + 1) + '</label></span>'
+					'<span style="margin-right: 15px;"><label ><input type="checkbox" ' + checkedon + ' style="vertical-align: middle;" data-col="' + colname + '" class="cv-view-columns-chooser-col" /> ' + colname.substring(newPrefix.length + 1) + '</label></span>'
 			);
 			
 			lastPrefix = newPrefix;
@@ -123,7 +123,7 @@ function cubesviewerViewCubeColumns () {
 		
 		
 		$(view.container).find(".cv-view-columns-chooser-cols").append (
-				'<div style="margin-top: 10px; margin-bottom: 5px;">' +
+				'<div style="margin-top: 10px;">' +
 				'<button class="cv-views-columns-chooser-close">Close Column Chooser</button>' +
 				'</div>'
 		);

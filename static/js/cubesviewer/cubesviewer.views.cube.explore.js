@@ -504,6 +504,7 @@ function cubesviewerViewCubeExplore() {
 							userDataOnFooter : true,
 							forceFit : false,
 							shrinkToFit : false,
+							width: cubesviewer.options.tableResizeHackMinWidth,
 							// autowidth: true,
 							multiselect : true,
 							multiboxonly : true,
@@ -602,12 +603,16 @@ function cubesviewerViewCubeExplore() {
 		$("[name='date_start']", container).datepicker({
 			changeMonth : true,
 			changeYear : true,
-			dateFormat : "yy-mm-dd"
+			dateFormat : "yy-mm-dd",
+			showWeek: cubesviewer.options.datepickerShowWeek,
+		    firstDay: cubesviewer.options.datepickerFirstDay
 		});
 		$("[name='date_end']", container).datepicker({
 			changeMonth : true,
 			changeYear : true,
-			dateFormat : "yy-mm-dd"
+			dateFormat : "yy-mm-dd",
+			showWeek: cubesviewer.options.datepickerShowWeek,
+		    firstDay: cubesviewer.options.datepickerFirstDay
 		});
 
 		$("[name='date_start']", container).attr('autocomplete', 'off');
@@ -709,7 +714,7 @@ function cubesviewerViewCubeExplore() {
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 					$(view.container).find('.cv-view-viewinfo-date'), "#ffdddd", null, readonly,
 					'<span class="ui-icon ui-icon-zoomin"></span> <b>Cut: </b> ' +  
-					dimparts.label +   
+					dimparts.labelNoLevel +   
 					': <span class="datefilter"></span>')
 			var container = $('.datefilter', piece);
 			view.cubesviewer.views.cube.explore.drawDateFilter(view, e, container);

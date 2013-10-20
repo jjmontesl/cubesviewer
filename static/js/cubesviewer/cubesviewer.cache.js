@@ -42,7 +42,7 @@ cubesviewer._showCachedMessage = function(message) {
 	
 	if ($('#cv-cache-indicator').size() < 1) {
 			
-		$(body).append('<div id="cv-cache-indicator" style="display: none;"></div>')
+		$("body").append('<div id="cv-cache-indicator" style="display: none;"></div>')
 		$('#cv-cache-indicator').qtip({
 			   content: 'NO MESSAGE DEFINED',
 			   position: {

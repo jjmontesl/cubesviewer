@@ -159,7 +159,7 @@ function cubesviewerViewCubeDimensionFilter () {
 		);
 		
 		$(view.container).find(".cv-view-dimensionfilter-cont").append (
-				'<div style="margin-top: 10px; margin-bottom: 5px;">' +
+				'<div style="margin-top: 10px;">' +
 				'<button class="cv-views-dimensionfilter-apply">Apply</button>' +
 				'<button class="cv-views-dimensionfilter-cancel">Close</button>' +
 				'<div id="cv-views-dimensionfilter-cols-' + view.id + '" class="cv-views-dimensionfilter-cols" style="display: inline-block; margin-left: 15px; padding: 0px;">' + 
