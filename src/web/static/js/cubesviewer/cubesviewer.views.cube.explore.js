@@ -713,7 +713,7 @@ function cubesviewerViewCubeExplore() {
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 					$(view.container).find('.cv-view-viewinfo-date'), "#ffdddd", null, readonly,
 					'<span class="ui-icon ui-icon-zoomin"></span> <b>Cut: </b> ' +  
-					dimparts.label +   
+					dimparts.labelNoLevel +   
 					': <span class="datefilter"></span>')
 			var container = $('.datefilter', piece);
 			view.cubesviewer.views.cube.explore.drawDateFilter(view, e, container);
