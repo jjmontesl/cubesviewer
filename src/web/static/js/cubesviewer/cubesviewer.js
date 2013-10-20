@@ -40,6 +40,8 @@ function cubesviewer () {
 		cubesUrl : null,
 		cubesLang : null,
 		pagingOptions: [15, 30, 100, 250],
+		datepickerShowWeek: true,
+		datepickerFirstDay: 1
 	};
 
 	// Model data as obtained from Cubes

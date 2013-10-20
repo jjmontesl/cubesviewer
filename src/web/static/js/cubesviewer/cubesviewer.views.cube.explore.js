@@ -602,12 +602,16 @@ function cubesviewerViewCubeExplore() {
 		$("[name='date_start']", container).datepicker({
 			changeMonth : true,
 			changeYear : true,
-			dateFormat : "yy-mm-dd"
+			dateFormat : "yy-mm-dd",
+			showWeek: cubesviewer.options.datepickerShowWeek,
+		    firstDay: cubesviewer.options.datepickerFirstDay
 		});
 		$("[name='date_end']", container).datepicker({
 			changeMonth : true,
 			changeYear : true,
-			dateFormat : "yy-mm-dd"
+			dateFormat : "yy-mm-dd",
+			showWeek: cubesviewer.options.datepickerShowWeek,
+		    firstDay: cubesviewer.options.datepickerFirstDay
 		});
 
 		$("[name='date_start']", container).attr('autocomplete', 'off');
