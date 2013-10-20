@@ -1,0 +1,115 @@
+/*
+ * Cubesviewer CSS
+ * Note that the application is also based on blueprint CSS framework, which is included separately.
+ */
+
+h3 {
+	margin-top: 5px;
+}
+
+th {
+    white-space: nowrap;
+}
+
+label {
+	font-weight: inherit;
+}
+
+.nobreak {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.ui-icon {
+    display: inline-block;
+    vertical-align: middle;
+}
+.ui-widget-header {
+    padding: 2px 4px 2px 4px;   
+}
+
+.ui-jqgrid tr.jqgrow td {
+    white-space: nowrap !important;
+    /*overflow: hidden;*/
+}
+
+a.ui-state-disabled {
+	margin-top: 0px !important;
+	margin-bottom: 0px !important;
+}
+a.ui-state-focus {
+    margin-top: -1px !important;
+    margin-bottom: -1px !important;
+}
+
+/* GUI Elements */
+
+#cubesviewer {
+	margin-top: 5px;
+}
+
+.cv-gui-panel {
+    width: 200px; 
+    float: left; 
+    padding: 6px;
+}
+
+.cv-gui-workspace {
+    margin-left: 230px;
+    min-height: 320px;
+}
+
+.cv-gui-viewcontainer {
+	margin-bottom: 10px; 
+}
+
+a.cv-grid-link {
+    text-decoration: none;
+    color: blue;
+}
+
+.cv-gui-viewcontent {
+	padding: 6px !important; 
+	overflow: hidden;
+}
+
+.cv-gui-panelsection {
+	margin-bottom: 10px;
+}
+
+.cv-view-viewinfo {
+	margin-bottom: 10px;
+}
+
+.ajaxloader {
+	background-image: url(ajax-loader.gif);
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+	margin: 8px;
+	display: inline-block;
+}
+
+.fixed {
+   position: fixed;
+}
+
+.cv-view-info-panel {
+	clear: both;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid rgb(221, 221, 221);
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.cv-view-dimensionfilter-item {
+    white-space: nowrap;
+    display: inline-block; 
+    width: 46%; 
+    overflow: hidden;
+    margin-right: 5px;
+}
+

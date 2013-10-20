@@ -4,13 +4,98 @@
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="static/css/gh/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="static/css/gh/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="static/css/gh/print.css" media="print" />
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    
+    
+    <link type="text/css" href="static/css/jqueryui-cupertino/jquery-ui-1.9.2.custom.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" media="screen" href="static/css/jqgrid/ui.jqgrid.css" />
+    <link type="text/css" href="static/js/qtip/jquery.qtip.css" rel="stylesheet" />
+
+    <script type="text/javascript" src="static/js/dateformat/dateformat.js"></script>
+
+    <script type="text/javascript" src="static/js/jquery/jquery-1.8.3.js"></script>
+    <script type="text/javascript" src="static/js/jquery/jquery-ui-1.9.2.custom.min.js"></script>
+    <script type="text/javascript" src="static/js/jquery/jquery.cookie.js"></script>
+    
+    <script type="text/javascript" src="static/js/qtip/jquery.qtip.js"></script>
+
+    <script src="static/js/jqgrid/i18n/grid.locale-en.js" type="text/javascript"></script>
+    <script src="static/js/jqgrid/jquery.jqGrid.min.js" type="text/javascript"></script>
+
+    <script type="text/javascript" src="static/js/cvapp.js"></script>      
+
+    <link type="text/css" rel="stylesheet" href="static/css/cubesviewer/cubesviewer.css" />    
+    <link type="text/css" rel="stylesheet" href="static/js/wiky/wiky.math.css" />    
+    
+    <script type="text/javascript" src="static/js/jquery/jquery.blockUI.js"></script>
+        
+    <script type="text/javascript" src="static/js/wiky/wiky.js"></script>
+    <script type="text/javascript" src="static/js/wiky/wiky.math.js"></script>
+    <script type="text/javascript" src="static/js/flotr2/flotr2.min.js"></script>
+    
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.model.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.explore.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.series.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.chart.js"></script>
+    
     <title>CubesViewer - Visual OLAP analysis and reporting tool</title>
+    
+<script type="text/javascript">
+    
+    // Reference to the created view
+    var view1 = null;
+    
+    // Initialize CubesViewer when document is ready
+    $(document).ready(function() {
+        
+        // Get user Cubes information for the example
+        //var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
+        var cubesUrl = "http://localhost:5000";
+        
+        // Initialize CubesViewer system
+        cubesviewer.init({
+            cubesUrl: cubesUrl
+        });
+        
+        // Sample serialized view (Based on cubes-examples project data)
+        var serializedView = 
+            '{"cubename":"sales","name":"Cube View - Webshop / Sales","mode":"chart","drilldown":["country:region"],"cuts":[],"datefilters":[{"dimension":"date_sale@weekly","mode":"auto-last12m","date_from":"","date_to":""}],"xaxis":"date_sale@monthly:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{}}';
+        
+        // Add views
+        $(document).bind("cubesviewerModelLoaded", { }, function() {
+            
+            // You can use a Javascript object with view arguments (ie. "cubename")
+            //view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", { "cubename": "contracts" });
+            
+            // You can use a serialized JSON string of the object with view arguments
+            view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", serializedView);
+            
+            cubesviewer.views.redrawView (view1);
+            
+        });
+        
+        // Scripting example for the "switch mode" link
+        $('#switchToSeriesTable').click(function() {
+            cubesviewer.views.cube.series.modeSeries(view1);
+            return false;
+        });
+        
+        // Start Cubesviewer system
+        cubesviewer.refresh();
+        
+    });
+    
+</script>
+    
+    
   </head>
 
   <body>
@@ -18,8 +103,9 @@
       <div class="inner">
 
         <header>
+          <div style="float: right;"><img alt="CubesViewer" src="static/img/cubesviewer-logo.png" /></div>
           <h1>CubesViewer</h1>
-          <h2>Visual tool for exploring and analyzing OLAP databases.</h2>
+          <h2>Visual tool for exploring and analyzing OLAP databases</h2>
         </header>
 
         <section id="downloads" class="clearfix">
@@ -31,44 +117,65 @@
         <hr>
 
         <section id="main_content">
-          <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+          <h3>CubesViewer</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
-
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
-
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
-
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+            <p>CubesViewer is a visual, web-based tool application for exploring and analyzing
+            OLAP databases served by the Cubes OLAP Framework.<p>
+            
+            <p>This tool allows users to inspect the different dimensions, measures and
+            aggregated data in different ways, allowing you to build tables and charts
+            like these:</p>
+            
+            <p>CubesViewer is a visual interface for the 
+            open-source OLAP server <a href="http://databrewery.org/cubes.html">Cubes</a>. 
+            Purpose is to keep it simple and modular, leveraging the web services 
+            provided by Cubes.</p>  
+                       
+            <h3>Features</h3>
+            
+            <ul>
+                <li>Cube explorer providing drilldown and cut operations.</li>
+                <li>Supports dimension hierarchies and date filtering.</li>
+                <li>Several charts and diagrams can be created.</li>
+                <li>View management, cloning, saving and sharing.</li>
+                <li>User Interface allows for multiple views on-screen.</li>
+                <li>Multiple modes: explore, data series, chart, facts.</li> 
+                <li>Undo / Redo.</li>
+                <li>Multi-user.</li>
+                <li>Shared wiki notes system to annotate cubes and views.</li>
+                <li>Views can be embedded in other web sites.</li>
+                <li>Modular and extensible.</li>
+            </ul>
+            
+            <h3>Live sample</h3>
+            
+            <p>CubesViewer can be embedded fully or partially into other websites.
+            This is useful to embed analytical data or charts into any web page, like shown here:</p>
+            
+            <div style="margin-bottom: 22px;">
+                <div id="cv-view1" class="olapview" style="min-width: 400px;"></div>
+            </div>
+            
+            <h3>Full application live simple</h3>
+            
+            
+            
+            <h3>More information</h3>
+            
+            <p>CubesViewer is an open source application hosted on Github. Please visit
+            the main site for full up to date information: <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a>.</p>
+            
+            <p>
+                <a href="https://github.com/jjmontesl/cubesviewer" id="view-on-github" class="button"><span>View on GitHub</span></a>
+            </p>
+            
+            <div style="clear: both;"></div>
+            
         </section>
 
         <footer>
-          CubesViewer is maintained by <a href="https://github.com/jjmontesl">jjmontesl</a><br>
-          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+          <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a> is maintained by <a href="https://github.com/jjmontesl">jjmontesl</a><br>
         </footer>
-
         
       </div>
     </div>
