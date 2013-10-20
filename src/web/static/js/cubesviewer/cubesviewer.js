@@ -42,7 +42,8 @@ function cubesviewer () {
 		pagingOptions: [15, 30, 100, 250],
 		datepickerShowWeek: true,
 		datepickerFirstDay: 1,
-		tableResizeHackMinWidth: 350 
+		tableResizeHackMinWidth: 350 ,
+		jsonRequestType: "json" // "json | jsonp"
 	};
 
 	// Model data as obtained from Cubes
@@ -78,7 +79,7 @@ function cubesviewer () {
 	 */
 	this.cubesRequest = function(path, params, successCallback, completeCallback, errorCallback) {
 		
-		var jqxhr = $.get(this.options["cubesUrl"] + path, params, this._cubesRequestCallback(successCallback), "json");
+		var jqxhr = $.get(this.options["cubesUrl"] + path, params, this._cubesRequestCallback(successCallback), cubesviewer.options.jsonRequestType);
 		
 		if (completeCallback != undefined && completeCallback != null) {
 			jqxhr.always (completeCallback);
