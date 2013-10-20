@@ -38,6 +38,21 @@ function cubesviewerViews () {
 	 */
 	this.createView = function(id, container, type, data) {
 
+		// Check if system is initialized, otherwise
+		// show a friendly error
+		if (cubesviewer.state != "Initialized") {
+			container.append (
+					'<div class="ui-widget">' +
+					'<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">' +
+					'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' +
+					'<strong>Error</strong><br/><br/>Cannot create CubesViewer view.<br />CubesViewer state is: <b>' + cubesviewer.state + '</b>.<br /><br />Try reloading or contact the administrator.</p>' +
+					'</div></div>'
+			);
+			return null;
+		}
+		
+		// Create view
+		
 		var params = {};
 		
 		if (typeof data == "string") {
@@ -119,6 +134,7 @@ function cubesviewerViews () {
 	 * Triggers redraw for a given view.
 	 */
 	this.redrawView = function (view) {
+		if (view == null) return;
 		$(document).trigger ("cubesviewerViewDraw", [ view ]);
 	}
 	
