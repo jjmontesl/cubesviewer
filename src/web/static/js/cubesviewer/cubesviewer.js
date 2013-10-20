@@ -81,15 +81,11 @@ function cubesviewer () {
 		var jqxhr = $.get(this.options["cubesUrl"] + path, params, this._cubesRequestCallback(successCallback), "json");
 		
 		if (completeCallback != undefined && completeCallback != null) {
-			jqxhr.always (function() {
-				completeCallback();
-			});
+			jqxhr.always (completeCallback);
 		}
 
 		if (errorCallback != undefined && errorCallback != null) {
-			jqxhr.fail (function() {
-				errorCallback();
-			});
+			jqxhr.fail (errorCallback);
 		} else {
 			jqxhr.fail (cubesviewer._myErrorHandler);
 		}
@@ -106,7 +102,7 @@ function cubesviewer () {
 	/*
 	 * Default XHR error handler for CubesRequests
 	 */
-	this._myErrorHandler = function(event, xhr, ajaxOptions, thrownError) {
+	this._myErrorHandler = function(xhr, textStatus, errorThrown) {
 		if (xhr.status == 401) {
 			cubesviewer.alert("Unauthorized.");
 		} else if (xhr.status == 403) {
@@ -122,9 +118,9 @@ function cubesviewer () {
 	 * Load model (cube list, dimensions...)
 	 */ 
 	this.loadModel = function() {
-		this.cubesRequest ("/model", { "lang": this.options.cubesLang }, this._loadModelCallback(), function() {}, function () {
-			cubesviewer.state = "Failed to load model.";
-			cubesviewer.showInfoMessage ('CubesViewer could not load model from Cubes server.\nCubesViewer will not work. Try reloading.');
+		this.cubesRequest ("/model", { "lang": this.options.cubesLang }, this._loadModelCallback(), function() {}, function (xhr, textStatus, errorThrown) {
+			cubesviewer.state = "Failed to load model";
+			cubesviewer.showInfoMessage ('CubesViewer could not load model from Cubes server. CubesViewer will not work. Try reloading.<br /><br>Status: ' + xhr.status);
 		});
 		return false;
 		//$.get(this.options["cubesUrl"] + "/model", { "lang": this.options.cubesLang }, this._loadModelCallback());
@@ -135,8 +131,8 @@ function cubesviewer () {
 		return function(data) {
 			// Set new model
 			cubesviewer.model = cubesviewer.buildModel(data);
-			$(document).trigger("cubesviewerModelLoaded", [ cubesviewer.model ] )
 			cubesviewer.state = "Initialized";
+			$(document).trigger("cubesviewerModelLoaded", [ cubesviewer.model ] )
 		}
 	};		
 	

@@ -80,7 +80,7 @@ function cubesviewerViewCube () {
 	 */
 	this.onViewDraw = function(event, view) {
 		
-		if ($(".cv-view-viewdata", $(view.container)).size() == 0) {
+		if ($(".cv-view-viewdata", view.container).size() == 0) {
 
 			$(view.container).empty();
 			$(view.container).append(
