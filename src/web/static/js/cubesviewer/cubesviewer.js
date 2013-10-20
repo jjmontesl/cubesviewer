@@ -121,8 +121,8 @@ function cubesviewer () {
 		this.cubesRequest ("/model", { "lang": this.options.cubesLang }, this._loadModelCallback(), function() {}, function (xhr, textStatus, errorThrown) {
 			cubesviewer.state = "Failed to load model";
 			cubesviewer.showInfoMessage ('CubesViewer could not load model from Cubes server. CubesViewer will not work. Try reloading.<br /><br>Status: ' + xhr.status);
+			$(document).trigger("cubesviewerModelLoaded", null );
 		});
-		return false;
 		//$.get(this.options["cubesUrl"] + "/model", { "lang": this.options.cubesLang }, this._loadModelCallback());
 	};
 
