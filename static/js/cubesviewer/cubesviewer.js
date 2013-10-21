@@ -33,7 +33,7 @@
 function cubesviewer () {
 	
 	// CubesViewer version
-	this.version = "0.7-devel";
+	this.version = "0.7";
 	
 	// Default options
 	this.options = {
