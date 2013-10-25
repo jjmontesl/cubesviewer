@@ -239,7 +239,7 @@ function cubesviewerViewCubeDimensionFilter () {
 		
 		$(view.container).find(".cv-view-dimensionfilter-list").find("input").each (function (idx, e) {
 			if (cols == 1) {
-				$(e).parents('.cv-view-dimensionfilter-item').first().css("display", "block");
+				$(e).parents('.cv-view-dimensionfilter-item').first().css("display", "inline-block");
 				$(e).parents('.cv-view-dimensionfilter-item').first().css("width", "98%");
 			} else {
 				$(e).parents('.cv-view-dimensionfilter-item').first().css("display", "inline-block");

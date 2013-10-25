@@ -9,7 +9,7 @@ OLAP databases served by the Cubes OLAP Framework.
 
 This tool allows users to inspect the different dimensions, measures and
 aggregated data in different ways, allowing you to build tables and charts
-based on analytical data available from the server.  
+based on analytical data available from the server.   
 
 CubesViewer is a visual interface for the 
 open-source ["Cubes" server](http://databrewery.org/cubes.html) (an OLAP server in Python). 
@@ -45,17 +45,19 @@ Github source repository: https://github.com/jjmontesl/cubesviewer
 Requirements
 ------------
 
-CubesViewer requires **[Cubes Server](http://databrewery.org/cubes.html)** 0.10.2 or later, configured and running, able to serve 
+CubesViewer requires a [Cubes Server](http://databrewery.org/cubes.html) 0.10.1 or later, configured and running, able to serve 
 data cubes. 
 
 Note that **your cubes model should be configured** to add support for CubesViewer features like date filters and descriptions
 (see Documentation below). 
 
 The **full CubesViewer application** (which includes all features including sharing/saving
-support) includes a Python Django application. You need Django 1.3 in order to run it. 
+and user notes support) includes a Python Django application. You need Django 1.3 in order to run it,
+but it is optional. 
 
 **CubesViewer library is HTML5/Javascript** and should work on most modern browsers
-(it may even work on older browsers). Views can be embedded in other websites.
+(it may even work on older browsers). Views can be embedded in other websites (see the Demos below).
+
 
 For further information, see the Documentation section below.
 
@@ -64,8 +66,8 @@ Documentation
 
 * [CubesViewer Documentation](https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/index.md)
 
-Demo Pages
-----------
+Online demos
+------------
 
 * [CubesViewer Demo page](http://jjmontesl.github.io/cubesviewer/index.html) with one embedded view
 * [CubesViewer Explorer](http://jjmontesl.github.io/cubesviewer/cv.html) with the full application
@@ -90,8 +92,7 @@ through the Cubes project mailing list:
 * Report bugs: https://github.com/jjmontesl/cubesviewer/issues
 * Discussion at Google Groups: http://groups.google.com/group/cubes-discuss
 
-If you are using CubesViewer, we'd love to hear from you. Suggestions
-are welcome. 
+If you are using or trying CubesViewer, we'd love to hear from you (tweet: #cubesviewer). 
 
 Authors
 =======

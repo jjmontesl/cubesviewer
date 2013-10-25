@@ -11,6 +11,7 @@ Ported from blueprint to make sure embedded views work without blueprint:
 	/*background: #fff;*/
 	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
 	vertical-align: middle;
+	line-height: 1em;
 }
 
 .cv-view-panel li.ui-menu-item {
@@ -40,7 +41,7 @@ Ported from blueprint to make sure embedded views work without blueprint:
 }
 
 .cv-view-panel input[type=checkbox] {
-    margin: 0px;
+    margin: 0px !important;
 }
 
 /*
