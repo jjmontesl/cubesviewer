@@ -300,7 +300,7 @@ function cubesviewerViewCubeChart() {
 	    chartOptions = {
 	    	  //barColor: d3.scale.category20().range(),
 	    	  delay: 1200,
-	    	  groupSpacing: 0.2,
+	    	  groupSpacing: 0.1,
 	    	  //reduceXTicks: false,
 	    	  //staggerLabels: true
 	    };

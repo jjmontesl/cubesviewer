@@ -4,12 +4,13 @@ CubesViewer - OLAP Visual Viewer and Explore Tool
 About
 -----
 
+
 CubesViewer is a visual, web-based tool application for exploring and analyzing
 OLAP databases served by the Cubes OLAP Framework.
 
-This tool allows users to inspect the different dimensions, measures and
-aggregated data in different ways, allowing you to build tables and charts
-based on analytical data available from the server.   
+CubesViewer can be used for data exploration and data auditory, 
+generation of reports, chart design and embedding, 
+and as a (simple) company-wide analytics application.
 
 CubesViewer is a visual interface for the 
 open-source ["Cubes" server](http://databrewery.org/cubes.html) (an OLAP server in Python). 
@@ -36,11 +37,11 @@ Features:
 * Views can be embedded in other web sites.
 * Modular and extensible.
 
+Online demos
+------------
 
-Source
-------
-
-Github source repository: https://github.com/jjmontesl/cubesviewer
+* [CubesViewer Demo page](http://jjmontesl.github.io/cubesviewer/index.html) with one embedded view
+* [CubesViewer Explorer](http://jjmontesl.github.io/cubesviewer/cv.html) with the full application
 
 Requirements
 ------------
@@ -48,29 +49,25 @@ Requirements
 CubesViewer requires a [Cubes Server](http://databrewery.org/cubes.html) 0.10.1 or later, configured and running, able to serve 
 data cubes. 
 
-Note that **your cubes model should be configured** to add support for CubesViewer features like date filters and descriptions
-(see Documentation below). 
+**CubesViewer is HTML5** and can run directly in the browser. It should work on most modern browsers
+(it may even work on older browsers). Views can be embedded in other websites (see the Demos section).
 
-The **full CubesViewer application** (which includes all features including sharing/saving
-and user notes support) includes a Python Django application. You need Django 1.3 in order to run it,
-but it is optional. 
+The **full CubesViewer application** includes a Python Django application to support features like sharing/saving
+and user notes support. You need Django 1.3 in order to run it, but it is optional. 
 
-**CubesViewer library is HTML5/Javascript** and should work on most modern browsers
-(it may even work on older browsers). Views can be embedded in other websites (see the Demos below).
-
+Note that **your cubes model shall be configured** to add support for CubesViewer features like date filters and descriptions
+(see Documentation below). This is optional, CubesViewer will work, but some features like Date Filters will be missing. 
 
 For further information, see the Documentation section below.
 
 Documentation
 -------------
 
+This tool allows users to inspect the different dimensions, measures and
+aggregated data in different ways, allowing you to build tables and charts
+based on the analytical data available from the server. 
+
 * [CubesViewer Documentation](https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/index.md)
-
-Online demos
-------------
-
-* [CubesViewer Demo page](http://jjmontesl.github.io/cubesviewer/index.html) with one embedded view
-* [CubesViewer Explorer](http://jjmontesl.github.io/cubesviewer/cv.html) with the full application
 
 Screenshots
 -----------
@@ -93,6 +90,11 @@ through the Cubes project mailing list:
 * Discussion at Google Groups: http://groups.google.com/group/cubes-discuss
 
 If you are using or trying CubesViewer, we'd love to hear from you (tweet: #cubesviewer). 
+
+Source
+======
+
+Github source repository: https://github.com/jjmontesl/cubesviewer
 
 Authors
 =======
