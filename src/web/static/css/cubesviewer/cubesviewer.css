@@ -12,6 +12,13 @@ Ported from blueprint to make sure embedded views work without blueprint:
 	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
 	vertical-align: middle;
 	line-height: 1em;
+	
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 .cv-view-panel li.ui-menu-item {
@@ -136,7 +143,7 @@ a.cv-grid-link {
 }
 
 div.cv-gui-viewcontent {
-	padding: 2px !important; 
+	padding: 3px !important; 
 	overflow: hidden;
 }
 
