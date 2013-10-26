@@ -267,7 +267,7 @@ function cubesviewerGui () {
 	this.showAbout = function() {
 		this.cubesviewer.alert(
 				"CubesViewer - Version " + this.cubesviewer.version + "\n" +
-				"https://github.com/jjmontesl/cubesviewer/" +
+				"https://github.com/jjmontesl/cubesviewer/\n" +
 				"\n" +
 				"Written by José Juan Montes\n" +
 				"2012-2013\n"

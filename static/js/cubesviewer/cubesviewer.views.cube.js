@@ -116,8 +116,24 @@ function cubesviewerViewCube () {
 	 */
 	this._initMenu = function (view, buttonSelector, menuSelector) {
 		//view.cubesviewer.views.initMenu('.panelbutton', '.cv-view-menu-panel');
-		$('.cv-view-toolbar', $(view.container)).find(buttonSelector).click(function() {
+		$('.cv-view-toolbar', $(view.container)).find(buttonSelector).on("click mouseenter", function(ev) {
 
+			if (ev.type == "mouseenter") {
+				if (! $('.cv-view-menu', view.container).is(":visible")) {
+					// Only if a menu was open we allow mouseenter to open a menu
+					return;
+				}
+			}
+			
+			if (ev.type == "click") {
+				if ($('.cv-view-menu', view.container).is(":visible")) {
+					// Hide the menu and return
+					$('.cv-view-menu', view.container).hide();
+					return;
+				}
+			}
+			
+			// Hide all menus (only one context menu open at once)
 			$('.cv-view-menu').hide();
 
 			var menu = $(menuSelector, $(view.container));

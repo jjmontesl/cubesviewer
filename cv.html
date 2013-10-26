@@ -17,6 +17,7 @@
     <link type="text/css" rel="stylesheet" href="static/css/jqgrid/ui.jqgrid.css" media="screen" />
     <link type="text/css" rel="stylesheet" href="static/js/qtip/jquery.qtip.css"  />    
     <link type="text/css" rel="stylesheet" href="static/js/wiky/wiky.math.css" />
+    <link type="text/css" rel="stylesheet" href="static/js/nvd3/nv.d3.min.css" />    
     
     <link type="text/css" rel="stylesheet" href="static/css/cubesviewer/cubesviewer.css" />
 
@@ -34,6 +35,8 @@
     <script type="text/javascript" src="static/js/wiky/wiky.math.js"></script>
     <script type="text/javascript" src="static/js/flotr2/flotr2.min.js"></script>
 
+    <script type="text/javascript" src="static/js/d3js/d3.v3.js"></script>
+    <script type="text/javascript" src="static/js/nvd3/nv.d3.js"></script>
     <script type="text/javascript" src="static/js/qtip/jquery.qtip.js"></script>
 
     <script type="text/javascript" src="static/js/jqgrid/i18n/grid.locale-en.js" ></script>
@@ -67,6 +70,11 @@
         
         //var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
         var cubesUrl = "http://slicer.databrewery.org/webshop-example";
+        
+        // Add views
+        $(document).bind("cubesviewerModelLoaded", { }, function() {
+            $('.cv-demo-example-view').slice(0, 3).click();
+        });
         
         cubesviewer.init({
             cubesUrl: cubesUrl
@@ -123,10 +131,8 @@
             	var view = cubesviewer.gui.addViewObject(serialized);
                 cubesviewer.views.redrawView (view);
         	}
-        	
-        	return false;
-        	
         });
+        
         
     });
     
@@ -148,13 +154,16 @@
         <section id="main_content">
             <p>Welcome to <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a>
             Explorer Demo. This is a visual, web-based tool application for exploring and analyzing
-            data. The complete application has some extra features.</p>
+            data. CubesViewer can be used for data exploration and data auditory, 
+            generation of reports, chart design and embedding, 
+            and as a (simple) company-wide analytics application. The complete application has 
+            more features than the ones shown here.</p>
             <p>
             
-            <p>You can use the menu and interface to navigate this example dataset (composed of fictional 
-               sales of a web store during years 2012-2013 and also fictional web visits).</p>
+            <p>You can use the menu and interface to navigate this example dataset, which is composed of fictional 
+               sales of a web store during years 2012-2013 and also fictional web visit data.</p>
             
-            <p> <span style="font-weight: bold;">To begin,
+            <p> <span style="font-weight: bold;">To begin, explore the views, or
                select a "Example view" or a "Cube" from the list on the left.</span>
             </p>
         </section>

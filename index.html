@@ -17,6 +17,7 @@
     <link type="text/css" rel="stylesheet" href="static/css/jqgrid/ui.jqgrid.css" media="screen" />
     <link type="text/css" rel="stylesheet" href="static/js/qtip/jquery.qtip.css"  />    
     <link type="text/css" rel="stylesheet" href="static/js/wiky/wiky.math.css" />
+    <link type="text/css" rel="stylesheet" href="static/js/nvd3/nv.d3.min.css" />    
     
     <link type="text/css" rel="stylesheet" href="static/css/cubesviewer/cubesviewer.css" />
 
@@ -34,6 +35,8 @@
     <script type="text/javascript" src="static/js/wiky/wiky.math.js"></script>
     <script type="text/javascript" src="static/js/flotr2/flotr2.min.js"></script>
 
+    <script type="text/javascript" src="static/js/d3js/d3.v3.js"></script>
+    <script type="text/javascript" src="static/js/nvd3/nv.d3.js"></script>
     <script type="text/javascript" src="static/js/qtip/jquery.qtip.js"></script>
 
     <script type="text/javascript" src="static/js/jqgrid/i18n/grid.locale-en.js" ></script>
@@ -68,14 +71,6 @@
         //var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
         var cubesUrl = "http://slicer.databrewery.org/webshop-example";
         
-        // Initialize CubesViewer system
-        cubesviewer.init({
-            cubesUrl: cubesUrl
-        });
-        
-        // Sample serialized view (Based on cubes-examples project data)
-        var serializedView = 
-            '{"cubename":"sales","name":"Cube View - Webshop / Sales","mode":"chart","drilldown":["country:region"],"cuts":[],"datefilters":[{"dimension":"date_sale@weekly","mode":"auto-last12m","date_from":"","date_to":""}],"xaxis":"date_sale@monthly:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{}}';
         
         // Add views
         $(document).bind("cubesviewerModelLoaded", { }, function() {
@@ -89,6 +84,15 @@
             cubesviewer.views.redrawView (view1);
             
         });
+        
+        // Initialize CubesViewer system
+        cubesviewer.init({
+            cubesUrl: cubesUrl
+        });
+        
+        // Sample serialized view (Based on cubes-examples project data)
+        var serializedView = 
+            '{"cubename":"sales","name":"Cube View - Webshop / Sales","mode":"chart","drilldown":["country:region"],"cuts":[],"datefilters":[{"dimension":"date_sale@weekly","mode":"auto-last12m","date_from":"","date_to":""}],"xaxis":"date_sale@monthly:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{}}';
         
         // Scripting example for the "switch mode" link
         $('#switchToSeriesTable').click(function() {
@@ -131,6 +135,11 @@
                     exploring and analyzing OLAP databases served by the
                     Cubes OLAP Framework.
                 <p>
+                <p>
+                    CubesViewer can be used for data exploration and data auditory, 
+                    generation of reports, chart design and embedding, 
+                    and as a (simple) company-wide analytics application.
+                <p>
                 
                 <ul>
                 <li><a href="index.html">Embedded View demo</a> <i>(this page)</i></li>
@@ -172,6 +181,8 @@
 
             <h3>Download</h3>
             <section id="downloads" class="clearfix">
+            
+            <div>
                 <a
                     href="https://github.com/jjmontesl/cubesviewer/zipball/master"
                     id="download-zip" class="button"><span>Download
@@ -182,6 +193,14 @@
                     href="https://github.com/jjmontesl/cubesviewer"
                     id="view-on-github" class="button"><span>View
                         on GitHub</span></a>
+            </div>
+            <div style="clear: both; margin-bottom: 10px;" ></div>
+            
+            <p>If you are using or trying CubesViewer, we'd love to hear from you...<br /><br/>
+            <a href="https://twitter.com/intent/tweet?button_hashtag=cubesviewer" class="twitter-hashtag-button" data-size="large" data-related="jjmontes">Tweet #cubesviewer</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+            </p>
+            
             </section>
 
             <footer>

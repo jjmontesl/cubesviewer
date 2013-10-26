@@ -42,8 +42,6 @@ function cubesviewerViewCubeChart() {
 			"charttype" : "bars-vertical",
 		});
 		
-		view.flotrDraw = null;
-		view.doExport = false;
 	};	
 	
 	/*
@@ -51,19 +49,8 @@ function cubesviewerViewCubeChart() {
 	 */
 	this.exportChart = function(view) {
 		 
-	     if (Flotr.isIE && Flotr.isIE < 9) {
-            view.cubesviewer.alert("Your browser doesn't allow you to get a bitmap image from the plot.");
-            return;
-         }
-	     
-	     if (view.flotrDraw == null) {
-	    	 view.cubesviewer.alert("Cannot export: there is no chart configured.");
-	         return;
-	     }
-
-	     view.doExport = true;
-	     view.cubesviewer.views.redrawView(view);
-	     
+		cubesviewer.alert ("Not implemented");
+		
 	};
 
 	/*
@@ -124,9 +111,8 @@ function cubesviewerViewCubeChart() {
 			'<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-calculator"></span>Chart Type</a><ul style="width: 180px;">' +
 	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="pie">Pie</a></li>' +
 	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="bars-vertical">Bars Vertical</a></li>' +
-	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="bars-vertical-stacked">Bars Vertical (Stacked)</a></li>' +
 	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines">Lines</a></li>' +
-	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines-stacked">Areas (Stacked)</a></li>' +
+	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines-stacked">Areas</a></li>' +
 	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="radar">Radar</a></li>' +
 	  	  '</ul></li>' +
   		  '<div></div>'
@@ -241,7 +227,7 @@ function cubesviewerViewCubeChart() {
 		$(view.container).find('.cv-view-viewdata').css("width", "99%");
 		$(view.container).find('.cv-view-viewdata').append(
 			'<h3>Series Chart</h3>' +
-			'<div id="seriesChart-' + view.id + '" style="height: 380px; "></div>'
+			'<div id="seriesChart-' + view.id + '" style="height: 400px; "><svg style="height: 400px;" /></div>'
 		);
 		
 		var colNames = [];
@@ -263,9 +249,7 @@ function cubesviewerViewCubeChart() {
 			});
 		}
 		
-		if (view.params.charttype == "bars-vertical") {
-			view.cubesviewer.views.cube.chart.drawChartBarsVertical(view, colNames, dataRows, dataTotals);
-		} else if (view.params.charttype == "bars-vertical-stacked") {
+		if ((view.params.charttype == "bars-vertical") || (view.params.charttype == "bars-vertical-stacked")) {
 			view.cubesviewer.views.cube.chart.drawChartBarsVertical(view, colNames, dataRows, dataTotals);
 		} else if (view.params.charttype == "lines") {
 			view.cubesviewer.views.cube.chart.drawChartLines(view, colNames, dataRows, dataTotals);
@@ -277,19 +261,7 @@ function cubesviewerViewCubeChart() {
 			view.cubesviewer.views.cube.chart.drawChartRadar(view, colNames, dataRows, dataTotals);
 		}
 		
-	    if (view.doExport) {
-	    	view.doExport = false;
-	    	view.flotrDraw.download.saveImage("png");
-	    }
-		
 		// Generic effects
-	    $('.flotr-legend').hover(function() {
-	    	$(this).stop().animate ({opacity: 0.10}, 1000);
-	    	$('.flotr-legend-bg').stop().animate ({opacity: 0.10}, 1000);
-	    }, function() {
-	    	$(this).stop().animate ({opacity: 0.75}, 1000);
-	    	$('.flotr-legend-bg').stop().animate ({opacity: 0.75}, 1000);
-	    });
 	    
 	};
 
@@ -298,7 +270,8 @@ function cubesviewerViewCubeChart() {
 	 */
 	this.drawChartBarsVertical = function (view, colNames, dataRows, dataTotals) {
 		
-		var container = $('#seriesChart-' + view.id).get(0);
+		var container = $('#seriesChart-' + view.id).find("svg").get(0);
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cubesviewer.model.getDimensionParts(view.params.xaxis).label : "None")
 		
 	    var d = [];
 
@@ -308,124 +281,167 @@ function cubesviewerViewCubeChart() {
 	    	for (i = 1; i < colNames.length; i++) {
 	    		var value = e[colNames[i]];
 	    		if (value != undefined) {
-	    			serie.push( [ (view.params.charttype == "bars-vertical-stacked") ? (i * 10) : (i*10 + ((idx / numRows) * 9)), value] );
+	    			serie.push( { "x": colNames[i], "y":  value } );
+	    		} else {
+	    			serie.push( { "x": colNames[i], "y":  0} );
 	    		}
 	    	}
-	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : "" });
+	    	d.push({ "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis });
 	    });
-	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
+	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
 	    
+	    /*
 	    xticks = [];
 	    for (i = 1; i < colNames.length; i++) {
     		xticks.push([ i * 10, colNames[i] ]); 
 	    }
+	    */
+
+	    chartOptions = {
+	    	  //barColor: d3.scale.category20().range(),
+	    	  delay: 1200,
+	    	  groupSpacing: 0.1,
+	    	  //reduceXTicks: false,
+	    	  //staggerLabels: true
+	    };
 	    
-	    view.flotrDraw = Flotr.draw(container, d, {
-	    	HtmlText: !view.doExport,
-	    	shadowSize: 2,
-	        bars: {
-	            show: true,
-	            horizontal: false,
-	            shadowSize: 0,
-	            barWidth: (view.params.charttype == "bars-vertical-stacked") ? 9 : (9 / numRows),
-	            stacked: (view.params.charttype == "bars-vertical-stacked")
-	        },
-	        mouse: {
-	            track: true,
-	            relative: true,
-            	trackFormatter:function(obj) {
-            		return (obj.series.label + ' -> ' + obj.series.xaxis.ticks[(Math.floor(obj.x / 10)) - 1].label + " = " + parseFloat(obj.y));
-            	}	            
-	        },
-	        yaxis: {
-	            // TODO: Check if this is applying correctly (null seems to be taken as 0)
-	        	min: (view.params.charttype == "bars-vertical-stacked" ? 0 : null),
-	            autoscaleMargin: 1
-	        },
-	        legend: {
-	            position: "nw",
-	            backgroundColor: "#D2E8FF"
-	        },
-	        grid: {
-	            verticalLines: false,
-	            horizontalLines: true
-	        },
-	        xaxis: {
-	            ticks: xticks
-	        }	        
-	        
+	    nv.addGraph(function() {
+	        var chart;
+	        chart = nv.models.multiBarChart()
+	          //.margin({bottom: 100})
+	          .transitionDuration(300)
+	          ;
+
+	        chart.options(chartOptions);
+	        chart.multibar
+	          .hideable(true);
+
+	        chart.xAxis
+	            .axisLabel(xAxisLabel)
+	            .showMaxMin(true)
+	            //.tickFormat(d3.format(',0f'))
+	            ;
+
+	        chart.yAxis.tickFormat(d3.format(',.2f'));
+
+	        d3.select(container)
+	            .datum(d)
+	            .call(chart);
+
+	        nv.utils.windowResize(chart.update);
+
+	        //chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+
+	        return chart;
 	    });
 	    
 	}
 	
 	/**
-	 * Draws a vertical bars chart.
 	 */
 	this.drawChartLines = function (view, colNames, dataRows, dataTotals) {
 		
-		var container = $('#seriesChart-' + view.id).get(0);
+		var container = $('#seriesChart-' + view.id).find("svg").get(0);
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cubesviewer.model.getDimensionParts(view.params.xaxis).label : "None")
 		
 	    var d = [];
 
 	    // TODO: Check there's only one value column
 	    
 	    numRows = dataRows.length;
+	    var serieCount = 1;
 	    $(dataRows).each(function(idx, e) {
 	    	serie = [];
 	    	for (i = 1; i < colNames.length; i++) {
-	    		var value = e[colNames[i]];
-	    		if (value != undefined) {
-	    			serie.push( [i*10, value] );
+	    		if (colNames[i] in e) {
+	    			var value = e[colNames[i]];
+	    			serie.push( { "x": i, "y": value } );
 	    		} else {
-	    			serie.push( [i*10, 0] );
+	    			serie.push( { "x": i, "y": 0 } );
 	    		}
 	    	}
-	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : view.params.yaxis });
-	    	//d.push({ data: serie, label: e["key"], lines: { /*fill: (view.params.charttype == "lines-stacked")*/ } });
+	    	d.push({ "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis });
 	    });
-	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
+	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
 	    
+	    /*
 	    xticks = [];
 	    for (i = 1; i < colNames.length; i++) {
-    		xticks.push([ i * 10, colNames[i] ]); 
+    		xticks.push([ i, colNames[i] ]); 
+	    }
+	    */
+	    
+	    if (view.params.charttype != "lines-stacked") {
+	    
+		    nv.addGraph(function() {
+		    	var chart = nv.models.lineChart()
+		    		.useInteractiveGuideline(true)
+		    		;
+	
+		    	chart.xAxis
+		    		.axisLabel(xAxisLabel)
+		    		.tickFormat(function(d,i) {
+				                return (colNames[d]);
+				     })	;
+	
+		    	chart.yAxis
+		    		//.axisLabel("Y-axis Label")
+		    		.tickFormat(d3.format(',.2f'));
+		    		;
+	
+		    	d3.select(container)
+		    		.datum(d)
+		    		.transition().duration(500).call(chart);
+	
+		    	nv.utils.windowResize(
+		    			function() {
+		    				chart.update();
+		    			}
+		    		);
+	
+		    	return chart;
+		    });
+		    
+	    } else {
+		    
+		    nv.addGraph(function() {
+	    	  var chart = nv.models.stackedAreaChart()
+	    	                //.x(function(d) { return d[0] })
+	    	                //.y(function(d) { return d[1] })
+	    	                .clipEdge(true)
+	    	                .useInteractiveGuideline(true);
+	
+	    	  chart.xAxis
+	    	  	  .axisLabel(xAxisLabel)
+	    	      .showMaxMin(false)
+	    	      .tickFormat(function(d,i) {
+			                return (colNames[d]);
+			       })	;
+	
+	    	  chart.yAxis
+	    	      .tickFormat(d3.format(',.2f'));
+	
+	    	  d3.select(container)
+	    	    .datum(d)
+	    	      .transition().duration(500).call(chart);
+	
+	    	  nv.utils.windowResize(chart.update);
+	
+	    	  return chart;
+	    	});
+		    
 	    }
 	    
-	    view.flotrDraw = Flotr.draw(container, d, {
-	    	HtmlText: ! view.doExport,
-	    	shadowSize: 0,
-	        yaxis: {
-	        	autoscaleMargin: 1
-	        },
-	        lines: {
-	        	lineWidth: 1, 
-	        	shadow: false,
-	        	stacked: (view.params.charttype == "lines-stacked"),
-	        	fill: (view.params.charttype == "lines-stacked")
-	        },
-	        mouse: {
-	            track: true,
-	            relative: true,
-            	trackFormatter:function(obj) {
-            		return (obj.series.label + ' -> ' + obj.series.xaxis.ticks[(obj.x / 10) - 1].label + " = " + parseFloat(obj.y));
-            	}
-	        },
-	        legend: {
-	            position: "nw",
-	            backgroundColor: "#D2E8FF"
-	        },
-	        xaxis: {
-	            ticks: xticks
-	        }
-	    });
+	    
 	    
 	};	
 
 	/**
-	 * Draws a vertical bars chart.
 	 */
 	this.drawChartPie = function (view, colNames, dataRows, dataTotals) {
 		
-		var container = $('#seriesChart-' + view.id).get(0);
+		var container = $('#seriesChart-' + view.id).find("svg").get(0);
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cubesviewer.model.getDimensionParts(view.params.xaxis).label : "None")
 		
 	    var d = [];
 
@@ -439,54 +455,50 @@ function cubesviewerViewCubeChart() {
 	    numRows = dataRows.length;
 	    $(dataRows).each(function(idx, e) {
 	    	serie = [];
-	    	for (i = 1; i < colNames.length; i++) {
-	    		var value = e[colNames[i]];
-	    		if (value != undefined) {
-	    			serie.push( [0, value] );
-	    		}
+	    	var value = e[colNames[1]];
+    		if ((value != undefined) && (value > 0)) {
+    			
+    			d.push({ "y": value, "key": e["key"] != "" ? e["key"] : colNames[0] });
 	    	}
-	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : colNames[0] });
 	    });
-	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
+	    //d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
 	    
 	    xticks = [];
 	    for (i = 1; i < colNames.length; i++) {
     		xticks.push([ i - 1, colNames[i] ]); 
 	    }
 	    
-	    view.flotrDraw = Flotr.draw(container, d, {
-	    	HtmlText: ! view.doExport,
-            xaxis: {
-                showLabels: false
-            },
-            yaxis: {
-                showLabels: false
-            }, 	        
-            mouse: {
-            	track: true,
-            	relative: true,
-            	trackFormatter:function(obj) {
-            		return (obj.series.label + ' -> ' + colNames[1] + " = " + parseFloat(obj.y));
-            	}
-            },
-	        grid: {
-	            verticalLines: false,
-	            horizontalLines: false
-	        },
-	        pie: {
-	            show: true,
-	            explode: 6
-	        },		        
-	        legend: {
-	            position: "nw",
-	            backgroundColor: "#D2E8FF"
-	        }
+	    nv.addGraph(function() {
+
+	        var chart = nv.models.pieChart()
+	            .x(function(d) { return d.key })
+	            .y(function(d) { return d.y })
+	            //.color(d3.scale.category20().range())
+	            //.width(width)
+	            //.height(height)
+	            .labelType("percent")
+	            //.donut(true);
+
+	        /*
+		    chart.pie
+		        .startAngle(function(d) { return d.startAngle/2 -Math.PI/2 })
+		        .endAngle(function(d) { return d.endAngle/2 -Math.PI/2 });
+		        */
+
+	          d3.select(container)
+	              .datum(d)
+	            .transition().duration(1200)
+	              //.attr('width', width)
+	              //.attr('height', height)
+	              .call(chart);
+
+	        nv.utils.windowResize(chart.update);
+	        return chart;
 	    });
 	    
 	};	
 	
 	/**
-	 * Draws a vertical bars chart.
 	 */
 	this.drawChartRadar = function (view, colNames, dataRows, dataTotals) {
 		
