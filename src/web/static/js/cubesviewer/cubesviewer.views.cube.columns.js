@@ -86,7 +86,7 @@ function cubesviewerViewCubeColumns () {
 		
 		var grid = $('#summaryTable-' + view.id);
 		
-		$(view.container).find(".cv-view-viewinfo").append('<div class="cv-view-columns-chooser cv-view-info-panel"><h3>Column chooser</h3><div class="cv-view-columns-chooser-cols"></div></div>');
+		$(view.container).find(".cv-view-viewinfo").append('<div class="cv-view-columns-chooser cv-view-info-panel infopiece ui-widget ui-corner-all" style="background-color: #ddddff;"><h3>Column chooser</h3><div class="cv-view-columns-chooser-cols"></div></div>');
 		
 		
 		var lastPrefix = "";

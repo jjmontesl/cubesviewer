@@ -142,8 +142,7 @@ function cubesviewerViewCubeDimensionFilter () {
 		// Clean interface if a filter was already open
 		$(view.container).find('.cv-view-dimensionfilter').remove();
 
-		
-		$(view.container).find(".cv-view-viewinfo").append('<div class="cv-view-dimensionfilter cv-view-info-panel"><h3>Dimension filter: ' + parts.label + '</h3><div class="cv-view-dimensionfilter-cont"></div></div>');
+		$(view.container).find(".cv-view-viewinfo").append('<div class="cv-view-dimensionfilter cv-view-info-panel infopiece ui-widget ui-corner-all" style="background-color: #ffcccc;"><h3>Dimension filter: ' + parts.label + '</h3><div class="cv-view-dimensionfilter-cont"></div></div>');
 		
 		// Draw value container
 		
@@ -162,10 +161,13 @@ function cubesviewerViewCubeDimensionFilter () {
 				'<div style="margin-top: 10px;">' +
 				'<button class="cv-views-dimensionfilter-apply">Apply</button>' +
 				'<button class="cv-views-dimensionfilter-cancel">Close</button>' +
-				'<div id="cv-views-dimensionfilter-cols-' + view.id + '" class="cv-views-dimensionfilter-cols" style="display: inline-block; margin-left: 15px; padding: 0px;">' + 
+				'<div id="cv-views-dimensionfilter-cols-' + view.id + '" class="cv-views-dimensionfilter-cols" style="display: inline-block; margin-left: 15px; margin-right: 15px; padding: 0px;">' + 
 			    '<input type="radio" name="cv-views-dimensionfilter-col" id="cv-views-dimensionfilter-col1-' + view.id + '" /><label for="cv-views-dimensionfilter-col1-' + view.id + '">1 col</label>' + 
 			    '<input type="radio" name="cv-views-dimensionfilter-col" id="cv-views-dimensionfilter-col2-' + view.id + '" checked="checked" /><label for="cv-views-dimensionfilter-col2-' + view.id + '">2 cols</label>' +
 			    '</div>' +
+				'<button class="cv-views-dimensionfilter-selectall">Select All</button>' +
+				'<button style="margin-right: 15px;" class="cv-views-dimensionfilter-selectnone">Select None</button>' +
+				'<button class="cv-views-dimensionfilter-drill">Drilldown This</button>' +
 				'</div>'
 		);
 		$(view.container).find(".cv-views-dimensionfilter-apply").button().click(function() {
@@ -182,6 +184,18 @@ function cubesviewerViewCubeDimensionFilter () {
 		});
 		$(view.container).find("#cv-views-dimensionfilter-col2-" + view.id).click(function() {
 			view.cubesviewer.views.cube.dimensionfilter.drawDimensionValuesCols( view, 2 );
+		});
+		
+		$(view.container).find(".cv-views-dimensionfilter-selectall").button().click(function() {
+			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox").not(":checked").trigger('click');;
+		});
+		$(view.container).find(".cv-views-dimensionfilter-selectnone").button().click(function() {
+			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox").filter(":checked").trigger('click');
+		});
+		
+		$(view.container).find(".cv-views-dimensionfilter-drill").button().click(function() {
+			cubesviewer.views.cube.explore.selectDrill(view, parts.fullDrilldownValue, "1");
+			return false;
 		});
 		
 		// Obtain data

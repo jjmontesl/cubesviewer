@@ -44,6 +44,10 @@ Ported from blueprint to make sure embedded views work without blueprint:
     margin: 0px !important;
 }
 
+.cv-view-panel button {
+    margin: 0px 2px 0px 0px;
+}
+
 /*
 Custom Cubesviewer styles
 */
@@ -161,7 +165,7 @@ div.cv-view-info-panel {
 	clear: both;
     margin-top: 10px;
     margin-bottom: 10px;
-    border: 1px solid rgb(221, 221, 221);
+    /*border: 1px solid rgb(221, 221, 221);*/
     padding-top: 3px;
     padding-bottom: 3px;
     padding-left: 5px;
