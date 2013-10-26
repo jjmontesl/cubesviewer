@@ -124,12 +124,20 @@ function cubesviewerViewCubeColumns () {
 		
 		$(view.container).find(".cv-view-columns-chooser-cols").append (
 				'<div style="margin-top: 10px;">' +
-				'<button class="cv-views-columns-chooser-close">Close Column Chooser</button>' +
+				'<button class="cv-views-columns-chooser-close" style="margin-right: 15px;">Close Column Chooser</button>' +
+				'<button class="cv-views-columns-chooser-selectall">Select All</button>' +
+				'<button class="cv-views-columns-chooser-selectnone">Select None</button>' +
 				'</div>'
 		);
 		$(view.container).find(".cv-views-columns-chooser-close").button().click(function() {
 			$(this).parents('.cv-view-columns-chooser').remove();
 		});
+		$(view.container).find(".cv-views-columns-chooser-selectall").button().click(function() {
+			$(view.container).find(".cv-view-columns-chooser-cols").find(":checkbox").not(":checked").trigger('click');;
+		});
+		$(view.container).find(".cv-views-columns-chooser-selectnone").button().click(function() {
+			$(view.container).find(".cv-view-columns-chooser-cols").find(":checkbox").filter(":checked").trigger('click');
+		});		
 		
 		
 	};
