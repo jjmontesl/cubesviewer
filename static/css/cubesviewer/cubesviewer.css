@@ -3,8 +3,14 @@
  */
 
 /*
-Ported from blueprint to make sure embedded views work without blueprint:
+ * YUI context css reset
+ */
+.cv-cssreset html{color:#000;background:#FFF}.yui3-cssreset body,.yui3-cssreset div,.yui3-cssreset dl,.yui3-cssreset dt,.yui3-cssreset dd,.yui3-cssreset ul,.yui3-cssreset ol,.yui3-cssreset li,.yui3-cssreset h1,.yui3-cssreset h2,.yui3-cssreset h3,.yui3-cssreset h4,.yui3-cssreset h5,.yui3-cssreset h6,.yui3-cssreset pre,.yui3-cssreset code,.yui3-cssreset form,.yui3-cssreset fieldset,.yui3-cssreset legend,.yui3-cssreset input,.yui3-cssreset textarea,.yui3-cssreset p,.yui3-cssreset blockquote,.yui3-cssreset th,.yui3-cssreset td{margin:0;padding:0}.yui3-cssreset table{border-collapse:collapse;border-spacing:0}.yui3-cssreset fieldset,.yui3-cssreset img{border:0}.yui3-cssreset address,.yui3-cssreset caption,.yui3-cssreset cite,.yui3-cssreset code,.yui3-cssreset dfn,.yui3-cssreset em,.yui3-cssreset strong,.yui3-cssreset th,.yui3-cssreset var{font-style:normal;font-weight:normal}.yui3-cssreset ol,.yui3-cssreset ul{list-style:none}.yui3-cssreset caption,.yui3-cssreset th{text-align:left}.yui3-cssreset h1,.yui3-cssreset h2,.yui3-cssreset h3,.yui3-cssreset h4,.yui3-cssreset h5,.yui3-cssreset h6{font-size:100%;font-weight:normal}.yui3-cssreset q:before,.yui3-cssreset q:after{content:''}.yui3-cssreset abbr,.yui3-cssreset acronym{border:0;font-variant:normal}.yui3-cssreset sup{vertical-align:text-top}.yui3-cssreset sub{vertical-align:text-bottom}.yui3-cssreset input,.yui3-cssreset textarea,.yui3-cssreset select{font-family:inherit;font-size:inherit;font-weight:inherit}.yui3-cssreset input,.yui3-cssreset textarea,.yui3-cssreset select{*font-size:100%}.yui3-cssreset legend{color:#000}#yui3-css-stamp.cssreset-context{display:none}
+
+/*
+Ported from blueprint to make sure embedded views work without blueprint.
 */
+
 .cv-view-panel {
 	font-size: 13px;
 	color: #222;
@@ -55,6 +61,9 @@ Ported from blueprint to make sure embedded views work without blueprint:
     margin: 0px 2px 0px 0px;
 }
 
+/* Override blueprint highlight */
+.cv-view-panel .highlight {background: inherit;}
+
 /*
 Custom Cubesviewer styles
 */
@@ -63,23 +72,31 @@ Custom Cubesviewer styles
     vertical-align: middle;
 }
 
+.cv-view-panel h1 {
+    font-variant: small-caps;
+    font-weight: bold;
+    margin: 0px 0px 10px 0px;
+    color: #8686BF;
+    font-size: 20pt;
+}
+
 .cv-view-panel h2 {
     font-variant: small-caps;
     font-weight: bold;
-    margin-top: 0px;
-    margin-bottom: 5px;
+    margin: 0px 0px 10px 0px;
     color: #8686BF;
     font-size: 16pt;
 }
 
-.cv-view-panel h3 {
+.cv-view-panel h3, .nvtooltip h3 {
     font-variant: small-caps;
     font-weight: bold;
-    margin-top: 0px;
-    margin-bottom: 5px;
+    margin: 0px 0px 10px 0px;
     color: #8686BF;
     font-size: 12pt;
 }
+
+
 
 .cv-view-panel th {
     white-space: nowrap;
@@ -187,3 +204,10 @@ div.cv-view-dimensionfilter-item {
     margin-right: 5px;
 }
 
+.nvtooltip table {
+	margin: 0px ;
+}
+
+.nvtooltip table td {
+    border: none;
+}

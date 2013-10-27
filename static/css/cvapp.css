@@ -10,20 +10,28 @@ img#cv-logo {
 	width: 135px;
 }
 
+h1 {
+    font-variant: small-caps;
+    font-weight: bold;
+    margin: 0px 0px 10px 0px;
+    color: #8686BF;
+    font-size: 20pt;
+}
+
 h2 {
-	font-variant: small-caps;
-	font-weight: bold;
-	margin: 12px 2px 12px 2px;
-	color: #8686BF;
-	font-size: 16pt;
+    font-variant: small-caps;
+    font-weight: bold;
+    margin: 0px 0px 10px 0px;
+    color: #8686BF;
+    font-size: 16pt;
 }
 
 h3 {
-	font-variant: small-caps;
-	font-weight: bold;
-	margin: 12px 2px 8px 2px;
-	color: #8686BF;
-	font-size: 12pt;
+    font-variant: small-caps;
+    font-weight: bold;
+    margin: 0px 0px 10px 0px;
+    color: #8686BF;
+    font-size: 12pt;
 }
 
 p {

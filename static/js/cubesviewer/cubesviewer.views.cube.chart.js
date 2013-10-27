@@ -112,6 +112,7 @@ function cubesviewerViewCubeChart() {
 	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="pie">Pie</a></li>' +
 	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="bars-vertical">Bars Vertical</a></li>' +
 	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines">Lines</a></li>' +
+	  		//'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines-cumulative">Cumulative lines</a></li>' +
 	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines-stacked">Areas</a></li>' +
 	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="radar">Radar</a></li>' +
 	  	  '</ul></li>' +
@@ -257,6 +258,8 @@ function cubesviewerViewCubeChart() {
 			view.cubesviewer.views.cube.chart.drawChartPie(view, colNames, dataRows, dataTotals);
 		} else if (view.params.charttype == "lines-stacked") {
 			view.cubesviewer.views.cube.chart.drawChartLines(view, colNames, dataRows, dataTotals);
+		} else if (view.params.charttype == "lines-cumulative") {
+			view.cubesviewer.views.cube.chart.drawChartLinesCumulative(view, colNames, dataRows, dataTotals);
 		} else if (view.params.charttype == "radar") {
 			view.cubesviewer.views.cube.chart.drawChartRadar(view, colNames, dataRows, dataTotals);
 		}
@@ -435,6 +438,67 @@ function cubesviewerViewCubeChart() {
 	    
 	    
 	};	
+	
+	/**
+	 */
+	/*
+	this.drawChartLinesCumulative = function (view, colNames, dataRows, dataTotals) {
+		
+		var container = $('#seriesChart-' + view.id).find("svg").get(0);
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cubesviewer.model.getDimensionParts(view.params.xaxis).label : "None")
+		
+	    var d = [];
+
+	    
+	    numRows = dataRows.length;
+	    var serieCount = 1;
+	    $(dataRows).each(function(idx, e) {
+	    	serie = [];
+	    	for (i = 1; i < colNames.length; i++) {
+	    		if ((colNames[i] in e) && (e[colNames[i]])) {
+	    			var value = e[colNames[i]];
+	    			serie.push( { "x": i-1, "y": parseFloat(value) } );
+	    		} else {
+	    			serie.push( { "x": i-1, "y": 0.0 } );
+	    		}
+	    	}
+	    	d.push({ "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis });
+	    });
+	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+	    
+	    console.debug(d);
+	    
+	    nv.addGraph(function() {
+	        var chart = nv.models.cumulativeLineChart()
+                          //.x(function(d) { return d.x })
+		                  //.y(function(d) { return d.y }) 
+		                  .color(d3.scale.category20().range())
+	                      //.color(d3.scale.category10().range())
+		                  //.useInteractiveGuideline(true)
+	                      ;
+
+	         chart.xAxis
+	            .axisLabel(xAxisLabel)
+			      .tickFormat(function(d,i) {
+			                return (colNames[d-1]);
+			       })	;
+	         
+	         chart.yAxis
+	         .tickFormat(d3.format(',.2f'));
+
+	        d3.select(container)
+	            .datum(d)
+	          .transition().duration(500)
+	            .call(chart);
+
+	        //TODO: Figure out a good way to do this automatically
+	        nv.utils.windowResize(chart.update);
+
+	        return chart;
+      });
+	    
+	};	
+	*/	
 
 	/**
 	 */
