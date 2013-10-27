@@ -88,13 +88,15 @@ Custom Cubesviewer styles
     font-size: 16pt;
 }
 
-.cv-view-panel h3 {
+.cv-view-panel h3, .nvtooltip h3 {
     font-variant: small-caps;
     font-weight: bold;
     margin: 0px 0px 10px 0px;
     color: #8686BF;
     font-size: 12pt;
 }
+
+
 
 .cv-view-panel th {
     white-space: nowrap;
