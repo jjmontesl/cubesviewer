@@ -92,6 +92,18 @@ function cubesviewerViews () {
 		
 	};
 	
+	/**
+	 * Destroys a view
+	 */
+	this.destroyView = function(view) {
+		
+		// Do cleanup
+		
+		// Trigger destroyed event
+		$(document).trigger("cubesviewerViewDestroyed", [ view ] );
+		
+	};
+	
 	/*
 	 * Locates a view object walking up the parents chain of an element.
 	 */

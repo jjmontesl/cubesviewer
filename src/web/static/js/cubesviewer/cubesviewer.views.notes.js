@@ -34,7 +34,8 @@ function cubesviewerViewNotes () {
 
 	this.cubesviewer = cubesviewer;
 	
-	this.noteViews = []
+	// TODO: This shall be managed by cubesviewer
+	this.noteViews = [];
 
 	this.onViewCreate = function(event, view) {
 		
@@ -49,7 +50,22 @@ function cubesviewerViewNotes () {
 		// Add the notes view to the list of notes views to be updated
 		cubesviewer.views.notes.noteViews.push(view);
 		
-	}
+	};
+	
+	/*
+	 * View destroyed 
+	 */
+	this.onViewDestroyed = function(event, view) {
+
+		var len = cubesviewer.views.notes.noteViews.length;
+		while (len--) {
+			if (cubesviewer.views.notes.noteViews[len].id == view.id) {
+			    // Element is detached, destroy graph
+				cubesviewer.views.notes.noteViews.splice (len,1);
+			}
+		}
+		
+	};	
 	
 	
 	/*
@@ -235,5 +251,6 @@ cubesviewer.views.notes = new cubesviewerViewNotes();
  * Bind events.
  */
 $(document).bind("cubesviewerViewCreate", { }, cubesviewer.views.notes.onViewCreate);
+$(document).bind("cubesviewerViewDestroyed", { }, cubesviewer.views.notes.onViewDestroyed);
 $(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.notes.onViewDraw);
 
