@@ -778,10 +778,6 @@ function cubesviewerViewCubeExplore() {
 						"dimension" : dimension,
 						"value" : value
 					});
-					// Don't drill cut dimension
-					if (value.indexOf(";") < 0) {
-						cubesviewer.views.cube.explore.removeDrill(view, dimension);
-					}
 				/*}*/
 			} else {
 				view.params.cuts = $.grep(view.params.cuts, function(e) {
