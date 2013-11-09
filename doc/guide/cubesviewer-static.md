@@ -40,47 +40,60 @@ In order to run CubesViewer, you need to include a number Javascript and CSS dep
 Note that the paths may vary in your application, depending on where you put CubesViewer file. Also,
 note that **the order of inclusion of Javascript files is critical** (  though you could remove optional components).
 
-(Note: the first CSS link, *screen.css*, is not required. It applies default fonts and styles and may be ignored
-if you already have applied styles to your site.)  
- 
 ```
-    <link rel="stylesheet" href="../web/static/css/blueprint/screen.css" type="text/css" media="screen, projection">
+    <!-- CubesViewer CSS resources -->
+    <link type="text/css" rel="stylesheet" href="../web/static/css/jqueryui-cupertino/jquery-ui-1.9.2.custom.css" />
+    <link type="text/css" rel="stylesheet" href="../web/static/css/jqgrid/ui.jqgrid.css" media="screen" />
+    <link type="text/css" rel="stylesheet" href="../web/static/js/qtip/jquery.qtip.css"  />    
+    <link type="text/css" rel="stylesheet" href="../web/static/js/wiky/wiky.math.css" />
+    <link type="text/css" rel="stylesheet" href="../web/static/js/nvd3/nv.d3.min.css" />    
+    
+    <link type="text/css" rel="stylesheet" href="../web/static/css/cubesviewer/cubesviewer.css" />
 
-    <link type="text/css" href="../web/static/css/jqueryui-cupertino/jquery-ui-1.9.2.custom.css" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" media="screen" href="../web/static/css/jqgrid/ui.jqgrid.css" />
-    <link type="text/css" href="../web/static/js/qtip/jquery.qtip.css" rel="stylesheet" />
-
-    <link rel="stylesheet" type="text/css" href="../web/static/css/cvapp.css" />
-
+    <!-- CubesViewer JS dependencies -->
+    
+    <script type="text/javascript" src="../web/static/js/jquery/jquery-1.8.3.js"></script>
+    <script type="text/javascript" src="../web/static/js/jquery/jquery-ui-1.9.2.custom.min.js"></script>
+    <script type="text/javascript" src="../web/static/js/jquery/jquery.cookie.js"></script> 
     
     <script type="text/javascript" src="../web/static/js/dateformat/dateformat.js"></script>
 
-    <script type="text/javascript" src="../web/static/js/jquery/jquery-1.8.3.js"></script>
-    <script type="text/javascript" src="../web/static/js/jquery/jquery-ui-1.9.2.custom.min.js"></script>
-    <script type="text/javascript" src="../web/static/js/jquery/jquery.cookie.js"></script>
-    
-    <script type="text/javascript" src="../web/static/js/qtip/jquery.qtip.js"></script>
+    <script type="text/javascript" src="../web/static/js/jquery/jquery.blockUI.js"></script>
 
-    <script src="../web/static/js/jqgrid/i18n/grid.locale-en.js" type="text/javascript"></script>
-    <script src="../web/static/js/jqgrid/jquery.jqGrid.min.js" type="text/javascript"></script>
-
-    <script type="text/javascript" src="../web/static/js/cvapp.js"></script>      
-
-    <link type="text/css" rel="stylesheet" href="../web/static/css/cubesviewer/cubesviewer.css" />    
-    <link type="text/css" rel="stylesheet" href="../web/static/js/wiky/wiky.math.css" />    
-        
     <script type="text/javascript" src="../web/static/js/wiky/wiky.js"></script>
     <script type="text/javascript" src="../web/static/js/wiky/wiky.math.js"></script>
     <script type="text/javascript" src="../web/static/js/flotr2/flotr2.min.js"></script>
+
+    <script type="text/javascript" src="../web/static/js/d3js/d3.v3.js"></script>
+    <script type="text/javascript" src="../web/static/js/nvd3/nv.d3.js"></script>
+    <script type="text/javascript" src="../web/static/js/qtip/jquery.qtip.js"></script>
+
+    <script type="text/javascript" src="../web/static/js/jqgrid/i18n/grid.locale-en.js" ></script>
+    <script type="text/javascript" src="../web/static/js/jqgrid/jquery.jqGrid.min.js" ></script>
+    
+    <!-- Cubesviewer modules -->
     
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.js"></script>
+    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.cache.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.model.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.explore.js"></script>
+    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.datefilter.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.series.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.chart.js"></script>
+    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.facts.js"></script>
+    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.dimensionfilter.js"></script>
+    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.columns.js"></script>  
+    
 ```
+
+Check if your project is using any of the used Javascript and CSS dependencies, as including them twice may cause errors, 
+or there may be version conflicts (jQuery, jQuery UI, jQuery QTip, D3.js, NVD3...).
+
+(Note: the most up to date list of JS and CSS files, and examples of HTML/CSS integration of CubesViewer 
+is best shown by the "views.html" and "gui.html" examples in the src/htmlviews directory of the project.).
+
 
 Container
 ---------
