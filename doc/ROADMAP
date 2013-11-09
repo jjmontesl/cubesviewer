@@ -1,0 +1,39 @@
+Roadmap 1.0
+    + Tag 1.0 release.
+Roadmap 0.14
+    + Interface available in English and Spanish.
+    + Implement i18n. 
+Roadmap 0.13
+    + Reviewed and improved doc
+    + Move doc to site (but import from repository markdown, to keep
+      doc sources along with the  project).
+    + Link from viewer to online doc.
+    + Create site, update readme, and site screenshots.
+Roadmap 0.12
+    + Implemented build system, concat simple file, minifying, etc.
+Roadmap 0.11
+    + GUI support for browser back button, correct URL usage, links to GUI.
+    + Support more authentication scenarios for embedded views / IFRAME, 
+      via CubesViewer server app (note upcoming Cubes auth framework).
+    + App support for IFRAME embedding.
+Roadmap 0.10
+    + Changed GUI loading (gui initializes cubesviewer, breaks existing 
+      GUI HTML integrations!), in order to fix loading events ordering issue.
+    + Loading is now less-destructive (up to the plugin).
+Roadmap 0.9    
+    + Ability to filter from chart filter / synchronize filter and chart filter (?).
+    + HTML, CSS and dynamic class usage sanitized (closes #14).
+    + GUI options (and all other plugin options) now as cubesviewer options
+      (with plugin namespace?).
+    + View UI interface reworked (reminder: ajaxloader usage in many places...)
+    + GUI interface reworked.
+    + Dialogs (serialize, others...) are no longer javascript alerts. 
+    + Hide interface mode (also, make these programmable options for the views).
+    + Fix too many series in legend issue (alternate legend?). 
+Roadmap 0.8
+    + Using less technical menu and button labels (drilldown, cut).
+    + Implemented chart resize options (alternate, more responsive method).  
+    + Charts now save configuration (grouped / stacked / stream / disabledseries / size).
+    + New rangefilter plugin (depends on separate datefilter as plugin) (closes #21).
+    + Separate datefilter as a plugin (closes #8).
+    
