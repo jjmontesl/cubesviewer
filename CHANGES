@@ -1,4 +1,5 @@
 0.8-devel
+    + Separated datefilter as a plugin (closes #8).
     + Cutting over a drilled dimension no longer removes the drill.
     + Added shortcuts (select all) and drilldown from filters.
     + Menus now open on hover if already open. 

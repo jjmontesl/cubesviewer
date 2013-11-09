@@ -139,8 +139,6 @@ function cubesviewerViewCubeFacts() {
 	 */
 	this.drawInfo = function(view) {
 		
-		view.cubesviewer.views.cube.explore.drawInfo(view);
-		
 	};
 	
 	

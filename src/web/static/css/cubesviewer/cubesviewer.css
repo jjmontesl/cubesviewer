@@ -27,6 +27,15 @@ Ported from blueprint to make sure embedded views work without blueprint.
 	user-select: none;
 }
 
+.cv-view-panel table, .cv-view-panel tr, .cv-view-panel td {
+	-webkit-touch-callout: initial;
+    -webkit-user-select: initial;
+    -khtml-user-select: initial;
+    -moz-user-select: initial;
+    -ms-user-select: initial;
+    user-select: initial;
+} 
+
 .cv-view-panel li.ui-menu-item {
   list-style: none;
   /*padding-left: 20px;*/

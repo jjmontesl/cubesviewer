@@ -28,12 +28,13 @@ Roadmap 0.9
     + View UI interface reworked (reminder: ajaxloader usage in many places...)
     + GUI interface reworked.
     + Dialogs (serialize, others...) are no longer javascript alerts. 
-    + Hide interface mode (also, make these programmable options for the views).
+    + Hide interface mode (also, make these programmable options for the views,
+      review current "readonly" variable usage ?? )
     + Fix too many series in legend issue (alternate legend?). 
-Roadmap 0.8
     + Using less technical menu and button labels (drilldown, cut).
     + Implemented chart resize options (alternate, more responsive method).  
+Roadmap 0.8
     + Charts now save configuration (grouped / stacked / stream / disabledseries / size).
     + New rangefilter plugin (depends on separate datefilter as plugin) (closes #21).
-    + Separate datefilter as a plugin (closes #8).
+
     

@@ -169,14 +169,6 @@ $.extend (cubesDimension.prototype, {
 	},
 	
 	/*
-	 * Inform if a dimension is a date dimension and can be used as a date
-	 * filter (i.e. with range selection tool).
-	 */ 
-	isDateDimension: function(dimension) {
-		return (this.getInfo("cv-datefilter") == true);
-	},
-	
-	/*
 	 * Get a level by name.
 	 */ 
 	getLevel: function(level) {

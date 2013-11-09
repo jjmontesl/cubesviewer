@@ -80,7 +80,7 @@ function cubesviewerViewCubeDimensionFilter () {
 
 		var dimensionFilterElements = cubesviewer.views.cube.explore.getDrillElementsList(view, "cv-view-show-dimensionfilter", false); 
 			
-		$(menu).prepend(
+		$(".ui-explore-cut-clearsep", menu).before(
 				'<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-zoomin"></span>Dimension filter</a><ul class="dimensionFilterList" style="width: 180px;">' + 
 				dimensionFilterElements + 
 				'</ul></li>'

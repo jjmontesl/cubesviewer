@@ -69,10 +69,11 @@ function cubesviewerViewCubeExplore() {
 		// Explore menu
 		view.cubesviewer.views.cube.explore.drawExploreMenu(view);
 		
+		// Draw minimum (explore) info pieces
+		view.cubesviewer.views.cube.explore.drawInfo(view);
+
 		if (view.params.mode != "explore") return;
 		
-		// Draw areas
-		view.cubesviewer.views.cube.explore.drawInfo(view);
 
 		// Highlight
 		$(view.container).find('.explorebutton').button("option", "disabled", "true").addClass('ui-state-active');
@@ -170,34 +171,15 @@ function cubesviewerViewCubeExplore() {
 		var menu = $(".cv-view-menu-cut", $(view.container));
 		var cube = view.cube;	
 	
-		var dateFilterElements = "";
-		$(cube.dimensions).each( function(idx, e) {
-
-			var dimension = $.grep(cubesviewer.model.dimensions, function(ed) {
-				return ed.name == e;
-			})[0];
-			
-			if (dimension.isDateDimension()) {
-
-				var disabled = "";
-				dateFilterElements = dateFilterElements + '<li><a href="#" class="selectDateFilter '  + disabled + 
-					'" data-dimension="' + dimension.name + ((dimension.getInfo("cv-datefilter-hierarchy")) ? "@" + dimension.getInfo("cv-datefilter-hierarchy") : "") +  
-				'" data-value="1">' + dimension.label + ((dimension.getHierarchy(dimension.getInfo("cv-datefilter-hierarchy"))) ? " / " + dimension.getHierarchy(dimension.getInfo("cv-datefilter-hierarchy")).label : "") +
-					'</a></li>';
-			}
-
-		});
-		
-		menu.append(
-				'<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-zoomin"></span>Date filter</a><ul class="dateFilterList" style="width: 180px;">' + 
-				dateFilterElements + 
-				'</ul></li>'
-		);
+		// Filter selected option (to filter in the values of the selected rows in the Explore table)
 		if (view.params.mode == "explore") {
-			menu.append('<li><a href="#" class="explore-filterselected" ><span class="ui-icon ui-icon-zoomin"></span>Filter selected</a></li>');
+			menu.append('<li><a href="#" class="explore-filterselected" ><span class="ui-icon ui-icon-zoomin"></span>Filter selected</a></li>' + 
+					    '<div></div>');
 		}
+		
+		// Separator and "clear filters". The datefilter uses this class to place itself in the menu.
 		menu.append(
-				'<div></div>' + 
+				'<div class="ui-explore-cut-clearsep"></div>' + 
 				'<li><a href="#" class="selectCut" data-dimension="" data-value="" ><span class="ui-icon ui-icon-close"></span>Clear filters</a></li>'
 		);
 		
@@ -205,7 +187,7 @@ function cubesviewerViewCubeExplore() {
 		view.cubesviewer.views.cube._initMenu(view, '.cutbutton', '.cv-view-menu-cut');		
 
 		
-	}
+	};
 	
 	/* 
 	 * Draw view options as appropriate.
@@ -232,10 +214,6 @@ function cubesviewerViewCubeExplore() {
 		});
 		$(view.container).find('.selectCut').click( function() {
 			cubesviewer.views.cube.explore.selectCut(view, $(this).attr('data-dimension'), $(this).attr('data-value'));
-			return false;
-		});
-		$(view.container).find('.selectDateFilter').click( function() {
-			cubesviewer.views.cube.explore.selectDateFilter(view, $(this).attr('data-dimension'), $(this).attr('data-value'));
 			return false;
 		});
 		
@@ -469,7 +447,7 @@ function cubesviewerViewCubeExplore() {
 			});
 		}
 		
-		dataTotals["key0"] = ((view.params.cuts.length == 0) && (view.params.datefilters.length == 0)) ? "<b>Summary</b>"
+		dataTotals["key0"] = (cubesviewer.views.cube.buildQueryCuts(view).length == 0) ? "<b>Summary</b>"
 				: "<b>Summary <i>(Filtered)</i></b>";
 
 		$('#summaryTable-' + view.id).get(0).updateIdsOfSelectedRows = function(
@@ -581,62 +559,6 @@ function cubesviewerViewCubeExplore() {
 	};
 		
 
-	this.drawDateFilter = function(view, datefilter, container) {
-
-		$(container)
-				.append(
-						' '
-								+ '<select name="date_mode" >'
-								+ '<option value="custom">Custom</option>'
-								//+ '<option value="linked" disabled="true">Linked to main</option>'
-								+ '<optgroup label="Auto">'
-								+ '<option value="auto-last1m">Last month</option>'
-								+ '<option value="auto-last3m">Last 3 months</option>'
-								+ '<option value="auto-last6m">Last 6 months</option>'
-								+ '<option value="auto-last12m">Last year</option>'
-								+ '<option value="auto-january1st">From January 1st</option>'
-								+ '<option value="auto-yesterday">Yesterday</option>'
-								+ '</optgroup>' + '</select> ' + 'Range: '
-								+ '<input name="date_start" /> - '
-								+ '<input name="date_end" /> ');
-
-		$("[name='date_start']", container).datepicker({
-			changeMonth : true,
-			changeYear : true,
-			dateFormat : "yy-mm-dd",
-			showWeek: cubesviewer.options.datepickerShowWeek,
-		    firstDay: cubesviewer.options.datepickerFirstDay
-		});
-		$("[name='date_end']", container).datepicker({
-			changeMonth : true,
-			changeYear : true,
-			dateFormat : "yy-mm-dd",
-			showWeek: cubesviewer.options.datepickerShowWeek,
-		    firstDay: cubesviewer.options.datepickerFirstDay
-		});
-
-		$("[name='date_start']", container).attr('autocomplete', 'off');
-		$("[name='date_end']", container).attr('autocomplete', 'off');
-
-		// Functionality
-		$("input,select", container).change(function() {
-			datefilter.mode = $("[name='date_mode']", container).val();
-			datefilter.date_from = $("[name='date_start']", container).val();
-			datefilter.date_to = $("[name='date_end']", container).val();
-			view.cubesviewer.views.redrawView (view);
-		});
-
-		// Set initial values
-		$("[name='date_mode']", container).val(datefilter.mode);
-		$("[name='date_start']", container).val(datefilter.date_from);
-		$("[name='date_end']", container).val(datefilter.date_to);
-		if ($("[name='date_mode']", container).val() != "custom") {
-			$("[name='date_start']", container).attr("disabled", "disabled");
-			$("[name='date_end']", container).attr("disabled", "disabled");
-		}
-
-	};
-
 	this.drawInfoPiece = function(selector, color, maxwidth, readonly, content) {
 
 		var maxwidthStyle = "";
@@ -661,16 +583,9 @@ function cubesviewerViewCubeExplore() {
 
 		$(view.container).find('.cv-view-viewinfo').empty();
 		
-		var drawHeader = ((view.params.cuts.length > 0) || (view.params.drilldown.length > 0)
-				|| (view.params.datefilters.length > 0));
-		if (drawHeader) {
-			//$(view.container).find('.cv-view-viewinfo').append('<div><h3 style="margin-top: 0px;">Current slice</h3></div>');
-		} 
-		
 		$(view.container).find('.cv-view-viewinfo').append(
 			'<div><div class="cv-view-viewinfo-drill"></div>' +
 			'<div class="cv-view-viewinfo-cut"></div>' +
-			'<div class="cv-view-viewinfo-date"></div>' +
 			'<div class="cv-view-viewinfo-extra"></div></div>' 
 		);
 		
@@ -708,22 +623,6 @@ function cubesviewerViewCubeExplore() {
 				view.cubesviewer.views.cube.explore.selectCut(view, e.dimension, "");
 			});
 		});
-
-		$(view.params.datefilters).each( function(idx, e) {
-			var dimparts = view.cubesviewer.model.getDimensionParts(e.dimension);
-			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
-					$(view.container).find('.cv-view-viewinfo-date'), "#ffdddd", null, readonly,
-					'<span class="ui-icon ui-icon-zoomin"></span> <b>Cut: </b> ' +  
-					dimparts.labelNoLevel +   
-					': <span class="datefilter"></span>')
-			var container = $('.datefilter', piece);
-			view.cubesviewer.views.cube.explore.drawDateFilter(view, e, container);
-			
-			piece.find('.cv-view-infopiece-close').click(function() {
-				view.cubesviewer.views.cube.explore.selectDateFilter(view, e.dimension, "0");
-			});
-		});
-
 
 		if (readonly) {
 			$(view.container).find('.infopiece').find('.ui-icon-close')
@@ -821,42 +720,7 @@ function cubesviewerViewCubeExplore() {
 				break;
 			}
 		}
-	},
-
-	// Adds a date filter
-	this.selectDateFilter = function(view, dimension, enabled) {
-
-		var cube = view.cube;
-
-		// Remove drill if exists
-		cubesviewer.views.cube.explore.removeDrill(view, dimension);
-
-		// TODO: Remove cuts if already exist
-
-		if (dimension != "") {
-			if (enabled == "1") {
-				view.params.datefilters.push({
-					"dimension" : dimension,
-					"mode" : "auto-last6m",
-					"date_from" : null,
-					"date_to" : null
-				});
-			} else {
-				for ( var i = 0; i < view.params.datefilters.length; i++) {
-					if (view.params.datefilters[i].dimension.split(':')[0] == dimension) {
-						view.params.datefilters.splice(i, 1);
-						break;
-					}
-				}
-			}
-		} else {
-			view.params.datefilters = [];
-		}
-
-		view.cubesviewer.views.redrawView(view);
-		
 	};
-
 
 };
 
