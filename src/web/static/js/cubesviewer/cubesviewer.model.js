@@ -33,6 +33,7 @@ cubesviewer.buildModel = function(model) {
 	
 	$.extend(model, cubesModel.prototype);
 	model.buildModel();
+	model.removeIgnoredDimensions();
 	return model;
 	
 };
@@ -104,6 +105,31 @@ $.extend (cubesModel.prototype, {
 		return dim;
 	},	
 
+	/*
+	 * Checks the cv-ignore metadata and ignores dimensions accordingly.
+	 * This can be used when a dimension must not be published  
+	 * in the interface.
+	 */
+	removeIgnoredDimensions: function() {
+		var ignoredDimensions = [];
+		$(this.dimensions).each(function(idx, dimension) {
+			if (dimension.getInfo("cv-ignore") == true) ignoredDimensions.push(dimension.name);
+		});
+		
+		// Remove from cube dimensions
+		$(this.cubes).each(function(idx, cube) {
+			cube.dimensions = $.grep(cube.dimensions, function (e, idx) {
+				return $.inArray(e, ignoredDimensions) == -1;
+			});
+		});
+		
+		// Remove from dimensions
+		this.dimensions = $.grep(this.dimensions, function (e, idx) {
+			return $.inArray(e.name, ignoredDimensions) == -1;
+		});
+		
+	},
+	
 	/*
 	 * Find level by name. Accept it prefixed with the dimension name:.
 	 */

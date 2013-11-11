@@ -86,8 +86,8 @@ If you have questions, problems or suggestions, please get in touch.
 CubesViewer doesn't have a list on its own. Instead, please get in touch 
 through the Cubes project mailing list:
 
+* User group: http://groups.google.com/group/cubes-discuss
 * Report bugs: https://github.com/jjmontesl/cubesviewer/issues
-* Discussion at Google Groups: http://groups.google.com/group/cubes-discuss
 
 If you are using or trying CubesViewer, we'd love to hear from you (tweet: #cubesviewer). 
 

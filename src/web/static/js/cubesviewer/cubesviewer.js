@@ -132,6 +132,7 @@ function cubesviewer () {
 		return function(data) {
 			// Set new model
 			cubesviewer.model = cubesviewer.buildModel(data);
+			
 			cubesviewer.state = "Initialized";
 			$(document).trigger("cubesviewerModelLoaded", [ cubesviewer.model ] )
 		}

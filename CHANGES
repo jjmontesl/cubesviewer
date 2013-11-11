@@ -1,4 +1,6 @@
 0.8-devel
+    + Added support for a cv-ignore option in the model, to ignore
+      dimensions.
     + Separated datefilter as a plugin (closes #8).
     + Cutting over a drilled dimension no longer removes the drill.
     + Added shortcuts (select all) and drilldown from filters.

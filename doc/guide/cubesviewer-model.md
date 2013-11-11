@@ -77,3 +77,23 @@ This is an example dimension "date_created" showing this configuration:
         },
         ...  
 ```
+
+Ignored Dimensions
+------------------
+
+You can make CubesViewer ignore a dimension by adding a "cv-ignore" information key as shown 
+in the example below. Ignored dimensions will not be shown by CubesViewer.
+
+```
+    "dimensions": [
+        {
+            "name": "company",
+            "label": "Company",
+            "info": {
+                "cv-ignore": true
+            }
+        },
+        ...
+```
+
+
