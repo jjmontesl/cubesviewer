@@ -569,10 +569,10 @@ function cubesviewerViewCubeExplore() {
 			'<div class="infopiece" style="background-color: ' + color + '; white-space: nowrap;">' +
 			'<div style="white-space: nowrap; overflow: hidden; display: inline-block; vertical-align: middle; ' + maxwidthStyle + '">' +
 			content + '</div>' +
-			( ! readonly ? ' <button style="display: inline-block;" class="cv-view-infopiece-close"><span class="ui-icon ui-icon-close"></span></button></div>' : '' )
+			( ! readonly ? ' <button style="display: inline-block; vertical-align: middle;" class="cv-view-infopiece-close"><span class="ui-icon ui-icon-close"></span></button></div>' : '' )
 		);
 		
-		selector.children().last().addClass('ui-widget').css('margin', '2px').css('padding', '4px').css('display', 'inline-block').addClass('ui-corner-all');
+		selector.children().last().addClass('ui-widget').css('margin', '2px').css('padding', '3px').css('display', 'inline-block').addClass('ui-corner-all');
 		selector.children().last().find('button').button().find('span').css('padding', '0px');
 		
 		return selector.children().last();
@@ -613,8 +613,8 @@ function cubesviewerViewCubeExplore() {
 			var dimparts = view.cubesviewer.model.getDimensionParts(e.dimension.replace(":",  "@"));
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-cut'), "#ffcccc", 480, readonly,
-				'<span class="ui-icon ui-icon-zoomin"></span> <b>Cut: </b> ' + dimparts.label  + ' = ' + 
-				'<span title="' + e.value + '">' + e.value + '</span>'
+				'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Cut: </b> ' + dimparts.label  + ' = ' + 
+				'<span title="' + e.value + '">' + e.value + '</span></span>'
 			);
 			piece.addClass("cv-view-infopiece-cut");
 			piece.attr("data-dimension", e.dimension);

@@ -35,6 +35,5 @@ Roadmap 0.9
     + Implemented chart resize options (alternate, more responsive method).  
 Roadmap 0.8
     + Charts now save configuration (grouped / stacked / stream / disabledseries / size).
-    + New rangefilter plugin (depends on separate datefilter as plugin) (closes #21).
 
     

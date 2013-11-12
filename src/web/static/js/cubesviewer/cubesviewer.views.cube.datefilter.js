@@ -98,6 +98,10 @@ function cubesviewerViewCubeDateFilter () {
 
 		});
 		
+		if (dateFilterElements == "") {
+			dateFilterElements = dateFilterElements + '<li><a href="#" onclick="return false;"><i>No date filters defined</i></a></li>';
+		}
+		
 		$(".ui-explore-cut-clearsep", menu).before(
 				'<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-zoomin"></span>Date filter</a><ul class="dateFilterList" style="width: 180px;">' + 
 				dateFilterElements + 
