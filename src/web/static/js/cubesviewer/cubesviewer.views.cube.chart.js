@@ -308,7 +308,8 @@ function cubesviewerViewCubeChart() {
 		
 	    var d = [];
 
-	    numRows = dataRows.length;
+	    var numRows = dataRows.length;
+	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
 	    	serie = [];
 	    	for (var i = 1; i < colNames.length; i++) {
@@ -319,7 +320,14 @@ function cubesviewerViewCubeChart() {
 	    			serie.push( { "x": colNames[i], "y":  0} );
 	    		}
 	    	}
-	    	d.push({ "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis });
+	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
+	    	if (view.params["chart-disabledseries"]) {
+	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+	    		}
+	    	} 
+	    	d.push(series);
+	    	serieCount++;
 	    });
 	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
 	    
@@ -343,9 +351,13 @@ function cubesviewerViewCubeChart() {
 	        chart = nv.models.multiBarChart()
 	          //.margin({bottom: 100})
 	          .transitionDuration(300)
-	          .margin({left: 130})
+	          .margin({left: 120})
 	          ;
 
+	    	  if (	view.params["chart-barsvertical-stacked"] ) {
+	    		  chart.stacked ( view.params["chart-barsvertical-stacked"] );
+	    	  }   
+	        
 	        chart.options(chartOptions);
 	        chart.multibar
 	          .hideable(true);
@@ -363,6 +375,18 @@ function cubesviewerViewCubeChart() {
 	            .call(chart);
 
 	        nv.utils.windowResize(chart.update);
+	        
+	    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-barsvertical-stacked"] = newState.stacked;
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","), 
+	        			  "disabled": {}
+	        	  };
+	        	  for (var i = 0; i < newState.disabled.length; i++) {
+	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+	        	  }
+	          });
 
 	        //chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
 
@@ -382,8 +406,8 @@ function cubesviewerViewCubeChart() {
 
 	    // TODO: Check there's only one value column
 	    
-	    numRows = dataRows.length;
-	    var serieCount = 1;
+	    var numRows = dataRows.length;
+	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
 	    	serie = [];
 	    	for (var i = 1; i < colNames.length; i++) {
@@ -394,7 +418,14 @@ function cubesviewerViewCubeChart() {
 	    			serie.push( { "x": i, "y": 0 } );
 	    		}
 	    	}
-	    	d.push({ "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis });
+	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
+	    	if (view.params["chart-disabledseries"]) {
+	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+	    		}
+	    	} 
+	    	d.push(series);
+	    	serieCount++;
 	    });
 	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
 	    
@@ -410,7 +441,7 @@ function cubesviewerViewCubeChart() {
 		    nv.addGraph(function() {
 		    	var chart = nv.models.lineChart()
 		    		.useInteractiveGuideline(true)
-		    		.margin({left: 130})
+		    		.margin({left: 120})
 		    		;
 	
 		    	chart.xAxis
@@ -434,6 +465,18 @@ function cubesviewerViewCubeChart() {
 		    			}
 		    		);
 	
+		    	  // Handler for state change
+		          chart.dispatch.on('stateChange', function(newState) {
+		        	  view.params["chart-disabledseries"] = {
+		        			  "key": view.params.drilldown.join(","), 
+		        			  "disabled": {}
+		        	  };
+		        	  for (var i = 0; i < newState.disabled.length; i++) {
+		        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+		        	  }
+		          });
+		          
+		    	
 		    	return chart;
 		    });
 		    
@@ -447,6 +490,10 @@ function cubesviewerViewCubeChart() {
 	    	                .clipEdge(true)
 	    	                .useInteractiveGuideline(true);
 	
+	    	  if (	view.params["chart-stackedarea-style"] ) {
+	    		  chart.style ( view.params["chart-stackedarea-style"] );
+	    	  }   
+	    	  
 	    	  chart.xAxis
 	    	  	  .axisLabel(xAxisLabel)
 	    	      .showMaxMin(false)
@@ -463,6 +510,18 @@ function cubesviewerViewCubeChart() {
 	
 	    	  nv.utils.windowResize(chart.update);
 	
+	    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-stackedarea-style"] = newState.style;
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","), 
+	        			  "disabled": {}
+	        	  };
+	        	  for (var i = 0; i < newState.disabled.length; i++) {
+	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+	        	  }
+	          });
+	    	  
 	    	  return chart;
 	    	});
 		    
@@ -518,9 +577,18 @@ function cubesviewerViewCubeChart() {
 	         .tickFormat(d3.format(',.2f'));
 
 	        d3.select(container)
-	            .datum(d)
+	            .datum(d)	
 	          .transition().duration(500)
 	            .call(chart);
+
+    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-stackedarea-style"] = newState.style;
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","), 
+	        			  "disabled": newState.disabled
+	        	  };
+	          });
 
 	        //TODO: Figure out a good way to do this automatically
 	        nv.utils.windowResize(chart.update);
@@ -547,16 +615,27 @@ function cubesviewerViewCubeChart() {
 			return;
 		} 
 	    
-	    numRows = dataRows.length;
+	    var numRows = dataRows.length;
+	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
 	    	serie = [];
 	    	var value = e[colNames[1]];
     		if ((value != undefined) && (value > 0)) {
     			
-    			d.push({ "y": value, "key": e["key"] != "" ? e["key"] : colNames[0] });
-	    	}
+    	    	var series = { "y": value, "key": e["key"] != "" ? e["key"] : colNames[0] };
+    	    	if (view.params["chart-disabledseries"]) {
+    	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+    	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+    	    		}
+    	    	} 
+    	    	
+    	    	d.push(series);
+    			serieCount++;
+
+    		}
+    		
 	    });
-	    //d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
 	    
 	    xticks = [];
 	    for (var i = 1; i < colNames.length; i++) {
@@ -588,6 +667,18 @@ function cubesviewerViewCubeChart() {
 	              .call(chart);
 
 	        nv.utils.windowResize(chart.update);
+	        
+	    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","), 
+	        			  "disabled": {}
+	        	  };
+	        	  for (var i = 0; i < newState.disabled.length; i++) {
+	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+	        	  }
+	          });
+	        
 	        return chart;
 	    });
 	    

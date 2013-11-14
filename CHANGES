@@ -1,7 +1,7 @@
-0.8-devel
+0.8
+    + Charts now save view configuration (status and disabledseries).
     + New rangefilter plugin (closes #21).
-    + Added support for a cv-ignore option in the model, to ignore
-      dimensions.
+    + Added support for a cv-ignore option in the model for dimensions.
     + Separated datefilter as a plugin (closes #8).
     + Cutting over a drilled dimension no longer removes the drill.
     + Added shortcuts (select all) and drilldown from filters.

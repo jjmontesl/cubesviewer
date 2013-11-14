@@ -2,6 +2,7 @@ Roadmap 1.0
     + Tag 1.0 release.
 Roadmap 0.14
     + Interface available in English and Spanish.
+    + Translation site / tool / ask for help.
     + Implement i18n. 
 Roadmap 0.13
     + Reviewed and improved doc
@@ -33,7 +34,5 @@ Roadmap 0.9
     + Fix too many series in legend issue (alternate legend?). 
     + Using less technical menu and button labels (drilldown, cut).
     + Implemented chart resize options (alternate, more responsive method).  
-Roadmap 0.8
-    + Charts now save configuration (grouped / stacked / stream / disabledseries / size).
 
     
