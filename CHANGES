@@ -1,3 +1,5 @@
+0.9-devel
+    + Added Google Analityics events plugin.
 0.8
     + Charts now save view configuration (status and disabledseries).
     + New rangefilter plugin (closes #21).
