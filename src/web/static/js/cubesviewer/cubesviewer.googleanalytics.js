@@ -34,7 +34,7 @@ cubesviewer._gaOverridedCubesRequest = cubesviewer.cubesRequest;
 
 cubesviewer.cubesRequest = function(path, params, successCallback, completeCallback, errorCallback) {
 	
-	cubesviewer._cacheOverridedCubesRequest.apply(this, arguments);
+	cubesviewer._gaOverridedCubesRequest.apply(this, arguments);
 	
 	if (_gaq) {
 		if (path.indexOf("/model") == 0) {
