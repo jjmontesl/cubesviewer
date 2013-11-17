@@ -27,6 +27,20 @@
 
 
 /*
+ * Google Analytics plugin.
+ * 
+ * This is an optional plugin. When loaded, it uses Google Analytics event system to
+ * log CubesViewer operations. Model loading, Aggregations, Facts and Dimension queries
+ * are registered.
+ * 
+ * Note: If the cache plugin is used, this plugin must be loaded _after_ the cache plugin.
+ * 
+ * TODO: Ideally this shall make use of a stronger events system within CubesViewer, instead of
+ * overriding the request function and parsing the path string.
+ */
+
+
+/*
  * Override original cubesRequest 
  */
 cubesviewer._gaOverridedCubesRequest = cubesviewer.cubesRequest;
@@ -39,18 +53,14 @@ cubesviewer.cubesRequest = function(path, params, successCallback, completeCallb
 	if (_gaq) {
 		if (path.indexOf("/model") == 0) {
 			_gaq.push(['_trackEvent', 'CubesViewer', 'Model']);
-			//console.debug ("GA Event: CubesViewer / Model");
 		} else if (path.indexOf("/cube") == 0) {
 			var cubeOperation = path.split("/");
 			if (cubeOperation[3] == "aggregate") {
 				_gaq.push(['_trackEvent', 'CubesViewer', 'Aggregate', cubeOperation[2]]);
-				//console.debug ("GA Event: CubesViewer / Aggregate");
 			} else if (cubeOperation[3] == "facts") {
 				_gaq.push(['_trackEvent', 'CubesViewer', 'Facts', cubeOperation[2]]);
-				//console.debug ("GA Event: CubesViewer / Facts");
 			} else if (cubeOperation[3] == "dimension") {
 				_gaq.push(['_trackEvent', 'CubesViewer', 'Dimension', cubeOperation[4]]);
-				//console.debug ("GA Event: CubesViewer / Dimension");
 			}
 		}
 	}
