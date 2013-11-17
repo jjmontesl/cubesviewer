@@ -55,8 +55,12 @@ function cubesviewerGui () {
 		for ( var i = 0; (i < this.views.length)
 				&& (this.views[i].id != view.id); i++)
 			;
-		this.views.splice(i, 1);
+		
 		$('#' + view.id).remove();
+		this.views.splice(i, 1);
+
+		cubesviewer.views.destroyView (view);
+		
 	};
 
 	// Adds a new clean view for a cube

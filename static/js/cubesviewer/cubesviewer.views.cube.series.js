@@ -234,8 +234,6 @@ function cubesviewerViewCubeSeries() {
 	 */
 	this.drawInfo = function(view) {
 		
-		view.cubesviewer.views.cube.explore.drawInfo(view);
-		
 		cubesviewer.views.cube.explore.drawInfoPiece(
 			$(view.container).find('.cv-view-viewinfo-extra'), "#ccccff", 350, true,
 			'<span class="ui-icon ui-icon-zoomin"></span> <b>Measure:</b> ' + ( (view.params.yaxis != null) ? view.params.yaxis : "<i>None</i>") 

@@ -39,8 +39,7 @@ function cubesviewerViewCube () {
 			"mode" : "explore",
 			
 			"drilldown" : [],
-			"cuts" : [],
-			"datefilters" : [],
+			"cuts" : []
 			
 		});
 		
@@ -102,7 +101,7 @@ function cubesviewerViewCube () {
 		
 		// Menu toolbar
 		$(view.container).find('.cv-view-viewmenu').empty().append(
-			'<div style="float: right; z-index: 9990; margin-bottom: 5px;"><div class="cv-view-toolbar ui-widget-header ui-corner-all" style="display: inline-block;">' +
+			'<div style="float: right; z-index: 9990; margin-bottom: 5px;"><div class="cv-view-toolbar ui-widget-header ui-corner-all" style="display: inline-block; padding: 2px;">' +
 			'</div></div>'
 		);
 		
@@ -196,108 +195,6 @@ function cubesviewerViewCube () {
 	};
 	
 	/*
-	 * Composes a filter with appropriate syntax and time grain from a
-	 * datefilter
-	 */ 
-	this.datefilterValue = function(datefilter) {
-
-		var date_from = null;
-		var date_to = null;
-
-		if (datefilter.mode.indexOf("auto-") == 0) {
-			if (datefilter.mode == "auto-last1m") {
-				date_from = new Date();
-				date_from.setMonth(date_from.getMonth() - 1);
-			} else if (datefilter.mode == "auto-last3m") {
-				date_from = new Date();
-				date_from.setMonth(date_from.getMonth() - 3);
-			} else if (datefilter.mode == "auto-last6m") {
-				date_from = new Date();
-				date_from.setMonth(date_from.getMonth() - 6);
-			} else if (datefilter.mode == "auto-last12m") {
-				date_from = new Date();
-				date_from.setMonth(date_from.getMonth() - 12);
-			} else if (datefilter.mode == "auto-january1st") {
-				date_from = new Date();
-				date_from.setMonth(0);
-				date_from.setDate(1);
-			} else if (datefilter.mode == "auto-yesterday") {
-				date_from = new Date();
-				date_from.setDate(date_from.getDate() - 1);
-				date_to = new Date();
-                date_to.setDate(date_from.getDate());
-			}
-
-		} else if (datefilter.mode == "custom") {
-			if ((datefilter.date_from != null) && (datefilter.date_from != "")) {
-				date_from = new Date(datefilter.date_from);
-			}
-			if ((datefilter.date_to != null) && (datefilter.date_to != "")) {
-				date_to = new Date(datefilter.date_to);
-			}
-		}
-
-		if ((date_from != null) || (date_to != null)) {
-			var datefiltervalue = "";
-			if (date_from != null)
-				datefiltervalue = datefiltervalue
-						+ this._datefiltercell(datefilter, date_from);
-			datefiltervalue = datefiltervalue + "-";
-			if (date_to != null)
-				datefiltervalue = datefiltervalue
-						+ this._datefiltercell(datefilter, date_to);
-			return datefiltervalue;
-		} else {
-			return null;
-		}
-
-	};
-
-	this._datefiltercell = function(datefilter, tdate) {
-
-		var values = [];
-		
-		var dimensionparts = cubesviewer.model.getDimensionParts(datefilter.dimension);
-		for (var i = 0; i < dimensionparts.hierarchy.levels.length; i++) {
-			var levelname = dimensionparts.hierarchy.levels[i];
-			var level = dimensionparts.dimension.getLevel(levelname);
-			
-			var field = level.getInfo("cv-datefilter-field");
-			if (field == "year") {
-				values.push(tdate.getFullYear());
-			} else if (field == "month") {
-				values.push(tdate.getMonth() + 1);
-			} else if (field == "quarter") {
-				values.push((Math.floor(tdate.getMonth() / 3) + 1));
-			} else if (field == "week") {
-				values.push(this._weekNumber(tdate));
-			} else if (field == "day") {
-				values.push(tdate.getDate());
-			} else {
-				cubesviewer.alert ("Wrong configuration of model: datefilter field '" + field + "' is invalid.");
-			}
-		}
-		
-		return values.join(',');
-		
-		return tdate.getFullYear() + ","
-				+ (Math.floor(tdate.getMonth() / 3) + 1) + ","
-				+ (tdate.getMonth() + 1);
-	};	
-	
-	this._weekNumber = function(d) {
-	    // Copy date so don't modify original
-	    d = new Date(d);
-	    d.setHours(0,0,0);
-	    // Get first day of year
-	    var yearStart = new Date(d.getFullYear(),0,1);
-	    // Calculate full weeks to nearest Thursday
-	    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7)
-	    // Return array of year and week number
-	    return weekNo;
-	};	
-	
-	/*
 	 * Builds Cubes Server query parameters based on current view values.
 	 */
 	this.buildQueryParams = function(view, includeXAxis, onlyCuts) {
@@ -325,22 +222,28 @@ function cubesviewerViewCube () {
 				params["drilldown"] = drilldown;
 		}
 
-		// Include cuts and datefilters
-		var cuts = [];
-		$(view.params.cuts).each(function(idx, e) {
-			cuts.push(e.dimension + ":" + e.value);
-		});
-		$(view.params.datefilters).each(function(idx, e) {
-			var datefiltervalue = view.cubesviewer.views.cube.datefilterValue(e);
-			if (datefiltervalue != null) {
-				cuts.push(e.dimension + ":" + datefiltervalue);
-			}
-		});
+		var cuts = cubesviewer.views.cube.buildQueryCuts(view);
+		
 		// Join different cut conditions
 		if (cuts.length > 0)
 			params["cut"] = cuts.join("|");
 
 		return params;
+	};
+	
+	/*
+	 * Builds Query Cuts
+	 */
+	this.buildQueryCuts = function(view) {
+		
+		// Include cuts
+		var cuts = [];
+		$(view.params.cuts).each(function(idx, e) {
+			cuts.push(e.dimension + ":" + e.value);
+		});
+		
+		return cuts;
+		
 	};
 
 };

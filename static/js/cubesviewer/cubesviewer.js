@@ -33,7 +33,7 @@
 function cubesviewer () {
 	
 	// CubesViewer version
-	this.version = "0.8-devel";
+	this.version = "0.9-devel";
 	
 	// Default options
 	this.options = {
@@ -132,6 +132,7 @@ function cubesviewer () {
 		return function(data) {
 			// Set new model
 			cubesviewer.model = cubesviewer.buildModel(data);
+			
 			cubesviewer.state = "Initialized";
 			$(document).trigger("cubesviewerModelLoaded", [ cubesviewer.model ] )
 		}

@@ -45,6 +45,13 @@ function cubesviewerViewCubeChart() {
 	};	
 	
 	/*
+	 * View destroyed 
+	 */
+	this.onViewDestroyed = function(event, view) {
+		view.cubesviewer.views.cube.chart.cleanupNvd3();
+	};	
+	
+	/*
 	 * Exports chart.
 	 */
 	this.exportChart = function(view) {
@@ -53,10 +60,23 @@ function cubesviewerViewCubeChart() {
 		
 	};
 
+	this.cleanupNvd3 = function() {
+		var len = nv.graphs.length;
+		while (len--) {
+			if (! ($.contains(document.documentElement, nv.graphs[len].container))) {
+			    // Element is detached, destroy graph
+				nv.graphs.splice (len,1);
+			}
+		}
+	};
+	
 	/*
 	 * Draw cube view structure.
 	 */
 	this.onViewDraw = function(event, view) {
+		
+		// Cleanup nvd3 graphs
+		view.cubesviewer.views.cube.chart.cleanupNvd3();
 		
 		if (view.cube == null) return;
 		
@@ -228,8 +248,18 @@ function cubesviewerViewCubeChart() {
 		$(view.container).find('.cv-view-viewdata').css("width", "99%");
 		$(view.container).find('.cv-view-viewdata').append(
 			'<h3>Series Chart</h3>' +
-			'<div id="seriesChart-' + view.id + '" style="height: 400px; "><svg style="height: 400px;" /></div>'
+			'<div id="seriesChart-' + view.id + '" style="height: 400px;" ><div><svg style="height: 400px;" /></div></div>'
 		);
+		
+		$(view.container).find('#seriesChart-' + view.id).resizable({
+			 maxHeight: 800,
+			 minHeight: 220,
+			 //helper: "ui-resizable-helper",
+			 resize: function(event, ui) {
+		        ui.size.width = ui.originalSize.width;
+		     },
+		     alsoResize: '#seriesChart-' + view.id + '>div>svg'
+		});
 		
 		var colNames = [];
 		var colModel = [];	
@@ -245,7 +275,7 @@ function cubesviewerViewCubeChart() {
 			colNames.splice (0, view.params.drilldown.length, "key");
 			$(dataRows).each(function(idx, e) {
 				var jointkey = [];
-				for (i = 0; i < view.params.drilldown.length; i++) jointkey.push(e["key" + i]);
+				for (var i = 0; i < view.params.drilldown.length; i++) jointkey.push(e["key" + i]);
 				e["key"] = jointkey.join(" / ");
 			});
 		}
@@ -278,10 +308,11 @@ function cubesviewerViewCubeChart() {
 		
 	    var d = [];
 
-	    numRows = dataRows.length;
+	    var numRows = dataRows.length;
+	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
 	    	serie = [];
-	    	for (i = 1; i < colNames.length; i++) {
+	    	for (var i = 1; i < colNames.length; i++) {
 	    		var value = e[colNames[i]];
 	    		if (value != undefined) {
 	    			serie.push( { "x": colNames[i], "y":  value } );
@@ -289,13 +320,20 @@ function cubesviewerViewCubeChart() {
 	    			serie.push( { "x": colNames[i], "y":  0} );
 	    		}
 	    	}
-	    	d.push({ "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis });
+	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
+	    	if (view.params["chart-disabledseries"]) {
+	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+	    		}
+	    	} 
+	    	d.push(series);
+	    	serieCount++;
 	    });
 	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
 	    
 	    /*
 	    xticks = [];
-	    for (i = 1; i < colNames.length; i++) {
+	    for (var i = 1; i < colNames.length; i++) {
     		xticks.push([ i * 10, colNames[i] ]); 
 	    }
 	    */
@@ -313,8 +351,13 @@ function cubesviewerViewCubeChart() {
 	        chart = nv.models.multiBarChart()
 	          //.margin({bottom: 100})
 	          .transitionDuration(300)
+	          .margin({left: 120})
 	          ;
 
+	    	  if (	view.params["chart-barsvertical-stacked"] ) {
+	    		  chart.stacked ( view.params["chart-barsvertical-stacked"] );
+	    	  }   
+	        
 	        chart.options(chartOptions);
 	        chart.multibar
 	          .hideable(true);
@@ -332,6 +375,18 @@ function cubesviewerViewCubeChart() {
 	            .call(chart);
 
 	        nv.utils.windowResize(chart.update);
+	        
+	    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-barsvertical-stacked"] = newState.stacked;
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","), 
+	        			  "disabled": {}
+	        	  };
+	        	  for (var i = 0; i < newState.disabled.length; i++) {
+	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+	        	  }
+	          });
 
 	        //chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
 
@@ -351,11 +406,11 @@ function cubesviewerViewCubeChart() {
 
 	    // TODO: Check there's only one value column
 	    
-	    numRows = dataRows.length;
-	    var serieCount = 1;
+	    var numRows = dataRows.length;
+	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
 	    	serie = [];
-	    	for (i = 1; i < colNames.length; i++) {
+	    	for (var i = 1; i < colNames.length; i++) {
 	    		if (colNames[i] in e) {
 	    			var value = e[colNames[i]];
 	    			serie.push( { "x": i, "y": value } );
@@ -363,13 +418,20 @@ function cubesviewerViewCubeChart() {
 	    			serie.push( { "x": i, "y": 0 } );
 	    		}
 	    	}
-	    	d.push({ "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis });
+	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
+	    	if (view.params["chart-disabledseries"]) {
+	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+	    		}
+	    	} 
+	    	d.push(series);
+	    	serieCount++;
 	    });
 	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
 	    
 	    /*
 	    xticks = [];
-	    for (i = 1; i < colNames.length; i++) {
+	    for (var i = 1; i < colNames.length; i++) {
     		xticks.push([ i, colNames[i] ]); 
 	    }
 	    */
@@ -379,6 +441,7 @@ function cubesviewerViewCubeChart() {
 		    nv.addGraph(function() {
 		    	var chart = nv.models.lineChart()
 		    		.useInteractiveGuideline(true)
+		    		.margin({left: 120})
 		    		;
 	
 		    	chart.xAxis
@@ -402,6 +465,18 @@ function cubesviewerViewCubeChart() {
 		    			}
 		    		);
 	
+		    	  // Handler for state change
+		          chart.dispatch.on('stateChange', function(newState) {
+		        	  view.params["chart-disabledseries"] = {
+		        			  "key": view.params.drilldown.join(","), 
+		        			  "disabled": {}
+		        	  };
+		        	  for (var i = 0; i < newState.disabled.length; i++) {
+		        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+		        	  }
+		          });
+		          
+		    	
 		    	return chart;
 		    });
 		    
@@ -411,9 +486,14 @@ function cubesviewerViewCubeChart() {
 	    	  var chart = nv.models.stackedAreaChart()
 	    	                //.x(function(d) { return d[0] })
 	    	                //.y(function(d) { return d[1] })
+	    	  				.margin({left: 130})
 	    	                .clipEdge(true)
 	    	                .useInteractiveGuideline(true);
 	
+	    	  if (	view.params["chart-stackedarea-style"] ) {
+	    		  chart.style ( view.params["chart-stackedarea-style"] );
+	    	  }   
+	    	  
 	    	  chart.xAxis
 	    	  	  .axisLabel(xAxisLabel)
 	    	      .showMaxMin(false)
@@ -430,6 +510,18 @@ function cubesviewerViewCubeChart() {
 	
 	    	  nv.utils.windowResize(chart.update);
 	
+	    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-stackedarea-style"] = newState.style;
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","), 
+	        			  "disabled": {}
+	        	  };
+	        	  for (var i = 0; i < newState.disabled.length; i++) {
+	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+	        	  }
+	          });
+	    	  
 	    	  return chart;
 	    	});
 		    
@@ -454,19 +546,17 @@ function cubesviewerViewCubeChart() {
 	    var serieCount = 1;
 	    $(dataRows).each(function(idx, e) {
 	    	serie = [];
-	    	for (i = 1; i < colNames.length; i++) {
-	    		if ((colNames[i] in e) && (e[colNames[i]])) {
+	    	for (var i = 1; i < colNames.length; i++) {
+	    		if ( (colNames[i] in e) && (e[colNames[i]] != null) && (e[colNames[i]]) ) {
 	    			var value = e[colNames[i]];
-	    			serie.push( { "x": i-1, "y": parseFloat(value) } );
+	    			serie.push( { "x": i, "y": parseFloat(value) } );
 	    		} else {
-	    			serie.push( { "x": i-1, "y": 0.0 } );
+	    			serie.push( { "x": i, "y": 0 } );
 	    		}
 	    	}
 	    	d.push({ "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis });
 	    });
 	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
-	    
-	    console.debug(d);
 	    
 	    nv.addGraph(function() {
 	        var chart = nv.models.cumulativeLineChart()
@@ -474,22 +564,31 @@ function cubesviewerViewCubeChart() {
 		                  //.y(function(d) { return d.y }) 
 		                  .color(d3.scale.category20().range())
 	                      //.color(d3.scale.category10().range())
-		                  //.useInteractiveGuideline(true)
+		                  .useInteractiveGuideline(true)
 	                      ;
 
 	         chart.xAxis
 	            .axisLabel(xAxisLabel)
 			      .tickFormat(function(d,i) {
-			                return (colNames[d-1]);
+			                return (colNames[d]);
 			       })	;
 	         
 	         chart.yAxis
 	         .tickFormat(d3.format(',.2f'));
 
 	        d3.select(container)
-	            .datum(d)
+	            .datum(d)	
 	          .transition().duration(500)
 	            .call(chart);
+
+    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-stackedarea-style"] = newState.style;
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","), 
+	        			  "disabled": newState.disabled
+	        	  };
+	          });
 
 	        //TODO: Figure out a good way to do this automatically
 	        nv.utils.windowResize(chart.update);
@@ -497,7 +596,7 @@ function cubesviewerViewCubeChart() {
 	        return chart;
       });
 	    
-	};	
+	};
 	*/	
 
 	/**
@@ -516,19 +615,30 @@ function cubesviewerViewCubeChart() {
 			return;
 		} 
 	    
-	    numRows = dataRows.length;
+	    var numRows = dataRows.length;
+	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
 	    	serie = [];
 	    	var value = e[colNames[1]];
     		if ((value != undefined) && (value > 0)) {
     			
-    			d.push({ "y": value, "key": e["key"] != "" ? e["key"] : colNames[0] });
-	    	}
+    	    	var series = { "y": value, "key": e["key"] != "" ? e["key"] : colNames[0] };
+    	    	if (view.params["chart-disabledseries"]) {
+    	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+    	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+    	    		}
+    	    	} 
+    	    	
+    	    	d.push(series);
+    			serieCount++;
+
+    		}
+    		
 	    });
-	    //d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
 	    
 	    xticks = [];
-	    for (i = 1; i < colNames.length; i++) {
+	    for (var i = 1; i < colNames.length; i++) {
     		xticks.push([ i - 1, colNames[i] ]); 
 	    }
 	    
@@ -557,6 +667,18 @@ function cubesviewerViewCubeChart() {
 	              .call(chart);
 
 	        nv.utils.windowResize(chart.update);
+	        
+	    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","), 
+	        			  "disabled": {}
+	        	  };
+	        	  for (var i = 0; i < newState.disabled.length; i++) {
+	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+	        	  }
+	          });
+	        
 	        return chart;
 	    });
 	    
@@ -580,7 +702,7 @@ function cubesviewerViewCubeChart() {
 	    numRows = dataRows.length;
 	    $(dataRows).each(function(idx, e) {
 	    	serie = [];
-	    	for (i = 1; i < colNames.length; i++) {
+	    	for (var i = 1; i < colNames.length; i++) {
 	    		var value = e[colNames[i]];
 	    		if (value != undefined) {
 	    			serie.push( [i-1, value] );
@@ -593,7 +715,7 @@ function cubesviewerViewCubeChart() {
 	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
 	    
 	    xticks = [];
-	    for (i = 1; i < colNames.length; i++) {
+	    for (var i = 1; i < colNames.length; i++) {
     		xticks.push([ i - 1, colNames[i] ]); 
 	    }
 	    
@@ -636,4 +758,5 @@ cubesviewer.views.cube.chart = new cubesviewerViewCubeChart();
  * Bind events.
  */
 $(document).bind("cubesviewerViewCreate", { }, cubesviewer.views.cube.chart.onViewCreate);
+$(document).bind("cubesviewerViewDestroyed", { }, cubesviewer.views.cube.chart.onViewDestroyed);
 $(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.cube.chart.onViewDraw);

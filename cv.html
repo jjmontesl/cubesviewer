@@ -45,10 +45,13 @@
     
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.cache.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.googleanalytics.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.model.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.explore.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.datefilter.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.rangefilter.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.series.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.chart.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.facts.js"></script>
@@ -193,15 +196,24 @@
       </div>
     </div>
 
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+<script type="text/javascript">
 
-  ga('create', 'UA-6169223-4', 'jjmontesl.github.io');
-  ga('send', 'pageview');
-</script>      
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-6169223-4']); // jjmontesl.github.io
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+  
+  function eventLogTimeGoogleAnalytics() {
+      _gaq.push(['_trackEvent', 'Time', 'Ping']);
+  }
+  setInterval( eventLogTimeGoogleAnalytics, 30000 );
+
+</script>   
     
   </body>
 </html>
