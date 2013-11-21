@@ -31,7 +31,8 @@
  * 
  * This is an optional plugin. When loaded, it uses Google Analytics event system to
  * log CubesViewer operations. Model loading, Aggregations, Facts and Dimension queries
- * are registered.
+ * are registered as non-interactive events (and don't affect bounce rate). Each
+ * view refresh isregistered as an interactive event.
  * 
  * Note: If the cache plugin is used, this plugin must be loaded _after_ the cache plugin.
  * 
@@ -52,19 +53,36 @@ cubesviewer.cubesRequest = function(path, params, successCallback, completeCallb
 	
 	if (_gaq) {
 		if (path.indexOf("/model") == 0) {
-			_gaq.push(['_trackEvent', 'CubesViewer', 'Model']);
+			_gaq.push(['_trackEvent', 'CubesViewer', 'Model', , , true]);
 		} else if (path.indexOf("/cube") == 0) {
 			var cubeOperation = path.split("/");
 			if (cubeOperation[3] == "aggregate") {
-				_gaq.push(['_trackEvent', 'CubesViewer', 'Aggregate', cubeOperation[2]]);
+				_gaq.push(['_trackEvent', 'CubesViewer', 'Aggregate', cubeOperation[2], , true]);
 			} else if (cubeOperation[3] == "facts") {
-				_gaq.push(['_trackEvent', 'CubesViewer', 'Facts', cubeOperation[2]]);
+				_gaq.push(['_trackEvent', 'CubesViewer', 'Facts', cubeOperation[2], , true]);
 			} else if (cubeOperation[3] == "dimension") {
-				_gaq.push(['_trackEvent', 'CubesViewer', 'Dimension', cubeOperation[4]]);
+				_gaq.push(['_trackEvent', 'CubesViewer', 'Dimension', cubeOperation[4], , true]);
 			}
 		}
 	}
 	
 }
+
+/*
+ * Tracks a "ViewDraw" event (except for the first call, which is discarded).
+ */
+$(document).bind("cubesviewerViewDraw", { }, function(event, view) {
+	
+	if (view.cube == null) return;
+	if (_gaq) {
+		if ("gaFirstDraw" in view) {
+			_gaq.push(['_trackEvent', 'CubesViewer', 'ViewDraw', view.cube.name]);
+			view.gaFirstDraw = false;
+		} else {
+			view.gaFirstDraw = true;
+		}
+	}
+	
+});
 
 
