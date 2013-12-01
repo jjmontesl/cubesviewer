@@ -13,15 +13,10 @@ generation of reports, chart design and embedding,
 and as a (simple) company-wide analytics application.
 
 CubesViewer is a visual interface for the 
-open-source ["Cubes" server](http://databrewery.org/cubes.html) (an OLAP server in Python). 
+open source [Cubes server](http://databrewery.org/cubes.html) (an OLAP server in Python). 
 Purpose is to keep it simple and modular, leveraging the web services 
 provided by Cubes.  
 
-The main focus of CubesViewer is the full GUI application 
-for CubesViewer views creation and management.
-But CubesViewer is mainly an HTML5 application which can also be embedded
-completely or partially in other sites. Views can easily be 
-inserted on other web pages.
 
 Features:
 
@@ -46,17 +41,23 @@ Online demos
 Requirements
 ------------
 
-CubesViewer requires a [Cubes Server](http://databrewery.org/cubes.html) 0.10.1 or later, configured and running, able to serve 
-data cubes. 
+CubesViewer requires a [Cubes Server](http://databrewery.org/cubes.html) 0.10.1 or later, configured and running, 
+able to serve Cubes OLAP queries. 
 
-**CubesViewer is HTML5** and can run directly in the browser. It should work on most modern browsers
-(it may even work on older browsers). Views can be embedded in other websites (see the Demos section).
+The application consists of two parts:
 
-The **full CubesViewer application** includes a Python Django application to support features like sharing/saving
-and user notes support. You need Django 1.3 in order to run it, but it is optional. 
+**CubesViewer Client** is a HTML5 application and can run directly in the browser.
+It can run without server side support as a standalone application, and  
+views can be embedded in other websites (see the Demos section).
 
-Note that **your cubes model shall be configured** to add support for CubesViewer features like date filters and descriptions
-(see Documentation below). This is optional, CubesViewer will work, but some features like Date Filters will be missing. 
+The **full CubesViewer application** includes a Python Django application which supports features 
+like sharing/saving and user notes. You need Django 1.3 in order to run it, but it is optional 
+(only needed if you wish to use the full application with user authentication, user notes
+or save/load/share support). 
+
+Note that **your cubes model shall be configured** to add support for CubesViewer features like date 
+filters and descriptions (see Documentation below). This is optional, CubesViewer will work, 
+but some features like Date Filters will be missing. 
 
 For further information, see the Documentation section below.
 

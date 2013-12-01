@@ -310,7 +310,7 @@ function cubesviewerViewCubeDimensionFilter () {
 	this.searchDimensionValues = function(view, search) {
 		
 		$(view.container).find(".cv-view-dimensionfilter-list").find("input").each (function (idx, e) {
-			if ((search == "") || ($(e).parent().text().toLowerCase().indexOf(search.toLowerCase()) > 0)) {
+			if ((search == "") || ($(e).parent().text().toLowerCase().indexOf(search.toLowerCase()) >= 0)) {
 				$(e).parents('.cv-view-dimensionfilter-item').first().show();
 			} else {
 				$(e).parents('.cv-view-dimensionfilter-item').first().hide();
@@ -338,7 +338,7 @@ function cubesviewerViewCubeDimensionFilter () {
 		if (filterValues.length > 0) {
 			$(view.container).find(".cv-view-dimensionfilter-list").find("input").each (function (idx, e) {
 				for (var i = 0; i < filterValues.length; i++) {
-					if ($(e).attr("value").indexOf(filterValues[i]) == 0) {
+					if ($(e).attr("value") == filterValues[i]) {
 						$(e).attr("checked", "checked");
 					}
 				}
