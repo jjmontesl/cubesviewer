@@ -23,7 +23,7 @@ to work, you need to add information to your model.
 2. Optionally, also add an "info" attribute "cv-datefilter-hierarchy" if your desired date 
    filtering hierarchy is not "default".
 3. For each *level* involved in your date filtering, add an "info" attribute "cv-datefilter-field" 
-   identifying the unit of date value (one of "year", "quarter", "month" or "week").   
+   identifying the unit of date value (one of "year", "quarter", "month", "week" or "day").   
 
 This is an example dimension "date_created" showing this configuration:
  
@@ -81,14 +81,14 @@ This is an example dimension "date_created" showing this configuration:
 Range Filtering
 ---------------
 
-CubesViewer has a "Date Filter" option that shows a special cut filter for ranges. This can be applied
+CubesViewer has a "Range Filter" option that shows a special cut filter for ranges. This can be applied
 to simple dimensions which *keys* are sortable.
 
 In order for this to work, you need to add information to your model.  
 
 1. For each range dimension, add an "info" attribute called "cv-rangefilter" with "true" value.
 2. Optionally, also add an "info" attribute "cv-rangefilter-slider" if you wish the filter
-   to include a slider. This attribute is a map with "min", "max" and "step" keys, as shown
+   to include a slider. This attribute must be a dictionary with "min", "max" and "step" keys, as shown
    in the example below:
 
 This is an example dimension "year" showing this configuration:
@@ -97,7 +97,7 @@ This is an example dimension "year" showing this configuration:
     "dimensions": [ 
         {
             "name": "date_year",
-            "label": "Año",
+            "label": "Year",
             "info": {
                 "cv-rangefilter": true,
                 "cv-rangefilter-slider": {
