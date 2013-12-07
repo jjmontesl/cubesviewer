@@ -101,7 +101,7 @@ Authors
 =======
 
 CubesViewer is written and maintained by Jose Juan Montes 
-<jjmontes@gmail.com> and other contributors. 
+and other contributors. 
 
 See AUTHORS file for more information.
 
