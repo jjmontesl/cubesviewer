@@ -1,4 +1,6 @@
 0.9-devel
+    + Fix dimensionfilter bug causing wrong values to
+      be selected when updating from the current filter.
     + Added Google Analityics events plugin.
 0.8
     + Charts now save view configuration (status and disabledseries).
