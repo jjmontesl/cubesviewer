@@ -1,3 +1,5 @@
+0.10
+    
 0.9
     + Last version supporting cubes 0.10.x.
     + Fix dimensionfilter bug causing wrong values to

@@ -41,8 +41,11 @@ Online demos
 Requirements
 ------------
 
-CubesViewer requires a [Cubes Server](http://databrewery.org/cubes.html) 0.10.1 or later, configured and running, 
+CubesViewer requires a [Cubes Server](http://databrewery.org/cubes.html), configured and running, 
 able to serve Cubes OLAP queries. 
+
+* CubesViewer versions up to 0.9 support Cubes 0.10.x  
+* Next CubesViewer version will be 0.10, supporting Cubes 1.0 
 
 The application consists of two parts:
 
@@ -84,13 +87,13 @@ Support
 =======
 
 If you have questions, problems or suggestions, please get in touch. 
-CubesViewer doesn't have a list on its own. Instead, please get in touch 
-through the Cubes project mailing list:
+CubesViewer doesn't have a list on its own. Instead, please use 
+the Cubes project mailing list:
 
 * User group: http://groups.google.com/group/cubes-discuss
 * Report bugs: https://github.com/jjmontesl/cubesviewer/issues
 
-If you are using or trying CubesViewer, we'd love to hear from you (tweet: #cubesviewer). 
+If you are using or trying CubesViewer, we'd love to hear from you (tweet #cubesviewer). 
 
 Source
 ======
