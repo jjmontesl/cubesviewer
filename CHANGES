@@ -1,4 +1,5 @@
-0.9-devel
+0.9
+    + Last version supporting cubes 0.10.x.
     + Fix dimensionfilter bug causing wrong values to
       be selected when updating from the current filter.
     + Added Google Analityics events plugin.
