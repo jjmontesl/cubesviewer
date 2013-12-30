@@ -38,28 +38,32 @@ Online demos
 * [CubesViewer Demo page](http://jjmontesl.github.io/cubesviewer/index.html) with one embedded view
 * [CubesViewer Explorer](http://jjmontesl.github.io/cubesviewer/cv.html) with the full application
 
-Requirements
+Download
 ------------
 
 CubesViewer requires a [Cubes Server](http://databrewery.org/cubes.html), configured and running, 
 able to serve Cubes OLAP queries. 
 
-* CubesViewer versions up to 0.9 support Cubes 0.10.x  
+* [CubesViewer version 0.9](https://github.com/jjmontesl/cubesviewer/archive/v0.9.zip) support Cubes 0.10.x  
 * Next CubesViewer version will be 0.10, supporting Cubes 1.0 
 
-The application consists of two parts:
+Requirements
+------------
+
+CubesViewer consists of two parts:
 
 **CubesViewer Client** is a HTML5 application and can run directly in the browser.
 It can run without server side support as a standalone application, and  
-views can be embedded in other websites (see the Demos section).
+views can be embedded in other websites. Simply
+download and open the src/htmlviews/gui.html file in your favourite browser.
 
-The **full CubesViewer application** includes a Python Django application which supports features 
+The **full CubesViewer application** includes a server side Python Django application which supports features 
 like sharing/saving and user notes. You need Django 1.3 in order to run it, but it is optional 
 (only needed if you wish to use the full application with user authentication, user notes
 or save/load/share support). 
 
 Note that **your cubes model shall be configured** to add support for CubesViewer features like date 
-filters and descriptions (see Documentation below). This is optional, CubesViewer will work, 
+filters and descriptions (see Documentation below). This is optional: CubesViewer will work, 
 but some features like Date Filters will be missing. 
 
 For further information, see the Documentation section below.
