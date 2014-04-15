@@ -95,10 +95,8 @@ function cubesviewerViewCubeExplore() {
 		
 		var drillElements = "";
 
-		$(cube.dimensions).each( function(idx, e) {
+		$(cube.dimensions).each( function(idx, dimension) {
 			
-			var dimension = view.cubesviewer.model.getDimension(e);
-
 			if (dimension.is_flat) {
 				// Don't show drilldown option if dimension is
 				// filtered (besides, this query causes a server error)
@@ -283,7 +281,7 @@ function cubesviewerViewCubeExplore() {
 			for ( var i = 0; i < drilldown.length; i++) {
 
 				// Get dimension
-				var dimension = view.cubesviewer.model.getDimension(drilldown[i]);
+				var dimension = view.cube.getDimension(drilldown[i]);
 
 				// row["key"] = ((e[view.params.drilldown_field] != null) &&
 				// (e[view.params.drilldown] != "")) ? e[view.params.drilldown] : "Undefined";
@@ -325,7 +323,7 @@ function cubesviewerViewCubeExplore() {
 			for ( var i = 0; i < view.params.drilldown.length; i++) {
 
 				// Get dimension
-				var parts = cubesviewer.model.getDimensionParts(view.params.drilldown[i]);
+				var parts = view.cube.getDimensionParts(view.params.drilldown[i]);
 				var infos = parts.hierarchy.readCell(e, parts.level);
 				
 				// Values and Labels
@@ -353,7 +351,9 @@ function cubesviewerViewCubeExplore() {
 			}
 			//row["key"] = key.join(' / ');
 
-			for ( var column in data.summary) {
+			//for ( var column in data.summary) {
+            for ( var columnIdx in data.aggregates) {
+                var column = data.aggregates[columnIdx];
 				row[column] = e[column];
 			}
 
@@ -366,7 +366,9 @@ function cubesviewerViewCubeExplore() {
 		if (rows.length == 0) {
 			var row = [];
 			row["key0"] = "Summary";
-			for ( var column in data.summary) {
+			//for ( var column in data.summary) {
+            for ( var columnIdx in data.aggregates) {
+                var column = data.aggregates[columnIdx];
 				row[column] = data.summary[column];
 			}
 			rows.push(row);
@@ -394,11 +396,13 @@ function cubesviewerViewCubeExplore() {
 						+ view.id + '"></div>');
 
 		var colNames = [];
+        var colLabels = [];
 		var colModel = [];
 		var dataRows = [];
 		var dataTotals = [];
 
-		for ( var column in data.summary) {
+		for ( var columnIdx in data.aggregates) {
+            var column = data.aggregates[columnIdx];
 			colNames.push(column);
 			colModel.push({
 				name : column,
@@ -424,7 +428,7 @@ function cubesviewerViewCubeExplore() {
 
 		var label = [];
 		$(view.params.drilldown).each(function(idx, e) {
-			label.push(cubesviewer.model.getDimension(e).label);
+			label.push(view.cube.getDimension(e).label);
 		})
 		for (var i = 0; i < view.params.drilldown.length; i++) {
 		
@@ -462,6 +466,26 @@ function cubesviewerViewCubeExplore() {
 			}
 		};
 
+        colNames.forEach(function (e) {
+            var colLabel = null;
+            $(view.cube.aggregates).each(function (idx, ag) {
+                if (ag.name == e) {
+                    colLabel = ag.label||ag.name;
+                    return false;
+                }
+            });
+            if (!colLabel) {
+                $(view.cube.measures).each(function (idx, me) {
+                    if (me.name == e) {
+                        colLabel = me.label||ag.name;
+                        return false;
+                    }
+                });
+            }
+            //colLabel = view.cube.getDimension(e).label
+            colLabels.push(colLabel||e);
+        });
+
 		$('#summaryTable-' + view.id).get(0).idsOfSelectedRows = [];
 		$('#summaryTable-' + view.id)
 				.jqGrid(
@@ -472,7 +496,7 @@ function cubesviewerViewCubeExplore() {
 							height : 'auto',
 							rowNum : cubesviewer.options.pagingOptions[0],
 							rowList : cubesviewer.options.pagingOptions,
-							colNames : colNames,
+							colNames : colLabels,
 							colModel : colModel,
 							pager : "#summaryPager-" + view.id,
 							sortname : cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[0],
@@ -596,7 +620,7 @@ function cubesviewerViewCubeExplore() {
 	
 		$(view.params.drilldown).each(function(idx, e) {
 			
-			var dimparts = view.cubesviewer.model.getDimensionParts(e);
+			var dimparts = view.cube.getDimensionParts(e);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-drill'), "#ccffcc", 360, readonly,
 				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Drilldown:</b> ' + dimparts.label 
@@ -610,7 +634,7 @@ function cubesviewerViewCubeExplore() {
 		});
 		
 		$(view.params.cuts).each(function(idx, e) { 
-			var dimparts = view.cubesviewer.model.getDimensionParts(e.dimension.replace(":",  "@"));
+			var dimparts = view.cube.getDimensionParts(e.dimension.replace(":",  "@"));
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-cut'), "#ffcccc", 480, readonly,
 				'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Cut: </b> ' + dimparts.label  + ' = ' + 

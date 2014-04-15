@@ -25,18 +25,57 @@
  * SOFTWARE.
  */
 
-/*
- * Adds cubesviewer support for binding model to objects. This built model
- * is used along the application. 
- */
-cubesviewer.buildModel = function(model) {
+cubesviewer.buildWorkspace = function(data) {
 	
-	$.extend(model, cubesModel.prototype);
-	model.buildModel();
-	model.removeIgnoredDimensions();
-	return model;
+    workspace = cubesWorkspace.prototype;
+    workspace.cubes = data;
+    $(workspace.cubes).each(function(idx, cube) {
+        workspace.loadCube(idx, cube.name);
+        $.extend(cube, cubesCube.prototype);
+        cube.buildModel();
+    });
+	return workspace;
 	
 };
+
+cubesWorkspace = function() {};
+$.extend (cubesWorkspace.prototype, {
+
+    loadCube: function(idx, cubename) {
+		cubesviewer.cubesRequest ("/cube/" + cubename + "/model", { "lang": cubesviewer.options.cubesLang }, this._loadModelCallback(idx), function() {}, function (xhr, textStatus, errorThrown) {
+			cubesviewer.state = "Failed to load cube";
+			cubesviewer.showInfoMessage ('CubesViewer could not load cube from Cubes server. CubesViewer will not work. Try reloading.<br /><br>Status: ' + xhr.status);
+			$(document).trigger("cubesviewerCubeLoaded", null );
+		});
+    },
+
+	_loadModelCallback: function(idx) {
+        var workspace = this;
+		return function(data) {
+			// Set new model
+            cube = workspace.cubes[idx];
+            $.extend(cube, data);
+			cube.buildModel();
+
+            // ???
+            $.extend(cube, cubesModel.prototype);
+            cube.removeIgnoredDimensions();
+			
+			cubesviewer.state = "Initialized";
+			$(document).trigger("cubesviewerCubeLoaded", [ workspace.cubes[idx] ] )
+		}
+	},
+	/*
+	 * Return a cube by name.
+	 */
+	getCube: function(cubename) {
+		var cube = $.grep(this.cubes, function(ed) {
+			return ed.name == cubename;
+		})[0];
+		
+		return cube;
+	},
+});
 
 cubesBase = function() {};
 $.extend (cubesBase.prototype, {
@@ -61,31 +100,10 @@ $.extend (cubesBase.prototype, {
 	
 });
 
+// TODO: Refactor this
 cubesModel = function() {};
 $.extend (cubesModel.prototype, cubesBase.prototype);
 $.extend (cubesModel.prototype, {
-	
-	buildModel: function() {
-		$(this.dimensions).each(function(idx, dimension) {
-			$.extend(dimension, cubesDimension.prototype);
-			dimension.buildModel();
-		});
-		$(this.cubes).each(function(idx, cube) {
-			$.extend(cube, cubesCube.prototype);
-			cube.buildModel();
-		});
-	},
-	
-	/*
-	 * Return a cube by name.
-	 */
-	getCube: function(cubename) {
-		var cube = $.grep(this.cubes, function(e) {
-			return e.name == cubename;
-		})[0];
-		
-		return cube;
-	},
 	
 	/*
 	 * Get a dimension by name.
@@ -117,11 +135,10 @@ $.extend (cubesModel.prototype, {
 		});
 		
 		// Remove from cube dimensions
-		$(this.cubes).each(function(idx, cube) {
-			cube.dimensions = $.grep(cube.dimensions, function (e, idx) {
-				return $.inArray(e, ignoredDimensions) == -1;
-			});
-		});
+        cube = this;
+        cube.dimensions = $.grep(cube.dimensions, function (e, idx) {
+            return $.inArray(e, ignoredDimensions) == -1;
+        });
 		
 		// Remove from dimensions
 		this.dimensions = $.grep(this.dimensions, function (e, idx) {
@@ -181,6 +198,7 @@ $.extend (cubesDimension.prototype, cubesBase.prototype);
 $.extend (cubesDimension.prototype, {
 	
 	buildModel: function() {
+        this.label = this.label||this.name;
 		var dim = this;
 		$(this.levels).each(function(idx, level) {
 			$.extend(level, cubesLevel.prototype);
@@ -245,14 +263,14 @@ $.extend (cubesLevel.prototype, {
 	 */
 	readCell: function(cell) {
 
-		if (!(this.getAttribute(this.key).full_name in cell)) return null;
+		if (!(this.getAttribute(this.key).ref in cell)) return null;
 		
 		var result = {};
-		result.key = cell[this.getAttribute(this.key).full_name];
-		result.label = cell[this.getAttribute(this.label_attribute).full_name];
+		result.key = cell[this.getAttribute(this.key).ref];
+		result.label = cell[this.getAttribute(this.label_attribute).ref];
 		result.info = {};
 		$(this.attributes).each(function(idx, attribute) {
-			result.info[attribute.name] = cell[attribute.full_name];
+			result.info[attribute.name] = cell[attribute.ref];
 		});		
 		return result;
 	},
@@ -264,6 +282,7 @@ $.extend (cubesHierarchy.prototype, cubesLevel.prototype);
 $.extend (cubesHierarchy.prototype, {
 	
 	buildModel: function() {
+        this.label = this.label||this.name;
 	},
 	
 	/*
@@ -295,6 +314,10 @@ $.extend (cubesCube.prototype, cubesLevel.prototype);
 $.extend (cubesCube.prototype, {
 	
 	buildModel: function() {
+		$(this.dimensions).each(function(idx, dimension) {
+			$.extend(dimension, cubesDimension.prototype);
+			dimension.buildModel();
+		});
 	},
 	
 });

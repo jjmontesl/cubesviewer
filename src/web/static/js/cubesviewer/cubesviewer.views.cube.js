@@ -44,7 +44,7 @@ function cubesviewerViewCube () {
 		});
 		
 		// Get a reference to the cube
-		view.cube = cubesviewer.model.getCube(view.params.cubename);
+		view.cube = cubesviewer.workspace.getCube(view.params.cubename);
 		
 	}
 	
@@ -213,7 +213,7 @@ function cubesviewerViewCube () {
 
 			// Preprocess
 			for (var i = 0; i < drilldown.length; i++) {
-				var parts  = cubesviewer.model.getDimensionParts(drilldown[i]);
+				var parts  = view.cube.getDimensionParts(drilldown[i]);
 				drilldown[i] = parts.fullDrilldownValue;
 			}
 			

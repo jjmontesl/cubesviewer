@@ -81,12 +81,8 @@ function cubesviewerViewCubeDateFilter () {
 		var menu = $(".cv-view-menu-cut", $(view.container));
 
 		var dateFilterElements = "";
-		$(cube.dimensions).each( function(idx, e) {
+		$(cube.dimensions).each( function(idx, dimension) {
 
-			var dimension = $.grep(cubesviewer.model.dimensions, function(ed) {
-				return ed.name == e;
-			})[0];
-			
 			if (dimension.isDateDimension()) {
 
 				var disabled = "";
@@ -127,7 +123,7 @@ function cubesviewerViewCubeDateFilter () {
 		);
 		
 		$(view.params.datefilters).each( function(idx, e) {
-			var dimparts = view.cubesviewer.model.getDimensionParts(e.dimension);
+			var dimparts = view.cube.getDimensionParts(e.dimension);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 					$(view.container).find('.cv-view-viewinfo-date'), "#ffdddd", null, readonly,
 					'<span class="ui-icon ui-icon-zoomin"></span> <b>Cut: </b> ' +  
@@ -302,7 +298,14 @@ function cubesviewerViewCubeDateFilter () {
 
 		var values = [];
 		
-		var dimensionparts = cubesviewer.model.getDimensionParts(datefilter.dimension);
+        var dimensionparts;
+        $(cubesviewer.workspace.cubes).each( function(idx, cube) {
+            dimensionparts = cube.getDimensionParts(datefilter.dimension);
+            if (dimensionparts) {
+                return false;
+            }
+        });
+
 		for (var i = 0; i < dimensionparts.hierarchy.levels.length; i++) {
 			var levelname = dimensionparts.hierarchy.levels[i];
 			var level = dimensionparts.dimension.getLevel(levelname);

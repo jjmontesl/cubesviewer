@@ -70,7 +70,7 @@ function cubesviewerGui () {
 		var viewId = "view" + this.lastViewId;
 
 		var container = this.createContainer(viewId);
-		var cube = this.cubesviewer.model.getCube(cubename);
+		var cube = this.cubesviewer.workspace.getCube(cubename);
 		var view = this.cubesviewer.views.createView(viewId, $('.cv-gui-viewcontent', container), "cube", { "cubename": cube.name, "name": "Cube View - " + cube.label });
 		this.views.push (view);
 		
@@ -235,7 +235,7 @@ function cubesviewerGui () {
 	};
 
 	// Model Loaded Event (redraws cubes list)
-	this.onModelLoaded = function(event, data) {
+	this.onWorkspaceLoaded = function(event, data) {
 		
 		var cubesviewer = event.data.gui.cubesviewer;
 		
@@ -243,7 +243,7 @@ function cubesviewerGui () {
 		$('.cv-gui-cubeslist', $(cubesviewer.gui.options.container)).empty();
 		
 		// Add cubes
-		$(cubesviewer.model["cubes"]).each(
+		$(cubesviewer.workspace["cubes"]).each(
 			function(idx, cube) {
 				$('.cv-gui-cubeslist', $(cubesviewer.gui.options.container)).append(
 						'<div><a href="#" data-cubename="' + cube.name + '" class="cv-gui-addviewcube">' + cube.label + '</a></div>'
@@ -358,6 +358,6 @@ cubesviewer.gui = new cubesviewerGui();
 /*
  * Bind events.
  */
-$(document).bind("cubesviewerModelLoaded", { "gui": cubesviewer.gui }, cubesviewer.gui.onModelLoaded);
+$(document).bind("cubesviewerWorkspaceLoaded", { "gui": cubesviewer.gui }, cubesviewer.gui.onWorkspaceLoaded);
 $(document).bind("cubesviewerGuiDraw", { "gui": cubesviewer.gui }, cubesviewer.gui.onGuiDraw);
 $(document).bind("cubesviewerViewDraw", { }, cubesviewer.gui.onViewDraw);

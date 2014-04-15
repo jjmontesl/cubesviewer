@@ -18,7 +18,7 @@ Embedded views examples
 -----------------------
 
 Examples of static (Javascript only) views and GUI can be found in the 
-[src/htmlviews](https://github.com/jjmontesl/cubesviewer/tree/master/src/htmlviews) directory.
+[src/htmlviews](src/htmlviews) directory.
 
 This includes a static HTML file (gui.html) that features a complete static version of
 CubesViewer interface, great for quickly testing the app on your favourite Cubes server.
@@ -29,7 +29,7 @@ Theh same directory includes an example of a view embedded into a web page (view
 Files
 ---------------------
 
-You will need to copy the contents of the [src/web/static](https://github.com/jjmontesl/cubesviewer/tree/master/src/web/static) 
+You will need to copy the contents of the [src/web/static](src/web/static) 
 directory to your application, so they can be accessed by your users.
 
 Including CubesViewer 

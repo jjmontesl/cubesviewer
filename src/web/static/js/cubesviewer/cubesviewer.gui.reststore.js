@@ -314,7 +314,7 @@ function cubesviewerGuiRestStore() {
      */
     this.addViewSaved = function(savedViewId) {
     	
-    	if (cubesviewer.model == null) return;
+    	if (cubesviewer.workspace == null) return;
     	
         var savedview = this.getSavedView(savedViewId);
         var viewobject = $.parseJSON(savedview.data);

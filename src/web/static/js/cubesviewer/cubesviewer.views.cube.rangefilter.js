@@ -79,12 +79,8 @@ function cubesviewerViewCubeRangeFilter () {
 		var menu = $(".cv-view-menu-cut", $(view.container));
 
 		var rangeFilterElements = "";
-		$(cube.dimensions).each( function(idx, e) {
+		$(cube.dimensions).each( function(idx, dimension) {
 
-			var dimension = $.grep(cubesviewer.model.dimensions, function(ed) {
-				return ed.name == e;
-			})[0];
-			
 			if (dimension.isRangeDimension()) {
 
 				var disabled = "";
@@ -123,7 +119,7 @@ function cubesviewerViewCubeRangeFilter () {
 		);
 		
 		$(view.params.rangefilters).each( function(idx, e) {
-			var dimparts = view.cubesviewer.model.getDimensionParts(e.dimension);
+			var dimparts = view.cube.getDimensionParts(e.dimension);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 					$(view.container).find('.cv-view-viewinfo-range'), "#ffe8dd", null, readonly,
 					'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Cut: </b> ' +  
@@ -147,7 +143,7 @@ function cubesviewerViewCubeRangeFilter () {
 	
 	this.drawRangeFilter = function(view, rangefilter, container) {
 
-		var dimparts = view.cubesviewer.model.getDimensionParts(rangefilter.dimension);
+		var dimparts = view.cube.getDimensionParts(rangefilter.dimension);
 		
 		$(container).append(
 			'<input name="range_start" /> - '

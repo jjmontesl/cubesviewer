@@ -31,12 +31,16 @@ in order to install and set up a cubes server if you haven't done so yet.
 
 It is not required that the Cubes server runs on the same host as the CubesViewer application.    
 
+To be able for CubesViewer to connect to the slicer server, your `slicer.ini` should allow cross origin resource
+sharing. To enable this option, put `allow_cors_origin: http://localhost:8000` (or the URL from wich your app will work)
+under the `[server]` section.
+
 ## 2 - Dependencies
 
 CubesViewer application runs on Python/Django. You need to have the following packages available in your system:
 
 * Python 2.7
-* Django 1.3 or Django 1.4 (possibly 1.5 works)
+* Django 1.6.2
 
 You will also need the following Python packages:
 * requests
@@ -47,8 +51,8 @@ need to install also the Python connectors for the appropriate database backend 
 
 ## 3 - Download and install CubesViewer
 
-Download CubesViewer project from GitHub (https://github.com/jjmontesl/cubesviewer). You can use 'git' or [download the ZIP 
-version](https://github.com/jjmontesl/cubesviewer/archive/master.zip) of the project. 
+Download CubesViewer project from GitHub [repository](/). You can use 'git' or [download the ZIP 
+version](archive/master.zip) of the project. 
 
 Put the content of the /src directory of the project, in the target directory of your choice.
 

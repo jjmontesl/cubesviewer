@@ -71,7 +71,8 @@ function cubesviewer () {
 	 */ 
 	this.onRefresh = function() {
 		// Loading the model will cause menus to be redrawn
-		cubesviewer.loadModel();
+		//cubesviewer.loadModel();
+		cubesviewer.loadWorkspace();
 	}
 
 	/*
@@ -108,6 +109,8 @@ function cubesviewer () {
 			cubesviewer.alert("Unauthorized.");
 		} else if (xhr.status == 403) {
 			cubesviewer.alert("Forbidden.");
+		} else if (xhr.status == 400) {
+			cubesviewer.alert($.parseJSON(xhr.responseText).message);
 		} else {
 			cubesviewer.alert("An error occurred while accessing the data server. Please try again or "
 					+ "contact the server administrator if the problem persists.");
@@ -116,25 +119,25 @@ function cubesviewer () {
 	};
 	
 	/*
-	 * Load model (cube list, dimensions...)
+	 * Load workspace (cube list, dimensions...)
 	 */ 
-	this.loadModel = function() {
-		this.cubesRequest ("/model", { "lang": this.options.cubesLang }, this._loadModelCallback(), function() {}, function (xhr, textStatus, errorThrown) {
-			cubesviewer.state = "Failed to load model";
-			cubesviewer.showInfoMessage ('CubesViewer could not load model from Cubes server. CubesViewer will not work. Try reloading.<br /><br>Status: ' + xhr.status);
-			$(document).trigger("cubesviewerModelLoaded", null );
+	this.loadWorkspace = function() {
+		this.cubesRequest ("/cubes", { "lang": this.options.cubesLang }, this._loadWorkspaceCallback(), function() {}, function (xhr, textStatus, errorThrown) {
+			cubesviewer.state = "Failed to load workspace";
+			cubesviewer.showInfoMessage ('CubesViewer could not load workspace from Cubes server. CubesViewer will not work. Try reloading.<br /><br>Status: ' + xhr.status);
+			$(document).trigger("cubesviewerWorkspaceLoaded", null );
 		});
 		//$.get(this.options["cubesUrl"] + "/model", { "lang": this.options.cubesLang }, this._loadModelCallback());
 	};
 
-	this._loadModelCallback = function() {
+	this._loadWorkspaceCallback = function() {
 		var cubesviewer = this;
 		return function(data) {
 			// Set new model
-			cubesviewer.model = cubesviewer.buildModel(data);
+			cubesviewer.workspace = cubesviewer.buildWorkspace(data);
 			
 			cubesviewer.state = "Initialized";
-			$(document).trigger("cubesviewerModelLoaded", [ cubesviewer.model ] )
+			$(document).trigger("cubesviewerWorkspaceLoaded", [ cubesviewer.workspace ] )
 		}
 	};		
 	

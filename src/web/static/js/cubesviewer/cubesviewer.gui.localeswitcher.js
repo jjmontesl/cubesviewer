@@ -55,7 +55,7 @@ function cubesviewerGuiLocaleSwitcher() {
 	/*
 	 * Draw languages from model
 	 */
-	this.onModelLoaded = function(event, data) {
+	this.onWorkspaceLoaded = function(event, data) {
 		
 		var gui = event.data.gui;
 		var cubesviewer = gui.cubesviewer;
@@ -65,6 +65,7 @@ function cubesviewerGuiLocaleSwitcher() {
 		$('[name=cv-gui-localeswitcher]', $(cubesviewer.gui.options.container)).append(
 				'<option value="">Default</option>'
 		);
+        /*
 		$(cubesviewer.model["locales"]).each(
 			function(idx, locale) {
 				$('[name=cv-gui-localeswitcher]', $(cubesviewer.gui.options.container)).append(
@@ -72,8 +73,9 @@ function cubesviewerGuiLocaleSwitcher() {
 				);
 			}
 		);
+        */
 		
-		// Selected langusage
+		// Selected language
 		$('[name=cv-gui-localeswitcher]', $(cubesviewer.gui.options.container)).val(gui.cubesviewer.options.cubesLang);
 		
 	}
@@ -99,4 +101,4 @@ cubesviewer.gui.localeswitcher = new cubesviewerGuiLocaleSwitcher();
  * Bind events.
  */
 $(document).bind("cubesviewerGuiDraw", { }, cubesviewer.gui.localeswitcher.onGuiDraw);
-$(document).bind("cubesviewerModelLoaded", { "gui": cubesviewer.gui }, cubesviewer.gui.localeswitcher.onModelLoaded);
+$(document).bind("cubesviewerWorkspaceLoaded", { "gui": cubesviewer.gui }, cubesviewer.gui.localeswitcher.onWorkspaceLoaded);
