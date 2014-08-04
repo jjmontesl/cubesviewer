@@ -249,7 +249,7 @@ function cubesviewerGui () {
 		$('.cv-gui-cubeslist', $(cubesviewer.gui.options.container)).empty();
 		
 		// Add cubes
-		$(cubesviewer.model).each(
+		$(cubesviewer.cubesserver._cube_list).each(
 			function(idx, cube) {
 				$('.cv-gui-cubeslist', $(cubesviewer.gui.options.container)).append(
 						'<div><a href="#" data-cubename="' + cube.name + '" class="cv-gui-addviewcube">' + cube.label + '</a></div>'
@@ -279,8 +279,8 @@ function cubesviewerGui () {
 				"CubesViewer - Version " + this.cubesviewer.version + "\n" +
 				"https://github.com/jjmontesl/cubesviewer/\n" +
 				"\n" +
-				"Written by José Juan Montes\n" +
-				"2012-2013\n"
+				"By José Juan Montes and others (see AUTHORS)\n" +
+				"2012-2014\n"
 		);
 	};
 	

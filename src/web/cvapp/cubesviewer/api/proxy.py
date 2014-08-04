@@ -56,12 +56,13 @@ def connection(request):
                     return HttpResponseForbidden("Wrong permissions for this data cube. User needs to be in group %s." % acl["group"])
                 
     elif (path.find("cubes") == 0):
-        
         pass
     
     elif (path.find("version") == 0):
-        
         pass
+    
+    elif (path.find("info") == 0):
+        pass    
     
     else:
         

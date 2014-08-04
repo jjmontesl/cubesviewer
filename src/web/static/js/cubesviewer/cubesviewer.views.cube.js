@@ -232,11 +232,7 @@ function cubesviewerViewCube () {
 		}
 
 		// Cuts
-		var cuts = [];
-		$(view.params.cuts).each(function(idx, e) {
-			var cut = cubes.cut_from_string (view.cube, e);
-			cuts.push(cut);
-		});
+		var cuts = cubesviewer.views.cube.buildQueryCuts(view);
 		if (cuts.length > 0) args.cut = new cubes.Cell(view.cube, cuts);
 
 		return args;
@@ -251,7 +247,7 @@ function cubesviewerViewCube () {
 		// Include cuts
 		var cuts = [];
 		$(view.params.cuts).each(function(idx, e) {
-			cuts.push(new cubes.PointCut(e.dimension + ":" + e.value));
+			cuts.push(cubes.cut_from_string (view.cube, e.dimension + ":" + e.value));
 		});
 		
 		return cuts;
