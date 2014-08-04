@@ -55,7 +55,7 @@ function cubesviewerGuiLocaleSwitcher() {
 	/*
 	 * Draw languages from model
 	 */
-	this.onModelLoaded = function(event, data) {
+	this.onCubesviewerRefresh = function(event, data) {
 		
 		var gui = event.data.gui;
 		var cubesviewer = gui.cubesviewer;
@@ -99,4 +99,4 @@ cubesviewer.gui.localeswitcher = new cubesviewerGuiLocaleSwitcher();
  * Bind events.
  */
 $(document).bind("cubesviewerGuiDraw", { }, cubesviewer.gui.localeswitcher.onGuiDraw);
-$(document).bind("cubesviewerModelLoaded", { "gui": cubesviewer.gui }, cubesviewer.gui.localeswitcher.onModelLoaded);
+$(document).bind("cubesviewerRefresh", { "gui": cubesviewer.gui }, cubesviewer.gui.localeswitcher.onCubesviewerRefresh);

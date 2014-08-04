@@ -29,6 +29,34 @@
  * Adds cubesviewer support for binding model to objects. This built model
  * is used along the application. 
  */
+
+
+cubesviewer.model = function() {};
+
+cubesviewer.model.buildCubesList = function(list) {
+	$.extend(list, cubesList.prototype);
+	list.buildModel();
+	return list;
+}
+
+cubesList = function() {};
+$.extend(cubesList.prototype, {
+	
+	buildModel: function() {
+		/*
+		$(this.dimensions).each(function(idx, dimension) {
+			$.extend(dimension, cubesDimension.prototype);
+			dimension.buildModel();
+		});
+		$(this.cubes).each(function(idx, cube) {
+			$.extend(cube, cubesCube.prototype);
+			cube.buildModel();
+		});
+		*/
+	}
+	
+});
+
 cubesviewer.buildModel = function(model) {
 	
 	$.extend(model, cubesModel.prototype);

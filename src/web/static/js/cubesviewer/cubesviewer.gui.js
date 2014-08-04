@@ -47,14 +47,17 @@ function cubesviewerGui () {
 	
 	// Track sorting state
 	this._sorting = false;
+	
+	this.onRefresh = function() {
+		cubesviewer.gui.drawCubesList();
+	};
+	
 
 	/*
 	 * Closes a view. 
 	 */ 
 	this.closeView = function(view) {
-		for ( var i = 0; (i < this.views.length)
-				&& (this.views[i].id != view.id); i++)
-			;
+		for ( var i = 0; (i < this.views.length) && (this.views[i].id != view.id); i++) ;
 		
 		$('#' + view.id).remove();
 		this.views.splice(i, 1);
@@ -70,8 +73,8 @@ function cubesviewerGui () {
 		var viewId = "view" + this.lastViewId;
 
 		var container = this.createContainer(viewId);
-		var cube = this.cubesviewer.model.getCube(cubename);
-		var view = this.cubesviewer.views.createView(viewId, $('.cv-gui-viewcontent', container), "cube", { "cubename": cube.name, "name": "Cube View - " + cube.label });
+		//var cube = this.cubesviewer.model.getCube(cubename);
+		var view = this.cubesviewer.views.createView(viewId, $('.cv-gui-viewcontent', container), "cube", { "cubename": cubename, "name": "Cube View - " + cubename });
 		this.views.push (view);
 		
 		// Bind close button
@@ -235,15 +238,18 @@ function cubesviewerGui () {
 	};
 
 	// Model Loaded Event (redraws cubes list)
-	this.onModelLoaded = function(event, data) {
+	this.onCubesViewerInit = function() {
+		cubesviewer.gui.drawCubesList();
+	};
 		
-		var cubesviewer = event.data.gui.cubesviewer;
+		
+	this.drawCubesList = function() {
 		
 		// Clean list
 		$('.cv-gui-cubeslist', $(cubesviewer.gui.options.container)).empty();
 		
 		// Add cubes
-		$(cubesviewer.model["cubes"]).each(
+		$(cubesviewer.model).each(
 			function(idx, cube) {
 				$('.cv-gui-cubeslist', $(cubesviewer.gui.options.container)).append(
 						'<div><a href="#" data-cubename="' + cube.name + '" class="cv-gui-addviewcube">' + cube.label + '</a></div>'
@@ -336,6 +342,8 @@ function cubesviewerGui () {
 		// forceHlperSize: true,
 		});
 		
+		
+		
 	}
 	
 	// Initialize Cubes Viewer GUI
@@ -358,6 +366,7 @@ cubesviewer.gui = new cubesviewerGui();
 /*
  * Bind events.
  */
-$(document).bind("cubesviewerModelLoaded", { "gui": cubesviewer.gui }, cubesviewer.gui.onModelLoaded);
+$(document).bind("cubesviewerRefresh", { "gui": cubesviewer.gui }, cubesviewer.gui.onRefresh);
 $(document).bind("cubesviewerGuiDraw", { "gui": cubesviewer.gui }, cubesviewer.gui.onGuiDraw);
 $(document).bind("cubesviewerViewDraw", { }, cubesviewer.gui.onViewDraw);
+$(document).bind("cubesviewerInit", { }, cubesviewer.gui.onCubesViewerInit);

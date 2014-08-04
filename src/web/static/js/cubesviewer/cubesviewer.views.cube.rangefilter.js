@@ -81,9 +81,7 @@ function cubesviewerViewCubeRangeFilter () {
 		var rangeFilterElements = "";
 		$(cube.dimensions).each( function(idx, e) {
 
-			var dimension = $.grep(cubesviewer.model.dimensions, function(ed) {
-				return ed.name == e;
-			})[0];
+			var dimension = e;
 			
 			if (dimension.isRangeDimension()) {
 
@@ -286,17 +284,11 @@ function cubesviewerViewCubeRangeFilter () {
 /*
  * Extend model prototype to support rangefilter dimensions.
  */
-$.extend (cubesDimension.prototype, {
+cubes.Dimension.prototype.isRangeDimension = function() {
 	
-	/*
-	 * Inform if a dimension is a date dimension and can be used as a date
-	 * filter (i.e. with range selection tool).
-	 */ 
-	isRangeDimension: function(dimension) {
-		return (this.getInfo("cv-rangefilter") == true);
-	},
+	return ("cv-rangefilter" in this.info && this.info["cv-rangefilter"] == true);
 	
-});
+};
 
 /*
  * Create object.

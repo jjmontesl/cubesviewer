@@ -83,7 +83,7 @@ function cubesviewerViewCubeDateFilter () {
 		var dateFilterElements = "";
 		$(cube.dimensions).each( function(idx, e) {
 
-			var dimension = $.grep(cubesviewer.model.dimensions, function(ed) {
+			var dimension = $.grep(view.cube.dimensions, function(ed) {
 				return ed.name == e;
 			})[0];
 			
@@ -91,8 +91,8 @@ function cubesviewerViewCubeDateFilter () {
 
 				var disabled = "";
 				dateFilterElements = dateFilterElements + '<li><a href="#" class="selectDateFilter '  + disabled + 
-					'" data-dimension="' + dimension.name + ((dimension.getInfo("cv-datefilter-hierarchy")) ? "@" + dimension.getInfo("cv-datefilter-hierarchy") : "") +  
-				'" data-value="1">' + dimension.label + ((dimension.getHierarchy(dimension.getInfo("cv-datefilter-hierarchy"))) ? " / " + dimension.getHierarchy(dimension.getInfo("cv-datefilter-hierarchy")).label : "") +
+					'" data-dimension="' + dimension.name + ((dimension.info["cv-datefilter-hierarchy"]) ? "@" + dimension.info["cv-datefilter-hierarchy"] : "") +  
+				'" data-value="1">' + dimension.label + ((dimension.hierarchies[dimension.info["cv-datefilter-hierarchy"]]) ? " / " + dimension.hierarchies[dimension.info["cv-datefilter-hierarchy"]].label : "") +
 					'</a></li>';
 			}
 
@@ -366,17 +366,13 @@ function cubesviewerViewCubeDateFilter () {
 /*
  * Extend model prototype to support datefilter dimensions.
  */
-$.extend (cubesDimension.prototype, {
+cubes.Dimension.prototype.isDateDimension = function()  {
+
+	// Inform if a dimension is a date dimension and can be used as a date
+	// filter (i.e. with range selection tool).
+	return ("cv-datefilter" in this.info && this.info["cv-datefilter"] == true);
 	
-	/*
-	 * Inform if a dimension is a date dimension and can be used as a date
-	 * filter (i.e. with range selection tool).
-	 */ 
-	isDateDimension: function(dimension) {
-		return (this.getInfo("cv-datefilter") == true);
-	},
-	
-});
+};
 
 /*
  * Create object.

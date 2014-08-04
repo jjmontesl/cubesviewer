@@ -43,10 +43,13 @@ function cubesviewerViewCube () {
 			
 		});
 		
-		// Get a reference to the cube
-		view.cube = cubesviewer.model.getCube(view.params.cubename);
+		cubesviewer.cubesserver.get_cube(view.params.cubename, function(cube) {
+			view.cube = cube;
+			view.state = cubesviewer.views.STATE_INITIALIZED;
+			cubesviewer.views.redrawView(view);
+		});
 		
-	}
+	};
 	
 	
 	/*
@@ -78,6 +81,18 @@ function cubesviewerViewCube () {
 	 * Draw cube view structure.
 	 */
 	this.onViewDraw = function(event, view) {
+
+		if (view.state != cubesviewer.views.STATE_INITIALIZED) {
+			$(view.container).append("Loading...");
+			return;
+		}
+		
+		// Check if the model/cube is loaded.
+		if (view.cube == null) {
+			cubesviewer.views.showFatal (view.container, 'Cannot present cube view: could not load model or cube <b>' + view.params.cubename + '</b>.');
+			return;
+		}
+		
 		
 		if ($(".cv-view-viewdata", view.container).size() == 0) {
 
@@ -91,12 +106,6 @@ function cubesviewerViewCube () {
 					'</div>'
 			);
 			
-		}
-		
-		// Check if the model/cube is loaded.
-		if (view.cube == null) {
-			cubesviewer.views.showFatal (view.container, 'Cannot present cube view: could not load model or cube <b>' + view.params.cubename + '</b>.');
-			return;
 		}
 		
 		// Menu toolbar
@@ -197,39 +206,42 @@ function cubesviewerViewCube () {
 	/*
 	 * Builds Cubes Server query parameters based on current view values.
 	 */
-	this.buildQueryParams = function(view, includeXAxis, onlyCuts) {
-
-		var params = {
-			"lang": view.cubesviewer.options.cubesLang
-		};
-
+	this.buildBrowserArgs = function(view, includeXAxis, onlyCuts) {
+		
+		// "lang": view.cubesviewer.options.cubesLang
+		
+		var args = {};
+		
 		if (!onlyCuts) {
-			var drilldown = view.params.drilldown.slice(0);
+			
+			var drilldowns = view.params.drilldown.slice(0);
 
 			// Include X Axis if necessary
 			if (includeXAxis) {
-				drilldown.splice(0, 0, view.params.xaxis);
+				drilldowns.splice(0, 0, view.params.xaxis);
 			}
 
 			// Preprocess
-			for (var i = 0; i < drilldown.length; i++) {
-				var parts  = cubesviewer.model.getDimensionParts(drilldown[i]);
-				drilldown[i] = parts.fullDrilldownValue;
+			for (var i = 0; i < drilldowns.length; i++) {
+				drilldowns[i] = view.cube.dimension(drilldowns[i]);
 			}
 			
 			// Include drilldown array
-			if (drilldown.length > 0)
-				params["drilldown"] = drilldown;
+			if (drilldowns.length > 0)
+				args.drilldown = cubes.drilldowns_to_string(drilldowns);
 		}
 
-		var cuts = cubesviewer.views.cube.buildQueryCuts(view);
-		
-		// Join different cut conditions
-		if (cuts.length > 0)
-			params["cut"] = cuts.join("|");
+		// Cuts
+		var cuts = [];
+		$(view.params.cuts).each(function(idx, e) {
+			var cut = cubes.cut_from_string (view.cube, e);
+			cuts.push(cut);
+		});
+		if (cuts.length > 0) args.cut = new cubes.Cell(view.cube, cuts);
 
-		return params;
-	};
+		return args;
+		
+	}
 	
 	/*
 	 * Builds Query Cuts
@@ -239,11 +251,10 @@ function cubesviewerViewCube () {
 		// Include cuts
 		var cuts = [];
 		$(view.params.cuts).each(function(idx, e) {
-			cuts.push(e.dimension + ":" + e.value);
+			cuts.push(new cubes.PointCut(e.dimension + ":" + e.value));
 		});
 		
 		return cuts;
-		
 	};
 
 };

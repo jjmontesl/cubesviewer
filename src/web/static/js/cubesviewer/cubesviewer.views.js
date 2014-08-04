@@ -27,6 +27,9 @@
 
 function cubesviewerViews () {
 
+	this.STATE_INITIALIZING = 1;
+	this.STATE_INITIALIZED = 2;
+	
 	/*
 	 * Cubesviewer reference.
 	 */
@@ -53,10 +56,12 @@ function cubesviewerViews () {
 
 		// Check if system is initialized, otherwise
 		// show a friendly error
-		if (cubesviewer.state != "Initialized") {
+		/*
+		if () {
 			cubesviewer.views.showFatal (container, 'Cannot create CubesViewer view.<br />CubesViewer state is: <b>' + cubesviewer.state + '</b>.<br /><br />Try reloading or contact the administrator.</p>');
 			return null;
 		}
+		*/
 		
 		// Create view
 		
@@ -78,6 +83,7 @@ function cubesviewerViews () {
 			"cubesviewer": this.cubesviewer,
 			"type": type,
 			"container": container,
+			"state": cubesviewer.views.STATE_INITIALIZING,
 			"params": {}
 		};
 
@@ -153,7 +159,7 @@ function cubesviewerViews () {
 	 * Triggers redraw for a given view.
 	 */
 	this.redrawView = function (view) {
-		if (view == null) return;
+		//if (view == null) return;
 		$(document).trigger ("cubesviewerViewDraw", [ view ]);
 	}
 	

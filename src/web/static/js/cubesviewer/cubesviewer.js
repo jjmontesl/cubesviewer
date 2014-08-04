@@ -46,12 +46,6 @@ function cubesviewer () {
 		jsonRequestType: "json" // "json | jsonp"
 	};
 
-	// Model data as obtained from Cubes
-	this.model = null;
-	
-	// Error state (failed to load model)
-	this.state = "Not initialized";
-	
 	/*
 	 * Show a global alert
 	 */
@@ -66,13 +60,6 @@ function cubesviewer () {
 		$(document).trigger("cubesviewerRefresh");
 	}
 	
-	/*
-	 * Respond to the restart event
-	 */ 
-	this.onRefresh = function() {
-		// Loading the model will cause menus to be redrawn
-		cubesviewer.loadModel();
-	}
 
 	/*
 	 * Cubes centralized request 
@@ -115,32 +102,10 @@ function cubesviewer () {
 		//$('.ajaxloader').hide();
 	};
 	
-	/*
-	 * Load model (cube list, dimensions...)
-	 */ 
-	this.loadModel = function() {
-		this.cubesRequest ("/model", { "lang": this.options.cubesLang }, this._loadModelCallback(), function() {}, function (xhr, textStatus, errorThrown) {
-			cubesviewer.state = "Failed to load model";
-			cubesviewer.showInfoMessage ('CubesViewer could not load model from Cubes server. CubesViewer will not work. Try reloading.<br /><br>Status: ' + xhr.status);
-			$(document).trigger("cubesviewerModelLoaded", null );
-		});
-		//$.get(this.options["cubesUrl"] + "/model", { "lang": this.options.cubesLang }, this._loadModelCallback());
-	};
-
-	this._loadModelCallback = function() {
-		var cubesviewer = this;
-		return function(data) {
-			// Set new model
-			cubesviewer.model = cubesviewer.buildModel(data);
-			
-			cubesviewer.state = "Initialized";
-			$(document).trigger("cubesviewerModelLoaded", [ cubesviewer.model ] )
-		}
-	};		
 	
 	/*
 	 * Change language for Cubes operations 
-	 * (locale must be one of the possible languages for the model).
+	 * (locale must be one of the possible languages for the cubes).
 	 */
 	this.changeCubesLang = function(lang) {
 		
@@ -163,14 +128,13 @@ function cubesviewer () {
 			traditional : true
 		});
 
-		// Global AJAX error handler
-		// TODO: This should probably not be a global handler!
-		//$(document).ajaxError(
-			// Nothing, remove
-		//);		
-		
-		// Bind events
-		$(document).bind ("cubesviewerRefresh", this.onRefresh);
+		// TODO: Use old custom call w/ support for cache
+		cubesviewer.cubesserver = new cubes.Server($.ajax);
+		cubesviewer.cubesserver.connect (this.options["cubesUrl"], function(model) { 
+			cubesviewer.model = model;
+			cubesviewer.showInfoMessage ('Cubes client initialized (server version: ' + cubesviewer.cubesserver.server_version + ')');
+			$(document).trigger ("cubesviewerInit", [ this ]);
+		} );
 		
 	};
 	
@@ -216,6 +180,23 @@ function cubesviewer () {
 	};
 	
 };
+
+
+/* Extensions to cubesviewer client lib */
+cubes.Dimension.prototype.hierarchies_count = function()  {
+
+	var count = 0;
+	for (hiename in this.hierarchies) {
+		if (this.hierarchies.hasOwnProperty(hiename)) {
+			count++;
+		}
+	}
+	return count;
+};
+cubes.Dimension.prototype.default_hierarchy = function()  {
+	return this.hierarchies[this.default_hierarchy_name];
+};
+
 
 /*
  * Global cubesviewer variable.
