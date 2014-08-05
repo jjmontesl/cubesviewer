@@ -44,8 +44,13 @@ Download
 CubesViewer requires a [Cubes Server](http://databrewery.org/cubes.html), configured and running, 
 able to serve Cubes OLAP queries. 
 
-* [CubesViewer version 0.9](https://github.com/jjmontesl/cubesviewer/archive/v0.9.zip) support Cubes 0.10.x  
-* Next CubesViewer version will be 0.10, supporting Cubes 1.0 
+Latest
+
+* [CubesViewer version 0.10-alpha](https://github.com/jjmontesl/cubesviewer/archive/master.zip): Development branch. Works with Cubes 1.0.x.
+
+Older versions
+
+* [CubesViewer version 0.9](https://github.com/jjmontesl/cubesviewer/archive/v0.9.zip): Works with Cubes 0.10.x.
 
 Requirements
 ------------
@@ -62,9 +67,8 @@ like sharing/saving and user notes. You need Django 1.3 in order to run it, but 
 (only needed if you wish to use the full application with user authentication, user notes
 or save/load/share support). 
 
-Note that **your cubes model shall be configured** to add support for CubesViewer features like date 
-filters and descriptions (see Documentation below). This is optional: CubesViewer will work, 
-but some features like Date Filters will be missing. 
+And of course you need a configured and running Cubes server. Note that **your cubes model needs some extra configuration** 
+if you wish to use features like date filters and range filters (see Documentation below).
 
 For further information, see the Documentation section below.
 

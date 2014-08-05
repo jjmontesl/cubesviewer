@@ -1,0 +1,56 @@
+Roadmap >1.0
+    + Support multiple servers and multiple versions.
+Roadmap 1.0
+    + Tag 1.0 release.
+Roadmap 0.17 ?
+    + Rework comments / ACLs / ownership / revisions if not done yet.
+      (new module / website: annotate) (?)
+    + Charts with time/sortable with series zoom.
+    + Time notes database.
+Roadmap 0.16
+    + Translation site / tool / ask for help.
+    + Interface available in English and one more language (Spanish?).
+    + Implement i18n. 
+Roadmap 0.15
+    + Reviewed and improved doc
+    + Move doc to site (but import from repository markdown, to keep
+      doc sources along with the  project).
+    + Link from viewer to online doc.
+    + Create site, update readme, and site screenshots.
+Roadmap 0.14
+    + Implemented build system, concat simple file, minifying, etc.
+Roadmap 0.13
+    + Support more authentication scenarios for embedded views / IFRAME, 
+      via CubesViewer server app (note upcoming Cubes auth framework).
+    + App support for IFRAME embedding.
+    + GUI support for browser back button, correct URL usage, links to GUI.
+Roadmap 0.12
+    + Changed GUI loading (gui initializes cubesviewer, breaks existing 
+      GUI HTML integrations!), in order to fix loading events ordering issue.
+    + Loading to be less destructive reusing existing DOM elements (up to the plugin).
+    + Support dimension attributes, and fact details in fact view etc..
+    + Support better exploration of facts
+Roadmap 0.11
+    + Drop notes system: use metadata for info and add a comments system    
+    + Ability to filter from chart filter / synchronize filter and chart filter (?).
+    + HTML, CSS and dynamic class usage sanitized (closes #14).
+    + GUI options (and all other plugin options) now as cubesviewer options
+      (with plugin namespace?).
+    + New set of *color* icons .
+    + View UI interface reworked (reminder: ajaxloader usage in many places...)
+    + GUI interface reworked.
+    + Cut and remove option from horizontal dimension (?) (see gui interface reworked)
+    + Horizontal dimension and measure dropdown from infobox (?) (see gui interface reworked)
+    + Dialogs (serialize, others...) are no longer javascript alerts. 
+    + Hide interface mode (also, make these programmable options for the views,
+      review current "readonly" variable usage ?? )
+    + Fix too many series in legend issue (alternate legend?).
+    + Use bootstrap as JS template.
+    + Implemented chart resize options (alternate, more responsive method).  
+    + Using less technical menu and button labels (drilldown, cut).
+    + Analytics plugin to ignore first N seconds of events as for bounce rate calculation.
+Roadmap 0.10-devel
+    + Review Django Proxy (may be useful, but authentication needs review).
+    + Use cubes.js official client library
+    + Update to Cubes 1.0
+    
