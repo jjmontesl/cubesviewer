@@ -304,7 +304,7 @@ function cubesviewerViewCubeChart() {
 	this.drawChartBarsVertical = function (view, colNames, dataRows, dataTotals) {
 		
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cubesviewer.model.getDimensionParts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
 		
 	    var d = [];
 
@@ -400,7 +400,7 @@ function cubesviewerViewCubeChart() {
 	this.drawChartLines = function (view, colNames, dataRows, dataTotals) {
 		
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cubesviewer.model.getDimensionParts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
 		
 	    var d = [];
 
@@ -533,7 +533,7 @@ function cubesviewerViewCubeChart() {
 	this.drawChartLinesCumulative = function (view, colNames, dataRows, dataTotals) {
 		
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cubesviewer.model.getDimensionParts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.getDimensionParts(view.params.xaxis).label : "None")
 		
 	    var d = [];
 
@@ -600,7 +600,7 @@ function cubesviewerViewCubeChart() {
 	this.drawChartPie = function (view, colNames, dataRows, dataTotals) {
 		
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cubesviewer.model.getDimensionParts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
 		
 	    var d = [];
 

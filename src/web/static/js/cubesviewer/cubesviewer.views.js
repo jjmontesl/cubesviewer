@@ -56,6 +56,7 @@ function cubesviewerViews () {
 
 		// Check if system is initialized, otherwise
 		// show a friendly error
+		// TODO: Review if this code is needed or how
 		/*
 		if () {
 			cubesviewer.views.showFatal (container, 'Cannot create CubesViewer view.<br />CubesViewer state is: <b>' + cubesviewer.state + '</b>.<br /><br />Try reloading or contact the administrator.</p>');
@@ -159,6 +160,7 @@ function cubesviewerViews () {
 	 * Triggers redraw for a given view.
 	 */
 	this.redrawView = function (view) {
+		// TODO: Review if if below is needed
 		//if (view == null) return;
 		$(document).trigger ("cubesviewerViewDraw", [ view ]);
 	}

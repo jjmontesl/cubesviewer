@@ -40,7 +40,7 @@ cubesviewer.cubesRequest = function(path, params, successCallback, completeCallb
 	
 	// TODO: Check if cache is enabled
 	
-	var cacheNoticeAfterMinutes = 5;
+	var cacheNoticeAfterMinutes = 10;
 	
 	cubesviewer._cacheCleanup();
 	
@@ -69,7 +69,7 @@ cubesviewer.cubesRequest = function(path, params, successCallback, completeCallb
  */
 cubesviewer._cacheCleanup = function() {
 	
-	var cacheMinutes = 10;
+	var cacheMinutes = 30;
 	var cacheSize = 32;
 		
 	if ("cacheMinutes" in cubesviewer.options) {

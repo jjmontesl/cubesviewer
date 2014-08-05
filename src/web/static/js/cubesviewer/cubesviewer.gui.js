@@ -73,7 +73,8 @@ function cubesviewerGui () {
 		var viewId = "view" + this.lastViewId;
 
 		var container = this.createContainer(viewId);
-		//var cube = this.cubesviewer.model.getCube(cubename);
+		//var cube = this.cubesviewer.cubesserver.cube(cubename);
+		// TODO: Use proper naming, find cube in GUI list if needed
 		var view = this.cubesviewer.views.createView(viewId, $('.cv-gui-viewcontent', container), "cube", { "cubename": cubename, "name": "Cube View - " + cubename });
 		this.views.push (view);
 		

@@ -279,11 +279,11 @@ function cubesviewerViewCubeExplore() {
 			for ( var i = 0; i < drilldown.length; i++) {
 
 				// Get dimension
-				var dimension = view.cubesviewer.model.getDimension(drilldown[i]);
+				var dimension = view.cube.cvdim_dim(drilldown[i]);
 
 				// row["key"] = ((e[view.params.drilldown_field] != null) &&
 				// (e[view.params.drilldown] != "")) ? e[view.params.drilldown] : "Undefined";
-				if (dimension.levels.length == 1) {
+				if (dimension.is_flat == true) {
 					if (a[dimension.name] < b[dimension.name])
 						return -1;
 					if (a[dimension.name] > b[dimension.name])
@@ -321,7 +321,7 @@ function cubesviewerViewCubeExplore() {
 			for ( var i = 0; i < view.params.drilldown.length; i++) {
 
 				// Get dimension
-				var dim = view.cube.dimension(view.params.drilldown[i]);
+				var dim = view.cube.cvdim_dim(view.params.drilldown[i]);
 				
 				var parts = view.cube.cvdim_parts(view.params.drilldown[i]);
 				var infos = parts.hierarchy.readCell(e, parts.level);
@@ -594,10 +594,10 @@ function cubesviewerViewCubeExplore() {
 	
 		$(view.params.drilldown).each(function(idx, e) {
 			
-			var dimension = view.cube.dimension(e);
+			var dimparts = view.cube.cvdim_parts(e);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-drill'), "#ccffcc", 360, readonly,
-				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Drilldown:</b> ' + dimension.label 
+				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Drilldown:</b> ' + dimparts.label 
 			);
 			piece.addClass("cv-view-infopiece-drilldown");
 			piece.attr("data-dimension", e);

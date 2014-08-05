@@ -314,7 +314,7 @@ function cubesviewerGuiRestStore() {
      */
     this.addViewSaved = function(savedViewId) {
     	
-    	if (cubesviewer.model == null) return;
+    	// TODO: Check whether the server model is loaded, etc
     	
         var savedview = this.getSavedView(savedViewId);
         var viewobject = $.parseJSON(savedview.data);

@@ -73,7 +73,7 @@ function cubesviewerGuiLocaleSwitcher() {
 			}
 		);
 		
-		// Selected langusage
+		// Selected language
 		$('[name=cv-gui-localeswitcher]', $(cubesviewer.gui.options.container)).val(gui.cubesviewer.options.cubesLang);
 		
 	}

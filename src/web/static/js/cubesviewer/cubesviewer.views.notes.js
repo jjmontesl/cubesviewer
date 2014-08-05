@@ -95,10 +95,17 @@ function cubesviewerViewNotes () {
 	
 	this.loadNotes = function(view) {
 		
+		if (view.cube == null) {
+			// The view has not been initialized
+			$('#view-' + view.id + '-notes-menu-cube').find('.cubes-notes-html').empty().append("<i>View not initialized. Try refreshing view.</i>");
+			$('#view-' + view.id + '-notes-menu-view').find('.cubes-notes-html').empty().append("<i>View not initialized. Try refreshing view.</i>");
+			return;
+		}
+		
 		$('#view-' + view.id + '-notes-menu-cube').find('.cubes-notes-html').empty().append("<i>Loading...</i>");
 		$('#view-' + view.id + '-notes-menu-view').find('.cubes-notes-html').empty().append("<i>Loading...</i>");
 		
-		$.get(view.cubesviewer.gui.options.backendUrl + "/note/get/" + "cube" + ":" + view.params.cubename, null, view.cubesviewer.views.notes._loadNotesCallbackCube(view), "json")
+		$.get(view.cubesviewer.gui.options.backendUrl + "/note/get/" + "cube" + ":" + view.cube.name, null, view.cubesviewer.views.notes._loadNotesCallbackCube(view), "json")
 		 .fail(cubesviewer.defaultRequestErrorHandler);
 	};
 	
@@ -174,7 +181,7 @@ function cubesviewerViewNotes () {
 		var key = "";
 		
 		if (noteType == "cube") {
-			key = "cube:" + view.params.cubename; 
+			key = "cube:" + view.cube.name; 
 		} else {
 			key = "view:" + view.savedId;
 		}
@@ -188,7 +195,7 @@ function cubesviewerViewNotes () {
 		
 		$( cubesviewer.views.notes.noteViews ).each (function(idx, e) {
 			if (e != view) {
-				if ((e.cube.params.cubename == view.params.cubename) && (noteType=="cube")) {
+				if ((e.cube.name == view.cube.name) && (noteType=="cube")) {
 					e.notes[noteType] = view.notes[noteType];
 					cubesviewer.views.notes.drawNotes(e);
 				} else if ((e.savedId == view.savedId) && (noteType=="view")) {

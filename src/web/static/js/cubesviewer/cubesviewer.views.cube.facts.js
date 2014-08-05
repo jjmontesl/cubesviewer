@@ -182,18 +182,18 @@ function cubesviewerViewCubeFacts() {
 		
 		for ( var dimensionIndex in dimensions) {
 			// Get dimension
-			var dimension = cubesviewer.model.getDimension(dimensions[dimensionIndex]);
+			var dimension = dimensions[dimensionIndex];
 			
 			for (var i = 0; i < dimension.levels.length; i++) {
 				var level = dimension.levels[i];
 				
 				colNames.push(level.label);
 				colModel.push({
-					name : level.getAttribute(level.key).full_name,
-					index : level.getAttribute(level.key).full_name,
+					name : level.getAttribute(level.key).ref,
+					index : level.getAttribute(level.key).ref,
 					align : "left",
 					//sorttype : "number",
-					width : cubesviewer.views.cube.explore.defineColumnWidth(view, level.getAttribute(level.key).full_name, 85),
+					width : cubesviewer.views.cube.explore.defineColumnWidth(view, level.getAttribute(level.key).ref, 85),
 					//formatter: 'number',  
 					//cellattr: this.columnTooltipAttr(column),
 					//formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
@@ -206,11 +206,11 @@ function cubesviewerViewCubeFacts() {
 			
 			colNames.push(measure.name);
 			colModel.push({
-				name : measure.full_name,
-				index : measure.full_name,
+				name : measure.ref,
+				index : measure.ref,
 				align : "right",
 				sorttype : "number",
-				width : cubesviewer.views.cube.explore.defineColumnWidth(view, measure.full_name, 75),
+				width : cubesviewer.views.cube.explore.defineColumnWidth(view, measure.ref, 75),
 				formatter: 'number',  
 				//cellattr: this.columnTooltipAttr(column),
 				formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
@@ -284,14 +284,14 @@ function cubesviewerViewCubeFacts() {
 					var level = dimension.levels[i];
 					var levelData = level.readCell (e);
 					
-					row[level.getAttribute(level.key).full_name] = levelData.label;
+					row[level.getAttribute(level.key).ref] = levelData.label;
 					
 				}
 			}
 			
 			for (var measureIndex in measures) {
 				var measure = measures[measureIndex];
-				row[measure.full_name] = e[measure.full_name];
+				row[measure.ref] = e[measure.ref];
 			}
 			
 

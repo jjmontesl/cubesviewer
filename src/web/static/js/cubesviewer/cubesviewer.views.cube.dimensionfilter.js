@@ -112,7 +112,7 @@ function cubesviewerViewCubeDimensionFilter () {
 		$(view.container).find('.cv-view-viewinfo-cut').find('button.cv-view-infopiece-cut-editcut').button().find('span').css('padding', '0px');
 		$(view.container).find('.cv-view-viewinfo-cut').find('button.cv-view-infopiece-cut-editcut').click(function () {
 			var dimensionString = $(this).parents('.cv-view-infopiece-cut').first().attr('data-dimension');
-			var parts = view.cubesviewer.model.getDimensionParts(dimensionString);
+			var parts = view.cube.cvdim_parts(dimensionString);
 			var depth = $(this).parents('.cv-view-infopiece-cut').first().attr('data-value').split(';')[0].split(",").length;
 			cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, dimensionString + ":" + parts.hierarchy.levels[depth - 1] );
 		});
@@ -137,7 +137,7 @@ function cubesviewerViewCubeDimensionFilter () {
 	 */
 	this.drawDimensionFilter = function (view, dimension) {
 
-		var parts = cubesviewer.model.getDimensionParts(dimension);
+		var parts = view.cube.cvdim_parts(dimension);
 		
 		// Clean interface if a filter was already open
 		$(view.container).find('.cv-view-dimensionfilter').remove();
@@ -211,7 +211,7 @@ function cubesviewerViewCubeDimensionFilter () {
 
 		view.dimensionFilter = tdimension;
 		
-		var parts = cubesviewer.model.getDimensionParts(tdimension);
+		var parts = view.cube.cvdim_parts(tdimension);
 		
 		var params = {
 				"hierarchy": parts.hierarchy.name,
@@ -221,7 +221,8 @@ function cubesviewerViewCubeDimensionFilter () {
 		//view.cubesviewer.views.blockViewLoading(view);
 		
 		view.cubesviewer.cubesRequest(
-				"/cube/" + view.cube.name + "/dimension/" + parts.dimension.name,
+                // Doc says it's dimension, not members
+				"/cube/" + view.cube.name + "/members/" + parts.dimension.name,
 				params,
 				view.cubesviewer.views.cube.dimensionfilter._loadDimensionValuesCallback(view, tdimension),
 				function() {
@@ -274,12 +275,12 @@ function cubesviewerViewCubeDimensionFilter () {
 		$(view.container).find(".cv-view-dimensionfilter-list").empty();
 		
 		// Get dimension
-		var dimension = view.cubesviewer.model.getDimension(tdimension);
+		var dimension = view.cube.getDimension(tdimension);
 		
 		$(data.data).each( function(idx, e) {
 		
 			// Get dimension
-			var parts = cubesviewer.model.getDimensionParts(tdimension);
+			var parts = view.cube.cvdim_parts(tdimension);
 			var infos = parts.hierarchy.readCell(e, parts.level);
 			
 			// Values and Labels
@@ -324,7 +325,7 @@ function cubesviewerViewCubeDimensionFilter () {
 	 */
 	this.updateFromCut = function(view, dimensionString) {
 		
-		var parts = cubesviewer.model.getDimensionParts(dimensionString);
+		var parts = view.cube.cvdim_parts(dimensionString);
 		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
 		
 		var filterValues = [];
@@ -352,7 +353,7 @@ function cubesviewerViewCubeDimensionFilter () {
 	 */
 	this.applyFilter = function(view, dimensionString) {
 		
-		var parts = cubesviewer.model.getDimensionParts(dimensionString);
+		var parts = view.cube.cvdim_parts(dimensionString);
 
 		checked = $(view.container).find(".cv-view-dimensionfilter-list").find("input:checked");
 		

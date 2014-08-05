@@ -98,7 +98,9 @@ function cubesviewerGuiSerializing() {
 	this.serializeView = function (view) {
 		
 		var serialized = view.cubesviewer.views.serialize(view);
+		console.log(serialized);
 		view.cubesviewer.alert (serialized);
+		// TODO: Show serialized info properly
 				
 	};
 	

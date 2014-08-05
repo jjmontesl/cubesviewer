@@ -43,6 +43,8 @@ function cubesviewerViewCube () {
 			
 		});
 		
+		view.cube = null;
+		
 		cubesviewer.cubesserver.get_cube(view.params.cubename, function(cube) {
 			view.cube = cube;
 			view.state = cubesviewer.views.STATE_INITIALIZED;
@@ -107,6 +109,15 @@ function cubesviewerViewCube () {
 			);
 			
 		}
+		
+		// Check if the model/cube is loaded.
+		// TODO: Review if this code is needed
+		/*
+		if (view.cube == null) {
+			cubesviewer.views.showFatal (view.container, 'Cannot present cube view: could not load model or cube <b>' + view.params.cubename + '</b>.');
+			return;
+		}
+		*/
 		
 		// Menu toolbar
 		$(view.container).find('.cv-view-viewmenu').empty().append(

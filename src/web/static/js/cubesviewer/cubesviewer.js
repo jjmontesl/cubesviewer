@@ -46,6 +46,11 @@ function cubesviewer () {
 		jsonRequestType: "json" // "json | jsonp"
 	};
 
+	// Cubes server.
+	this.cubesserver = null;
+	
+	
+
 	/*
 	 * Show a global alert
 	 */
@@ -95,6 +100,8 @@ function cubesviewer () {
 			cubesviewer.alert("Unauthorized.");
 		} else if (xhr.status == 403) {
 			cubesviewer.alert("Forbidden.");
+		} else if (xhr.status == 400) {
+			cubesviewer.alert($.parseJSON(xhr.responseText).message);
 		} else {
 			cubesviewer.alert("An error occurred while accessing the data server. Please try again or "
 					+ "contact the server administrator if the problem persists.");
@@ -105,7 +112,7 @@ function cubesviewer () {
 	
 	/*
 	 * Change language for Cubes operations 
-	 * (locale must be one of the possible languages for the cubes).
+	 * (locale must be one of the possible languages for the model).
 	 */
 	this.changeCubesLang = function(lang) {
 		
