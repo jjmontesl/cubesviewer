@@ -65,13 +65,23 @@ function cubesviewer () {
 		$(document).trigger("cubesviewerRefresh");
 	}
 	
-
+	/*
+	 * Ajax handler for cubes library
+	 */
+	this.cubesAjaxHandler = function (settings) {
+		cubesviewer.cubesRequest(settings.url, settings.data || [], settings.success, settings.complete, settings.error);
+		return null;
+	};
+	
+	
 	/*
 	 * Cubes centralized request 
 	 */
 	this.cubesRequest = function(path, params, successCallback, completeCallback, errorCallback) {
 		
-		var jqxhr = $.get(this.options["cubesUrl"] + path, params, this._cubesRequestCallback(successCallback), cubesviewer.options.jsonRequestType);
+		if (path.charAt(0) == '/') path = this.options["cubesUrl"] + path;
+		
+		var jqxhr = $.get(path, params, this._cubesRequestCallback(successCallback), cubesviewer.options.jsonRequestType);
 		
 		if (completeCallback != undefined && completeCallback != null) {
 			jqxhr.always (completeCallback);
@@ -136,7 +146,7 @@ function cubesviewer () {
 		});
 
 		// TODO: Use old custom call w/ support for cache
-		cubesviewer.cubesserver = new cubes.Server($.ajax);
+		cubesviewer.cubesserver = new cubes.Server(cubesviewer.cubesAjaxHandler);
 		cubesviewer.cubesserver.connect (this.options["cubesUrl"], function(model) { 
 			cubesviewer.showInfoMessage ('Cubes client initialized (server version: ' + cubesviewer.cubesserver.server_version + ')');
 			$(document).trigger ("cubesviewerInit", [ this ]);

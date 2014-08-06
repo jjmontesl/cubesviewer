@@ -104,24 +104,17 @@ function cubesviewerViewCubeFacts() {
 	
 	
 	/*
-	 * Load and draw current data
-	 */ 
+	 * Load and draw current data.
+	 */
 	this.loadData = function(view) {
 
-		var params = view.cubesviewer.views.cube.buildQueryParams(view, false, true);
-
 		view.cubesviewer.views.blockViewLoading(view);
+
+		var browser_args = this.cubesviewer.views.cube.buildBrowserArgs(view, false, false);
+		var browser = new cubes.Browser(view.cubesviewer.cubesserver, view.cube);
+		browser.facts(browser_args, view.cubesviewer.views.cube.facts._loadDataCallback(view));
 		
-		view.cubesviewer.cubesRequest(
-				"/cube/" + view.cube.name + "/facts",
-				params,
-				view.cubesviewer.views.cube.facts._loadDataCallback(view),
-				function() {
-					view.cubesviewer.views.unblockView(view);
-				}
-		);
-		
-	};
+	};	
 	
 	this._loadDataCallback = function(view) {
 
@@ -130,6 +123,7 @@ function cubesviewerViewCubeFacts() {
 		return function (data, status) {
 			$(view.container).find('.cv-view-viewdata').empty();
 			view.cubesviewer.views.cube.facts.drawTable(view, data);
+			view.cubesviewer.views.unblockView(view);
 		};
 		
 	};	
@@ -189,11 +183,11 @@ function cubesviewerViewCubeFacts() {
 				
 				colNames.push(level.label);
 				colModel.push({
-					name : level.getAttribute(level.key).ref,
-					index : level.getAttribute(level.key).ref,
+					name : level.key().ref,
+					index : level.key().ref,
 					align : "left",
 					//sorttype : "number",
-					width : cubesviewer.views.cube.explore.defineColumnWidth(view, level.getAttribute(level.key).ref, 85),
+					width : cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
 					//formatter: 'number',  
 					//cellattr: this.columnTooltipAttr(column),
 					//formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
@@ -277,14 +271,14 @@ function cubesviewerViewCubeFacts() {
 			
 			for ( var dimensionIndex in dimensions) {
 				// Get dimension
-				var dimension = cubesviewer.model.getDimension(dimensions[dimensionIndex]);
+				var dimension = dimensions[dimensionIndex];
 				
 				for (var i = 0; i < dimension.levels.length; i++) {
 					
 					var level = dimension.levels[i];
 					var levelData = level.readCell (e);
 					
-					row[level.getAttribute(level.key).ref] = levelData.label;
+					row[level.key().ref] = levelData.label;
 					
 				}
 			}

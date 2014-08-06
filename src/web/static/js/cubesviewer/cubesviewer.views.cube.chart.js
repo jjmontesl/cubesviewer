@@ -195,26 +195,11 @@ function cubesviewerViewCubeChart() {
 		} 
 		
 		// Build params and include xaxis if present
-		var params = view.cubesviewer.views.cube.buildQueryParams(view, view.params.xaxis != null ? true : false, false);
-		
 		view.cubesviewer.views.blockViewLoading(view);
-		
-		view.cubesviewer.cubesRequest(
-				"/cube/" + view.cube.name + "/aggregate",
-				params,
-				view.cubesviewer.views.cube.chart._loadDataCallback(view),
-				function() {
-					view.cubesviewer.views.unblockView(view);
-				}
-		);
-		
-		/*
-		var jqxhr = $.get(view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/aggregate", params, 
-				view.cubesviewer.views.cube.chart._loadDataCallback(view), "json");
-		jqxhr.complete (function() {
-			view.cubesviewer.views.unblockView(view);
-		});
-		*/
+
+		var browser_args = this.cubesviewer.views.cube.buildBrowserArgs(view, view.params.xaxis != null ? true : false, false);
+		var browser = new cubes.Browser(view.cubesviewer.cubesserver, view.cube);
+		var jqxhr = browser.aggregate(browser_args, view.cubesviewer.views.cube.chart._loadDataCallback(view));
 		
 	};
 	
@@ -226,6 +211,7 @@ function cubesviewerViewCubeChart() {
 		return function (data, status) {
 			$(view.container).find('.cv-view-viewdata').empty();
 			view.cubesviewer.views.cube.chart.drawChart(view, data);
+			view.cubesviewer.views.unblockView(view);
 		};
 		
 	};	

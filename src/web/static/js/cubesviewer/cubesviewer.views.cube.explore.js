@@ -233,12 +233,7 @@ function cubesviewerViewCubeExplore() {
 
 		var browser_args = this.cubesviewer.views.cube.buildBrowserArgs(view, false, false);
 		var browser = new cubes.Browser(view.cubesviewer.cubesserver, view.cube);
-		browser.aggregate(browser_args, 
-						  view.cubesviewer.views.cube.explore._loadDataCallback(view)						  
-				/*,function() {
-					view.cubesviewer.views.unblockView(view);
-				}*/
-		);
+		browser.aggregate(browser_args, view.cubesviewer.views.cube.explore._loadDataCallback(view));
 		
 	};
 

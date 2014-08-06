@@ -201,18 +201,11 @@ function cubesviewerViewCubeSeries() {
 		} 
 		
 		// Build params and include xaxis if present
-		var params = view.cubesviewer.views.cube.buildQueryParams(view, view.params.xaxis != null ? true : false, false);
-		
 		view.cubesviewer.views.blockViewLoading(view);
-		
-		view.cubesviewer.cubesRequest(
-				"/cube/" + view.cube.name + "/aggregate",
-				params,
-				view.cubesviewer.views.cube.series._loadDataCallback(view),
-				function() {
-					view.cubesviewer.views.unblockView(view);
-				}
-		);
+
+		var browser_args = this.cubesviewer.views.cube.buildBrowserArgs(view, view.params.xaxis != null ? true : false, false);
+		var browser = new cubes.Browser(view.cubesviewer.cubesserver, view.cube);
+		browser.aggregate(browser_args, view.cubesviewer.views.cube.series._loadDataCallback(view));
 		
 	};
 	
@@ -223,6 +216,7 @@ function cubesviewerViewCubeSeries() {
 		return function (data, status) {
 			$(view.container).find('.cv-view-viewdata').empty();
 			view.cubesviewer.views.cube.series.drawTable(view, data);
+			view.cubesviewer.views.unblockView(view);
 		};
 		
 	};	

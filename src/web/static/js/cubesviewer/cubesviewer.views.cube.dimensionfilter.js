@@ -275,7 +275,7 @@ function cubesviewerViewCubeDimensionFilter () {
 		$(view.container).find(".cv-view-dimensionfilter-list").empty();
 		
 		// Get dimension
-		var dimension = view.cube.getDimension(tdimension);
+		var dimension = view.cube.cvdim_dim(tdimension);
 		
 		$(data.data).each( function(idx, e) {
 		

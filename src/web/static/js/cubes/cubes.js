@@ -514,6 +514,20 @@
 
         this.server.query("aggregate", this.cube, args, callback);
     };
+    
+    cubes.Browser.prototype.facts = function(args, callback) {
+        if ( ! args )
+          args = {};
+
+        var http_args = {};
+
+        if (args.cut) http_args.cut = args.cut.toString();
+        if (args.order) http_args.order = args.order.toString();
+        if (args.page) http_args.page = args.page;
+        if (args.pagesize) http_args.pagesize = args.pagesize;
+
+        this.server.query("facts", this.cube, args, callback);
+    };    
 
     cubes.Drilldown = function(dimension, hierarchy, level) {
         if ( ! _.isObject(dimension) )

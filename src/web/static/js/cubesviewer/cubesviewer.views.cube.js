@@ -48,7 +48,11 @@ function cubesviewerViewCube () {
 		cubesviewer.cubesserver.get_cube(view.params.cubename, function(cube) {
 			view.cube = cube;
 			view.state = cubesviewer.views.STATE_INITIALIZED;
-			cubesviewer.views.redrawView(view);
+			
+			// TODO: Nasty avoiding redrawing before view is initialized
+			setTimeout(function() {
+			    cubesviewer.views.redrawView(view);
+			}, 500);
 		});
 		
 	};
