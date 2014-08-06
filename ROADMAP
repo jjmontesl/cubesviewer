@@ -50,7 +50,6 @@ Roadmap 0.11
     + Using less technical menu and button labels (drilldown, cut).
     + Analytics plugin to ignore first N seconds of events as for bounce rate calculation.
 Roadmap 0.10-devel
+    + Solve onDraw event race condition due to loading cube causing initialization events not to run.
     + Review Django Proxy (may be useful, but authentication needs review).
-    + Use cubes.js official client library
-    + Update to Cubes 1.0
     

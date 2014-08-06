@@ -91,6 +91,12 @@
         this._cubes = {}
     };
 
+    cubes.Server.prototype.cubeinfo = function(cubename) {
+    	cubeinfos = $.grep(this._cube_list, function (ci) { return ci.name == cubename });
+    	if (cubeinfos.length != 1) throw "Found " + cubeinfos.length + " cubes with name '" + cubename + "' in the cube list";
+    	return cubeinfos[0];
+    };
+    
     cubes.Server.prototype.ajaxRequest = function(settings) {
         throw "Must implement ajaxRequest for server to process jquery-style $.ajax settings object";
     };

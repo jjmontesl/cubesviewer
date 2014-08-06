@@ -73,9 +73,11 @@ function cubesviewerGui () {
 		var viewId = "view" + this.lastViewId;
 
 		var container = this.createContainer(viewId);
-		//var cube = this.cubesviewer.cubesserver.cube(cubename);
-		// TODO: Use proper naming, find cube in GUI list if needed
-		var view = this.cubesviewer.views.createView(viewId, $('.cv-gui-viewcontent', container), "cube", { "cubename": cubename, "name": "Cube View - " + cubename });
+
+		// Find cube name
+		var cubeinfo = cubesviewer.cubesserver.cubeinfo (cubename);
+		
+		var view = this.cubesviewer.views.createView(viewId, $('.cv-gui-viewcontent', container), "cube", { "cubename": cubename, "name": "Cube " + cubeinfo.label });
 		this.views.push (view);
 		
 		// Bind close button

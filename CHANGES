@@ -1,5 +1,6 @@
 0.10
-    
+    + Updated to work with Cubes 1.0 (note: dropped support for Cubes 0.10.x).
+    + Use cubes.js official client library (altered).
 0.9
     + Last version supporting cubes 0.10.x.
     + Fix dimensionfilter bug causing wrong values to
