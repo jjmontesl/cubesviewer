@@ -122,6 +122,8 @@ function cubesviewerViewCubeSeries() {
 		
 		// Add measures menu
 		var measuresElements = "";
+		
+		/*
 		$(view.cube.measures).each(function(idx, e) {
 			
 			if ("aggregates" in e) {
@@ -133,6 +135,7 @@ function cubesviewerViewCubeSeries() {
 			}
 			
 		});
+		*/
 		
 		$(view.cube.aggregates).each(function(idx, e) {
             measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + e.name + '">' + e.label||e.name + '</a></li>';
