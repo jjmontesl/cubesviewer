@@ -71,11 +71,12 @@ note that **the order of inclusion of Javascript files is critical** (  though y
     <script type="text/javascript" src="../web/static/js/jqgrid/i18n/grid.locale-en.js" ></script>
     <script type="text/javascript" src="../web/static/js/jqgrid/jquery.jqGrid.min.js" ></script>
     
+    <script type="text/javascript" src="../web/static/js/cubes/cubes.js"></script>
+    
     <!-- Cubesviewer modules -->
     
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.cache.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.model.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.explore.js"></script>

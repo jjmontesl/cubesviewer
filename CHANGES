@@ -1,4 +1,4 @@
-0.10
+0.10-devel
     + Updated to work with Cubes 1.0 (note: dropped support for Cubes 0.10.x).
     + Use cubes.js official client library (altered).
 0.9

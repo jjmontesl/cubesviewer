@@ -44,13 +44,9 @@ Download
 CubesViewer requires a [Cubes Server](http://databrewery.org/cubes.html), configured and running, 
 able to serve Cubes OLAP queries. 
 
-Latest
+Development: [CubesViewer version 0.10-alpha](https://github.com/jjmontesl/cubesviewer/archive/master.zip): Development branch. Works with Cubes 1.0.x. 
 
-* [CubesViewer version 0.10-alpha](https://github.com/jjmontesl/cubesviewer/archive/master.zip): Development branch. Works with Cubes 1.0.x.
-
-Older versions
-
-* [CubesViewer version 0.9](https://github.com/jjmontesl/cubesviewer/archive/v0.9.zip): Works with Cubes 0.10.x.
+Stable: [CubesViewer version 0.9](https://github.com/jjmontesl/cubesviewer/archive/v0.9.zip): Works with Cubes 0.10.x.
 
 Requirements
 ------------
@@ -69,6 +65,9 @@ or save/load/share support).
 
 And of course you need a configured and running Cubes server. Note that **your cubes model needs some extra configuration** 
 if you wish to use features like date filters and range filters (see Documentation below).
+To be able for CubesViewer to connect to the slicer server, your `slicer.ini` should allow cross origin resource
+sharing. To enable this option, put `allow_cors_origin: http://localhost:8000` (or the URL from wich your app will work,
+or an asterisk *) under the `[server]` section.
 
 For further information, see the Documentation section below.
 

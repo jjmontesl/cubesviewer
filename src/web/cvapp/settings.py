@@ -48,7 +48,7 @@ DATABASES = {
 
 
 ##
-# 2. Configuration of Slicer OLAP Server
+# 2. Configuration of CubesViewer
 ##
 
 # Base Cubes Server URL. 

@@ -237,7 +237,7 @@ function cubesviewerViewCubeDateFilter () {
 	 * Composes a filter with appropriate syntax and time grain from a
 	 * datefilter
 	 */ 
-	this.datefilterValue = function(datefilter) {
+	this.datefilterValue = function(view, datefilter) {
 
 		var date_from = null;
 		var date_to = null;
@@ -282,11 +282,11 @@ function cubesviewerViewCubeDateFilter () {
 			var datefiltervalue = "";
 			if (date_from != null)
 				datefiltervalue = datefiltervalue
-						+ this._datefiltercell(datefilter, date_from);
+						+ this._datefiltercell(view, datefilter, date_from);
 			datefiltervalue = datefiltervalue + "-";
 			if (date_to != null)
 				datefiltervalue = datefiltervalue
-						+ this._datefiltercell(datefilter, date_to);
+						+ this._datefiltercell(view, datefilter, date_to);
 			return datefiltervalue;
 		} else {
 			return null;
@@ -294,16 +294,15 @@ function cubesviewerViewCubeDateFilter () {
 
 	};
 
-	this._datefiltercell = function(datefilter, tdate) {
+	this._datefiltercell = function(view, datefilter, tdate) {
 
 		var values = [];
 		
-		var dimensionparts = cubesviewer.model.getDimensionParts(datefilter.dimension);
+		var dimensionparts = view.cube.cvdim_parts(datefilter.dimension);
 		for (var i = 0; i < dimensionparts.hierarchy.levels.length; i++) {
-			var levelname = dimensionparts.hierarchy.levels[i];
-			var level = dimensionparts.dimension.getLevel(levelname);
+			var level = dimensionparts.hierarchy.levels[i];
 			
-			var field = level.getInfo("cv-datefilter-field");
+			var field = level.info["cv-datefilter-field"];
 			if (field == "year") {
 				values.push(tdate.getFullYear());
 			} else if (field == "month") {
@@ -347,9 +346,9 @@ function cubesviewerViewCubeDateFilter () {
 		var cuts = cubesviewer.views.cube.datefilter._overridedbuildQueryCuts(view);
 		
 		$(view.params.datefilters).each(function(idx, e) {
-			var datefiltervalue = view.cubesviewer.views.cube.datefilter.datefilterValue(e);
+			var datefiltervalue = view.cubesviewer.views.cube.datefilter.datefilterValue(view, e);
 			if (datefiltervalue != null) {
-				cuts.push(e.dimension + ":" + datefiltervalue);
+				cuts.push(cubes.cut_from_string (view.cube, e.dimension + ":" + datefiltervalue));
 			}
 		});
 		
