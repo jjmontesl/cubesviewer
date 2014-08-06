@@ -38,7 +38,7 @@ function cubesviewerViewCubeSeries() {
 	this.onViewCreate = function(event, view) {
 		$.extend(view.params, {
 			"xaxis" : null,
-			"yaxis" : "record_count"
+			"yaxis" : null
 		});
 	}	
 	
@@ -97,49 +97,35 @@ function cubesviewerViewCubeSeries() {
 		
 		var drillElements = cubesviewer.views.cube.explore.getDrillElementsList(view, "cv-view-series-setxaxis", true);
 		
-		/*
-		$(cube.dimensions).each(function(idx, e) {
-			
-			var dimension = $.grep(view.cube.dimensions, function(ed) { return ed.name == e; })[0];
-			
-			if (dimension.is_flat) {
-				// Don't show the drilldown if dimension is filtered (besides, this query causes a server error)
-				// TODO: Handle this for non-flat dimensions too
-				var disabled = "";
-				if ( (($.grep(view.params.cuts, function(ed) {return ed.dimension == dimension.name;} )).length > 0) ||
-						(($.grep(view.params.drilldown, function(ed) {return ed == dimension.name;} )).length > 0) ) disabled = "ui-state-disabled";
-				drillElements = drillElements + '<li><a href="#" class="cv-view-series-setxaxis ' + disabled + '" data-dimension="' + dimension.name + '" >' + dimension.label + '</a></li>';
-			} else {
-				drillElements = drillElements + '<li><a href="#">' + dimension.label + '</a><ul class="drillList" style="width: 180px; z-index: 9999;">';
-				$(dimension.levels).each(function(idx, el) {
-					drillElements = drillElements + '<li><a href="#" class="cv-view-series-setxaxis ' + disabled + '" data-dimension="' + dimension.name + ':' + el.name + '" >' + el.label + '</a></li>';
-				});
-				drillElements = drillElements + '</ul></li>';
-			}
-			
-		});
-		*/
-		
 		// Add measures menu
 		var measuresElements = "";
-		
-		/*
 		$(view.cube.measures).each(function(idx, e) {
 			
-			if ("aggregates" in e) {
-			measuresElements = measuresElements + '<li><a href="#" onclick="return false;">' + e.name + '</a><ul style="width: 170px; z-index: 9999;">';
-				$(e.aggregates).each(function(idx, ea) {
-					measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + e.name + '_' + ea + '">' + ea + '</a></li>';
+			var aggregates = $.grep(view.cube.aggregates, function(ia) { return ia.measure == e.name; } );
+			if (aggregates.length > 0) {
+				measuresElements = measuresElements + '<li><a href="#" onclick="return false;">' + e.label + '</a><ul style="width: 170px; z-index: 9999;">';
+				$(aggregates).each(function(idx, ea) {
+					measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + ea.ref + '">' + ea.label + '</a></li>';
 				});
                 measuresElements = measuresElements + '</ul></li>';
 			}
 			
 		});
-		*/
 		
+		var aggregates = $.grep(view.cube.aggregates, function(ia) { return ! ia.measure; } );
+		if (aggregates.length > 0) {
+			measuresElements = measuresElements + '<div class="ui-series-measures-sep"></div>'; 
+			$(aggregates).each(function(idx, ea) {
+				measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + ea.ref + '">' + ea.label + '</a></li>';
+			});
+		}
+		
+		
+		/*
 		$(view.cube.aggregates).each(function(idx, e) {
             measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + e.name + '">' + e.label||e.name + '</a></li>';
 		});
+		*/
 		
 		menu.append(
 		  '<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-arrowthick-1-s"></span>Horizontal Dimension</a><ul style="width: 180px;">' +
