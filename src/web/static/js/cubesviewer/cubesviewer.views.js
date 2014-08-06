@@ -29,6 +29,7 @@ function cubesviewerViews () {
 
 	this.STATE_INITIALIZING = 1;
 	this.STATE_INITIALIZED = 2;
+	this.STATE_ERROR = 3;
 	
 	/*
 	 * Cubesviewer reference.
@@ -91,6 +92,8 @@ function cubesviewerViews () {
 		$.extend(view.params, params);
 		$(document).trigger("cubesviewerViewCreate", [ view ] );
 		$.extend(view.params, params);
+		
+		if (view.state == cubesviewer.views.STATE_INITIALIZING) view.state = cubesviewer.views.STATE_INITIALIZED;
 		
 		// Attach view to container
 		$(container).data("cubesviewer-view", view);
@@ -169,6 +172,13 @@ function cubesviewerViews () {
 	 * Updates view when the view is refreshed.
 	 */
 	this.onViewDraw = function (event, view) {
+		
+		if (view.state == cubesviewer.views.STATE_ERROR) {
+			cubesviewer.views.showFatal (view.container, 'An error has occurred. Cannot present view.');
+			event.stopImmediatePropagation();
+			return;
+		}
+		
 	}	
 
 	/*

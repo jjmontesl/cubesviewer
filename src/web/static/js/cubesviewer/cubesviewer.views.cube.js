@@ -45,15 +45,16 @@ function cubesviewerViewCube () {
 		
 		view.cube = null;
 		
-		cubesviewer.cubesserver.get_cube(view.params.cubename, function(cube) {
+		var jqxhr = cubesviewer.cubesserver.get_cube(view.params.cubename, function(cube) {
 			view.cube = cube;
-			view.state = cubesviewer.views.STATE_INITIALIZED;
-			
-			// TODO: Nasty avoiding redrawing before view is initialized
-			setTimeout(function() {
-			    cubesviewer.views.redrawView(view);
-			}, 500);
+		    if (view.state == cubesviewer.views.STATE_INITIALIZED) cubesviewer.views.redrawView(view);
 		});
+		if (jqxhr) {
+			jqxhr.fail(function() {
+				view.state = cubesviewer.views.STATE_ERROR;
+				cubesviewer.views.redrawView(view);
+			});
+		}
 		
 	};
 	
@@ -88,17 +89,13 @@ function cubesviewerViewCube () {
 	 */
 	this.onViewDraw = function(event, view) {
 
-		if (view.state != cubesviewer.views.STATE_INITIALIZED) {
-			$(view.container).append("Loading...");
-			return;
-		}
-		
 		// Check if the model/cube is loaded.
 		if (view.cube == null) {
-			cubesviewer.views.showFatal (view.container, 'Cannot present cube view: could not load model or cube <b>' + view.params.cubename + '</b>.');
+			$(view.container).append("Loading...");
+			event.stopImmediatePropagation();
 			return;
 		}
-		
+
 		
 		if ($(".cv-view-viewdata", view.container).size() == 0) {
 

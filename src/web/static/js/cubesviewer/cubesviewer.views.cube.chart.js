@@ -200,6 +200,9 @@ function cubesviewerViewCubeChart() {
 		var browser_args = this.cubesviewer.views.cube.buildBrowserArgs(view, view.params.xaxis != null ? true : false, false);
 		var browser = new cubes.Browser(view.cubesviewer.cubesserver, view.cube);
 		var jqxhr = browser.aggregate(browser_args, view.cubesviewer.views.cube.chart._loadDataCallback(view));
+		jqxhr.always(function() {
+			view.cubesviewer.views.unblockView(view);
+		});
 		
 	};
 	
@@ -211,7 +214,6 @@ function cubesviewerViewCubeChart() {
 		return function (data, status) {
 			$(view.container).find('.cv-view-viewdata').empty();
 			view.cubesviewer.views.cube.chart.drawChart(view, data);
-			view.cubesviewer.views.unblockView(view);
 		};
 		
 	};	

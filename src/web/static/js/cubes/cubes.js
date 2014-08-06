@@ -518,7 +518,7 @@
         if (args.page) http_args.page = args.page;
         if (args.pagesize) http_args.pagesize = args.pagesize;
 
-        this.server.query("aggregate", this.cube, args, callback);
+        return this.server.query("aggregate", this.cube, args, callback);
     };
     
     cubes.Browser.prototype.facts = function(args, callback) {
@@ -532,7 +532,7 @@
         if (args.page) http_args.page = args.page;
         if (args.pagesize) http_args.pagesize = args.pagesize;
 
-        this.server.query("facts", this.cube, args, callback);
+        return this.server.query("facts", this.cube, args, callback);
     };    
 
     cubes.Drilldown = function(dimension, hierarchy, level) {

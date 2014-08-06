@@ -112,7 +112,10 @@ function cubesviewerViewCubeFacts() {
 
 		var browser_args = this.cubesviewer.views.cube.buildBrowserArgs(view, false, false);
 		var browser = new cubes.Browser(view.cubesviewer.cubesserver, view.cube);
-		browser.facts(browser_args, view.cubesviewer.views.cube.facts._loadDataCallback(view));
+		var jqxhr = browser.facts(browser_args, view.cubesviewer.views.cube.facts._loadDataCallback(view));
+		jqxhr.always(function() {
+			view.cubesviewer.views.unblockView(view);
+		});
 		
 	};	
 	
@@ -123,7 +126,6 @@ function cubesviewerViewCubeFacts() {
 		return function (data, status) {
 			$(view.container).find('.cv-view-viewdata').empty();
 			view.cubesviewer.views.cube.facts.drawTable(view, data);
-			view.cubesviewer.views.unblockView(view);
 		};
 		
 	};	

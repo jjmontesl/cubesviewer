@@ -69,28 +69,21 @@ function cubesviewer () {
 	 * Ajax handler for cubes library
 	 */
 	this.cubesAjaxHandler = function (settings) {
-		return cubesviewer.cubesRequest(settings.url, settings.data || [], settings.success, settings.complete, settings.error);
+		return cubesviewer.cubesRequest(settings.url, settings.data || [], settings.success);
 	};
 	
 	
 	/*
 	 * Cubes centralized request 
 	 */
-	this.cubesRequest = function(path, params, successCallback, completeCallback, errorCallback) {
+	this.cubesRequest = function(path, params, successCallback) {
 		
 		// TODO: normalize how URLs are used (full URL shall come from client code)
 		if (path.charAt(0) == '/') path = this.options["cubesUrl"] + path;
 		
 		var jqxhr = $.get(path, params, this._cubesRequestCallback(successCallback), cubesviewer.options.jsonRequestType);
 		
-		if (completeCallback != undefined && completeCallback != null) {
-			jqxhr.always (completeCallback);
-		}
-
 		jqxhr.fail (cubesviewer.defaultRequestErrorHandler);
-		if (errorCallback != undefined && errorCallback != null) {
-			jqxhr.fail (errorCallback);
-		} 
 		
 		return jqxhr;
 		
