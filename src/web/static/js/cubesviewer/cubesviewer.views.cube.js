@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,10 +43,20 @@ function cubesviewerViewCube () {
 			
 		});
 		
-		// Get a reference to the cube
-		view.cube = cubesviewer.model.getCube(view.params.cubename);
+		view.cube = null;
 		
-	}
+		var jqxhr = cubesviewer.cubesserver.get_cube(view.params.cubename, function(cube) {
+			view.cube = cube;
+		    if (view.state == cubesviewer.views.STATE_INITIALIZED) cubesviewer.views.redrawView(view);
+		});
+		if (jqxhr) {
+			jqxhr.fail(function() {
+				view.state = cubesviewer.views.STATE_ERROR;
+				cubesviewer.views.redrawView(view);
+			});
+		}
+		
+	};
 	
 	
 	/*
@@ -78,6 +88,14 @@ function cubesviewerViewCube () {
 	 * Draw cube view structure.
 	 */
 	this.onViewDraw = function(event, view) {
+
+		// Check if the model/cube is loaded.
+		if (view.cube == null) {
+			$(view.container).append("Loading...");
+			event.stopImmediatePropagation();
+			return;
+		}
+
 		
 		if ($(".cv-view-viewdata", view.container).size() == 0) {
 
@@ -94,10 +112,13 @@ function cubesviewerViewCube () {
 		}
 		
 		// Check if the model/cube is loaded.
+		// TODO: Review if this code is needed
+		/*
 		if (view.cube == null) {
 			cubesviewer.views.showFatal (view.container, 'Cannot present cube view: could not load model or cube <b>' + view.params.cubename + '</b>.');
 			return;
 		}
+		*/
 		
 		// Menu toolbar
 		$(view.container).find('.cv-view-viewmenu').empty().append(
@@ -197,39 +218,38 @@ function cubesviewerViewCube () {
 	/*
 	 * Builds Cubes Server query parameters based on current view values.
 	 */
-	this.buildQueryParams = function(view, includeXAxis, onlyCuts) {
-
-		var params = {
-			"lang": view.cubesviewer.options.cubesLang
-		};
-
+	this.buildBrowserArgs = function(view, includeXAxis, onlyCuts) {
+		
+		// "lang": view.cubesviewer.options.cubesLang
+		
+		var args = {};
+		
 		if (!onlyCuts) {
-			var drilldown = view.params.drilldown.slice(0);
+			
+			var drilldowns = view.params.drilldown.slice(0);
 
 			// Include X Axis if necessary
 			if (includeXAxis) {
-				drilldown.splice(0, 0, view.params.xaxis);
+				drilldowns.splice(0, 0, view.params.xaxis);
 			}
 
 			// Preprocess
-			for (var i = 0; i < drilldown.length; i++) {
-				var parts  = cubesviewer.model.getDimensionParts(drilldown[i]);
-				drilldown[i] = parts.fullDrilldownValue;
+			for (var i = 0; i < drilldowns.length; i++) {
+				drilldowns[i] = cubes.drilldown_from_string(view.cube, view.cube.cvdim_parts(drilldowns[i]).fullDrilldownValue);
 			}
 			
 			// Include drilldown array
-			if (drilldown.length > 0)
-				params["drilldown"] = drilldown;
+			if (drilldowns.length > 0)
+				args.drilldown = cubes.drilldowns_to_string(drilldowns);
 		}
 
+		// Cuts
 		var cuts = cubesviewer.views.cube.buildQueryCuts(view);
-		
-		// Join different cut conditions
-		if (cuts.length > 0)
-			params["cut"] = cuts.join("|");
+		if (cuts.length > 0) args.cut = new cubes.Cell(view.cube, cuts);
 
-		return params;
-	};
+		return args;
+		
+	}
 	
 	/*
 	 * Builds Query Cuts
@@ -239,11 +259,10 @@ function cubesviewerViewCube () {
 		// Include cuts
 		var cuts = [];
 		$(view.params.cuts).each(function(idx, e) {
-			cuts.push(e.dimension + ":" + e.value);
+			cuts.push(cubes.cut_from_string (view.cube, e.dimension + ":" + e.value));
 		});
 		
 		return cuts;
-		
 	};
 
 };

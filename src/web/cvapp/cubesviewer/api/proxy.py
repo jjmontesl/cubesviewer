@@ -1,6 +1,6 @@
 # CubesViewer  
 #
-# Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
+# Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -55,9 +55,14 @@ def connection(request):
                 if (not (acl["group"] in groups)):
                     return HttpResponseForbidden("Wrong permissions for this data cube. User needs to be in group %s." % acl["group"])
                 
-    elif (path.find("model") == 0):
-        
+    elif (path.find("cubes") == 0):
         pass
+    
+    elif (path.find("version") == 0):
+        pass
+    
+    elif (path.find("info") == 0):
+        pass    
     
     else:
         

@@ -1,12 +1,12 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Sof	tware, and to permit persons to whom the Software is
+ * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in all
@@ -95,11 +95,9 @@ function cubesviewerViewCubeExplore() {
 		
 		var drillElements = "";
 
-		$(cube.dimensions).each( function(idx, e) {
+		$(cube.dimensions).each( function(idx, dimension) {
 			
-			var dimension = view.cubesviewer.model.getDimension(e);
-
-			if (dimension.is_flat) {
+			if (dimension.levels.length == 1) {
 				// Don't show drilldown option if dimension is
 				// filtered (besides, this query causes a server error)
 				// TODO: Handle this for non-flat dimensions too
@@ -114,7 +112,7 @@ function cubesviewerViewCubeExplore() {
 				drillElements = drillElements + '<li><a href="#" onclick="return false;">' + dimension.label + 
 					'</a><ul class="drillList" style="width: 170px; z-index: 9999;">';
 				
-				if (dimension.hierarchies.length > 1) {
+				if (dimension.hierarchies_count() > 1) {
 					$(dimension.hierarchies).each(function(idx,hi) {
 						drillElements = drillElements + '<li><a href="#" onclick="return false;">' + hi.label + 
 						'</a><ul class="drillList" style="width: 160px; z-index: 9999;">';
@@ -126,8 +124,7 @@ function cubesviewerViewCubeExplore() {
 						drillElements = drillElements + '</ul></li>';
 					});
 				} else {
-					$(dimension.hierarchies[0].levels).each(function(idx, el) { 
-						var level = dimension.getLevel(el);
+					$(dimension.default_hierarchy().levels).each(function(idx, level) { 
 						drillElements = drillElements + '<li><a href="#" class="' + cssclass + '" data-dimension="' + dimension.name + ':'+ 
 						level.name + '" data-value="1">' + level.label + '</a></li>';
 					});
@@ -232,18 +229,14 @@ function cubesviewerViewCubeExplore() {
 	 */
 	this.loadData = function(view) {
 
-		var params = this.cubesviewer.views.cube.buildQueryParams(view, false, false);
-
 		view.cubesviewer.views.blockViewLoading(view);
-		
-		view.cubesviewer.cubesRequest(
-				"/cube/" + view.cube.name + "/aggregate",
-				params,
-				view.cubesviewer.views.cube.explore._loadDataCallback(view),
-				function() {
-					view.cubesviewer.views.unblockView(view);
-				}
-		);
+
+		var browser_args = this.cubesviewer.views.cube.buildBrowserArgs(view, false, false);
+		var browser = new cubes.Browser(view.cubesviewer.cubesserver, view.cube);
+		var jqxhr = browser.aggregate(browser_args, view.cubesviewer.views.cube.explore._loadDataCallback(view));
+		jqxhr.always(function() {
+			view.cubesviewer.views.unblockView(view);
+		});
 		
 	};
 
@@ -283,7 +276,7 @@ function cubesviewerViewCubeExplore() {
 			for ( var i = 0; i < drilldown.length; i++) {
 
 				// Get dimension
-				var dimension = view.cubesviewer.model.getDimension(drilldown[i]);
+				var dimension = view.cube.cvdim_dim(drilldown[i]);
 
 				// row["key"] = ((e[view.params.drilldown_field] != null) &&
 				// (e[view.params.drilldown] != "")) ? e[view.params.drilldown] : "Undefined";
@@ -325,7 +318,9 @@ function cubesviewerViewCubeExplore() {
 			for ( var i = 0; i < view.params.drilldown.length; i++) {
 
 				// Get dimension
-				var parts = cubesviewer.model.getDimensionParts(view.params.drilldown[i]);
+				var dim = view.cube.cvdim_dim(view.params.drilldown[i]);
+				
+				var parts = view.cube.cvdim_parts(view.params.drilldown[i]);
 				var infos = parts.hierarchy.readCell(e, parts.level);
 				
 				// Values and Labels
@@ -424,7 +419,7 @@ function cubesviewerViewCubeExplore() {
 
 		var label = [];
 		$(view.params.drilldown).each(function(idx, e) {
-			label.push(cubesviewer.model.getDimension(e).label);
+			label.push(view.cube.cvdim_dim(e).label);
 		})
 		for (var i = 0; i < view.params.drilldown.length; i++) {
 		
@@ -596,7 +591,7 @@ function cubesviewerViewCubeExplore() {
 	
 		$(view.params.drilldown).each(function(idx, e) {
 			
-			var dimparts = view.cubesviewer.model.getDimensionParts(e);
+			var dimparts = view.cube.cvdim_parts(e);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-drill'), "#ccffcc", 360, readonly,
 				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Drilldown:</b> ' + dimparts.label 
@@ -610,7 +605,7 @@ function cubesviewerViewCubeExplore() {
 		});
 		
 		$(view.params.cuts).each(function(idx, e) { 
-			var dimparts = view.cubesviewer.model.getDimensionParts(e.dimension.replace(":",  "@"));
+			var dimparts = view.cube.cvdim_parts(e.dimension.replace(":",  "@"));
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-cut'), "#ffcccc", 480, readonly,
 				'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Cut: </b> ' + dimparts.label  + ' = ' + 

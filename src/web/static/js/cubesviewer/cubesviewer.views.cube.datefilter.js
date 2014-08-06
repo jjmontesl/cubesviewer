@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -81,18 +81,14 @@ function cubesviewerViewCubeDateFilter () {
 		var menu = $(".cv-view-menu-cut", $(view.container));
 
 		var dateFilterElements = "";
-		$(cube.dimensions).each( function(idx, e) {
-
-			var dimension = $.grep(cubesviewer.model.dimensions, function(ed) {
-				return ed.name == e;
-			})[0];
-			
+		$(cube.dimensions).each( function(idx, dimension) {
+		
 			if (dimension.isDateDimension()) {
 
 				var disabled = "";
 				dateFilterElements = dateFilterElements + '<li><a href="#" class="selectDateFilter '  + disabled + 
-					'" data-dimension="' + dimension.name + ((dimension.getInfo("cv-datefilter-hierarchy")) ? "@" + dimension.getInfo("cv-datefilter-hierarchy") : "") +  
-				'" data-value="1">' + dimension.label + ((dimension.getHierarchy(dimension.getInfo("cv-datefilter-hierarchy"))) ? " / " + dimension.getHierarchy(dimension.getInfo("cv-datefilter-hierarchy")).label : "") +
+					'" data-dimension="' + dimension.name + ((dimension.info["cv-datefilter-hierarchy"]) ? "@" + dimension.info["cv-datefilter-hierarchy"] : "") +  
+				'" data-value="1">' + dimension.label + ((dimension.hierarchy(dimension.info["cv-datefilter-hierarchy"])) ? " / " + dimension.hierarchy(dimension.info["cv-datefilter-hierarchy"]).label : "") +
 					'</a></li>';
 			}
 
@@ -127,7 +123,7 @@ function cubesviewerViewCubeDateFilter () {
 		);
 		
 		$(view.params.datefilters).each( function(idx, e) {
-			var dimparts = view.cubesviewer.model.getDimensionParts(e.dimension);
+			var dimparts = view.cube.cvdim_parts(e.dimension);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 					$(view.container).find('.cv-view-viewinfo-date'), "#ffdddd", null, readonly,
 					'<span class="ui-icon ui-icon-zoomin"></span> <b>Cut: </b> ' +  
@@ -366,17 +362,13 @@ function cubesviewerViewCubeDateFilter () {
 /*
  * Extend model prototype to support datefilter dimensions.
  */
-$.extend (cubesDimension.prototype, {
+cubes.Dimension.prototype.isDateDimension = function()  {
+
+	// Inform if a dimension is a date dimension and can be used as a date
+	// filter (i.e. with range selection tool).
+	return ("cv-datefilter" in this.info && this.info["cv-datefilter"] == true);
 	
-	/*
-	 * Inform if a dimension is a date dimension and can be used as a date
-	 * filter (i.e. with range selection tool).
-	 */ 
-	isDateDimension: function(dimension) {
-		return (this.getInfo("cv-datefilter") == true);
-	},
-	
-});
+};
 
 /*
  * Create object.

@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -100,7 +100,7 @@ function cubesviewerViewCubeSeries() {
 		/*
 		$(cube.dimensions).each(function(idx, e) {
 			
-			var dimension = $.grep(view.cubesviewer.model.dimensions, function(ed) { return ed.name == e; })[0];
+			var dimension = $.grep(view.cube.dimensions, function(ed) { return ed.name == e; })[0];
 			
 			if (dimension.is_flat) {
 				// Don't show the drilldown if dimension is filtered (besides, this query causes a server error)
@@ -122,22 +122,24 @@ function cubesviewerViewCubeSeries() {
 		
 		// Add measures menu
 		var measuresElements = "";
-		measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="record_count">Record count</a></li>';
-		measuresElements = measuresElements + '<div></div>';
+		
+		/*
 		$(view.cube.measures).each(function(idx, e) {
 			
+			if ("aggregates" in e) {
 			measuresElements = measuresElements + '<li><a href="#" onclick="return false;">' + e.name + '</a><ul style="width: 170px; z-index: 9999;">';
-			if ("aggregations" in e) {
-				$(e.aggregations).each(function(idx, ea) {
+				$(e.aggregates).each(function(idx, ea) {
 					measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + e.name + '_' + ea + '">' + ea + '</a></li>';
 				});
-			} else {
-				measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + e.name + '_' + "sum" + '">' + "sum" + '</a></li>';
+                measuresElements = measuresElements + '</ul></li>';
 			}
-			measuresElements = measuresElements + '</ul></li>';
 			
 		});
+		*/
 		
+		$(view.cube.aggregates).each(function(idx, e) {
+            measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + e.name + '">' + e.label||e.name + '</a></li>';
+		});
 		
 		menu.append(
 		  '<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-arrowthick-1-s"></span>Horizontal Dimension</a><ul style="width: 180px;">' +
@@ -202,18 +204,14 @@ function cubesviewerViewCubeSeries() {
 		} 
 		
 		// Build params and include xaxis if present
-		var params = view.cubesviewer.views.cube.buildQueryParams(view, view.params.xaxis != null ? true : false, false);
-		
 		view.cubesviewer.views.blockViewLoading(view);
-		
-		view.cubesviewer.cubesRequest(
-				"/cube/" + view.cube.name + "/aggregate",
-				params,
-				view.cubesviewer.views.cube.series._loadDataCallback(view),
-				function() {
-					view.cubesviewer.views.unblockView(view);
-				}
-		);
+
+		var browser_args = this.cubesviewer.views.cube.buildBrowserArgs(view, view.params.xaxis != null ? true : false, false);
+		var browser = new cubes.Browser(view.cubesviewer.cubesserver, view.cube);
+		var jqxhr = browser.aggregate(browser_args, view.cubesviewer.views.cube.series._loadDataCallback(view));
+		jqxhr.always(function() {
+			view.cubesviewer.views.unblockView(view);
+		});
 		
 	};
 	
@@ -242,7 +240,7 @@ function cubesviewerViewCubeSeries() {
 		if (view.params.xaxis != null) {
 			cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-extra'), "#ccddff", 350, true,
-				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Horizontal dimension:</b> ' + ( (view.params.xaxis != null) ? view.cubesviewer.model.getDimensionParts(view.params.xaxis).label : "<i>None</i>") 
+				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Horizontal dimension:</b> ' + ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "<i>None</i>") 
 			);
 		}
 		
@@ -270,6 +268,7 @@ function cubesviewerViewCubeSeries() {
 		);
 		
 		var colNames = [];
+        var colLabels = [];
 		var colModel = [];	
 		var dataRows = [];
 		var dataTotals = [];
@@ -286,6 +285,26 @@ function cubesviewerViewCubeSeries() {
 		view.cubesviewer.views.cube.explore._sortData (view, data.cells, view.params.xaxis != null ? true : false);
 		view.cubesviewer.views.cube.series._addRows (view, dataRows, dataTotals, colNames, colModel, data);
 		
+        colNames.forEach(function (e) {
+            var colLabel = null;
+            $(view.cube.aggregates).each(function (idx, ag) {
+                if (ag.name == e) {
+                    colLabel = ag.label||ag.name;
+                    return false;
+                }
+            });
+            if (!colLabel) {
+                $(view.cube.measures).each(function (idx, me) {
+                    if (me.name == e) {
+                        colLabel = me.label||ag.name;
+                        return false;
+                    }
+                });
+            }
+            //colLabel = view.cube.getDimension(e).label
+            colLabels.push(colLabel||e);
+        });
+		
 		$('#seriesTable-' + view.id).jqGrid({ 
 			data: dataRows,
 			//userData: dataTotals,
@@ -293,7 +312,7 @@ function cubesviewerViewCubeSeries() {
 			height: 'auto', 
 			rowNum: cubesviewer.options.pagingOptions[0], 
 			rowList: cubesviewer.options.pagingOptions, 
-			colNames: colNames, 
+			colNames: colLabels, 
 			colModel: colModel, 
 	        pager: "#seriesPager-" + view.id, 
 	        sortname: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[0], 
@@ -348,7 +367,7 @@ function cubesviewerViewCubeSeries() {
 			for (var i = 0; i < drilldown.length; i++) {
 
 				// Get dimension
-				var parts = cubesviewer.model.getDimensionParts(drilldown[i]);
+				var parts = view.cube.cvdim_parts(drilldown[i]);
 				var infos = parts.hierarchy.readCell(e, parts.level);
 				
 				// Values and Labels
@@ -399,8 +418,8 @@ function cubesviewerViewCubeSeries() {
 
 		//var label = [];
 		$(view.params.drilldown).each (function (idx, e) { 
-			//label.push (view.cubesviewer.model.getDimension(e).label);
-			colNames.splice(idx, 0, view.cubesviewer.model.getDimension(e).label);
+			//label.push (view.cube.cvdim_dim(e).label);
+			colNames.splice(idx, 0, view.cube.cvdim_dim(e).label);
 			colModel.splice(idx, 0, { name: "key" + idx , index: "key" + idx , align: "left", width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + idx, 190) });
 		});
 		

@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -195,26 +195,14 @@ function cubesviewerViewCubeChart() {
 		} 
 		
 		// Build params and include xaxis if present
-		var params = view.cubesviewer.views.cube.buildQueryParams(view, view.params.xaxis != null ? true : false, false);
-		
 		view.cubesviewer.views.blockViewLoading(view);
-		
-		view.cubesviewer.cubesRequest(
-				"/cube/" + view.cube.name + "/aggregate",
-				params,
-				view.cubesviewer.views.cube.chart._loadDataCallback(view),
-				function() {
-					view.cubesviewer.views.unblockView(view);
-				}
-		);
-		
-		/*
-		var jqxhr = $.get(view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/aggregate", params, 
-				view.cubesviewer.views.cube.chart._loadDataCallback(view), "json");
-		jqxhr.complete (function() {
+
+		var browser_args = this.cubesviewer.views.cube.buildBrowserArgs(view, view.params.xaxis != null ? true : false, false);
+		var browser = new cubes.Browser(view.cubesviewer.cubesserver, view.cube);
+		var jqxhr = browser.aggregate(browser_args, view.cubesviewer.views.cube.chart._loadDataCallback(view));
+		jqxhr.always(function() {
 			view.cubesviewer.views.unblockView(view);
 		});
-		*/
 		
 	};
 	
@@ -304,7 +292,7 @@ function cubesviewerViewCubeChart() {
 	this.drawChartBarsVertical = function (view, colNames, dataRows, dataTotals) {
 		
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cubesviewer.model.getDimensionParts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
 		
 	    var d = [];
 
@@ -400,7 +388,7 @@ function cubesviewerViewCubeChart() {
 	this.drawChartLines = function (view, colNames, dataRows, dataTotals) {
 		
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cubesviewer.model.getDimensionParts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
 		
 	    var d = [];
 
@@ -533,7 +521,7 @@ function cubesviewerViewCubeChart() {
 	this.drawChartLinesCumulative = function (view, colNames, dataRows, dataTotals) {
 		
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cubesviewer.model.getDimensionParts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.getDimensionParts(view.params.xaxis).label : "None")
 		
 	    var d = [];
 
@@ -600,7 +588,7 @@ function cubesviewerViewCubeChart() {
 	this.drawChartPie = function (view, colNames, dataRows, dataTotals) {
 		
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cubesviewer.model.getDimensionParts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
 		
 	    var d = [];
 

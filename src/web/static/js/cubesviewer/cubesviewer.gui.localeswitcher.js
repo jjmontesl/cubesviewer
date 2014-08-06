@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,7 +55,7 @@ function cubesviewerGuiLocaleSwitcher() {
 	/*
 	 * Draw languages from model
 	 */
-	this.onModelLoaded = function(event, data) {
+	this.onCubesviewerRefresh = function(event, data) {
 		
 		var gui = event.data.gui;
 		var cubesviewer = gui.cubesviewer;
@@ -73,7 +73,7 @@ function cubesviewerGuiLocaleSwitcher() {
 			}
 		);
 		
-		// Selected langusage
+		// Selected language
 		$('[name=cv-gui-localeswitcher]', $(cubesviewer.gui.options.container)).val(gui.cubesviewer.options.cubesLang);
 		
 	}
@@ -99,4 +99,4 @@ cubesviewer.gui.localeswitcher = new cubesviewerGuiLocaleSwitcher();
  * Bind events.
  */
 $(document).bind("cubesviewerGuiDraw", { }, cubesviewer.gui.localeswitcher.onGuiDraw);
-$(document).bind("cubesviewerModelLoaded", { "gui": cubesviewer.gui }, cubesviewer.gui.localeswitcher.onModelLoaded);
+$(document).bind("cubesviewerRefresh", { "gui": cubesviewer.gui }, cubesviewer.gui.localeswitcher.onCubesviewerRefresh);

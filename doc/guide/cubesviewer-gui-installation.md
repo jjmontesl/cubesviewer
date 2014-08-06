@@ -31,6 +31,10 @@ in order to install and set up a cubes server if you haven't done so yet.
 
 It is not required that the Cubes server runs on the same host as the CubesViewer application.    
 
+To be able for CubesViewer to connect to the slicer server, your `slicer.ini` should allow cross origin resource
+sharing. To enable this option, put `allow_cors_origin: http://localhost:8000` (or the URL from wich your app will work)
+under the `[server]` section.
+
 ## 2 - Dependencies
 
 CubesViewer application runs on Python/Django. You need to have the following packages available in your system:

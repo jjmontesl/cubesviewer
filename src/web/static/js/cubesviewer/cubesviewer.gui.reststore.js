@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -314,7 +314,7 @@ function cubesviewerGuiRestStore() {
      */
     this.addViewSaved = function(savedViewId) {
     	
-    	if (cubesviewer.model == null) return;
+    	// TODO: Check whether the server model is loaded, etc
     	
         var savedview = this.getSavedView(savedViewId);
         var viewobject = $.parseJSON(savedview.data);

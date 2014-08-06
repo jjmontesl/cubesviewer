@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,10 @@
 
 function cubesviewerViews () {
 
+	this.STATE_INITIALIZING = 1;
+	this.STATE_INITIALIZED = 2;
+	this.STATE_ERROR = 3;
+	
 	/*
 	 * Cubesviewer reference.
 	 */
@@ -53,10 +57,13 @@ function cubesviewerViews () {
 
 		// Check if system is initialized, otherwise
 		// show a friendly error
-		if (cubesviewer.state != "Initialized") {
+		// TODO: Review if this code is needed or how
+		/*
+		if () {
 			cubesviewer.views.showFatal (container, 'Cannot create CubesViewer view.<br />CubesViewer state is: <b>' + cubesviewer.state + '</b>.<br /><br />Try reloading or contact the administrator.</p>');
 			return null;
 		}
+		*/
 		
 		// Create view
 		
@@ -78,12 +85,15 @@ function cubesviewerViews () {
 			"cubesviewer": this.cubesviewer,
 			"type": type,
 			"container": container,
+			"state": cubesviewer.views.STATE_INITIALIZING,
 			"params": {}
 		};
 
 		$.extend(view.params, params);
 		$(document).trigger("cubesviewerViewCreate", [ view ] );
 		$.extend(view.params, params);
+		
+		if (view.state == cubesviewer.views.STATE_INITIALIZING) view.state = cubesviewer.views.STATE_INITIALIZED;
 		
 		// Attach view to container
 		$(container).data("cubesviewer-view", view);
@@ -153,7 +163,8 @@ function cubesviewerViews () {
 	 * Triggers redraw for a given view.
 	 */
 	this.redrawView = function (view) {
-		if (view == null) return;
+		// TODO: Review if if below is needed
+		//if (view == null) return;
 		$(document).trigger ("cubesviewerViewDraw", [ view ]);
 	}
 	
@@ -161,6 +172,13 @@ function cubesviewerViews () {
 	 * Updates view when the view is refreshed.
 	 */
 	this.onViewDraw = function (event, view) {
+		
+		if (view.state == cubesviewer.views.STATE_ERROR) {
+			cubesviewer.views.showFatal (view.container, 'An error has occurred. Cannot present view.');
+			event.stopImmediatePropagation();
+			return;
+		}
+		
 	}	
 
 	/*

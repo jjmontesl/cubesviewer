@@ -76,7 +76,7 @@
             '{"cubename":"sales","name":"Cube View - Webshop / Sales","mode":"chart","drilldown":["country:region"],"cuts":[],"datefilters":[{"dimension":"date_sale@weekly","mode":"auto-last12m","date_from":"","date_to":""}],"xaxis":"date_sale@monthly:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{}}';
         
         // Add views
-        $(document).bind("cubesviewerModelLoaded", { }, function() {
+        $(document).bind("cubesviewerRefresh", { }, function() {
             
             // You can use a Javascript object with view arguments (ie. "cubename")
             //view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", { "cubename": "contracts" });
@@ -153,7 +153,7 @@ Initialization of the view uses the following code. Note the following points:
 
 <ul>
     <li>CubesViewer system needs to be initialized only once (cubesviewer.init).</li>
-    <li>Views can only be added after the model has been loaded. Use the 'cubesviewerModelLoaded' event as shown below.</li>
+    <li>Views can only be added after the model has been loaded. Use the 'cubesviewerRefresh' event as shown below.</li>
     <li>This sample page contains code that asks for the Cubes server to use.</li>
 </ul>
 

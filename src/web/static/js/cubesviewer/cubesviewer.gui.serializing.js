@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -98,7 +98,9 @@ function cubesviewerGuiSerializing() {
 	this.serializeView = function (view) {
 		
 		var serialized = view.cubesviewer.views.serialize(view);
+		console.log(serialized);
 		view.cubesviewer.alert (serialized);
+		// TODO: Show serialized info properly
 				
 	};
 	

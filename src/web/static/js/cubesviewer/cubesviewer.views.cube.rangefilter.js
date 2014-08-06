@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -79,12 +79,8 @@ function cubesviewerViewCubeRangeFilter () {
 		var menu = $(".cv-view-menu-cut", $(view.container));
 
 		var rangeFilterElements = "";
-		$(cube.dimensions).each( function(idx, e) {
+		$(cube.dimensions).each( function(idx, dimension) {
 
-			var dimension = $.grep(cubesviewer.model.dimensions, function(ed) {
-				return ed.name == e;
-			})[0];
-			
 			if (dimension.isRangeDimension()) {
 
 				var disabled = "";
@@ -123,7 +119,7 @@ function cubesviewerViewCubeRangeFilter () {
 		);
 		
 		$(view.params.rangefilters).each( function(idx, e) {
-			var dimparts = view.cubesviewer.model.getDimensionParts(e.dimension);
+			var dimparts = view.cube.cvdim_parts(e.dimension);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 					$(view.container).find('.cv-view-viewinfo-range'), "#ffe8dd", null, readonly,
 					'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Cut: </b> ' +  
@@ -147,7 +143,7 @@ function cubesviewerViewCubeRangeFilter () {
 	
 	this.drawRangeFilter = function(view, rangefilter, container) {
 
-		var dimparts = view.cubesviewer.model.getDimensionParts(rangefilter.dimension);
+		var dimparts = view.cube.cvdim_parts(rangefilter.dimension);
 		
 		$(container).append(
 			'<input name="range_start" /> - '
@@ -286,17 +282,11 @@ function cubesviewerViewCubeRangeFilter () {
 /*
  * Extend model prototype to support rangefilter dimensions.
  */
-$.extend (cubesDimension.prototype, {
+cubes.Dimension.prototype.isRangeDimension = function() {
 	
-	/*
-	 * Inform if a dimension is a date dimension and can be used as a date
-	 * filter (i.e. with range selection tool).
-	 */ 
-	isRangeDimension: function(dimension) {
-		return (this.getInfo("cv-rangefilter") == true);
-	},
+	return ("cv-rangefilter" in this.info && this.info["cv-rangefilter"] == true);
 	
-});
+};
 
 /*
  * Create object.

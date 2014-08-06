@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ cubesviewer.cache = {};
 cubesviewer._cacheOverridedCubesRequest = cubesviewer.cubesRequest;
 
 
-cubesviewer.cubesRequest = function(path, params, successCallback, completeCallback, errorCallback) {
+cubesviewer.cubesRequest = function(path, params, successCallback) {
 	
 	// TODO: Check if cache is enabled
 	
@@ -45,11 +45,11 @@ cubesviewer.cubesRequest = function(path, params, successCallback, completeCallb
 	cubesviewer._cacheCleanup();
 	
 	var requestHash = path + "?" + $.param(params);
+	var jqxhr = null;
 	if (requestHash in this.cache) {
 		
 		// TODO: What is the correct ordering of success/complete callbacks?
 		successCallback(this.cache[requestHash].data);
-		completeCallback();
 		
 		// Warn that data comes from cache (QTip can do this?)
 		var timediff = Math.round ((new Date().getTime() - this.cache[requestHash].time) / 1000 / 60);
@@ -57,11 +57,15 @@ cubesviewer.cubesRequest = function(path, params, successCallback, completeCallb
 			cubesviewer.showInfoMessage("Data loaded from cache<br/>(" + timediff + " minutes old)", 1000);
 		}
 		
+		jqxhr = $.Deferred().resolve().promise();
+		
+		
 	} else {
 		// Do request
-		cubesviewer._cacheOverridedCubesRequest(path, params, this.cacheCubesRequestSuccess(successCallback, requestHash), completeCallback, errorCallback);
+		jqxhr = cubesviewer._cacheOverridedCubesRequest(path, params, this.cacheCubesRequestSuccess(successCallback, requestHash));
 	}
 	
+	return jqxhr;
 }
 
 /*

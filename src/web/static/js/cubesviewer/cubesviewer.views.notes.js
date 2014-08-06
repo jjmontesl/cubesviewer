@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -94,6 +94,13 @@ function cubesviewerViewNotes () {
 	};
 	
 	this.loadNotes = function(view) {
+		
+		if (view.cube == null) {
+			// The view has not been initialized
+			$('#view-' + view.id + '-notes-menu-cube').find('.cubes-notes-html').empty().append("<i>View not initialized. Try refreshing view.</i>");
+			$('#view-' + view.id + '-notes-menu-view').find('.cubes-notes-html').empty().append("<i>View not initialized. Try refreshing view.</i>");
+			return;
+		}
 		
 		$('#view-' + view.id + '-notes-menu-cube').find('.cubes-notes-html').empty().append("<i>Loading...</i>");
 		$('#view-' + view.id + '-notes-menu-view').find('.cubes-notes-html').empty().append("<i>Loading...</i>");
