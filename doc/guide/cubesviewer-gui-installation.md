@@ -14,9 +14,9 @@ The CubesViewer application is a web application and as such it must be served b
 It can be run using Python Django local webserver, but for more serious/production environments, it should
 be fronted by a real web server like Apache. 
 
-    As a side note, it should be pointed that CubesViewer is, however, mainly a client-side Javascript application, 
-    which means that although the full application is a Python Django Server-Side app, you can use a subset
-    of the GUI features running the tool directly from your browser (as long as the Cubes server is accessible).
+As a side note, it should be pointed that CubesViewer is, however, mainly a client-side Javascript application, 
+which means that although the full application is a Python Django Server-Side app, you can use a subset
+of the GUI features running the tool directly from your browser (as long as the Cubes server is accessible).
 
 The installation steps are:
 
