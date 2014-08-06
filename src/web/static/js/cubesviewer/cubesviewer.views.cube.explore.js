@@ -113,16 +113,16 @@ function cubesviewerViewCubeExplore() {
 					'</a><ul class="drillList" style="width: 170px; z-index: 9999;">';
 				
 				if (dimension.hierarchies_count() > 1) {
-					$(dimension.hierarchies).each(function(idx,hi) {
+					for (var hikey in dimension.hierarchies) {
+						var hi = dimension.hierarchies[hikey];
 						drillElements = drillElements + '<li><a href="#" onclick="return false;">' + hi.label + 
 						'</a><ul class="drillList" style="width: 160px; z-index: 9999;">';
-						$(hi.levels).each(function(idx, el) { 
-							var level = dimension.getLevel(el);
+						$(hi.levels).each(function(idx, level) { 
 							drillElements = drillElements + '<li><a href="#" class="' + cssclass + '" data-dimension="' + 
 								dimension.name + '@' + hi.name + ':'+ level.name + '" data-value="1">' + level.label + '</a></li>';
 						});
 						drillElements = drillElements + '</ul></li>';
-					});
+					}
 				} else {
 					$(dimension.default_hierarchy().levels).each(function(idx, level) { 
 						drillElements = drillElements + '<li><a href="#" class="' + cssclass + '" data-dimension="' + dimension.name + ':'+ 
