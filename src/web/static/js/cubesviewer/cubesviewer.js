@@ -69,8 +69,7 @@ function cubesviewer () {
 	 * Ajax handler for cubes library
 	 */
 	this.cubesAjaxHandler = function (settings) {
-		cubesviewer.cubesRequest(settings.url, settings.data || [], settings.success, settings.complete, settings.error);
-		return null;
+		return cubesviewer.cubesRequest(settings.url, settings.data || [], settings.success, settings.complete, settings.error);
 	};
 	
 	
@@ -79,6 +78,7 @@ function cubesviewer () {
 	 */
 	this.cubesRequest = function(path, params, successCallback, completeCallback, errorCallback) {
 		
+		// TODO: normalize how URLs are used (full URL shall come from client code)
 		if (path.charAt(0) == '/') path = this.options["cubesUrl"] + path;
 		
 		var jqxhr = $.get(path, params, this._cubesRequestCallback(successCallback), cubesviewer.options.jsonRequestType);
@@ -87,11 +87,12 @@ function cubesviewer () {
 			jqxhr.always (completeCallback);
 		}
 
+		jqxhr.fail (cubesviewer.defaultRequestErrorHandler);
 		if (errorCallback != undefined && errorCallback != null) {
 			jqxhr.fail (errorCallback);
-		} else {
-			jqxhr.fail (cubesviewer.defaultRequestErrorHandler);
-		}
+		} 
+		
+		return jqxhr;
 		
 	}
 	
@@ -113,8 +114,8 @@ function cubesviewer () {
 		} else if (xhr.status == 400) {
 			cubesviewer.alert($.parseJSON(xhr.responseText).message);
 		} else {
-			cubesviewer.alert("An error occurred while accessing the data server. Please try again or "
-					+ "contact the server administrator if the problem persists.");
+			cubesviewer.alert("An error occurred while accessing the data server. Please try again or " +
+							  "contact the application administrator if the problem persists.");
 		}
 		//$('.ajaxloader').hide();
 	};

@@ -417,7 +417,7 @@ function cubesviewerViewCubeExplore() {
 
 		var label = [];
 		$(view.params.drilldown).each(function(idx, e) {
-			label.push(view.cube.dimension(e).label);
+			label.push(view.cube.cvdim_dim(e).label);
 		})
 		for (var i = 0; i < view.params.drilldown.length; i++) {
 		

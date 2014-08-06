@@ -238,7 +238,7 @@ function cubesviewerViewCube () {
 
 			// Preprocess
 			for (var i = 0; i < drilldowns.length; i++) {
-				drilldowns[i] = view.cube.dimension(drilldowns[i]);
+				drilldowns[i] = cubes.drilldown_from_string(view.cube, view.cube.cvdim_parts(drilldowns[i]).fullDrilldownValue);
 			}
 			
 			// Include drilldown array
