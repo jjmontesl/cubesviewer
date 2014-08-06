@@ -53,6 +53,3 @@ Roadmap 0.11
 Roadmap 0.10
     + Review Django Proxy (may be useful, but authentication needs review).
     + Review Datefilter and Rangefilter (improve metadata)
-    + record_count is no longer the default measure and may not exist.
-    + Fix measure/aggregates lists and column chooser
-    

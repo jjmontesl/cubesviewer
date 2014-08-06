@@ -150,7 +150,7 @@ function cubesviewerViewCubeRangeFilter () {
 			+ '<input name="range_end" /> ' 
 		);
 		
-		var slider = dimparts.dimension.getInfo("cv-rangefilter-slider");
+		var slider = dimparts.dimension.info["cv-rangefilter-slider"];
 		if (slider != null) { 
 			$(container).append(
 				'<div style="display: inline-block; margin-left: 8px; margin-right: 8px; vertical-align: middle;">' +
