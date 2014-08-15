@@ -100,6 +100,7 @@ function cubesviewer () {
 	 * Default XHR error handler for CubesRequests
 	 */
 	this.defaultRequestErrorHandler = function(xhr, textStatus, errorThrown) {
+		// TODO: These alerts are not acceptable.
 		if (xhr.status == 401) {
 			cubesviewer.alert("Unauthorized.");
 		} else if (xhr.status == 403) {
@@ -107,8 +108,9 @@ function cubesviewer () {
 		} else if (xhr.status == 400) {
 			cubesviewer.alert($.parseJSON(xhr.responseText).message);
 		} else {
-			cubesviewer.alert("An error occurred while accessing the data server. Please try again or " +
-							  "contact the application administrator if the problem persists.");
+			console.debug (xhr);
+			cubesviewer.showInfoMessage("CubesViewer: An error occurred while accessing the data server.\n\n" + 
+										"Please try again or contact the application administrator if the problem persists.\n");
 		}
 		//$('.ajaxloader').hide();
 	};
@@ -139,11 +141,11 @@ function cubesviewer () {
 			traditional : true
 		});
 
-		// TODO: Use old custom call w/ support for cache
+		// Initialize Cubes client library
 		cubesviewer.cubesserver = new cubes.Server(cubesviewer.cubesAjaxHandler);
-		cubesviewer.cubesserver.connect (this.options["cubesUrl"], function(model) { 
+		cubesviewer.cubesserver.connect (this.options["cubesUrl"], function() { 
 			cubesviewer.showInfoMessage ('Cubes client initialized (server version: ' + cubesviewer.cubesserver.server_version + ')');
-			$(document).trigger ("cubesviewerInit", [ this ]);
+			$(document).trigger ("cubesviewerInitialized", [ this ]);
 		} );
 		
 	};

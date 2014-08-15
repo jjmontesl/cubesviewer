@@ -43,11 +43,12 @@
 	<script type="text/javascript" src="../web/static/js/jqgrid/i18n/grid.locale-en.js" ></script>
 	<script type="text/javascript" src="../web/static/js/jqgrid/jquery.jqGrid.min.js" ></script>
     
+    <script type="text/javascript" src="../web/static/js/cubes/cubes.js"></script>
+    
     <!-- Cubesviewer modules -->
     
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.cache.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.model.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.explore.js"></script>
@@ -71,28 +72,24 @@
 	    // Get user Cubes information for the example
 	    var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
 	    
-        // Sample serialized view (Based on cubes-examples project data)
-        var serializedView = 
-            '{"cubename":"sales","name":"Cube View - Webshop / Sales","mode":"chart","drilldown":["country:region"],"cuts":[],"datefilters":[{"dimension":"date_sale@weekly","mode":"auto-last12m","date_from":"","date_to":""}],"xaxis":"date_sale@monthly:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{}}';
-        
-        // Add views
-        $(document).bind("cubesviewerRefresh", { }, function() {
-            
-            // You can use a Javascript object with view arguments (ie. "cubename")
-            //view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", { "cubename": "contracts" });
-            
-            // You can use a serialized JSON string of the object with view arguments
-            view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", serializedView);
-            
-            cubesviewer.views.redrawView (view1);
-            
+	    // Initialize CubesViewer system
+        cubesviewer.init({
+            cubesUrl: cubesUrl
         });
 	    
-	    // Initialize CubesViewer system
-	    cubesviewer.init({
-	        cubesUrl: cubesUrl
-	    });
-	    
+        // Sample serialized view (Based on cubes-examples project data)
+        var serializedView = 
+            '{"cubename":"sales","name":"Cube View - Webshop / Sales","mode":"chart","drilldown":["country:region"],"cuts":[],"datefilters":[{"dimension":"date_sale@weekly","mode":"auto-last24m","date_from":"","date_to":""}],"xaxis":"date_sale@monthly:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{}}';
+        
+        // Add views
+            
+        // You can use a Javascript object with view arguments (ie. "cubename")
+        //view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", { "cubename": "contracts" });
+            
+        // You can use a serialized JSON string of the object with view arguments
+        view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", serializedView);
+            
+        
 	    // Scripting example for the "switch mode" link
 	    $('#switchToSeriesTable').click(function() {
 	        cubesviewer.views.cube.series.modeSeries(view1);
@@ -143,28 +140,18 @@
 <h2>Example Embedded View</h2>
 
 <p>
-This is an example CubesView inserted in this page. The current version loads a serialized view which uses the
-<b>cubes-examples "webshop"</b> project data (<a href="https://github.com/Stiivi/cubes-examples/">https://github.com/Stiivi/cubes-examples/</a>).
+This is an example CubesView inserted in this page. It loads a serialized view which uses the
+<b>cubes-examples "webshop"</b> project data (<a href="https://github.com/Stiivi/cubes-examples/">https://github.com/Stiivi/cubes-examples/</a>).  
 </p>
 
-<p>
-Initialization of the view uses the following code. Note the following points:
-</p>
-
-<ul>
-    <li>CubesViewer system needs to be initialized only once (cubesviewer.init).</li>
-    <li>Views can only be added after the model has been loaded. Use the 'cubesviewerRefresh' event as shown below.</li>
-    <li>This sample page contains code that asks for the Cubes server to use.</li>
-</ul>
-
-<div style="border: 1px solid #dddddd; padding: 4px; margin-bottom: 22px;">
-    <div id="cv-view1" class="olapview"></div>
+<div style="border: none; margin-bottom: 22px;">
+    <div id="cv-view1" class="olapview">The view should appear here...</div>
 </div>
 
 <h2>Scripting</h2>
 
 <p>
-Note that the view above can be scripted using CubesViewer View API. 
+The view above can be scripted using CubesViewer View API.  
 </p>   
 <p>
 For example, <a id="switchToSeriesTable" href="">click here</a> to switch to Series Table mode.
@@ -174,7 +161,7 @@ For example, <a id="switchToSeriesTable" href="">click here</a> to switch to Ser
 
 <p>Check the source code of this page to see how this CubesViewer view is initialized.</p>
 
-<p>More information can be found at 
+<p>More information can be found in the documentation page  
 <a href="https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-static.md">Embedding CubesViewer static views</a>.
 </p>
 

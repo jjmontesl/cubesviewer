@@ -241,7 +241,7 @@ function cubesviewerGui () {
 	};
 
 	// Model Loaded Event (redraws cubes list)
-	this.onCubesViewerInit = function() {
+	this.onCubesViewerInitialized = function() {
 		cubesviewer.gui.drawCubesList();
 	};
 		
@@ -372,4 +372,4 @@ cubesviewer.gui = new cubesviewerGui();
 $(document).bind("cubesviewerRefresh", { "gui": cubesviewer.gui }, cubesviewer.gui.onRefresh);
 $(document).bind("cubesviewerGuiDraw", { "gui": cubesviewer.gui }, cubesviewer.gui.onGuiDraw);
 $(document).bind("cubesviewerViewDraw", { }, cubesviewer.gui.onViewDraw);
-$(document).bind("cubesviewerInit", { }, cubesviewer.gui.onCubesViewerInit);
+$(document).bind("cubesviewerInitialized", { }, cubesviewer.gui.onCubesViewerInitialized);
