@@ -1,11 +1,12 @@
+# Sample file to deploy Cubes slicer as a WSGI application
+
 import sys
 import os.path
 import ConfigParser
 
-sys.path.append('/opt/cubesviewer/cubes')
 
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-CONFIG_PATH = os.path.join(CURRENT_DIR, "cubes/slicer.ini")
+_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_PATH = os.path.join(CURRENT_DIR, "slicer.ini")
 
 try:
     config = ConfigParser.SafeConfigParser()

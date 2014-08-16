@@ -58,7 +58,7 @@ views can be embedded in other websites. Simply
 download and open the src/htmlviews/gui.html file in your favourite browser.
 
 The **full CubesViewer application** includes a server side Python Django application which supports features 
-like sharing/saving and user notes. Requires Django 1.3, but it is optional 
+like sharing/saving and user notes. Requires Django 1.6, but it is optional 
 (only needed if you wish to use the full application with user authentication, user notes
 or save/load/share support). 
 

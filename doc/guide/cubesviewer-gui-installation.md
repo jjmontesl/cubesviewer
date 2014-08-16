@@ -40,7 +40,7 @@ or an asterisk *) under the `[server]` section.
 CubesViewer application runs on Python/Django. You need to have the following packages available in your system:
 
 * Python 2.7
-* Django 1.3 or Django 1.4 (possibly 1.5 works)
+* Django 1.6 or later
 
 You will also need the following Python packages:
 * requests
