@@ -89,32 +89,39 @@ function cubesviewerViewCubeColumns () {
 		$(view.container).find(".cv-view-viewinfo").append('<div class="cv-view-columns-chooser cv-view-info-panel infopiece ui-widget ui-corner-all" style="background-color: #ddddff;"><h3>Column chooser</h3><div class="cv-view-columns-chooser-cols"></div></div>');
 		
 		
-		var lastPrefix = "";
-		var newPrefix = "";
+		// Add columns
+		var measuresElements = "";
+		var measuresNames = [];
+		$(view.cube.measures).each(function(idx, e) {
+			
+			measuresNames.push(e.name);
+			
+			var aggregates = $.grep(view.cube.aggregates, function(ia) { return ia.measure == e.name; } );
+			if (aggregates.length > 0) {
+				$(view.container).find(".cv-view-columns-chooser-cols").append('<span style="float: left; min-width: 180px; margin-right: 20px;"><b>' + e.label + '</b>: </span>');
+				$(aggregates).each(function(idx, ea) {
+					var checkedon = (! view.cubesviewer.views.cube.columns.isColumnHidden (view, ea.ref)) ? 'checked="on"' : '';
+					$(view.container).find(".cv-view-columns-chooser-cols").append (
+						'<span style="margin-right: 15px;"><label ><input type="checkbox" ' + checkedon + ' style="vertical-align: middle;" data-col="' + ea.ref + '" class="cv-view-columns-chooser-col" /> ' + ea.label + '</label></span>'
+					);
+				});
+				$(view.container).find(".cv-view-columns-chooser-cols").append('<br/>');
+			}
+			
+		});
 		
-		for (var i = ((view.params.mode == "explore") ? 1 : 0); i < grid.jqGrid('getGridParam','colNames').length; i++) {
-			
-			// TODO: This relies on naming including a subscore to separate metrics, and record_count always including
-			// an underscore, and other columns not including it
-			var colname = grid.jqGrid('getGridParam','colNames')[i];
-			if (colname.lastIndexOf('_') < 0) continue;
-			newPrefix = (colname.substring(0, colname.lastIndexOf('_')));
-			
-			if ((lastPrefix != "") && (lastPrefix != newPrefix)) {
-				$(view.container).find(".cv-view-columns-chooser-cols").append('<br />');
-			}
-			if (lastPrefix != newPrefix) {
-				$(view.container).find(".cv-view-columns-chooser-cols").append('<span style="float: left; min-width: 180px; margin-right: 20px;"><b>' + newPrefix + '</b>: </span>');
-			}
-			
-			var checkedon = (! grid.jqGrid('getGridParam','colModel')[i].hidden) ? 'checked="on"' : '';
-			$(view.container).find(".cv-view-columns-chooser-cols").append (
-					'<span style="margin-right: 15px;"><label ><input type="checkbox" ' + checkedon + ' style="vertical-align: middle;" data-col="' + colname + '" class="cv-view-columns-chooser-col" /> ' + colname.substring(newPrefix.length + 1) + '</label></span>'
-			);
-			
-			lastPrefix = newPrefix;
-			
+		var aggregates = $.grep(view.cube.aggregates, function(ia) { return (! ia.measure) || ($.inArray(ia.measure, measuresNames) == -1 ); } );
+		if (aggregates.length > 0) {
+			$(view.container).find(".cv-view-columns-chooser-cols").append('<span style="float: left; min-width: 180px; margin-right: 20px;"><b><i>Derived</i></b>: </span>'); 
+			$(aggregates).each(function(idx, ea) {
+				var checkedon = (! view.cubesviewer.views.cube.columns.isColumnHidden (view, ea.ref)) ? 'checked="on"' : '';
+				$(view.container).find(".cv-view-columns-chooser-cols").append (
+					'<span style="margin-right: 15px;"><label ><input type="checkbox" ' + checkedon + ' style="vertical-align: middle;" data-col="' + ea.ref + '" class="cv-view-columns-chooser-col" /> ' + ea.label + '</label></span>'
+				);
+			});
+			$(view.container).find(".cv-view-columns-chooser-cols").append('<br/>');
 		}
+		
 		
 		// Event for checkboxes
 		$(view.container).find(".cv-view-columns-chooser-cols").find(".cv-view-columns-chooser-col").click(function () {
@@ -142,6 +149,12 @@ function cubesviewerViewCubeColumns () {
 		
 	};
 
+	this.isColumnHidden = function (view, col) {
+		var grid = $('#summaryTable-' + view.id);
+		var colmod = $.grep(grid.jqGrid('getGridParam','colModel'), function(co) { return co.name == col })[0];
+		return (colmod.hidden);
+	};
+	
 	this.toogleColumn = function (view, col) {
 		var grid = $('#summaryTable-' + view.id);
 		var colmod = $.grep(grid.jqGrid('getGridParam','colModel'), function(co) { return co.name == col })[0];
