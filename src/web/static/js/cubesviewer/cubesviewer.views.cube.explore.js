@@ -348,9 +348,10 @@ function cubesviewerViewCubeExplore() {
 			}
 			//row["key"] = key.join(' / ');
 
-			for ( var column in data.summary) {
-				row[column] = e[column];
-			}
+			// Add columns
+			$(view.cube.aggregates).each(function(idx, ag) {
+				row[ag.ref] = e[ag.ref];
+			});
 
 			row["id"] = nid.join('-');
 			rows.push(row);
@@ -358,12 +359,14 @@ function cubesviewerViewCubeExplore() {
 
 		// Copy summary if there's no data
 		// This allows a scrollbar to appear in jqGrid when only the summary row is shown. 
-		if (rows.length == 0) {
+		if ((rows.length == 0) && (data.summary)) {
 			var row = [];
 			row["key0"] = "Summary";
-			for ( var column in data.summary) {
-				row[column] = data.summary[column];
-			}
+			
+			$(view.cube.aggregates).each(function(idx, ag) {
+				row[ag.ref] = data.summary[ag.ref];
+			});
+			
 			rows.push(row);
 		}
 		
@@ -393,20 +396,20 @@ function cubesviewerViewCubeExplore() {
 		var dataRows = [];
 		var dataTotals = [];
 
-		for ( var column in data.summary) {
-			colNames.push(column);
+		$(view.cube.aggregates).each(function(idx, ag) {
+			colNames.push(ag.label);
 			colModel.push({
-				name : column,
-				index : column,
+				name : ag.ref,
+				index : ag.ref,
 				align : "right",
 				sorttype : "number",
-				width : cubesviewer.views.cube.explore.defineColumnWidth(view, column, 95),
+				width : cubesviewer.views.cube.explore.defineColumnWidth(view, ag.ref, 95),
 				formatter: 'number',  
-				cellattr: this.columnTooltipAttr(column),
+				cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 				formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
 			});
-			dataTotals[column] = data.summary[column];
-		}
+			if (data.summary) dataTotals[ag.ref] = data.summary[ag.ref];
+		});
 
 		colNames.sort();
 		colModel.sort(function(a, b) {
@@ -462,7 +465,7 @@ function cubesviewerViewCubeExplore() {
 				.jqGrid(
 						{
 							data : dataRows,
-							userData : dataTotals,
+							userData : (data.summary ? dataTotals : null),
 							datatype : "local",
 							height : 'auto',
 							rowNum : cubesviewer.options.pagingOptions[0],

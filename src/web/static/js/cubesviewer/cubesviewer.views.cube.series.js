@@ -262,14 +262,6 @@ function cubesviewerViewCubeSeries() {
 		var dataRows = [];
 		var dataTotals = [];
 		
-		/*
-		for (var column in data.summary) { 
-			colNames.push (column);
-			colModel.push ({ name: column, index: column, align: "right", sorttype: "number" });
-			dataTotals[column] = data.summary[column]; 
-		}
-		*/
-		
 		// Process cells
 		view.cubesviewer.views.cube.explore._sortData (view, data.cells, view.params.xaxis != null ? true : false);
 		view.cubesviewer.views.cube.series._addRows (view, dataRows, dataTotals, colNames, colModel, data);
