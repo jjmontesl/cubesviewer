@@ -99,11 +99,14 @@ function cubesviewerViewCubeSeries() {
 		
 		// Add measures menu
 		var measuresElements = "";
+		var measuresNames = [];
 		$(view.cube.measures).each(function(idx, e) {
+			
+			measuresNames.push(e.name);
 			
 			var aggregates = $.grep(view.cube.aggregates, function(ia) { return ia.measure == e.name; } );
 			if (aggregates.length > 0) {
-				measuresElements = measuresElements + '<li><a href="#" onclick="return false;">' + e.label + '</a><ul style="width: 170px; z-index: 9999;">';
+				measuresElements = measuresElements + '<li><a href="#" onclick="return false;">' + e.label + '</a><ul style="width: 220px; z-index: 9999;">';
 				$(aggregates).each(function(idx, ea) {
 					measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + ea.ref + '">' + ea.label + '</a></li>';
 				});
@@ -112,7 +115,7 @@ function cubesviewerViewCubeSeries() {
 			
 		});
 		
-		var aggregates = $.grep(view.cube.aggregates, function(ia) { return ! ia.measure; } );
+		var aggregates = $.grep(view.cube.aggregates, function(ia) { return (! ia.measure) || ($.inArray(ia.measure, measuresNames) == -1 ); } );
 		if (aggregates.length > 0) {
 			measuresElements = measuresElements + '<div class="ui-series-measures-sep"></div>'; 
 			$(aggregates).each(function(idx, ea) {
