@@ -138,10 +138,13 @@ function cubesviewerViewCubeChart() {
 	  	  '</ul></li>' +
   		  '<div></div>'
 	  	);
-	  	menu.append(
+	  	
+		/*
+		menu.append(
 	  	  '<div></div>' +
   		  '<li><a href="#" class="cv-view-chart-export"><span class="ui-icon ui-icon-script"></span>Export image</a></li>'
 		);
+		*/
 		
 		$(menu).menu( "refresh" );
 		$(menu).addClass("ui-menu-icons");

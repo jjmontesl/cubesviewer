@@ -57,8 +57,8 @@ function cubesviewerViewCubeExporter() {
 		
 		// Draw menu options (depending on mode)
 		
+		menu.append('<div></div>');
 		if ((view.params.mode == "explore") || (view.params.mode == "series")) {
-			menu.append('<div></div>');
 			menu.append('<li><a href="#" class="cv-view-export-table"><span class="ui-icon ui-icon-script"></span>Export table</a></li>');
 		}
 		menu.append('<li><a href="#" class="cv-view-export-facts"><span class="ui-icon ui-icon-script"></span>Export facts</a></li>');
