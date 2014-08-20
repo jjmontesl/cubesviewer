@@ -406,15 +406,17 @@ function cubesviewerViewCubeExplore() {
 				width : cubesviewer.views.cube.explore.defineColumnWidth(view, ag.ref, 95),
 				formatter: 'number',  
 				cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-				formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
+				formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: (ag.ref=="record_count" ? 0 : 2)  }
 			});
 			if (data.summary) dataTotals[ag.ref] = data.summary[ag.ref];
 		});
 
+		/*
 		colNames.sort();
 		colModel.sort(function(a, b) {
 			return (a.name < b.name ? -1 : (a.name == b.name ? 0 : 1));
 		});
+		*/
 
 		// If there are cells, show them
 		cubesviewer.views.cube.explore._sortData(view, data.cells, false);
@@ -644,13 +646,17 @@ function cubesviewerViewCubeExplore() {
 			return;
 		}
 
+		var dom = null;
 		var filterValues = [];
-		for (i = 0, count = $('#summaryTable-' + view.id).get(0).idsOfSelectedRows.length; i < count; i++) {
-			var data = $('#summaryTable-' + view.id).getRowData(
-					$('#summaryTable-' + view.id).get(0).idsOfSelectedRows[i]);
-			var dom = $(data["key0"]);
+		var idsOfSelectedRows = $('#summaryTable-' + view.id).get(0).idsOfSelectedRows;
+		var filterData = $.grep($('#summaryTable-' + view.id).jqGrid('getGridParam','data'), function (gd) {
+			return ($.inArray(gd.id, idsOfSelectedRows) != -1);
+		} );
+		$(filterData).each( function(idx, gd) {
+			dom = $(gd["key0"]);
 			filterValues.push($(dom).attr("data-value"));
-		}
+		});
+		
 		this.selectCut(view, $(dom).attr("data-dimension"), filterValues.join(";"));
 
 	};
