@@ -52,7 +52,7 @@ function cubesviewerViewCubeFacts() {
 		
 		// Buttonize and event
 		$(view.container).find('.cv-view-button-facts').button();
-		$(view.container).find('.cv-view-button-facts').click(function() { 
+		$(view.container).find('.cv-view-button-facts').click(function() {
 			view.cubesviewer.views.cube.facts.modeFacts(view);
 			return false;
 		});	
@@ -163,10 +163,11 @@ function cubesviewerViewCubeFacts() {
 		var colModel = [];	
 		var dataRows = [];
 		var dataTotals = [];
-		
+
 		var dimensions = view.cube.dimensions;
 		var measures = view.cube.measures;
-		
+        var details = view.cube.details;
+
 		colNames.push("ID");
 		colModel.push({
 			name : "id",
@@ -179,10 +180,10 @@ function cubesviewerViewCubeFacts() {
 		for ( var dimensionIndex in dimensions) {
 			// Get dimension
 			var dimension = dimensions[dimensionIndex];
-			
+
 			for (var i = 0; i < dimension.levels.length; i++) {
 				var level = dimension.levels[i];
-				
+
 				colNames.push(level.label);
 				colModel.push({
 					name : level.key().ref,
@@ -212,6 +213,22 @@ function cubesviewerViewCubeFacts() {
 				formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
 			});
 		}
+
+        for (var detailIndex in details){
+            var detail = details[detailIndex];
+            console.log("detail",detail);
+			colNames.push(detail.name);
+			colModel.push({
+				name : detail.ref,
+                index : detail.ref,
+                align : "left",
+                //sorttype : "number",
+                width : cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
+                //formatter: 'number',
+                //cellattr: this.columnTooltipAttr(column),
+                //formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
+			});
+        }
 		
 		
 		// Process cells
@@ -264,6 +281,7 @@ function cubesviewerViewCubeFacts() {
 		var counter = 0;
 		var dimensions = view.cube.dimensions;
 		var measures = view.cube.measures;
+        var details = view.cube.details;
 		
 		$(data).each( function(idx, e) {
 
@@ -289,7 +307,11 @@ function cubesviewerViewCubeFacts() {
 				var measure = measures[measureIndex];
 				row[measure.ref] = e[measure.ref];
 			}
-			
+
+            for (var detailIndex in details) {
+				var detail = details[detailIndex];
+				row[detail.ref] = e[detail.ref];
+			}
 
 			// Set key
 			row["id"] = counter++;
