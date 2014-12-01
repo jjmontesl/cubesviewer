@@ -1,4 +1,4 @@
-# CubesViewer  
+# CubesViewer
 # Web (Django Application) Configuration File
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -31,7 +31,7 @@ DATABASES = {
 # 2. Configuration of CubesViewer
 ##
 
-# Base Cubes Server URL. 
+# Base Cubes Server URL.
 # Your Cubes Server needs to be running and listening on this URL, and it needs
 # to be accessible to clients of the application.
 CUBESVIEWER_CUBES_URL="http://localhost:5000"
@@ -41,7 +41,7 @@ CUBESVIEWER_BACKEND_URL="http://localhost:8000/cubesviewer"
 
 # Optional user and password tuple to access the backend, or False
 # (only meaningful when CubesViewer Cubes proxy is used)
-#CUBESVIEWER_CUBES_PROXY_USER = ('user', 'password') 
+#CUBESVIEWER_CUBES_PROXY_USER = ('user', 'password')
 CUBESVIEWER_CUBES_PROXY_USER = None
 
 # CubesViewer Proxy ACL
@@ -148,7 +148,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    TEMPLATE_DIR
+    TEMPLATE_DIR,
 )
 
 # A sample logging configuration. The only tangible logging
