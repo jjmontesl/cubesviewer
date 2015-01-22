@@ -302,7 +302,7 @@ function cubesviewerViewCubeDateFilter () {
 		for (var i = 0; i < dimensionparts.hierarchy.levels.length; i++) {
 			var level = dimensionparts.hierarchy.levels[i];
 
-			var field = level.info["cv-datefilter-field"];
+			var field = level.role;
 			if (field == "year") {
 				values.push(tdate.getFullYear());
 			} else if (field == "month") {
@@ -314,7 +314,7 @@ function cubesviewerViewCubeDateFilter () {
 			} else if (field == "day") {
 				values.push(tdate.getDate());
 			} else {
-				cubesviewer.alert ("Wrong configuration of model: datefilter field '" + field + "' is invalid.");
+				cubesviewer.alert ("Wrong configuration of model: time role of level '" + level.name + "' is invalid.");
 			}
 		}
 

@@ -1,12 +1,13 @@
 0.10-devel
+    + Updated to work with Cubes 1.0 (note: dropped support for Cubes 0.10.x).
+    + Upgraded to Django 1.7.3 (your settings.py may need updating).
+    + Datefilter now uses dimension role "time" in Cubes 1.0.
+    + First version using Django migrations.
+    + Use cubes.js official client library (altered).
     + Modified jQueryUI theme.
-    + Updated to latest jQuery version.
+    + Updated to latest jQuery version 1.10.2.
     + Switched from django-piston to django-rest-framework.
     + Dropped notes system.
-    + Upgrading to Django 1.7.3 (your settings.py may need updating).
-    + Initial Django migrations.
-    + Updated to work with Cubes 1.0 (note: dropped support for Cubes 0.10.x).
-    + Use cubes.js official client library (altered).
 0.9
     + Last version supporting cubes 0.10.x.
     + Fix dimensionfilter bug causing wrong values to

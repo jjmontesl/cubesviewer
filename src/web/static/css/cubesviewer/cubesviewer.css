@@ -49,6 +49,10 @@ Ported from blueprint to make sure embedded views work without blueprint.
   /*padding-left: 20px;*/
 }
 
+li.ui-menu-item a {
+	display: block;
+}
+
 .ui-widget {
     font-size: 13px;
 }
