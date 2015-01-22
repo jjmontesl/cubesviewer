@@ -31,7 +31,7 @@ Roadmap 0.12
     + Loading to be less destructive reusing existing DOM elements (up to the plugin).
     + Support dimension attributes, and fact details in fact view etc..
     + Support better exploration of facts
-Roadmap 0.11
+Roadmap 0.10, 0.11
     + Drop notes system 2: use metadata for info and add a comments system
     + Ability to filter from chart filter / synchronize filter and chart filter (?).
     + HTML, CSS and dynamic class usage sanitized (closes #14).
@@ -50,6 +50,6 @@ Roadmap 0.11
     + Implemented chart resize options (alternate, more responsive method).
     + Analytics plugin to ignore first N seconds of events as for bounce rate calculation.
     + Using less technical menu and button labels (drilldown, cut).
+    + jQGrid has changed licence (had to patch it). Change table component?!
 Roadmap 0.10
-    + Review Django Proxy (may be useful, but authentication needs review).
     + Review Datefilter and Rangefilter (improve metadata).

@@ -4,33 +4,33 @@
 
     <title>{% block title %}{% endblock %}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}    
+    {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 
 	<link rel="stylesheet" href="{{ STATIC_URL }}css/blueprint/screen.css" type="text/css" media="screen, projection">
 	<link rel="stylesheet" href="{{ STATIC_URL }}css/blueprint/print.css" type="text/css" media="print">
 	<!--[if lt IE 8]> <link rel="stylesheet" href="{{ STATIC_URL }}css/blueprint/ie.css" type="text/css" media="screen, projection"> <!¡[endif]-->
 
-	<link type="text/css" href="{{ STATIC_URL }}css/jqueryui-cupertino/jquery-ui-1.9.2.custom.css" rel="stylesheet" />
+	<link type="text/css" href="{{ STATIC_URL }}js/jqueryui/jquery-ui.min.css" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/cvapp.css" />
 
 	{% block extrastyle %}{% endblock %}
-	
+
 	<script type="text/javascript" src="{{ STATIC_URL }}js/dateformat/dateformat.js"></script>
 
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery/jquery-1.8.3.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery/jquery-ui-1.9.2.custom.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery/jquery.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery/jquery.cookie.js"></script>
-	
-    <script type="text/javascript" src="{{ STATIC_URL }}js/cvapp.js"></script>      
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jqueryui/jquery-ui.min.js"></script>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}js/cvapp.js"></script>
 
 	{% block extrahead %}{% endblock %}
-	
+
 </head>
 
 <body id="{% block body_id %}{% endblock %}">
 	<div id="body">
-		
+
         <table>
             <tr>
                 <td>
@@ -43,8 +43,8 @@
                 </td>
             </tr>
         </table>
-        <div>{% block content_footer %}{% endblock %}</div>    
-        		
+        <div>{% block content_footer %}{% endblock %}</div>
+
 	</div>
 </body>
 

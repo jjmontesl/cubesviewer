@@ -1,4 +1,7 @@
 0.10-devel
+    + Modified jQueryUI theme.
+    + Updated to latest jQuery version.
+    + Switched from django-piston to django-rest-framework.
     + Dropped notes system.
     + Upgrading to Django 1.7.3 (your settings.py may need updating).
     + Initial Django migrations.

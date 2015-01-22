@@ -9,25 +9,25 @@
 	<link rel="stylesheet" href="../web/static/css/blueprint/screen.css" type="text/css" media="screen, projection">
 	<link rel="stylesheet" href="../web/static/css/blueprint/print.css" type="text/css" media="print">
 	<!--[if lt IE 8]> <link rel="stylesheet" href="../web/static/css/blueprint/ie.css" type="text/css" media="screen, projection"> <!¡[endif]-->
-    
+
     <link rel="stylesheet" type="text/css" href="../web/static/css/cvapp.css" />
 
 
     <!-- CubesViewer CSS resources -->
-	<link type="text/css" rel="stylesheet" href="../web/static/css/jqueryui-cupertino/jquery-ui-1.9.2.custom.css" />
+    <link type="text/css" rel="stylesheet" href="../web/static/js/jqueryui/jquery-ui.min.css" />
     <link type="text/css" rel="stylesheet" href="../web/static/css/jqgrid/ui.jqgrid.css" media="screen" />
-    <link type="text/css" rel="stylesheet" href="../web/static/js/qtip/jquery.qtip.css"  />    
+    <link type="text/css" rel="stylesheet" href="../web/static/js/qtip/jquery.qtip.css"  />
     <link type="text/css" rel="stylesheet" href="../web/static/js/wiky/wiky.math.css" />
-    <link type="text/css" rel="stylesheet" href="../web/static/js/nvd3/nv.d3.min.css" />    
-    
+    <link type="text/css" rel="stylesheet" href="../web/static/js/nvd3/nv.d3.min.css" />
+
     <link type="text/css" rel="stylesheet" href="../web/static/css/cubesviewer/cubesviewer.css" />
 
     <!-- CubesViewer JS dependencies -->
-    
-    <script type="text/javascript" src="../web/static/js/jquery/jquery-1.8.3.js"></script>
-    <script type="text/javascript" src="../web/static/js/jquery/jquery-ui-1.9.2.custom.min.js"></script>
-    <script type="text/javascript" src="../web/static/js/jquery/jquery.cookie.js"></script> 
-    
+
+    <script type="text/javascript" src="../web/static/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="../web/static/js/jquery/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../web/static/js/jqueryui/jquery-ui.min.js"></script>
+
     <script type="text/javascript" src="../web/static/js/dateformat/dateformat.js"></script>
 
     <script type="text/javascript" src="../web/static/js/jquery/jquery.blockUI.js"></script>
@@ -41,12 +41,13 @@
 	<script type="text/javascript" src="../web/static/js/qtip/jquery.qtip.js"></script>
 
 	<script type="text/javascript" src="../web/static/js/jqgrid/i18n/grid.locale-en.js" ></script>
+    <script type="text/javascript" src="../web/static/js/jqgrid/migrate-jquery-browser.js" ></script>
 	<script type="text/javascript" src="../web/static/js/jqgrid/jquery.jqGrid.min.js" ></script>
-    
+
     <script type="text/javascript" src="../web/static/js/cubes/cubes.js"></script>
-    
+
     <!-- Cubesviewer modules -->
-    
+
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.cache.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.js"></script>
@@ -58,64 +59,64 @@
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.chart.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.facts.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.dimensionfilter.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.columns.js"></script>    
+    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.columns.js"></script>
 
 
 <script type="text/javascript">
-	
+
 	// Reference to the created view
 	var view1 = null;
-	
+
 	// Initialize CubesViewer when document is ready
 	$(document).ready(function() {
-	    
+
 	    // Get user Cubes information for the example
 	    var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
-	    
+
 	    // Initialize CubesViewer system
         cubesviewer.init({
             cubesUrl: cubesUrl
         });
-	    
+
         // Sample serialized view (Based on cubes-examples project data)
-        var serializedView = 
+        var serializedView =
             '{"cubename":"sales","name":"Cube View - Webshop / Sales","mode":"chart","drilldown":["country:region"],"cuts":[],"datefilters":[{"dimension":"date_sale@weekly","mode":"auto-last24m","date_from":"","date_to":""}],"xaxis":"date_sale@monthly:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{}}';
-        
+
         // Add views
-            
+
         // You can use a Javascript object with view arguments (ie. "cubename")
         //view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", { "cubename": "contracts" });
-            
+
         // You can use a serialized JSON string of the object with view arguments
         view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", serializedView);
-            
-        
+
+
 	    // Scripting example for the "switch mode" link
 	    $('#switchToSeriesTable').click(function() {
 	        cubesviewer.views.cube.series.modeSeries(view1);
 	        return false;
 	    });
-	    
+
 	    // Start Cubesviewer system
 	    cubesviewer.refresh();
-	    
+
 	});
-	
+
 </script>
-  
-	
+
+
 <style type="text/css">
 .olapview {
     min-width: 400px;
 }
 </style>
 
-	
+
 </head>
 
 <body id="">
 	<div id="body">
-		
+
         <table>
             <tr>
                 <td>
@@ -125,9 +126,9 @@
 						    <div style="float: left;">
 						        <img id="cv-logo" title="CubesViewer" src="../web/static/img/cubesviewer-logo.png" />
 						    </div>
-						
+
 						    <h1 id="site-name">CubesViewer Static View Sample</h1>
-						
+
 						    <div style="clear: both;"></div>
 						</div>
 
@@ -141,7 +142,7 @@
 
 <p>
 This is an example CubesView inserted in this page. It loads a serialized view which uses the
-<b>cubes-examples "webshop"</b> project data (<a href="https://github.com/Stiivi/cubes-examples/">https://github.com/Stiivi/cubes-examples/</a>).  
+<b>cubes-examples "webshop"</b> project data (<a href="https://github.com/Stiivi/cubes-examples/">https://github.com/Stiivi/cubes-examples/</a>).
 </p>
 
 <div style="border: none; margin-bottom: 22px;">
@@ -151,8 +152,8 @@ This is an example CubesView inserted in this page. It loads a serialized view w
 <h2>Scripting</h2>
 
 <p>
-The view above can be scripted using CubesViewer View API.  
-</p>   
+The view above can be scripted using CubesViewer View API.
+</p>
 <p>
 For example, <a id="switchToSeriesTable" href="">click here</a> to switch to Series Table mode.
 </p>
@@ -161,7 +162,7 @@ For example, <a id="switchToSeriesTable" href="">click here</a> to switch to Ser
 
 <p>Check the source code of this page to see how this CubesViewer view is initialized.</p>
 
-<p>More information can be found in the documentation page  
+<p>More information can be found in the documentation page
 <a href="https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-static.md">Embedding CubesViewer static views</a>.
 </p>
 
@@ -171,11 +172,11 @@ For example, <a id="switchToSeriesTable" href="">click here</a> to switch to Ser
         </table>
         <div>
 
-        
+
 <div id="footer" style="clear: both; padding-top: 20px;">
-	<div style="height: 1px; border-top: 1px solid #DDDDDD; padding-top: 4px;"></div> 
+	<div style="height: 1px; border-top: 1px solid #DDDDDD; padding-top: 4px;"></div>
 	<div style="float: right; white-space: nowrap;">
-		<p style="vertical-align: middle;"> 
+		<p style="vertical-align: middle;">
 		<a href="http://databrewery.org/" target="_blank"><img title="Powered by Databrewery Cubes" style="width: 30px; height: 30px;" src="../web/static/img/cubes-logo.png" /></a>
         <a href="https://github.com/jjmontesl/cubesviewer" target="_blank"><img title="Powered by CubesViewer" style="width: 65px; height: 30px;" src="../web/static/img/cubesviewer-logo.png" /></a>
 		</p>
@@ -184,8 +185,8 @@ For example, <a id="switchToSeriesTable" href="">click here</a> to switch to Ser
 		<p>CubesViewer</p>
 	</div>
 </div>
-</div>    
-        		
+</div>
+
 	</div>
 </body>
 

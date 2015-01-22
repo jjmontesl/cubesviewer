@@ -14,20 +14,20 @@
 
 
     <!-- CubesViewer CSS resources -->
-    <link type="text/css" rel="stylesheet" href="../web/static/css/jqueryui-cupertino/jquery-ui-1.9.2.custom.css" />
+    <link type="text/css" rel="stylesheet" href="../web/static/js/jqueryui/jquery-ui.min.css" />
     <link type="text/css" rel="stylesheet" href="../web/static/css/jqgrid/ui.jqgrid.css" media="screen" />
-    <link type="text/css" rel="stylesheet" href="../web/static/js/qtip/jquery.qtip.css"  />    
+    <link type="text/css" rel="stylesheet" href="../web/static/js/qtip/jquery.qtip.css"  />
     <link type="text/css" rel="stylesheet" href="../web/static/js/wiky/wiky.math.css" />
     <link type="text/css" rel="stylesheet" href="../web/static/js/nvd3/nv.d3.min.css" />
-    
+
     <link type="text/css" rel="stylesheet" href="../web/static/css/cubesviewer/cubesviewer.css" />
 
     <!-- CubesViewer JS dependencies -->
-    
-    <script type="text/javascript" src="../web/static/js/jquery/jquery-1.8.3.js"></script>
-    <script type="text/javascript" src="../web/static/js/jquery/jquery-ui-1.9.2.custom.min.js"></script>
-    <script type="text/javascript" src="../web/static/js/jquery/jquery.cookie.js"></script> 
-    
+
+    <script type="text/javascript" src="../web/static/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="../web/static/js/jquery/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../web/static/js/jqueryui/jquery-ui.min.js"></script>
+
     <script type="text/javascript" src="../web/static/js/dateformat/dateformat.js"></script>
 
     <script type="text/javascript" src="../web/static/js/jquery/jquery.blockUI.js"></script>
@@ -41,12 +41,13 @@
     <script type="text/javascript" src="../web/static/js/qtip/jquery.qtip.js"></script>
 
     <script type="text/javascript" src="../web/static/js/jqgrid/i18n/grid.locale-en.js" ></script>
+    <script type="text/javascript" src="../web/static/js/jqgrid/migrate-jquery-browser.js" ></script>
     <script type="text/javascript" src="../web/static/js/jqgrid/jquery.jqGrid.min.js" ></script>
-    
+
     <script type="text/javascript" src="../web/static/js/cubes/cubes.js"></script>
-    
+
     <!-- Cubesviewer modules -->
-    
+
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.cache.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.js"></script>
@@ -58,7 +59,7 @@
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.chart.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.facts.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.dimensionfilter.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.columns.js"></script> 
+    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.columns.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.export.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.undo.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.gui.js"></script>
@@ -67,33 +68,33 @@
 
 
 <script type="text/javascript">
-	
+
 	// Initialize CubesViewer when document is ready
 	$(document).ready(function() {
-	    
+
 		var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
-		
+
 		cubesviewer.init({
 	        cubesUrl: cubesUrl
 	    });
-		
+
 		cubesviewer.gui.init({
 	        container: $('#cubesviewer').get(0)
 		});
-		
+
 	    // Start Cubesviewer system
         cubesviewer.refresh();
-		
+
 	});
-	
+
 </script>
-  
-	
+
+
 </head>
 
 <body id="">
 	<div id="body">
-		
+
         <table>
             <tr>
                 <td>
@@ -114,14 +115,14 @@
             </tr>
             <tr>
                 <td style="width: 100%; vertical-align: top;">
-                  
-                  
+
+
 <!-- Cubes Viewer GUI container -->
 <div id="cubesviewer">
 
     <div class="cv-gui-panel ui-widget ui-widget-content ui-corner-all" >
     </div>
-    
+
     <div class="cv-gui-workspace">
     </div>
 
@@ -131,12 +132,12 @@
             </tr>
         </table>
         <div>
-        
-        
+
+
 <div id="footer" style="clear: both; padding-top: 20px;">
-	<div style="height: 1px; border-top: 1px solid #DDDDDD; padding-top: 4px;"></div> 
+	<div style="height: 1px; border-top: 1px solid #DDDDDD; padding-top: 4px;"></div>
 	<div style="float: right; white-space: nowrap;">
-		<p style="vertical-align: middle;"> 
+		<p style="vertical-align: middle;">
 		<a href="http://databrewery.org/" target="_blank"><img title="Powered by Databrewery Cubes" style="width: 30px; height: 30px;" src="../web/static/img/cubes-logo.png" /></a>
         <a href="https://github.com/jjmontesl/cubesviewer" target="_blank"><img title="Powered by CubesViewer" style="width: 65px; height: 30px;" src="../web/static/img/cubesviewer-logo.png" /></a>
 		</p>
@@ -145,8 +146,8 @@
 		<p>CubesViewer</p>
 	</div>
 </div>
-</div>    
-        		
+</div>
+
 	</div>
 </body>
 
