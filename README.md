@@ -40,9 +40,9 @@ Online demos
 Download
 ------------
 
-Current CubesViewer version is 0.10-devel. Works with Cubes 1.0.x.
+Current CubesViewer version is 0.10. Works with Cubes 1.0.x.
 
-[CubesViewer version 0.10-devel](https://github.com/jjmontesl/cubesviewer/archive/master.zip) - Works with Cubes 1.0.x
+[CubesViewer version 0.10](https://github.com/jjmontesl/cubesviewer/archive/master.zip) - Works with Cubes 1.0.x
 
 (Use older [CubesViewer version 0.9](https://github.com/jjmontesl/cubesviewer/archive/v0.9.zip) if you need to work with Cubes 0.10.x)
 
