@@ -42,6 +42,7 @@ class CubesViewerModel(models.Model):
     class Meta:
         abstract = True
 
+
 class CubesView(CubesViewerModel):
     """
     Saved Cubes View
@@ -56,6 +57,7 @@ class CubesView(CubesViewerModel):
 
     class Meta:
         ordering = ['name']
+
 
 class Note(CubesViewerModel):
     """

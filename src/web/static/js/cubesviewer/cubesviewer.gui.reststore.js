@@ -75,9 +75,9 @@ function cubesviewerGuiRestStore() {
             if (view.owner == view.cubesviewer.gui.options.user) {
                 viewstate += ('<span style="color: white; font-size: 10px; border: 1px solid white; padding: 1px;">Owner</span> ');
             }
-            
+
             var changed = view.cubesviewer.gui.reststore.isViewChanged(view);
-        
+
             if (changed)
                 viewstate += ('<span style="color: lightgray; font-size: 10px; border: 1px solid lightgray; padding: 1px;">Modified</span> ');
             if (!changed)
@@ -146,8 +146,15 @@ function cubesviewerGuiRestStore() {
             "data":  view.cubesviewer.views.serialize(view)
         };
 
-        $.post(view.cubesviewer.gui.options.backendUrl + "/view/save/", data, view.cubesviewer.gui.reststore._viewSaveCallback(view), "json")
-         .fail(cubesviewer.defaultRequestErrorHandler);
+        $.ajax({
+        	"type": "POST",
+        	"url": view.cubesviewer.gui.options.backendUrl + "/view/save/",
+        	"data": data,
+        	"success": view.cubesviewer.gui.reststore._viewSaveCallback(view),
+        	"dataType": "json",
+        	"headers": {"X-CSRFToken": $.cookie('csrftoken')},
+        })
+        .fail(cubesviewer.defaultRequestErrorHandler);
 
     };
 
@@ -176,7 +183,14 @@ function cubesviewerGuiRestStore() {
 
         view.cubesviewer.gui.closeView(view);
 
-        $.post(view.cubesviewer.gui.options.backendUrl + "/view/save/", data, view.cubesviewer.gui.reststore._viewDeleteCallback(view.cubesviewer.gui), "json")
+        $.ajax({
+        	"type": "POST",
+        	"url": view.cubesviewer.gui.options.backendUrl + "/view/save/",
+        	"data": data,
+        	"success": view.cubesviewer.gui.reststore._viewDeleteCallback(view.cubesviewer.gui),
+        	"dataType": "json",
+        	"headers": {"X-CSRFToken": $.cookie('csrftoken')},
+         })
          .fail(cubesviewer.defaultRequestErrorHandler);
 
     };
@@ -203,14 +217,14 @@ function cubesviewerGuiRestStore() {
                 view.cubesviewer.views.redrawView(view);
             }
             view.cubesviewer.gui.reststore.viewList();
-            
+
             cubesviewer.showInfoMessage("View saved.", 3000);
         }
 
     };
 
     /*
-     * Delete callback 
+     * Delete callback
      */
     this._viewDeleteCallback = function(gui) {
 
@@ -221,7 +235,7 @@ function cubesviewerGuiRestStore() {
         }
 
     };
-    
+
     /*
      * Get view list.
      */
@@ -243,7 +257,7 @@ function cubesviewerGuiRestStore() {
 
         $( data ).each (function(idx, e) {
             var link = '<a style="margin-left: 10px; white-space: nowrap; overflow: hidden;" class="backend-loadview" data-view="' + e.id + '" href="#" title="' + e.name + '">' + e.name + '</a><br />';
-            if (e.owner_id == cubesviewer.gui.options.user) {
+            if (e.owner == cubesviewer.gui.options.user) {
                 $(container).find('.savedviews-personal').append (link);
             }
             if (e.shared) {
@@ -295,15 +309,15 @@ function cubesviewerGuiRestStore() {
      * Change shared mode
      */
     this.shareView = function(view, sharedstate) {
-    	
+
         if (view.owner != view.cubesviewer.gui.options.user) {
             view.cubesviewer.alert ('Cannot share/unshare a view that belongs to other user (try cloning the view).');
             return;
         }
-    	
+
         view.shared = ( sharedstate == 1 ? true : false );
         this.saveView(view);
-        
+
     };
 
     /*
@@ -313,14 +327,14 @@ function cubesviewerGuiRestStore() {
      * the storage backend.
      */
     this.addViewSaved = function(savedViewId) {
-    	
+
     	// TODO: Check whether the server model is loaded, etc
-    	
+
         var savedview = this.getSavedView(savedViewId);
         var viewobject = $.parseJSON(savedview.data);
         var view = cubesviewer.gui.addViewObject(viewobject);
         view.savedId = savedview.id
-        view.owner = savedview.owner_id;
+        view.owner = savedview.owner;
         view.shared = savedview.shared;
 
         this.cubesviewer.views.redrawView (view);

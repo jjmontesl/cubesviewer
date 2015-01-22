@@ -1,4 +1,7 @@
 0.10-devel
+    + Dropped notes system.
+    + Upgrading to Django 1.7.3 (your settings.py may need updating).
+    + Initial Django migrations.
     + Updated to work with Cubes 1.0 (note: dropped support for Cubes 0.10.x).
     + Use cubes.js official client library (altered).
 0.9
@@ -13,12 +16,12 @@
     + Separated datefilter as a plugin (closes #8).
     + Cutting over a drilled dimension no longer removes the drill.
     + Added shortcuts (select all) and drilldown from filters.
-    + Menus now open on hover if already open. 
+    + Menus now open on hover if already open.
     + Charts now using nvd3.js!
 0.7
     + Always send dimension level for drilldown (solves
       issue about single-point cut + drilldown combination)
-    + Updated the pure-html examples (embedded views).  
+    + Updated the pure-html examples (embedded views).
     + Ajax global error handler is no longer used.
     + More user friendly error handling if server not available.
     + Fixed table resizing not fitting parent.
@@ -36,7 +39,7 @@
     + Added tooltips to table values.
     + Added wiki plugin for public notes for cubes and views.
     + Menu buttons now require click to activate.
-    + Fixed a few UI glitches. 
+    + Fixed a few UI glitches.
 0.5
     + Removed the "global shared views" concept.
     + Experimental Cubes proxy (with ACLs).

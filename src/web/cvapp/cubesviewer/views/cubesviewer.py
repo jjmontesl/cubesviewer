@@ -1,4 +1,4 @@
-# CubesViewer  
+# CubesViewer
 #
 # Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
 #
@@ -11,11 +11,11 @@
 #
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # If your version of the Software supports interaction with it remotely through
 # a computer network, the above copyright notice and this permission notice
 # shall be accessible to all users.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,14 +28,15 @@
 from django.views.generic.base import TemplateView
 from django.conf import settings
 
+
 class CubesViewerView(TemplateView):
-    
+
     template_name = "cubesviewer/index.html"
     exclude = ()
-    
+
     def get_context_data(self, **kwargs):
         context = TemplateView.get_context_data(self, **kwargs)
         context["cubesviewer_cubes_url"] = settings.CUBESVIEWER_CUBES_URL
         context["cubesviewer_backend_url"] = settings.CUBESVIEWER_BACKEND_URL
         return context
-        
+

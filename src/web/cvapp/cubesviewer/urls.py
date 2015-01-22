@@ -1,4 +1,4 @@
-# CubesViewer  
+# CubesViewer
 #
 # Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
 #
@@ -11,11 +11,11 @@
 #
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # If your version of the Software supports interaction with it remotely through
 # a computer network, the above copyright notice and this permission notice
 # shall be accessible to all users.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,16 +26,13 @@
 
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from piston.resource import Resource
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from cubesviewer.views.cubesviewer import CubesViewerView
-from cubesviewer.api.view import ViewSaveHandler
-from cubesviewer.api.view import ViewListHandler
 from cubesviewer.api import proxy
-from cubesviewer.api.note import NoteViewHandler, NoteSaveHandler
-
+from cubesviewer.api.view import ViewSaveView, ViewListView
+from django.views.decorators.csrf import csrf_exempt
 
 # Enable admin
 admin.autodiscover()
@@ -43,13 +40,10 @@ admin.autodiscover()
 urlpatterns = patterns('',
 
     url(r'^$', login_required( CubesViewerView.as_view() ) ),
-    
-    url(r'^view/list/$', login_required( Resource(ViewListHandler) )),
-    url(r'^view/save/$', login_required( Resource(ViewSaveHandler) )),
 
-    url(r'^note/save/$', login_required( Resource(NoteSaveHandler) )),
-    url(r'^note/get/(?P<pk>.+)$', login_required( Resource(NoteViewHandler) )),
-    
+    url(r'^view/list/$', ViewListView.as_view() ),
+    url(r'^view/save/$', csrf_exempt(ViewSaveView.as_view()) ),
+
     url(r'^cubes/', login_required(proxy.connection))
-    
+
 )

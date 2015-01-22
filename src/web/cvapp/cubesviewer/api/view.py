@@ -25,16 +25,30 @@
 # SOFTWARE.
 
 
-from piston.handler import BaseHandler
 from django.db.models import Q
 
+from rest_framework import routers, serializers, viewsets, permissions
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
 from cubesviewer.models import CubesView
+from django.views.decorators.csrf import csrf_exempt
 
-class ViewSaveHandler(BaseHandler):
 
-    allowed_methods = ('POST')
+class CubesViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CubesView
+        #fields = ('url', 'username', 'email', 'groups')
 
-    def create(self, request, *args, **kwargs):
+
+class ViewSaveView(APIView):
+
+    #model = Match
+    #serializer_class = MatchSerializer
+
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
 
         #tview = None
         if (int(request.POST["id"]) > 0):
@@ -58,17 +72,21 @@ class ViewSaveHandler(BaseHandler):
 
             tview.save()
 
+        serializer = CubesViewSerializer(tview, many=False, context={'request': request})
+        return Response(serializer.data)
 
-        return tview
 
+class ViewListView(APIView):
 
-class ViewListHandler(BaseHandler):
+    #model = Match
+    #serializer_class = MatchSerializer
 
-    allowed_methods = ('GET')
-    exclude = ()
+    permission_classes = (permissions.IsAuthenticated,)
 
-    def read(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
 
-        return CubesView.objects.filter(Q(owner=request.user) | Q(shared=True))
+        views = CubesView.objects.filter(Q(owner=request.user) | Q(shared=True))
+        serializer = CubesViewSerializer(views, many=True, context={'request': request})
+        return Response(serializer.data)
 
 

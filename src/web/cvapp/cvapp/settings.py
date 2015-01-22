@@ -1,4 +1,4 @@
-# CubesViewer  
+# CubesViewer
 # Web (Django Application) Configuration File
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -31,7 +31,7 @@ DATABASES = {
 # 2. Configuration of CubesViewer
 ##
 
-# Base Cubes Server URL. 
+# Base Cubes Server URL.
 # Your Cubes Server needs to be running and listening on this URL, and it needs
 # to be accessible to clients of the application.
 CUBESVIEWER_CUBES_URL="http://localhost:5000"
@@ -41,7 +41,7 @@ CUBESVIEWER_BACKEND_URL="http://localhost:8000/cubesviewer"
 
 # Optional user and password tuple to access the backend, or False
 # (only meaningful when CubesViewer Cubes proxy is used)
-#CUBESVIEWER_CUBES_PROXY_USER = ('user', 'password') 
+#CUBESVIEWER_CUBES_PROXY_USER = ('user', 'password')
 CUBESVIEWER_CUBES_PROXY_USER = None
 
 # CubesViewer Proxy ACL
@@ -79,6 +79,8 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
 
     'cubesviewer',
+
+    'rest_framework',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -117,8 +119,8 @@ STATIC_URL = '/static/'
 
 
 # Path to static files
-STATIC_DIR=os.path.join(BASE_DIR, os.path.pardir, 'static')
-TEMPLATE_DIR=os.path.join(BASE_DIR, os.path.pardir, 'templates')
+STATIC_DIR = ( os.path.join(BASE_DIR, os.path.pardir, 'static'), )
+TEMPLATE_DIR = ( os.path.join(BASE_DIR, os.path.pardir, 'templates'), )
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -131,7 +133,8 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    STATIC_DIR,
+    #STATIC_DIR,
+    os.path.join(BASE_DIR, os.path.pardir, 'static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -173,7 +176,7 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler'
         },
        'console':{
-            'level':'DEBUG',
+            'level':'INFO',
             'class':'logging.StreamHandler',
             'formatter': 'simple',
         },
