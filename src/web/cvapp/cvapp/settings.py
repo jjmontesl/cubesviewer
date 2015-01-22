@@ -34,10 +34,10 @@ DATABASES = {
 # Base Cubes Server URL.
 # Your Cubes Server needs to be running and listening on this URL, and it needs
 # to be accessible to clients of the application.
-CUBESVIEWER_CUBES_URL="http://localhost:5000"
+CUBESVIEWER_CUBES_URL="http://127.0.0.1:8000"
 
 # CubesViewer Store backend URL. It should point to this application.
-CUBESVIEWER_BACKEND_URL="http://localhost:8000/cubesviewer"
+CUBESVIEWER_BACKEND_URL="http://127.0.0.1:5555/cubesviewer"
 
 # Optional user and password tuple to access the backend, or False
 # (only meaningful when CubesViewer Cubes proxy is used)
@@ -151,7 +151,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    TEMPLATE_DIR
+    TEMPLATE_DIR,
 )
 
 # A sample logging configuration. The only tangible logging
