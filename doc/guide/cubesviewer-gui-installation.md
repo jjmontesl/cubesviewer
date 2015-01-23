@@ -12,9 +12,9 @@ of the operations (ie. saving / sharing).
 
 The CubesViewer application is a web application and as such it must be served by an HTTP server.
 It can be run using Python Django local webserver, but for more serious/production environments, it should
-be fronted by a real web server like Apache. 
+be fronted by a real web server like Apache.
 
-As a side note, it should be pointed that CubesViewer is, however, mainly a client-side Javascript application, 
+As a side note, it should be pointed that CubesViewer is, however, mainly a client-side Javascript application,
 which means that although the full application is a Python Django Server-Side app, you can use a subset
 of the GUI features running the tool directly from your browser (as long as the Cubes server is accessible).
 
@@ -22,14 +22,14 @@ The installation steps are:
 
 ## 1 - Python Cubes Requisite
 
-In order to use CubesViewer, you need to have a working installation and configuration of the latest version of 
+In order to use CubesViewer, you need to have a working installation and configuration of the latest version of
 [Cubes Framework](http://databrewery.org/cubes.html) version.
 
 Cubes includes an HTTP server called "slicer", which provides a REST-like API interface to one or more data cubes. This
 server needs to be running for CubesViewer. Follow [Cubes Framework](http://databrewery.org/cubes.html) instructions
 in order to install and set up a cubes server if you haven't done so yet.
 
-It is not required that the Cubes server runs on the same host as the CubesViewer application.    
+It is not required that the Cubes server runs on the same host as the CubesViewer application.
 
 To be able for CubesViewer to connect to the slicer server, your `slicer.ini` should allow cross origin resource
 sharing. To enable this option, put `allow_cors_origin: http://localhost:8000` (or the URL from wich your app will work,
@@ -40,19 +40,18 @@ or an asterisk *) under the `[server]` section.
 CubesViewer application runs on Python/Django. You need to have the following packages available in your system:
 
 * Python 2.7
-* Django 1.6 or later
+* Django 1.7 or later
 
-You will also need the following Python packages:
-* requests
-* django-piston
+You will also need Python packages "requests", "django-rest-framework". Check the requirements.txt file for
+the full list of dependencies (you can also use this file to install all dependencies via "pip install").
 
 Django applications can run on local SQLite files, but if you plan to run on a different database system, you may
-need to install also the Python connectors for the appropriate database backend (ie. python-mysqldb).   
+need to install also the Python connectors for the appropriate database backend (ie. python-mysqldb).
 
 ## 3 - Download and install CubesViewer
 
-Download CubesViewer project from GitHub (https://github.com/jjmontesl/cubesviewer). You can use 'git' or [download the ZIP 
-version](https://github.com/jjmontesl/cubesviewer/archive/master.zip) of the project. 
+Download CubesViewer project from GitHub (https://github.com/jjmontesl/cubesviewer). You can use 'git' or [download the ZIP
+version](https://github.com/jjmontesl/cubesviewer/archive/master.zip) of the project.
 
 Put the content of the /src directory of the project, in the target directory of your choice.
 
@@ -67,8 +66,8 @@ By default, CubesViewer uses a SQLite database located in the same directory as 
 See [Django Database configuration](https://docs.djangoproject.com/en/dev/ref/settings/#databases) documents for more information
 on the database configuration.
 
-**Edit the web/cvapp/settings.py file**, and review the following sections according to your Cubes URL, database config and 
-installation path.  
+**Edit the web/cvapp/settings.py file**, and review the following sections according to your Cubes URL, database config and
+installation path.
 
 ```python
 ##
@@ -105,7 +104,7 @@ CUBESVIEWER_BACKEND_URL="http://localhost:8000/cubesviewer"
 
 # Optional user and password tuple to access the backend, or False
 # (only meaningful when CubesViewer Cubes proxy is used)
-#CUBESVIEWER_CUBES_PROXY_USER = ('user', 'password') 
+#CUBESVIEWER_CUBES_PROXY_USER = ('user', 'password')
 CUBESVIEWER_CUBES_PROXY_USER = None
 
 # CubesViewer Proxy ACL
@@ -164,15 +163,15 @@ Now, the application should be available from your browser, using the following 
 
 http://localhost:8000/
 
-If the data model can be loaded from Cubes server and contains any cube definitions, you should be able to see them and inspect 
+If the data model can be loaded from Cubes server and contains any cube definitions, you should be able to see them and inspect
 them using CubesViewer.
 
 ## 7 - Configure your model for CubesViewer
- 
+
 Note that you can benefit from extra features if you configure your Cubes model. Check the
 [Configuring your Cubes data model](cubesviewer-model.md) section of the documentation.
 
 
-If you are using CubesViewer, share your experience in the [discussion list](http://groups.google.com/group/cubes-discuss) 
+If you are using CubesViewer, share your experience in the [discussion list](http://groups.google.com/group/cubes-discuss)
 or tweet #cubesviewer !
 
