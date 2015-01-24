@@ -1,5 +1,7 @@
 0.11-devel
-
+    + Using less technical menu and button labels (drilldown = split, cut = filter).
+    + Facts table now includes fact details.
+    + Fixed export facts feature.
 0.10
     + Updated to work with Cubes 1.0 (note: dropped support for Cubes 0.10.x).
     + Upgraded to Django 1.7.3 (your settings.py may need updating).

@@ -122,7 +122,7 @@ function cubesviewerViewCubeRangeFilter () {
 			var dimparts = view.cube.cvdim_parts(e.dimension);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 					$(view.container).find('.cv-view-viewinfo-range'), "#ffe8dd", null, readonly,
-					'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Cut: </b> ' +
+					'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Filter: </b> ' +
 					dimparts.labelNoLevel +
 					': </span><span class="rangefilter"></span>')
 			var container = $('.rangefilter', piece);

@@ -50,4 +50,4 @@ Roadmap 0.11
     + Use bootstrap as JS template.
     + Implemented chart resize options (alternate, more responsive method).
     + Analytics plugin to ignore first N seconds of events as for bounce rate calculation.
-    + Using less technical menu and button labels (drilldown, cut).
+

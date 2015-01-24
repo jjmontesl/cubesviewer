@@ -11,11 +11,11 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * If your version of the Software supports interaction with it remotely through
  * a computer network, the above copyright notice and this permission notice
  * shall be accessible to all users.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,33 +31,33 @@
  */
 function cubesviewerViewCubeChart() {
 
-	this.cubesviewer = cubesviewer; 
-	
+	this.cubesviewer = cubesviewer;
+
 	/*
-	 * Prepares the view. 
+	 * Prepares the view.
 	 */
 	this.onViewCreate = function(event, view) {
 
 		$.extend(view.params, {
 			"charttype" : "bars-vertical",
 		});
-		
-	};	
-	
+
+	};
+
 	/*
-	 * View destroyed 
+	 * View destroyed
 	 */
 	this.onViewDestroyed = function(event, view) {
 		view.cubesviewer.views.cube.chart.cleanupNvd3();
-	};	
-	
+	};
+
 	/*
 	 * Exports chart.
 	 */
 	this.exportChart = function(view) {
-		 
+
 		cubesviewer.alert ("Not implemented");
-		
+
 	};
 
 	this.cleanupNvd3 = function() {
@@ -69,41 +69,41 @@ function cubesviewerViewCubeChart() {
 			}
 		}
 	};
-	
+
 	/*
 	 * Draw cube view structure.
 	 */
 	this.onViewDraw = function(event, view) {
-		
+
 		// Cleanup nvd3 graphs
 		view.cubesviewer.views.cube.chart.cleanupNvd3();
-		
+
 		if (view.cube == null) return;
-		
+
 		// Series Mode button
 		$(view.container).find('.cv-view-toolbar').find(".cv-view-button-series").after(
 			'<button class="cv-view-button-chart" title="Chart" style="margin-right: 15px;"><span class="ui-icon ui-icon-image"></span></button>'
 		);
-		
+
 		// Buttonize and event
 		$(view.container).find('.cv-view-button-chart').button();
-		$(view.container).find('.cv-view-button-chart').click(function() { 
+		$(view.container).find('.cv-view-button-chart').click(function() {
 			view.cubesviewer.views.cube.chart.modeChart(view);
 			return false;
-		});	
+		});
 		$(view.container).find('.cv-view-button-chart').mouseenter(function() {
 			$('.cv-view-menu').hide();
-		});		
-		
+		});
+
 		if (view.params.mode != "chart") return;
-		
-		
+
+
 		// Draw areas
 		view.cubesviewer.views.cube.chart.drawInfo(view);
 
 		// Highlight
 		$(view.container).find('.cv-view-button-chart').button("option", "disabled", "true").addClass('ui-state-active');
-		
+
 		// Explore menu
 		view.cubesviewer.views.cube.chart.drawChartMenu(view);
 
@@ -111,22 +111,22 @@ function cubesviewerViewCubeChart() {
 		if ($(view.container).find('.cv-view-viewdata').children().size() == 0) {
 			$(view.container).find('.cv-view-viewdata').append('<h3>Series Chart</h3>');
 		}
-		
+
 		// Load data
 		view.cubesviewer.views.cube.chart.loadData(view);
-		
-	};	
+
+	};
 
 	/*
 	 * Updates view options menus.
 	 */
 	this.drawChartMenu = function (view) {
-		
-		this.cubesviewer.views.cube.series.drawSeriesMenu(view);	
-		
+
+		this.cubesviewer.views.cube.series.drawSeriesMenu(view);
+
 		var menu = $(".cv-view-menu-view", $(view.container));
 		var cube = view.cube;
-		
+
 		menu.prepend(
 			'<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-calculator"></span>Chart Type</a><ul style="width: 180px;">' +
 	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="pie">Pie</a></li>' +
@@ -138,55 +138,55 @@ function cubesviewerViewCubeChart() {
 	  	  '</ul></li>' +
   		  '<div></div>'
 	  	);
-	  	
+
 		/*
 		menu.append(
 	  	  '<div></div>' +
   		  '<li><a href="#" class="cv-view-chart-export"><span class="ui-icon ui-icon-script"></span>Export image</a></li>'
 		);
 		*/
-		
+
 		$(menu).menu( "refresh" );
 		$(menu).addClass("ui-menu-icons");
-		
+
 		var serieschart = view.cubesviewer.views.cube.chart;
-		$(view.container).find('.cv-view-chart-export').click(function() { 
-			view.cubesviewer.views.cube.chart.exportChart(view) ; 
-			return false; 
+		$(view.container).find('.cv-view-chart-export').click(function() {
+			view.cubesviewer.views.cube.chart.exportChart(view) ;
+			return false;
 		});
-		$(view.container).find('.cv-view-chart-settype').click(function() { 
-			view.cubesviewer.views.cube.chart.selectChartType(view, $(this).attr('data-charttype')); 
-			return false; 
+		$(view.container).find('.cv-view-chart-settype').click(function() {
+			view.cubesviewer.views.cube.chart.selectChartType(view, $(this).attr('data-charttype'));
+			return false;
 		});
 	};
 
 	/*
 	 * Change to chart mode.
-	 */ 
+	 */
 	this.modeChart = function(view) {
 		view.params.mode = "chart";
 		view.cubesviewer.views.redrawView(view);
-	};	
-	
+	};
+
 	/*
 	 * Selects chart type
 	 */
 	this.selectChartType = function(view, charttype) {
 		view.params.charttype = charttype;
 		view.cubesviewer.views.redrawView(view);
-	};	
-	
+	};
+
 	/*
 	 * Draws series table information (axis).
-	 * First calls drawInfo in explore table in order to draw slice info and container. 
+	 * First calls drawInfo in explore table in order to draw slice info and container.
 	 */
 	this.drawInfo = function(view) {
 		view.cubesviewer.views.cube.series.drawInfo(view);
 	};
-	
+
 	/*
 	 * Load and draw current data
-	 */ 
+	 */
 	this.loadData = function(view) {
 
 		// Check if we can produce a table
@@ -195,8 +195,8 @@ function cubesviewerViewCubeChart() {
 					'<h3>Series Chart</h3><div><i>Cannot present chart: no <b>measure</b> has been selected.</i></div>'
 			);
 			return;
-		} 
-		
+		}
+
 		// Build params and include xaxis if present
 		view.cubesviewer.views.blockViewLoading(view);
 
@@ -206,42 +206,42 @@ function cubesviewerViewCubeChart() {
 		jqxhr.always(function() {
 			view.cubesviewer.views.unblockView(view);
 		});
-		
+
 	};
-	
+
 	this._loadDataCallback = function(view) {
 
 		var view = view;
-		
-		
+
+
 		return function (data, status) {
 			$(view.container).find('.cv-view-viewdata').empty();
 			view.cubesviewer.views.cube.chart.drawChart(view, data);
 		};
-		
-	};	
-	
+
+	};
+
 	/**
 	 * Draws Series Chart.
 	 */
 	this.drawChart = function(view, data) {
-		
+
 		$(view.container).find('.cv-view-viewdata').empty();
-		
+
 		if (data.cells.length == 0) {
 			$(view.container).find('.cv-view-viewdata').empty().append(
 				'<h3>Series Chart</h3>' +
-				'<div>Cannot present chart as no rows are returned by the current filtering, horizontal dimension, and drilldown combination.</div>'
+				'<div>Cannot present chart as no rows are returned by the current filtering, horizontal dimension, and split combination.</div>'
 			);
 			return;
 		}
-		
+
 		$(view.container).find('.cv-view-viewdata').css("width", "99%");
 		$(view.container).find('.cv-view-viewdata').append(
 			'<h3>Series Chart</h3>' +
 			'<div id="seriesChart-' + view.id + '" style="height: 400px;" ><div><svg style="height: 400px;" /></div></div>'
 		);
-		
+
 		$(view.container).find('#seriesChart-' + view.id).resizable({
 			 maxHeight: 800,
 			 minHeight: 220,
@@ -251,16 +251,16 @@ function cubesviewerViewCubeChart() {
 		     },
 		     alsoResize: '#seriesChart-' + view.id + '>div>svg'
 		});
-		
+
 		var colNames = [];
-		var colModel = [];	
+		var colModel = [];
 		var dataRows = [];
 		var dataTotals = [];
-		
+
 		// Process cells
 		view.cubesviewer.views.cube.explore._sortData (view, data.cells, view.params.xaxis != null ? true : false);
 		view.cubesviewer.views.cube.series._addRows (view, dataRows, dataTotals, colNames, colModel, data);
-		
+
 		// Join keys
 		if (view.params.drilldown.length > 0) {
 			colNames.splice (0, view.params.drilldown.length, "key");
@@ -270,7 +270,7 @@ function cubesviewerViewCubeChart() {
 				e["key"] = jointkey.join(" / ");
 			});
 		}
-		
+
 		if ((view.params.charttype == "bars-vertical") || (view.params.charttype == "bars-vertical-stacked")) {
 			view.cubesviewer.views.cube.chart.drawChartBarsVertical(view, colNames, dataRows, dataTotals);
 		} else if (view.params.charttype == "lines") {
@@ -284,19 +284,19 @@ function cubesviewerViewCubeChart() {
 		} else if (view.params.charttype == "radar") {
 			view.cubesviewer.views.cube.chart.drawChartRadar(view, colNames, dataRows, dataTotals);
 		}
-		
+
 		// Generic effects
-	    
+
 	};
 
 	/**
 	 * Draws a vertical bars chart.
 	 */
 	this.drawChartBarsVertical = function (view, colNames, dataRows, dataTotals) {
-		
+
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
 		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
-		
+
 	    var d = [];
 
 	    var numRows = dataRows.length;
@@ -316,16 +316,16 @@ function cubesviewerViewCubeChart() {
 	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
 	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
 	    		}
-	    	} 
+	    	}
 	    	d.push(series);
 	    	serieCount++;
 	    });
 	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
-	    
+
 	    /*
 	    xticks = [];
 	    for (var i = 1; i < colNames.length; i++) {
-    		xticks.push([ i * 10, colNames[i] ]); 
+    		xticks.push([ i * 10, colNames[i] ]);
 	    }
 	    */
 
@@ -336,7 +336,7 @@ function cubesviewerViewCubeChart() {
 	    	  //reduceXTicks: false,
 	    	  //staggerLabels: true
 	    };
-	    
+
 	    nv.addGraph(function() {
 	        var chart;
 	        chart = nv.models.multiBarChart()
@@ -347,8 +347,8 @@ function cubesviewerViewCubeChart() {
 
 	    	  if (	view.params["chart-barsvertical-stacked"] ) {
 	    		  chart.stacked ( view.params["chart-barsvertical-stacked"] );
-	    	  }   
-	        
+	    	  }
+
 	        chart.options(chartOptions);
 	        chart.multibar
 	          .hideable(true);
@@ -366,12 +366,12 @@ function cubesviewerViewCubeChart() {
 	            .call(chart);
 
 	        nv.utils.windowResize(chart.update);
-	        
+
 	    	  // Handler for state change
 	          chart.dispatch.on('stateChange', function(newState) {
 	        	  view.params["chart-barsvertical-stacked"] = newState.stacked;
 	        	  view.params["chart-disabledseries"] = {
-	        			  "key": view.params.drilldown.join(","), 
+	        			  "key": view.params.drilldown.join(","),
 	        			  "disabled": {}
 	        	  };
 	        	  for (var i = 0; i < newState.disabled.length; i++) {
@@ -383,20 +383,20 @@ function cubesviewerViewCubeChart() {
 
 	        return chart;
 	    });
-	    
+
 	}
-	
+
 	/**
 	 */
 	this.drawChartLines = function (view, colNames, dataRows, dataTotals) {
-		
+
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
 		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
-		
+
 	    var d = [];
 
 	    // TODO: Check there's only one value column
-	    
+
 	    var numRows = dataRows.length;
 	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
@@ -414,61 +414,61 @@ function cubesviewerViewCubeChart() {
 	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
 	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
 	    		}
-	    	} 
+	    	}
 	    	d.push(series);
 	    	serieCount++;
 	    });
 	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
-	    
+
 	    /*
 	    xticks = [];
 	    for (var i = 1; i < colNames.length; i++) {
-    		xticks.push([ i, colNames[i] ]); 
+    		xticks.push([ i, colNames[i] ]);
 	    }
 	    */
-	    
+
 	    if (view.params.charttype != "lines-stacked") {
-	    
+
 		    nv.addGraph(function() {
 		    	var chart = nv.models.lineChart()
 		    		.useInteractiveGuideline(true)
 		    		.margin({left: 120})
 		    		;
-	
+
 		    	chart.xAxis
 		    		.axisLabel(xAxisLabel)
 		    		.tickFormat(function(d,i) {
 				                return (colNames[d]);
 				     })	;
-	
+
 		    	chart.yAxis
 		    		//.axisLabel("Y-axis Label")
 		    		.tickFormat(d3.format(',.2f'));
 		    		;
-	
+
 		    	d3.select(container)
 		    		.datum(d)
 		    		.transition().duration(500).call(chart);
-	
+
 		    	nv.utils.windowResize(chart.update);
-	
+
 		    	  // Handler for state change
 		          chart.dispatch.on('stateChange', function(newState) {
 		        	  view.params["chart-disabledseries"] = {
-		        			  "key": view.params.drilldown.join(","), 
+		        			  "key": view.params.drilldown.join(","),
 		        			  "disabled": {}
 		        	  };
 		        	  for (var i = 0; i < newState.disabled.length; i++) {
 		        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
 		        	  }
 		          });
-		          
-		    	
+
+
 		    	return chart;
 		    });
-		    
+
 	    } else {
-		    
+
 		    nv.addGraph(function() {
 	    	  var chart = nv.models.stackedAreaChart()
 	    	                //.x(function(d) { return d[0] })
@@ -476,59 +476,59 @@ function cubesviewerViewCubeChart() {
 	    	  				.margin({left: 130})
 	    	                .clipEdge(true)
 	    	                .useInteractiveGuideline(true);
-	
+
 	    	  if (	view.params["chart-stackedarea-style"] ) {
 	    		  chart.style ( view.params["chart-stackedarea-style"] );
-	    	  }   
-	    	  
+	    	  }
+
 	    	  chart.xAxis
 	    	  	  .axisLabel(xAxisLabel)
 	    	      .showMaxMin(false)
 	    	      .tickFormat(function(d,i) {
 			                return (colNames[d]);
 			       })	;
-	
+
 	    	  chart.yAxis
 	    	      .tickFormat(d3.format(',.2f'));
-	
+
 	    	  d3.select(container)
 	    	    .datum(d)
 	    	      .transition().duration(500).call(chart);
-	
+
 	    	  nv.utils.windowResize(chart.update);
-	
+
 	    	  // Handler for state change
 	          chart.dispatch.on('stateChange', function(newState) {
 	        	  view.params["chart-stackedarea-style"] = newState.style;
 	        	  view.params["chart-disabledseries"] = {
-	        			  "key": view.params.drilldown.join(","), 
+	        			  "key": view.params.drilldown.join(","),
 	        			  "disabled": {}
 	        	  };
 	        	  for (var i = 0; i < newState.disabled.length; i++) {
 	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
 	        	  }
 	          });
-	    	  
+
 	    	  return chart;
 	    	});
-		    
+
 	    }
-	    
-	    
-	    
-	};	
-	
+
+
+
+	};
+
 	/**
 	 */
 	/*
 	this.drawChartLinesCumulative = function (view, colNames, dataRows, dataTotals) {
-		
+
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
 		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.getDimensionParts(view.params.xaxis).label : "None")
-		
+
 	    var d = [];
 
-	    
+
 	    numRows = dataRows.length;
 	    var serieCount = 1;
 	    $(dataRows).each(function(idx, e) {
@@ -544,11 +544,11 @@ function cubesviewerViewCubeChart() {
 	    	d.push({ "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis });
 	    });
 	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
-	    
+
 	    nv.addGraph(function() {
 	        var chart = nv.models.cumulativeLineChart()
                           //.x(function(d) { return d.x })
-		                  //.y(function(d) { return d.y }) 
+		                  //.y(function(d) { return d.y })
 		                  .color(d3.scale.category20().range())
 	                      //.color(d3.scale.category10().range())
 		                  .useInteractiveGuideline(true)
@@ -559,12 +559,12 @@ function cubesviewerViewCubeChart() {
 			      .tickFormat(function(d,i) {
 			                return (colNames[d]);
 			       })	;
-	         
+
 	         chart.yAxis
 	         .tickFormat(d3.format(',.2f'));
 
 	        d3.select(container)
-	            .datum(d)	
+	            .datum(d)
 	          .transition().duration(500)
 	            .call(chart);
 
@@ -572,7 +572,7 @@ function cubesviewerViewCubeChart() {
 	          chart.dispatch.on('stateChange', function(newState) {
 	        	  view.params["chart-stackedarea-style"] = newState.style;
 	        	  view.params["chart-disabledseries"] = {
-	        			  "key": view.params.drilldown.join(","), 
+	        			  "key": view.params.drilldown.join(","),
 	        			  "disabled": newState.disabled
 	        	  };
 	          });
@@ -582,17 +582,17 @@ function cubesviewerViewCubeChart() {
 
 	        return chart;
       });
-	    
+
 	};
-	*/	
+	*/
 
 	/**
 	 */
 	this.drawChartPie = function (view, colNames, dataRows, dataTotals) {
-		
+
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
 		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
-		
+
 	    var d = [];
 
 		// Check if we can produce a pie
@@ -600,35 +600,35 @@ function cubesviewerViewCubeChart() {
 			$('#' + view.id).find('.cv-view-viewdata').empty();
 			$('#' + view.id).find('.cv-view-viewdata').append('<h3>Series Chart</h3><div><i>Cannot present a Pie Chart when more than one column is present.</i></div>');
 			return;
-		} 
-	    
+		}
+
 	    var numRows = dataRows.length;
 	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
 	    	serie = [];
 	    	var value = e[colNames[1]];
     		if ((value != undefined) && (value > 0)) {
-    			
+
     	    	var series = { "y": value, "key": e["key"] != "" ? e["key"] : colNames[0] };
     	    	if (view.params["chart-disabledseries"]) {
     	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
     	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
     	    		}
-    	    	} 
-    	    	
+    	    	}
+
     	    	d.push(series);
     			serieCount++;
 
     		}
-    		
+
 	    });
 	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
-	    
+
 	    xticks = [];
 	    for (var i = 1; i < colNames.length; i++) {
-    		xticks.push([ i - 1, colNames[i] ]); 
+    		xticks.push([ i - 1, colNames[i] ]);
 	    }
-	    
+
 	    nv.addGraph(function() {
 
 	        var chart = nv.models.pieChart()
@@ -654,27 +654,27 @@ function cubesviewerViewCubeChart() {
 	              .call(chart);
 
 	        nv.utils.windowResize(chart.update);
-	        
+
 	    	  // Handler for state change
 	          chart.dispatch.on('stateChange', function(newState) {
 	        	  view.params["chart-disabledseries"] = {
-	        			  "key": view.params.drilldown.join(","), 
+	        			  "key": view.params.drilldown.join(","),
 	        			  "disabled": {}
 	        	  };
 	        	  for (var i = 0; i < newState.disabled.length; i++) {
 	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
 	        	  }
 	          });
-	        
+
 	        return chart;
 	    });
-	    
-	};	
-	
+
+	};
+
 	/**
 	 */
 	this.drawChartRadar = function (view, colNames, dataRows, dataTotals) {
-		
+
 		var container = $('#seriesChart-' + view.id).get(0);
 
 		// Check if we can produce a pie
@@ -683,7 +683,7 @@ function cubesviewerViewCubeChart() {
 			$('#' + view.id).find('.cv-view-viewdata').append('<h3>Series Chart</h3><div><i>Cannot present a Radar Chart when less than 3 data columns are present.</i></div>');
 			return;
 		}
-		
+
 	    var d = [];
 
 	    numRows = dataRows.length;
@@ -700,12 +700,12 @@ function cubesviewerViewCubeChart() {
 	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : view.params.yaxis });
 	    });
 	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
-	    
+
 	    xticks = [];
 	    for (var i = 1; i < colNames.length; i++) {
-    		xticks.push([ i - 1, colNames[i] ]); 
+    		xticks.push([ i - 1, colNames[i] ]);
 	    }
-	    
+
 	    view.flotrDraw = Flotr.draw(container, d, {
 	    	HtmlText: ! view.doExport,
 	    	shadowSize: 2,
@@ -728,11 +728,11 @@ function cubesviewerViewCubeChart() {
 	            ticks: xticks
 	        },
 	        yaxis: {
-	        }	        
+	        }
 	    });
-	    
-	};		
-	
+
+	};
+
 };
 
 
