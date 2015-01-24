@@ -221,6 +221,11 @@ function cubesviewerViewCubeChart() {
 
 	};
 
+	this.resizeChart = function(view, size) {
+		$(view.container).find('#seriesChart-' + view.id).find('svg').height(size);
+		$(view.container).find('#seriesChart-' + view.id).find('svg').resize();
+	};
+
 	/**
 	 * Draws Series Chart.
 	 */
@@ -239,9 +244,18 @@ function cubesviewerViewCubeChart() {
 		$(view.container).find('.cv-view-viewdata').css("width", "99%");
 		$(view.container).find('.cv-view-viewdata').append(
 			'<h3>Series Chart</h3>' +
-			'<div id="seriesChart-' + view.id + '" style="height: 400px;" ><div><svg style="height: 400px;" /></div></div>'
+			'<div id="seriesChart-' + view.id + '"  ><div><svg style="height: 400px;" /></div>' +
+			'<div style="font-size: 8px; float: right;">' +
+			'<a href="#" class="cv-chart-height" data-chart-height="400" >Small</a> ' +
+			'<a href="#" class="cv-chart-height" data-chart-height="550" >Medium</a> ' +
+			'<a href="#" class="cv-chart-height" data-chart-height="700" >Tall</a>' +
+			'</div></div>'
 		);
+		$(view.container).find('.cv-chart-height').click(function () {
+			view.cubesviewer.views.cube.chart.resizeChart(view, $(this).attr('data-chart-height'));
+		});
 
+		/*
 		$(view.container).find('#seriesChart-' + view.id).resizable({
 			 maxHeight: 800,
 			 minHeight: 220,
@@ -251,6 +265,7 @@ function cubesviewerViewCubeChart() {
 		     },
 		     alsoResize: '#seriesChart-' + view.id + '>div>svg'
 		});
+		*/
 
 		var colNames = [];
 		var colModel = [];

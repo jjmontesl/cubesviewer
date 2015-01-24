@@ -32,6 +32,7 @@ Roadmap 0.12
     + Support dimension attributes, and fact details in fact view etc..
     + Support better exploration of facts
     + Drop notes system 2: use metadata for info and add a comments system
+    + Analytics plugin to ignore first N seconds of events as for bounce rate calculation.
 Roadmap 0.11
     + jQGrid has changed licence (had to patch it). Change table component?!
     + Ability to filter from chart filter / synchronize filter and chart filter (?).
@@ -48,6 +49,4 @@ Roadmap 0.11
       review current "readonly" variable usage ?? )
     + Fix too many series in legend issue (alternate legend?).
     + Use bootstrap as JS template.
-    + Implemented chart resize options (alternate, more responsive method).
-    + Analytics plugin to ignore first N seconds of events as for bounce rate calculation.
 
