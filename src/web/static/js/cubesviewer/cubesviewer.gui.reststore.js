@@ -52,9 +52,8 @@ function cubesviewerGuiRestStore() {
 
     this.onGuiDraw = function(event, gui) {
 
-        gui.drawSection (gui, "Saved Views", "cv-gui-savedviews-list");
-        var cubeslistsection = $('.cv-gui-cubeslist', gui.options.container).parent();
-        $('.cv-gui-savedviews-list', gui.options.container).parent().insertAfter(cubeslistsection);
+        gui.drawSection (gui, "Saved Views", "cv-gui-savedviews");
+        gui.drawSection (gui, "Shared Views", "cv-gui-sharedviews");
 
         gui.reststore.viewList();
 
@@ -248,24 +247,23 @@ function cubesviewerGuiRestStore() {
 
         cubesviewer.gui.savedViews = data;
 
-        container = $(cubesviewer.gui.options.container).find(".cv-gui-savedviews-list");
-        container.empty();
-        container.append (
-                '<div class="savedviews-personal" style="margin-top: 8px; overflow: hidden;"><b>Personal</b><br /></div>' +
-                '<div class="savedviews-shared" style="margin-top: 8px; overflow: hidden;"><b>Shared</b><br /></div>'
-        );
+        $(cubesviewer.gui.options.container).find(".cv-gui-savedviews-menu").empty();
+        $(cubesviewer.gui.options.container).find(".cv-gui-sharedviews-menu").empty();
 
         $( data ).each (function(idx, e) {
-            var link = '<a style="margin-left: 10px; white-space: nowrap; overflow: hidden;" class="backend-loadview" data-view="' + e.id + '" href="#" title="' + e.name + '">' + e.name + '</a><br />';
+            var link = '<li><a style="margin-left: 10px; white-space: nowrap; overflow: hidden;" class="backend-loadview" data-view="' + e.id + '" href="#" title="' + e.name + '">' + e.name + '</a></li>';
             if (e.owner == cubesviewer.gui.options.user) {
-                $(container).find('.savedviews-personal').append (link);
+                $(cubesviewer.gui.options.container).find('.cv-gui-savedviews-menu').append (link);
             }
             if (e.shared) {
-                $(container).find('.savedviews-shared').append (link);
+                $(cubesviewer.gui.options.container).find('.cv-gui-sharedviews-menu').append (link);
             }
         });
 
-        $(container).find('.backend-loadview').click(function () {
+        $(cubesviewer.gui.options.container).find('.cv-gui-savedviews-menu').menu('refresh');
+        $(cubesviewer.gui.options.container).find('.cv-gui-sharedviews-menu').menu('refresh');
+
+        $(cubesviewer.gui.options.container).find('.backend-loadview').click(function () {
             cubesviewer.gui.reststore.addViewSaved($(this).attr('data-view'));
             return false;
         });

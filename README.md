@@ -31,11 +31,11 @@ Features:
 * Views can be embedded in other web sites.
 * Modular and extensible.
 
-Online demos
+Online Demos
 ------------
 
-* [CubesViewer Demo page](http://jjmontesl.github.io/cubesviewer/index.html) with one embedded view
 * [CubesViewer Explorer](http://jjmontesl.github.io/cubesviewer/cv.html) with the full application
+* [CubesViewer Demo page](http://jjmontesl.github.io/cubesviewer/index.html) with one embedded view
 
 Download
 ------------

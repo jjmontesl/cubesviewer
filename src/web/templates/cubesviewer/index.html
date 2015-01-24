@@ -14,6 +14,7 @@
 
 <!-- CubesViewer JS dependencies -->
 
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery/jquery.sticky.js"></script> <!-- for CubesViewer GUI -->
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery/jquery.blockUI.js"></script>
 
 <script type="text/javascript" src="{{ STATIC_URL }}js/wiky/wiky.js"></script>
@@ -70,6 +71,8 @@
 	    // Start Cubesviewer system
         cubesviewer.refresh();
 
+        $('.cv-gui-panel').sticky({topSpacing:0});
+
 	});
 
 </script>
@@ -81,7 +84,7 @@
 
 <div id="cubesviewer">
 
-    <div class="cv-gui-panel ui-widget ui-widget-content ui-corner-all" >
+    <div class="cv-gui-panel" >
     </div>
 
     <div class="cv-gui-workspace">

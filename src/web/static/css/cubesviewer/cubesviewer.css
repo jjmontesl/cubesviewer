@@ -173,13 +173,21 @@ a.ui-state-focus {
 }
 
 .cv-gui-panel {
+    /*
     width: 200px;
     float: left;
-    padding: 6px;
+    height: 40px;
+    */
+    padding: 3px;
+    z-index: 9995;
+    border-top: 5px solid white;
+    border-bottom: 5px solid white;
+    background-color: #ddddff;
+
 }
 
 .cv-gui-workspace {
-    margin-left: 230px;
+    /*margin-left: 230px;*/
     min-height: 320px;
 }
 

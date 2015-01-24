@@ -1,4 +1,5 @@
 0.11-devel
+    + Moved GUI interface to top sticky menu.
     + Changed chart resize method to a fixed set of height choices.
     + Using less technical menu and button labels (drilldown = split, cut = filter).
     + Facts table now includes fact details.

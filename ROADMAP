@@ -41,12 +41,11 @@ Roadmap 0.11
       (with plugin namespace?).
     + New set of *color* icons .
     + View UI interface reworked (reminder: ajaxloader usage in many places...)
-    + GUI interface reworked.
     + Cut and remove option from horizontal dimension (?) (see gui interface reworked)
     + Horizontal dimension and measure dropdown from infobox (?) (see gui interface reworked)
-    + Dialogs (serialize, others...) are no longer javascript alerts.
-    + Hide interface mode (also, make these programmable options for the views,
-      review current "readonly" variable usage ?? )
+    + Hide interface mode (also, make these programmable options for the views)
     + Fix too many series in legend issue (alternate legend?).
-    + Use bootstrap as JS template.
-
+    + Use bootstrap as JS template ??
+    + Avoid leaving the page inadvertedely (also make back/forward/url_links work?)
+    + Dialogs (serialize, others...) are no longer javascript alerts.
+    + GUI Interface, don't use menus (use divs, resizable when necessary). Also put messages here.
