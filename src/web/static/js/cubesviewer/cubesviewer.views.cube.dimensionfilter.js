@@ -167,7 +167,7 @@ function cubesviewerViewCubeDimensionFilter () {
 			    '</div>' +
 				'<button class="cv-views-dimensionfilter-selectall">Select All</button>' +
 				'<button style="margin-right: 15px;" class="cv-views-dimensionfilter-selectnone">Select None</button>' +
-				'<button class="cv-views-dimensionfilter-drill">Split this</button>' +
+				'<button class="cv-views-dimensionfilter-drill">Drilldown this</button>' +
 				'</div>'
 		);
 		$(view.container).find(".cv-views-dimensionfilter-apply").button().click(function() {

@@ -236,7 +236,7 @@ function cubesviewerViewCubeChart() {
 		if (data.cells.length == 0) {
 			$(view.container).find('.cv-view-viewdata').empty().append(
 				'<h3>Series Chart</h3>' +
-				'<div>Cannot present chart as no rows are returned by the current filtering, horizontal dimension, and split combination.</div>'
+				'<div>Cannot present chart as no rows are returned by the current filtering, horizontal dimension, and drilldown combination.</div>'
 			);
 			return;
 		}

@@ -245,7 +245,7 @@ function cubesviewerViewCubeSeries() {
 		if (data.cells.length == 0) {
 			$(view.container).find('.cv-view-viewdata').append(
 				'<h3>Series Table</h3>' +
-				'<div>Cannot present series table as no rows are returned by the current filtering, horizontal dimension, and split combination.</div>'
+				'<div>Cannot present series table as no rows are returned by the current filtering, horizontal dimension, and drilldown combination.</div>'
 			);
 			return;
 		}

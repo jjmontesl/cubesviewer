@@ -37,15 +37,28 @@ Roadmap 0.11
     + jQGrid has changed licence (had to patch it). Change table component?!
     + Ability to filter from chart filter / synchronize filter and chart filter (?).
     + HTML, CSS and dynamic class usage sanitized (closes #14).
+    + Data formatters (color, decimals, abbreviations, units, etc...). Allow client side changes?
+    + Allow to show blank for zeros (can be changed client side for the view)
+    + Implement limits to items shown in charts or dimension filters...?
     + GUI options (and all other plugin options) now as cubesviewer options
       (with plugin namespace?).
     + New set of *color* icons .
-    + View UI interface reworked (reminder: ajaxloader usage in many places...)
-    + Cut and remove option from horizontal dimension (?) (see gui interface reworked)
+    + Bring back locale support!
+    + View UI interface reworked (reminder: ajaxloader usage in many places...).
     + Horizontal dimension and measure dropdown from infobox (?) (see gui interface reworked)
     + Hide interface mode (also, make these programmable options for the views)
     + Fix too many series in legend issue (alternate legend?).
     + Use bootstrap as JS template ??
     + Avoid leaving the page inadvertedely (also make back/forward/url_links work?)
+    + Jump to added view when creating a view (also make back/forward/url_links work?)
     + Dialogs (serialize, others...) are no longer javascript alerts.
     + GUI Interface, don't use menus (use divs, resizable when necessary). Also put messages here.
+    + Make the entry point (gui.html, ...) more accessible (also review grunt branch)?
+    + Make it clear when the results limit has been hit (for dimension values and aggregations).
+    + Support negated cuts (also quick "invert" button in the cut-box).
+    + Cut and remove option from horizontal dimension (?) (see gui interface reworked)
+    + Show filter icon from "horizontal dimension". Also show its detail level (and perhaps not the hierarchy).
+    + Short list cubes.js status for the list (fixes I had to do, not easy to add caching or get jQuery promise,
+      not easy to get the path to be reused, missing facts I had to add, support for export/format,
+      support for several servers desirable, inconsistent use of Cell/Browser interface or missing
+      methods to transform drilldown_string<->drilldown object, same for cuts)
