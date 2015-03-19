@@ -44,7 +44,7 @@ CubesViewer application runs on Python/Django. You need to have the following pa
 
 You will also need the following Python packages:
 * requests
-* django-piston
+* django-rest-framework
 
 Django applications can run on local SQLite files, but if you plan to run on a different database system, you may
 need to install also the Python connectors for the appropriate database backend (ie. python-mysqldb).   
