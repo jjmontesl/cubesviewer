@@ -84,7 +84,7 @@ function cubesviewerViewCubeExporter() {
 	 */
 	this.exportFacts = function(view) {
 
-		var params = view.cubesviewer.views.cube.buildQueryParams(view, false, true);
+		var params = view.cubesviewer.views.cube.buildBrowserArgs(view, false, true);
 
 		params["format"] = "csv";
 
