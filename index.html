@@ -9,25 +9,26 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    
-    
+
+
     <!-- CubesViewer CSS resources -->
-    <link type="text/css" rel="stylesheet" href="static/css/jqueryui-cupertino/jquery-ui-1.9.2.custom.css" />
+    <link type="text/css" rel="stylesheet" href="static/js/jqueryui/jquery-ui.min.css" />
     <link type="text/css" rel="stylesheet" href="static/css/jqgrid/ui.jqgrid.css" media="screen" />
-    <link type="text/css" rel="stylesheet" href="static/js/qtip/jquery.qtip.css"  />    
+    <link type="text/css" rel="stylesheet" href="static/js/qtip/jquery.qtip.css"  />
     <link type="text/css" rel="stylesheet" href="static/js/wiky/wiky.math.css" />
-    <link type="text/css" rel="stylesheet" href="static/js/nvd3/nv.d3.min.css" />    
-    
+    <link type="text/css" rel="stylesheet" href="static/js/nvd3/nv.d3.min.css" />
+
     <link type="text/css" rel="stylesheet" href="static/css/cubesviewer/cubesviewer.css" />
 
     <!-- CubesViewer JS dependencies -->
-    
+
     <script type="text/javascript" src="static/js/jquery/jquery-1.8.3.js"></script>
     <script type="text/javascript" src="static/js/jquery/jquery-ui-1.9.2.custom.min.js"></script>
-    <script type="text/javascript" src="static/js/jquery/jquery.cookie.js"></script> 
-    
+    <script type="text/javascript" src="static/js/jquery/jquery.cookie.js"></script>
+
     <script type="text/javascript" src="static/js/dateformat/dateformat.js"></script>
 
+    <script type="text/javascript" src="static/js/jquery/jquery.sticky.js"></script> <!-- for CubesViewer GUI -->
     <script type="text/javascript" src="static/js/jquery/jquery.blockUI.js"></script>
 
     <script type="text/javascript" src="static/js/wiky/wiky.js"></script>
@@ -39,75 +40,67 @@
     <script type="text/javascript" src="static/js/qtip/jquery.qtip.js"></script>
 
     <script type="text/javascript" src="static/js/jqgrid/i18n/grid.locale-en.js" ></script>
+    <script type="text/javascript" src="static/js/jqgrid/migrate-jquery-browser.js" ></script>
     <script type="text/javascript" src="static/js/jqgrid/jquery.jqGrid.min.js" ></script>
-    
+
+    <script type="text/javascript" src="static/js/cubes/cubes.js"></script>
+
     <!-- Cubesviewer modules -->
-    
+
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.cache.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.googleanalytics.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.model.js"></script>
+    <!-- <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.googleanalytics.js"></script>  -->
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.explore.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.datefilter.js"></script>
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.rangefilter.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.series.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.chart.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.facts.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.dimensionfilter.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.columns.js"></script> 
+    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.columns.js"></script>
 
-    
+
     <title>CubesViewer - Visual OLAP analysis and reporting tool</title>
-    
+
 <script type="text/javascript">
-    
+
     // Reference to the created view
     var view1 = null;
-    
+
     // Initialize CubesViewer when document is ready
     $(document).ready(function() {
-        
+
         // Get user Cubes information for the example
         //var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
-        var cubesUrl = "http://slicer.databrewery.org/webshop-example";
-        
-        
-        // Add views
-        $(document).bind("cubesviewerModelLoaded", { }, function() {
-            
-            // You can use a Javascript object with view arguments (ie. "cubename")
-            //view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", { "cubename": "contracts" });
-            
-            // You can use a serialized JSON string of the object with view arguments
-            view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", serializedView);
-            
-            cubesviewer.views.redrawView (view1);
-            
-        });
-        
+        var cubesUrl = "http://cubesdemo.anastutia.com:5000";
+
         // Initialize CubesViewer system
         cubesviewer.init({
             cubesUrl: cubesUrl
         });
-        
+
         // Sample serialized view (Based on cubes-examples project data)
-        var serializedView = 
-            '{"cubename":"sales","name":"Cube View - Webshop / Sales","mode":"chart","drilldown":["country:region"],"cuts":[],"datefilters":[{"dimension":"date_sale@weekly","mode":"auto-last12m","date_from":"","date_to":""}],"xaxis":"date_sale@monthly:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{}}';
-        
-        // Scripting example for the "switch mode" link
-        $('#switchToSeriesTable').click(function() {
-            cubesviewer.views.cube.series.modeSeries(view1);
-            return false;
-        });
-        
+        var serializedView =
+            '{"cubename":"webshop_sales","name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+
+        // Add views
+
+        // You can use a Javascript object with view arguments (ie. "cubename")
+        //view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", { "cubename": "contracts" });
+
+        // You can use a serialized JSON string of the object with view arguments
+        view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", serializedView);
+
         // Start Cubesviewer system
         cubesviewer.refresh();
-        
+
     });
-    
+
 </script>
-    
-    
+
+
   </head>
 
   <body>
@@ -128,7 +121,7 @@
 
                 <p>Welcome to <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a>
                 demos.</p>
-                
+
                 <p>
                     <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a>
                     is a visual, web-based tool application for
@@ -136,16 +129,16 @@
                     Cubes OLAP Framework.
                 <p>
                 <p>
-                    CubesViewer can be used for data exploration and data auditory, 
-                    generation of reports, chart design and embedding, 
+                    CubesViewer can be used for data exploration and data auditory,
+                    generation of reports, chart design and embedding,
                     and as a (simple) company-wide analytics application.
                 <p>
-                
+
                 <ul>
                 <li><a href="index.html">Embedded View demo</a> <i>(this page)</i></li>
                 <li><a href="cv.html">CubesViewer Explorer demo</a></li>
                 </ul>
-                
+
                 <h3>Embedded View Demo</h3>
 
                 <p>CubesViewer can be embedded fully or partially
@@ -155,9 +148,9 @@
 
                 <p>You can use the menu and interface to navigate
                     this dataset (composed of fictional sales along
-                    years 2012-2013):</p>
+                    years 2014-2015):</p>
 
-                <div style="margin-bottom: 22px;">
+                <div style="margin-bottom: 22px; padding: 5px; background-color: #eeeeee;" >
                     <div id="cv-view1" class="olapview"
                         style="min-width: 400px;"></div>
                 </div>
@@ -177,7 +170,7 @@
 
             <h3>Download</h3>
             <section id="downloads" class="clearfix">
-            
+
             <div>
                 <a
                     href="https://github.com/jjmontesl/cubesviewer/zipball/master"
@@ -190,19 +183,19 @@
                     id="view-on-github" class="button"><span>View
                         on GitHub</span></a>
             </div>
-            <div style="clear: both; margin-bottom: 10px;" ></div>
-            
-            <p>If you are using or trying CubesViewer, we'd love to hear from you (tweet: #cubesviewer)<br /><br/>
+            <div style="clear: both; margin-bottom: 30px;" ></div>
+
+            <p>If you are using or trying CubesViewer, we'd love to hear from you! (tweet: #cubesviewer)<br /><br/>
             <a href="https://twitter.com/intent/tweet?button_hashtag=cubesviewer" class="twitter-hashtag-button" data-size="large" data-related="jjmontes">Tweet #cubesviewer</a>
             <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
             </p>
-            
+
             </section>
 
             <footer>
-          <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a> is maintained by <a href="https://github.com/jjmontesl">jjmontesl</a><br>
+          <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a> created and maintained by <a href="https://github.com/jjmontesl">jjmontesl</a><br>
         </footer>
-       
+
       </div>
     </div>
 
@@ -224,9 +217,9 @@
   }
   setInterval( eventLogTimeGoogleAnalytics, 30000 );
   */
-  
+
 </script>
 
-    
+
   </body>
 </html>

@@ -12,7 +12,7 @@
 
 
     <!-- CubesViewer CSS resources -->
-    <link type="text/css" rel="stylesheet" href="static/css/jqueryui-cupertino/jquery-ui-1.9.2.custom.css" />
+    <link type="text/css" rel="stylesheet" href="static/js/jqueryui/jquery-ui.min.css" />
     <link type="text/css" rel="stylesheet" href="static/css/jqgrid/ui.jqgrid.css" media="screen" />
     <link type="text/css" rel="stylesheet" href="static/js/qtip/jquery.qtip.css"  />
     <link type="text/css" rel="stylesheet" href="static/js/wiky/wiky.math.css" />
@@ -28,6 +28,7 @@
 
     <script type="text/javascript" src="static/js/dateformat/dateformat.js"></script>
 
+    <script type="text/javascript" src="static/js/jquery/jquery.sticky.js"></script> <!-- for CubesViewer GUI -->
     <script type="text/javascript" src="static/js/jquery/jquery.blockUI.js"></script>
 
     <script type="text/javascript" src="static/js/wiky/wiky.js"></script>
@@ -39,14 +40,16 @@
     <script type="text/javascript" src="static/js/qtip/jquery.qtip.js"></script>
 
     <script type="text/javascript" src="static/js/jqgrid/i18n/grid.locale-en.js" ></script>
+    <script type="text/javascript" src="static/js/jqgrid/migrate-jquery-browser.js" ></script>
     <script type="text/javascript" src="static/js/jqgrid/jquery.jqGrid.min.js" ></script>
+
+    <script type="text/javascript" src="static/js/cubes/cubes.js"></script>
 
     <!-- Cubesviewer modules -->
 
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.cache.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.googleanalytics.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.model.js"></script>
+    <!-- <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.googleanalytics.js"></script>  -->
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.explore.js"></script>
@@ -61,7 +64,9 @@
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.undo.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.gui.js"></script>
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.gui.serializing.js"></script>
+    <!--
     <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.gui.localeswitcher.js"></script>
+     -->
 
     <title>CubesViewer - Visual OLAP analysis and reporting tool</title>
 
@@ -71,7 +76,7 @@
     $(document).ready(function() {
 
         //var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
-        var cubesUrl = "http://slicer.databrewery.org/webshop-example";
+        var cubesUrl = "http://cubesdemo.anastutia.com:5000";
 
         // Add views
         $(document).bind("cubesviewerModelLoaded", { }, function() {
@@ -89,17 +94,21 @@
         // Start Cubesviewer system
         cubesviewer.refresh();
 
+        $('.cv-gui-panel').sticky({topSpacing:0});
+
         // Some predefined views
+        /*
         $('.cv-gui-tools').parent().before (
         	    '<div class="cv-gui-panelsection"><h3>Example views</h3>' +
         	    '<a href="#" class="cv-demo-example-view" data-demo="1">Sales by category (monthly)</a><br />' +
-        	    '<a href="#" class="cv-demo-example-view" data-demo="2">Sales per product (last 3m)</a><br />' +
-        	    '<a href="#" class="cv-demo-example-view" data-demo="3">Sales per continent (last 6m)</a><br />' +
+        	    '<a href="#" class="cv-demo-example-view" data-demo="2">Sales per product</a><br />' +
+        	    '<a href="#" class="cv-demo-example-view" data-demo="3">Sales per continent</a><br />' +
         	    '<a href="#" class="cv-demo-example-view" data-demo="6">Some product sales per year</a><br />' +
         	    '<a href="#" class="cv-demo-example-view" data-demo="4">Web visits browser vs. source</a><br />' +
         	    '<a href="#" class="cv-demo-example-view" data-demo="5">Web visits per region (from April)</a><br />' +
         	    '</div>'
         );
+        */
         $('.cv-demo-example-view').click(function() {
         	var demo = $(this).attr("data-demo");
         	var serialized = null;
@@ -158,8 +167,8 @@
             Explorer Demo. This is a visual, web-based tool application for exploring and analyzing
             data. CubesViewer can be used for data exploration and data auditory,
             generation of reports, chart design and embedding,
-            and as a (simple) company-wide analytics application. The complete application has
-            more features than the ones shown here.</p>
+            and as a (simple) company-wide analytics application.
+            This demo shows a reduced set of the full applicaton features.</p>
             <p>
 
             <p>You can use the menu and interface to navigate this example dataset, which is composed of fictional

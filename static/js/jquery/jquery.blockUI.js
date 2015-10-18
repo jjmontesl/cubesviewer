@@ -16,7 +16,7 @@
 "use strict";
 
 	function setup($) {
-		if (/^1\.(0|1|2)/.test($.fn.jquery)) {
+		if (/^1\.(0|1|2)\./.test($.fn.jquery)) {
 			/*global alert:true */
 			alert('blockUI requires jQuery v1.3 or later!  You are using v' + $.fn.jquery);
 			return;
@@ -280,7 +280,7 @@
 				s = '<div class="blockUI ' + opts.blockMsgClass + ' blockElement ui-dialog ui-widget ui-corner-all" style="z-index:'+(z+10)+';display:none;position:absolute">';
 				if ( opts.title ) {
 					s += '<div class="ui-widget-header ui-dialog-titlebar ui-corner-all blockTitle">'+(opts.title || '&nbsp;')+'</div>';
-				}  
+				}
 				s += '<div class="ui-widget-content ui-dialog-content"></div>';
 				s += '</div>';
 			}

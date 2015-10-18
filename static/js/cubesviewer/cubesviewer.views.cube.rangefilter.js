@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2013 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -11,11 +11,11 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * If your version of the Software supports interaction with it remotely through
  * a computer network, the above copyright notice and this permission notice
  * shall be accessible to all users.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,50 +27,50 @@
 
 /**
  * Adds support for rangefilters.
- * 
+ *
  * This plugin requires that the model is configured
  * to declare which dimensions may use a rangefilter
  * (see integrator documentation for more information).
- *  
+ *
  * This is an optional plugin.
  * Depends on the cube.explore plugin.
  */
 function cubesviewerViewCubeRangeFilter () {
 
 	this.cubesviewer = cubesviewer;
-	
+
 	this._overridedbuildQueryCuts = null;
 
 	this.onViewCreate = function(event, view) {
-		
+
 		$.extend(view.params, {
 
 			"rangefilters" : [],
-			
+
 		});
-		
+
 	}
-	
-	
+
+
 	/*
 	 * Draw cube view structure.
 	 */
 	this.onViewDraw = function(event, view) {
-		
+
 		if (view.cube == null) return;
 		var cube = view.cube;
-		
+
 		// Draw menu options (depending on mode)
 		view.cubesviewer.views.cube.rangefilter.drawFilterMenu(view);
-		
+
 		// Draw info boxes
 		view.cubesviewer.views.cube.rangefilter.drawInfo(view);
-		
+
 	};
 
-	
-	
-	/* 
+
+
+	/*
 	 * Draw rangefilter options in the cut menu.
 	 */
 	this.drawFilterMenu = function(view) {
@@ -79,16 +79,12 @@ function cubesviewerViewCubeRangeFilter () {
 		var menu = $(".cv-view-menu-cut", $(view.container));
 
 		var rangeFilterElements = "";
-		$(cube.dimensions).each( function(idx, e) {
+		$(cube.dimensions).each( function(idx, dimension) {
 
-			var dimension = $.grep(cubesviewer.model.dimensions, function(ed) {
-				return ed.name == e;
-			})[0];
-			
 			if (dimension.isRangeDimension()) {
 
 				var disabled = "";
-				rangeFilterElements = rangeFilterElements + '<li><a href="#" class="selectRangeFilter '  + disabled + 
+				rangeFilterElements = rangeFilterElements + '<li><a href="#" class="selectRangeFilter '  + disabled +
 					'" data-dimension="' + dimension.name + '" data-value="1">' + dimension.label +
 					'</a></li>';
 			}
@@ -97,13 +93,13 @@ function cubesviewerViewCubeRangeFilter () {
 		if (rangeFilterElements == "") {
 			rangeFilterElements = rangeFilterElements + '<li><a href="#" onclick="return false;"><i>No range filters defined</i></a></li>';
 		}
-		
+
 		$(".ui-explore-cut-clearsep", menu).before(
-				'<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-zoomin"></span>Range filter</a><ul class="rangeFilterList" style="width: 180px;">' + 
-				rangeFilterElements + 
+				'<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-zoomin"></span>Range filter</a><ul class="rangeFilterList" style="width: 180px;">' +
+				rangeFilterElements +
 				'</ul></li>'
 		);
-		
+
 		$(menu).menu("refresh");
 		$(menu).addClass("ui-menu-icons");
 
@@ -111,8 +107,8 @@ function cubesviewerViewCubeRangeFilter () {
 			cubesviewer.views.cube.rangefilter.selectRangeFilter(view, $(this).attr('data-dimension'), $(this).attr('data-value'));
 			return false;
 		});
-			
-	};	
+
+	};
 
 
 	// Draw information bubbles
@@ -121,17 +117,17 @@ function cubesviewerViewCubeRangeFilter () {
 		$(view.container).find('.cv-view-viewinfo-cut').after(
 				'<div class="cv-view-viewinfo-range"></div>'
 		);
-		
+
 		$(view.params.rangefilters).each( function(idx, e) {
-			var dimparts = view.cubesviewer.model.getDimensionParts(e.dimension);
+			var dimparts = view.cube.cvdim_parts(e.dimension);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 					$(view.container).find('.cv-view-viewinfo-range'), "#ffe8dd", null, readonly,
-					'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Cut: </b> ' +  
-					dimparts.labelNoLevel +   
+					'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Filter: </b> ' +
+					dimparts.labelNoLevel +
 					': </span><span class="rangefilter"></span>')
 			var container = $('.rangefilter', piece);
 			view.cubesviewer.views.cube.rangefilter.drawRangeFilter(view, e, container);
-			
+
 			piece.find('.cv-view-infopiece-close').click(function() {
 				view.cubesviewer.views.cube.rangefilter.selectRangeFilter(view, e.dimension, "0");
 			});
@@ -143,19 +139,19 @@ function cubesviewerViewCubeRangeFilter () {
 		}
 
 	};
-	
-	
+
+
 	this.drawRangeFilter = function(view, rangefilter, container) {
 
-		var dimparts = view.cubesviewer.model.getDimensionParts(rangefilter.dimension);
-		
+		var dimparts = view.cube.cvdim_parts(rangefilter.dimension);
+
 		$(container).append(
 			'<input name="range_start" /> - '
-			+ '<input name="range_end" /> ' 
+			+ '<input name="range_end" /> '
 		);
-		
-		var slider = dimparts.dimension.getInfo("cv-rangefilter-slider");
-		if (slider != null) { 
+
+		var slider = dimparts.dimension.info["cv-rangefilter-slider"];
+		if (slider != null) {
 			$(container).append(
 				'<div style="display: inline-block; margin-left: 8px; margin-right: 8px; vertical-align: middle;">' +
 				'<span style="font-size: 70%;">' + slider.min + '</span>' +
@@ -177,23 +173,25 @@ function cubesviewerViewCubeRangeFilter () {
 		$("[name='range_end']", container).val(rangefilter.range_to);
 
 		// Slider
-		$(".slider-range", container).slider({
-			range: true,
-			min: slider.min ,
-			max: slider.max ,
-			step: slider.step ? slider.step : 1,
-			values: [ rangefilter.range_from ? rangefilter.range_from : slider.min, rangefilter.range_to ? rangefilter.range_to : slider.max ],
-			slide: function( event, ui ) {
-				$("[name='range_start']", container).val(ui.values[ 0 ]);
-				$("[name='range_end']", container).val(ui.values[ 1 ]);
-			},
-			stop: function(event, ui) {
-				view.cubesviewer.views.cube.rangefilter._updateRangeFilter(view, rangefilter);
-			}
-		});
-		
+		if (slider) {
+			$(".slider-range", container).slider({
+				range: true,
+				min: slider.min ,
+				max: slider.max ,
+				step: slider.step ? slider.step : 1,
+				values: [ rangefilter.range_from ? rangefilter.range_from : slider.min, rangefilter.range_to ? rangefilter.range_to : slider.max ],
+				slide: function( event, ui ) {
+					$("[name='range_start']", container).val(ui.values[ 0 ]);
+					$("[name='range_end']", container).val(ui.values[ 1 ]);
+				},
+				stop: function(event, ui) {
+					view.cubesviewer.views.cube.rangefilter._updateRangeFilter(view, rangefilter);
+				}
+			});
+		}
+
 	};
-	
+
 	this._updateRangeFilter = function (view, rangefilter) {
 		var changed = false;
 		var container = view.container;
@@ -207,7 +205,7 @@ function cubesviewerViewCubeRangeFilter () {
 		}
 		if (changed) view.cubesviewer.views.redrawView (view);
 	};
-	
+
 	// Adds a date filter
 	this.selectRangeFilter = function(view, dimension, enabled) {
 
@@ -235,13 +233,13 @@ function cubesviewerViewCubeRangeFilter () {
 		}
 
 		view.cubesviewer.views.redrawView(view);
-		
+
 	};
-	
+
 	/*
 	 * Composes a filter with appropriate syntax and time grain from a
 	 * rangefilter
-	 */ 
+	 */
 	this.rangefilterValue = function(rangefilter) {
 
 		var range_from = rangefilter.range_from;
@@ -260,43 +258,37 @@ function cubesviewerViewCubeRangeFilter () {
 		}
 
 	};
-	
-	
+
+
 	/*
 	 * Builds Query Cuts (overrides default cube cut build function).
 	 */
 	this.buildQueryCuts = function(view) {
-		
+
 		// Include cuts and rangefilters
 		var cuts = cubesviewer.views.cube.rangefilter._overridedbuildQueryCuts(view);
-		
+
 		$(view.params.rangefilters).each(function(idx, e) {
 			var rangefiltervalue = view.cubesviewer.views.cube.rangefilter.rangefilterValue(e);
 			if (rangefiltervalue != null) {
 				cuts.push(e.dimension + ":" + rangefiltervalue);
 			}
 		});
-		
+
 		return cuts;
-		
+
 	};
-	
+
 }
 
 /*
  * Extend model prototype to support rangefilter dimensions.
  */
-$.extend (cubesDimension.prototype, {
-	
-	/*
-	 * Inform if a dimension is a date dimension and can be used as a date
-	 * filter (i.e. with range selection tool).
-	 */ 
-	isRangeDimension: function(dimension) {
-		return (this.getInfo("cv-rangefilter") == true);
-	},
-	
-});
+cubes.Dimension.prototype.isRangeDimension = function() {
+
+	return ("cv-rangefilter" in this.info && this.info["cv-rangefilter"] == true);
+
+};
 
 /*
  * Create object.
@@ -304,7 +296,7 @@ $.extend (cubesDimension.prototype, {
 cubesviewer.views.cube.rangefilter = new cubesviewerViewCubeRangeFilter();
 
 /*
- * Override original Cut generation function to add support for rangefilters 
+ * Override original Cut generation function to add support for rangefilters
  */
 cubesviewer.views.cube.rangefilter._overridedbuildQueryCuts = cubesviewer.views.cube.buildQueryCuts;
 cubesviewer.views.cube.buildQueryCuts = cubesviewer.views.cube.rangefilter.buildQueryCuts;
