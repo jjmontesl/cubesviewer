@@ -43,7 +43,7 @@ function cubesviewerViewCubeExplore() {
 
 		// Add view menu options button
 		$(view.container).find('.viewbutton').before(
-			'<button class="drilldownbutton" title="Split" style="margin-right: 5px;"><span class="ui-icon ui-icon-arrowthick-1-s"></span> Split</button>' +
+			'<button class="drilldownbutton" title="Drilldown" style="margin-right: 5px;"><span class="ui-icon ui-icon-arrowthick-1-s"></span> Drilldown</button>' +
 			'<button class="cutbutton" title="Filter" style="margin-right: 15px;"><span class="ui-icon ui-icon-zoomin"></span> Filter</button>'
 		);
 		$(view.container).find('.cv-view-viewmenu').append(
@@ -599,7 +599,7 @@ function cubesviewerViewCubeExplore() {
 			var dimparts = view.cube.cvdim_parts(e);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-drill'), "#ccffcc", 360, readonly,
-				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Split:</b> ' + dimparts.label
+				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Drilldown:</b> ' + dimparts.label
 			);
 			piece.addClass("cv-view-infopiece-drilldown");
 			piece.attr("data-dimension", e);
