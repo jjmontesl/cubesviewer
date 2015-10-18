@@ -288,7 +288,7 @@ function cubesviewerGui () {
 				"https://github.com/jjmontesl/cubesviewer/\n" +
 				"\n" +
 				"By José Juan Montes and others (see AUTHORS)\n" +
-				"2012-2014\n"
+				"2012-2015\n"
 		);
 	};
 
