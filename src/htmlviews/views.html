@@ -80,7 +80,7 @@
 
         // Sample serialized view (Based on cubes-examples project data)
         var serializedView =
-            '{"cubename":"sales","name":"Cube View - Webshop / Sales","mode":"chart","drilldown":["country:region"],"cuts":[],"datefilters":[{"dimension":"date_sale@weekly","mode":"auto-last24m","date_from":"","date_to":""}],"xaxis":"date_sale@monthly:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{}}';
+        	'{"cubename":"webshop_sales","name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
 
         // Add views
 
@@ -142,10 +142,10 @@
 
 <p>
 This is an example CubesView inserted in this page. It loads a serialized view which uses the
-<b>cubes-examples "webshop"</b> project data (<a href="https://github.com/Stiivi/cubes-examples/">https://github.com/Stiivi/cubes-examples/</a>).
+Cubes <a href="https://github.com/jjmontesl/cubes-examples">example webshop</a> project.
 </p>
 
-<div style="border: none; margin-bottom: 22px;">
+<div style="border: none; margin-top: 22px; margin-bottom: 22px;">
     <div id="cv-view1" class="olapview">The view should appear here...</div>
 </div>
 
@@ -160,10 +160,10 @@ For example, <a id="switchToSeriesTable" href="">click here</a> to switch to Ser
 
 <h2>Code</h2>
 
-<p>Check the source code of this page to see how this CubesViewer view is initialized.</p>
+<p>Check the <a href="">source code of this page</a> to see how this CubesViewer view is initialized.</p>
 
 <p>More information can be found in the documentation page
-<a href="https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-static.md">Embedding CubesViewer static views</a>.
+<a href="https://github.com/jjmontesl/cubesviewer/blob/master/src/htmlviews/views.html">Embedding CubesViewer static views</a>.
 </p>
 
 

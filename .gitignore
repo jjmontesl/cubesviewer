@@ -43,6 +43,7 @@ nosetests.xml
 #/ROADMAP
 
 #/virtualenv
+/env
 
 *.log
 *.pyc

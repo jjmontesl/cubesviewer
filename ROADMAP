@@ -33,8 +33,8 @@ Roadmap 0.12
     + Support better exploration of facts
     + Drop notes system 2: use metadata for info and add a comments system
     + Analytics plugin to ignore first N seconds of events as for bounce rate calculation.
-Roadmap 0.11
     + jQGrid has changed licence (had to patch it). Change table component?!
+Roadmap 0.11
     + Ability to filter from chart filter / synchronize filter and chart filter (?).
     + HTML, CSS and dynamic class usage sanitized (closes #14).
     + Data formatters (color, decimals, abbreviations, units, etc...). Allow client side changes?
@@ -47,18 +47,24 @@ Roadmap 0.11
     + View UI interface reworked (reminder: ajaxloader usage in many places...).
     + Horizontal dimension and measure dropdown from infobox (?) (see gui interface reworked)
     + Hide interface mode (also, make these programmable options for the views)
-    + Fix too many series in legend issue (alternate legend?).
+    + Fix too many series in legend issue (limit? alternate legend?).
     + Use bootstrap as JS template ??
     + Avoid leaving the page inadvertedely (also make back/forward/url_links work?)
     + Jump to added view when creating a view (also make back/forward/url_links work?)
     + Dialogs (serialize, others...) are no longer javascript alerts.
     + GUI Interface, don't use menus (use divs, resizable when necessary). Also put messages here.
     + Make the entry point (gui.html, ...) more accessible (also review grunt branch)?
+      Separate client from backend in dif folders at least? Client GUI with index.html, samples in separate folder.
+      Package!
     + Make it clear when the results limit has been hit (for dimension values and aggregations).
     + Support negated cuts (also quick "invert" button in the cut-box).
     + Cut and remove option from horizontal dimension (?) (see gui interface reworked)
     + Show filter icon from "horizontal dimension". Also show its detail level (and perhaps not the hierarchy).
+    + Scroll to recently open view on GUI (also provide function to do it from code for standalone views).
     + Short list cubes.js status for the list (fixes I had to do, not easy to add caching or get jQuery promise,
       not easy to get the path to be reused, missing facts I had to add, support for export/format,
       support for several servers desirable, inconsistent use of Cell/Browser interface or missing
-      methods to transform drilldown_string<->drilldown object, same for cuts)
+      methods to transform drilldown_string<->drilldown object, same for cuts, documentation!!!!)
+    + Dimensions were somehow promoted to be kind of a top-level UI objects to be selectable/draggable
+    + Refactor libs to static/lib, join cubesviewer js and css in cubesviewer/js and cubesviewer/css  .
+

@@ -320,9 +320,9 @@ function cubesviewerViewCubeDateFilter () {
 
 		return values.join(',');
 
-		return tdate.getFullYear() + ","
+		/*return tdate.getFullYear() + ","
 				+ (Math.floor(tdate.getMonth() / 3) + 1) + ","
-				+ (tdate.getMonth() + 1);
+				+ (tdate.getMonth() + 1); */
 	};
 
 	this._weekNumber = function(d) {
