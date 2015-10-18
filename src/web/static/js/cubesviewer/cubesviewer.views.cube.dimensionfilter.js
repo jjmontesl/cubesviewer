@@ -187,7 +187,9 @@ function cubesviewerViewCubeDimensionFilter () {
 		});
 
 		$(view.container).find(".cv-views-dimensionfilter-selectall").button().click(function() {
-			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox").not(":checked").trigger('click');;
+			// Clear previous selected items before applying new clicks
+			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox").filter(":checked").trigger('click');
+			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox:visible").trigger('click');
 		});
 		$(view.container).find(".cv-views-dimensionfilter-selectnone").button().click(function() {
 			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox").filter(":checked").trigger('click');

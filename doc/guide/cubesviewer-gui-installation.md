@@ -42,7 +42,7 @@ CubesViewer application runs on Python/Django. You need to have the following pa
 * Python 2.7
 * Django 1.7 or later
 
-You will also need Python packages "requests", "django-rest-framework". Check the requirements.txt file for
+You will also need Python packages "requests" and "django-rest-framework". Check the requirements.txt file for
 the full list of dependencies (you can also use this file to install all dependencies via "pip install").
 
 Django applications can run on local SQLite files, but if you plan to run on a different database system, you may
