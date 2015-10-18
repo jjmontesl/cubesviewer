@@ -1,3 +1,10 @@
+0.11-devel
+    + Moved GUI interface to top sticky menu (warning: could break existing
+      integrations of the interface).
+    + Changed chart resize method to a fixed set of height choices.
+    + Using less technical menu and button labels (cut = filter).
+    + Facts table now includes fact details.
+    + Fixed export facts feature.
 0.10
     + Updated to work with Cubes 1.0 (note: dropped support for Cubes 0.10.x).
     + Upgraded to Django 1.7.3 (your settings.py may need updating).

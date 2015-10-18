@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -11,11 +11,11 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * If your version of the Software supports interaction with it remotely through
  * a computer network, the above copyright notice and this permission notice
  * shall be accessible to all users.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,29 +28,25 @@
 
 /*
  * Google Analytics plugin.
- * 
+ *
  * This is an optional plugin. When loaded, it uses Google Analytics event system to
  * log CubesViewer operations. Model loading, Aggregations, Facts and Dimension queries
  * are registered as non-interactive events (and don't affect bounce rate). Each
  * view refresh isregistered as an interactive event.
- * 
+ *
  * Note: If the cache plugin is used, this plugin must be loaded _after_ the cache plugin.
- * 
- * TODO: Ideally this shall make use of a stronger events system within CubesViewer, instead of
- * overriding the request function and parsing the path string.
  */
 
 
 /*
- * Override original cubesRequest 
+ * Override original cubesRequest
  */
 cubesviewer._gaOverridedCubesRequest = cubesviewer.cubesRequest;
 
-
 cubesviewer.cubesRequest = function(path, params, successCallback, completeCallback, errorCallback) {
-	
+
 	cubesviewer._gaOverridedCubesRequest.apply(this, arguments);
-	
+
 	if (_gaq) {
 		if (path.indexOf("/model") == 0) {
 			_gaq.push(['_trackEvent', 'CubesViewer', 'Model', , , true]);
@@ -65,14 +61,14 @@ cubesviewer.cubesRequest = function(path, params, successCallback, completeCallb
 			}
 		}
 	}
-	
+
 }
 
 /*
  * Tracks a "ViewDraw" event (except for the first call, which is discarded).
  */
 $(document).bind("cubesviewerViewDraw", { }, function(event, view) {
-	
+
 	if (view.cube == null) return;
 	if (_gaq) {
 		if ("gaFirstDraw" in view) {
@@ -82,7 +78,7 @@ $(document).bind("cubesviewerViewDraw", { }, function(event, view) {
 			view.gaFirstDraw = true;
 		}
 	}
-	
+
 });
 
 

@@ -30,6 +30,7 @@
 
     <script type="text/javascript" src="../web/static/js/dateformat/dateformat.js"></script>
 
+    <script type="text/javascript" src="../web/static/js/jquery/jquery.sticky.js"></script> <!-- for CubesViewer GUI -->
     <script type="text/javascript" src="../web/static/js/jquery/jquery.blockUI.js"></script>
 
     <script type="text/javascript" src="../web/static/js/wiky/wiky.js"></script>
@@ -64,7 +65,7 @@
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.undo.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.gui.js"></script>
     <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.gui.serializing.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.gui.localeswitcher.js"></script>
+    <!-- <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.gui.localeswitcher.js"></script>  -->
 
 
 <script type="text/javascript">
@@ -84,6 +85,8 @@
 
 	    // Start Cubesviewer system
         cubesviewer.refresh();
+
+        $('.cv-gui-panel').sticky({topSpacing:0});
 
 	});
 
@@ -120,7 +123,7 @@
 <!-- Cubes Viewer GUI container -->
 <div id="cubesviewer">
 
-    <div class="cv-gui-panel ui-widget ui-widget-content ui-corner-all" >
+    <div class="cv-gui-panel" >
     </div>
 
     <div class="cv-gui-workspace">

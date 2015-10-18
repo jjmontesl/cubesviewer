@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -248,9 +248,9 @@ function cubesviewerViewCubeExplore() {
 		return function(data, status) {
 			$(view.container).find('.cv-view-viewdata').empty();
 			view.cubesviewer.views.cube.explore.drawSummary(view, data);
+			//view.cubesviewer.views.cube._adjustGridSize();
 		}
 
-		this.cubesviewer.view.adjustGridSize();
 	};
 
 	// Sort data according to current drilldown ordering
@@ -613,8 +613,8 @@ function cubesviewerViewCubeExplore() {
 			var dimparts = view.cube.cvdim_parts(e.dimension.replace(":",  "@"));
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-cut'), "#ffcccc", 480, readonly,
-				'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Cut: </b> ' + dimparts.label  + ' = ' +
-				'<span title="' + e.value + '">' + e.value + '</span></span>'
+				'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Filter: </b> ' + dimparts.label  + ' = ' + '</span>' +
+				'<span title="' + e.value + '">' + e.value + '</span>'
 			);
 			piece.addClass("cv-view-infopiece-cut");
 			piece.attr("data-dimension", e.dimension);

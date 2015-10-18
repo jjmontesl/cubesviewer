@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -186,7 +186,6 @@ function cubesviewerGui () {
 			'<li><a class="cv-gui-closeview" href="#"><span class="ui-icon ui-icon-close"></span>Close</a></li>'
 		);
 
-
 		// Menu functionality
 		view.cubesviewer.views.cube._initMenu(view, '.panelbutton', '.cv-view-menu-panel');
 
@@ -254,19 +253,20 @@ function cubesviewerGui () {
 	this.drawCubesList = function() {
 
 		// Clean list
-		$('.cv-gui-cubeslist', $(cubesviewer.gui.options.container)).empty();
+		$('.cv-gui-cubeslist-menu', $(cubesviewer.gui.options.container)).empty();
 
 		// Add cubes
 		$(cubesviewer.cubesserver._cube_list).each(
 			function(idx, cube) {
-				$('.cv-gui-cubeslist', $(cubesviewer.gui.options.container)).append(
-						'<div><a href="#" data-cubename="' + cube.name + '" class="cv-gui-addviewcube">' + cube.label + '</a></div>'
+				$('.cv-gui-cubeslist-menu', $(cubesviewer.gui.options.container)).append(
+						'<li><a href="#" data-cubename="' + cube.name + '" class="cv-gui-addviewcube">' + cube.label + '</a></li>'
 				);
 			}
 		);
+		$('.cv-gui-cubeslist-menu', $(cubesviewer.gui.options.container)).menu("refresh");
 
 		// Add handlers for clicks
-		$('.cv-gui-cubeslist', $(cubesviewer.gui.options.container)).find('.cv-gui-addviewcube').click(function() {
+		$('.cv-gui-cubeslist-menu', $(cubesviewer.gui.options.container)).find('.cv-gui-addviewcube').click(function() {
 			var view = cubesviewer.gui.addViewCube(  $(this).attr('data-cubename') );
 			view.cubesviewer.views.redrawView (view);
 			return false;
@@ -288,7 +288,7 @@ function cubesviewerGui () {
 				"https://github.com/jjmontesl/cubesviewer/\n" +
 				"\n" +
 				"By José Juan Montes and others (see AUTHORS)\n" +
-				"2012-2014\n"
+				"2012-2015\n"
 		);
 	};
 
@@ -296,14 +296,39 @@ function cubesviewerGui () {
 	 * Draws a section in the main GUI menu.
 	 */
 	this.drawSection = function(gui, title, cssClass) {
-		$(gui.options.container).children('.cv-gui-panel').append(
-			'<div class="cv-gui-panelsection"><h3>' + title + '</h3>' +
-			'<div class="' + cssClass + '"></div></div>'
-        );
 
-		$("." + cssClass, gui.options.container).prev().click(function() {
-			$("." + cssClass).toggle("slow");
+		$(gui.options.container).children('.cv-gui-panel').append(
+			'<button class="' + cssClass + '" title="' + title + '" style="margin-right: 15px;">' + title + '</button>' +
+			'<ul class="' + cssClass + '-menu cv-view-menu"></ul>'
+		);
+		//$("." + cssClass + "-menu", gui.options.container).appendTo(document.body);
+		$("." + cssClass, gui.options.container).button();
+		$("." + cssClass, gui.options.container).click(function(ev) {
+
+			// Hide all other menus
+			$('.cv-view-menu').hide();
+
+			$("." + cssClass + "-menu", gui.options.container).css("position", "absolute");
+			$("." + cssClass + "-menu", gui.options.container).css("z-index", "9990");
+			$("." + cssClass + "-menu", gui.options.container).show();
+			$("." + cssClass + "-menu", gui.options.container).fadeIn().position({
+				my : "left top",
+				at : "left bottom",
+				of : this
+			});
+
+			ev.stopPropagation();
+			$(document).one("click", function () {
+				$("." + cssClass + "-menu", gui.options.container).fadeOut();
+			});
+
 		});
+
+		$("." + cssClass + "-menu", gui.options.container).menu({}).hide();
+
+		// Menu functionality
+		//view.cubesviewer.views.cube._initMenu(view, "." + cssClass, "." + cssClass + "-menu");
+
 	};
 
 	/*
@@ -317,11 +342,11 @@ function cubesviewerGui () {
 
 
 		if (! ((gui.options.showAbout != undefined) && (gui.options.showAbout == false))) {
-			$(gui.options.container).find('.cv-gui-tools').append(
-				'<div style="margin-top: 8px;">' +
-				'<a href="#" class="cv-gui-about">About CubesViewer...</a>' +
-				'</div>'
+			$(gui.options.container).find('.cv-gui-tools-menu').append(
+				'<div></div>' +
+				'<li><a href="#" class="cv-gui-about">About CubesViewer...</a></li>'
 		    );
+			$(gui.options.container).find('.cv-gui-tools-menu').menu('refresh');
 			$('.cv-gui-about', gui.options.container).click(function() {
 				gui.showAbout();
 				return false;

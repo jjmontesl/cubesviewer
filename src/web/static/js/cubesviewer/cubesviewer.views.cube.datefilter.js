@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -126,7 +126,7 @@ function cubesviewerViewCubeDateFilter () {
 			var dimparts = view.cube.cvdim_parts(e.dimension);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 					$(view.container).find('.cv-view-viewinfo-date'), "#ffdddd", null, readonly,
-					'<span class="ui-icon ui-icon-zoomin"></span> <b>Cut: </b> ' +
+					'<span class="ui-icon ui-icon-zoomin"></span> <b>Filter: </b> ' +
 					dimparts.labelNoLevel +
 					': <span class="datefilter"></span>')
 			var container = $('.datefilter', piece);
@@ -320,9 +320,9 @@ function cubesviewerViewCubeDateFilter () {
 
 		return values.join(',');
 
-		return tdate.getFullYear() + ","
+		/*return tdate.getFullYear() + ","
 				+ (Math.floor(tdate.getMonth() / 3) + 1) + ","
-				+ (tdate.getMonth() + 1);
+				+ (tdate.getMonth() + 1); */
 	};
 
 	this._weekNumber = function(d) {

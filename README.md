@@ -31,18 +31,18 @@ Features:
 * Views can be embedded in other web sites.
 * Modular and extensible.
 
-Online demos
+Online Demos
 ------------
 
-* [CubesViewer Demo page](http://jjmontesl.github.io/cubesviewer/index.html) with one embedded view
 * [CubesViewer Explorer](http://jjmontesl.github.io/cubesviewer/cv.html) with the full application
+* [CubesViewer Demo page](http://jjmontesl.github.io/cubesviewer/index.html) with one embedded view
 
 Download
 ------------
 
-Current CubesViewer version is 0.10. Works with Cubes 1.0.x.
+Current CubesViewer version is 0.11. Works with Cubes 1.0.x.
 
-[CubesViewer version 0.10](https://github.com/jjmontesl/cubesviewer/archive/master.zip) - Works with Cubes 1.0.x
+[CubesViewer version 0.11](https://github.com/jjmontesl/cubesviewer/archive/v0.11.zip) - Works with Cubes 1.0.x
 
 (Use older [CubesViewer version 0.9](https://github.com/jjmontesl/cubesviewer/archive/v0.9.zip) if you need to work with Cubes 0.10.x)
 
@@ -57,7 +57,7 @@ views can be embedded in other websites. Simply
 download and open the src/htmlviews/gui.html file in your favourite browser.
 
 The **full CubesViewer application** includes a server side Python Django application which supports features
-like sharing/saving and user notes. Requires Django 1.6, but it is optional
+like sharing/saving and user notes. Requires Django 1.7, but it is optional
 (only needed if you wish to use the full application with user authentication, user notes
 or save/load/share support).
 

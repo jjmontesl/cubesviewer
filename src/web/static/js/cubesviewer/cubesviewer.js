@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@
 function cubesviewer () {
 
 	// CubesViewer version
-	this.version = "0.10";
+	this.version = "0.11-devel";
 
 	// Default options
 	this.options = {
@@ -159,7 +159,7 @@ function cubesviewer () {
 
 		if ($('#cv-cache-indicator').size() < 1) {
 
-			$("body").append('<div id="cv-cache-indicator" class="cv-view-panel cv-cssreset" style="display: none;"></div>')
+			$("body").append('<div id="cv-cache-indicator" class="cv-view-panel yui3-cssreset" style="display: none;"></div>')
 			$('#cv-cache-indicator').qtip({
 				   content: 'NO MESSAGE DEFINED',
 				   position: {

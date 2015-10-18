@@ -119,10 +119,9 @@ handle the *$(document).ready()* event.
 First, inside this method,
 
 * Initialize CubesViewer (the URL of the Cubes server needs to be passed)
-* Respond to "cubesviewerModelLoaded" event (because views can only be created once the model is loaded).
 * Use *cubesviewer.views.createView* to create a view in your container (options
-  can be defined with a JSON string or a Javascript).
-* View need to be redrawn after initializing them (calling *cubesviewer.views.redrawView(view)*).
+  can be defined with a JSON string or a Javascript array).
+* View need to be refreshed after initializing them (calling *cubesviewer.refresh()*).
 
 
 ```
@@ -134,20 +133,17 @@ First, inside this method,
             cubesUrl: "http://localhost:5000"
         });
 
+        // Sample serialized view (Based on cubes-examples project data)
+        var serializedView =
+            '{"cubename":"webshop_sales","name":"Cube Webshop / Sales","mode":"chart","drilldown":[],"cuts":[],"datefilters":[],"rangefilters":[],"xaxis":"country:country","yaxis":"price_total_avg","charttype":"bars-vertical","columnHide":{},"columnWidths":{},"columnSort":{}}';
+
         // Add views
-        $(document).bind("cubesviewerModelLoaded", { }, function() {
 
-            // Sample serialized view (Based on cubes-examples project data)
-            var serializedView =
-                '{"cubename":"contracts","name":"Cube View - Contracts","mode":"chart","drilldown":["geography:kraj"],"cuts":[],' +
-                '"datefilters":[],"xaxis":"date:year","yaxis":"record_count","charttype":"lines-stacked"}';
+        // You can use a serialized JSON string of the object with view arguments
+        view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", serializedView);
 
-            // Use a serialized JSON string of the object with view arguments
-            view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", serializedView);
-
-            cubesviewer.views.redrawView (view1);
-
-        });
+        // You could use a Javascript object with view arguments (ie. "cubename")
+        //view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", { "cubename": "contracts" });
 
         // Start Cubesviewer system
         cubesviewer.refresh();
