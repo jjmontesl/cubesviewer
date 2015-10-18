@@ -18,6 +18,7 @@ Ported from blueprint to make sure embedded views work without blueprint.
 	/*font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;*/
 	vertical-align: middle;
 	line-height: 1em;
+	text-shadow: none;
 
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;

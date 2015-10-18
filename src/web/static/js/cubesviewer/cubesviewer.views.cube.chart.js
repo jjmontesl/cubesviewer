@@ -246,12 +246,13 @@ function cubesviewerViewCubeChart() {
 			'<h3>Series Chart</h3>' +
 			'<div id="seriesChart-' + view.id + '"  ><div><svg style="height: 400px;" /></div>' +
 			'<div style="font-size: 8px; float: right;">' +
-			'<a href="#" class="cv-chart-height" data-chart-height="400" >Small</a> ' +
-			'<a href="#" class="cv-chart-height" data-chart-height="550" >Medium</a> ' +
-			'<a href="#" class="cv-chart-height" data-chart-height="700" >Tall</a>' +
+			'<a href="" class="cv-chart-height" data-chart-height="400" >Small</a> ' +
+			'<a href="" class="cv-chart-height" data-chart-height="550" >Medium</a> ' +
+			'<a href="" class="cv-chart-height" data-chart-height="700" >Tall</a>' +
 			'</div></div>'
 		);
-		$(view.container).find('.cv-chart-height').click(function () {
+		$(view.container).find('.cv-chart-height').click(function (e) {
+			e.preventDefault();
 			view.cubesviewer.views.cube.chart.resizeChart(view, $(this).attr('data-chart-height'));
 		});
 
