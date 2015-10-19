@@ -96,54 +96,28 @@
 
         $('.cv-gui-panel').sticky({topSpacing:0});
 
-        // Some predefined views
-        /*
-        $('.cv-gui-tools').parent().before (
-        	    '<div class="cv-gui-panelsection"><h3>Example views</h3>' +
-        	    '<a href="#" class="cv-demo-example-view" data-demo="1">Sales by category (monthly)</a><br />' +
-        	    '<a href="#" class="cv-demo-example-view" data-demo="2">Sales per product</a><br />' +
-        	    '<a href="#" class="cv-demo-example-view" data-demo="3">Sales per continent</a><br />' +
-        	    '<a href="#" class="cv-demo-example-view" data-demo="6">Some product sales per year</a><br />' +
-        	    '<a href="#" class="cv-demo-example-view" data-demo="4">Web visits browser vs. source</a><br />' +
-        	    '<a href="#" class="cv-demo-example-view" data-demo="5">Web visits per region (from April)</a><br />' +
-        	    '</div>'
-        );
-        */
-        $('.cv-demo-example-view').click(function() {
-        	var demo = $(this).attr("data-demo");
-        	var serialized = null;
-        	if (demo == 1) {
-        		   serialized = '{"cubename":"sales","name":"Sales by category (monthly)","mode":"chart","drilldown":["product:category"],"cuts":[],"datefilters":[{"dimension":"date_sale@weekly","mode":"custom","date_from":"","date_to":""}],' +
-        			   '"xaxis":"date_sale@monthly:month","yaxis":"price_total_sum","charttype":"bars-vertical-stacked","columnHide":{"price_total_max":true,"quantity_max":true,"quantity_sum":false,"price_total_min":true,"quantity_avg":true,' +
-        			   '"price_total_avg":false},"columnWidths":{},"columnSort":{"facts":["customer.id","asc"]}}';
-        	} else if (demo == 2) {
-        		serialized = '{"cubename":"sales","name":"Sales per product","mode":"chart","drilldown":["product:product"],"cuts":[],"datefilters":[{"dimension":"date_sale@weekly","mode":"custom","date_from":"","date_to":""}],"xaxis":null,' +
-        		   '"yaxis":"price_total_sum","charttype":"pie","columnHide":{"price_total_max":true,"quantity_max":true,"quantity_sum":false,"price_total_min":true,"quantity_avg":true,"price_total_avg":false},"columnWidths":{},"columnSort":{"facts":' +
-        		   '["customer.id","asc"]}}';
-        	} else if (demo == 3) {
-        		serialized = '{"cubename":"sales","name":"Sales per continent","mode":"chart","drilldown":["country:region"],"cuts":[],"datefilters":[{"dimension":"date_sale@weekly","mode":"custom","date_from":"","date_to":""}],"xaxis":' +
-        			'"date_sale@monthly:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{"price_total_max":true,"quantity_max":true,"quantity_sum":false,"price_total_min":true,"quantity_avg":true,"price_total_avg":false},'+
-        			'"columnWidths":{},"columnSort":{"facts":["customer.id","asc"]}}';
-        	} else if (demo == 4) {
-        		serialized = '{"cubename":"webvisits","name":"Web visits browser vs. source","mode":"chart","drilldown":["browser"],"cuts":[],"datefilters":[],"xaxis":"source","yaxis":"record_count","charttype":"radar","columnHide":{},"columnWidths":{},'+
-        			 '"columnSort":{}}';
-        	} else if (demo == 5) {
-        		serialized = '{"cubename":"webvisits","name":"Web visits per continent (from April)","mode":"chart","drilldown":["country:region"],"cuts":[],"datefilters":[{"dimension":"date_visit@weekly","mode":"custom","date_from":"2013-04-01","date_to":""}],' +
-        			'"xaxis":"date_visit@weekly:week","yaxis":"record_count","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{}}';
-        	} else if (demo == 6) {
-        		serialized = '{"cubename":"sales","name":"Some product sales per year","mode":"explore","drilldown":["product:product","date_sale@monthly:year"],"cuts":[{"dimension":"product","value":"Sports,Mountain_Bike;Sports,Snowboard_table;' +
-        		    'Sports,Rafting_Boat;Sports,Snowboard_boots;Sports,Trial_Bike;Books,Bicycle_Wheel;Sports,Climbing_equipment;Various,Various;Sports,Tent_for_extreme_weather;Sports,Climbing_boots;Books,Build_your_own_bicycle"}],"datefilters":[' +
-        		    '{"dimension":"date_sale@weekly","mode":"custom","date_from":"","date_to":""}],"xaxis":"date_sale@monthly:month","yaxis":"price_total_sum","charttype":"bars-vertical-stacked","columnHide":{"price_total_max":true,"quantity_max":' +
-        		    	'true,"quantity_sum":false,"price_total_min":true,"quantity_avg":true,"price_total_avg":true},"columnWidths":{"key0":237,"price_total_avg":95,"price_total_max":95,"price_total_min":95,"price_total_sum":95,"quantity_avg":95,' +
-        		    		'"quantity_max":95,"quantity_sum":95,"record_count":95,"key1":82},"columnSort":{"facts":["customer.id","asc"],"explore":["key0","asc"]}}';
-        	}
 
-        	if (serialized != null) {
-            	var view = cubesviewer.gui.addViewObject(serialized);
-                cubesviewer.views.redrawView (view);
-        	}
-        });
 
+        serialized = '{"cubename":"webshop_sales","name":"Product sales monthly","mode":"chart","drilldown":["product:product_category"],"cuts":[],"datefilters":[],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+        var view = cubesviewer.gui.addViewObject(serialized);
+        cubesviewer.views.redrawView (view);
+
+
+        serialized = '{"cubename":"webshop_sales","name":"Product sales per region","mode":"chart","drilldown":["product:product_category"],"cuts":[],"datefilters":[],"rangefilters":[],"xaxis":"country:continent","yaxis":"price_total_sum","charttype":"bars-vertical","columnHide":{},"columnWidths":{},"columnSort":{}}';
+        var view = cubesviewer.gui.addViewObject(serialized);
+        cubesviewer.views.redrawView (view);
+
+        serialized = '{"cubename":"webshop_sales","name":"Product sales quarterly filtered","mode":"series","drilldown":["product:product_product"],"cuts":[{"dimension":"country@contcountry","value":"europe;north_america;south_america"}],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:quarter","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+        var view = cubesviewer.gui.addViewObject(serialized);
+        cubesviewer.views.redrawView (view);
+
+        serialized = '{"cubename":"webshop_visits","name":"Web visits per country","mode":"chart","drilldown":["country:country"],"cuts":[],"datefilters":[{"dimension":"date_visit@daily","mode":"auto-last12m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_visit@daily:month","yaxis":"pageviews_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"browser","disabled":{"Chrome":false,"Firefox":false,"Lynx":false}}}';
+        var view = cubesviewer.gui.addViewObject(serialized);
+        cubesviewer.views.redrawView (view);
+
+    	serialized = '{"cubename":"webshop_visits","name":"Web visits per browser","mode":"chart","drilldown":["browser"],"cuts":[],"datefilters":[],"rangefilters":[],"xaxis":"date_visit@daily:month","yaxis":"pageviews_sum","charttype":"lines","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"browser","disabled":{"Chrome":false,"Firefox":false,"Lynx":false}}}';
+    	var view = cubesviewer.gui.addViewObject(serialized);
+        cubesviewer.views.redrawView (view);
 
     });
 
@@ -157,7 +131,7 @@
       <div class="inner" style="width: 96%;">
 
         <header>
-          <div style="float: right;"><img alt="CubesViewer" src="static/img/cubesviewer-logo.png" style="width: 70%; height: 70%;" /></div>
+          <div style="float: right;"><img alt="CubesViewer" src="static/img/cubesviewer-logo.png" style="width: 60%; height: 60%;" /></div>
           <h1>CubesViewer</h1>
           <h2>Visual data analysis and explore tool</h2>
         </header>
@@ -174,8 +148,8 @@
             <p>You can use the menu and interface to navigate this example dataset, which is composed of fictional
                sales of a web store during years 2012-2013 and also fictional web visit data.</p>
 
-            <p> <span style="font-weight: bold;">To begin, explore the views, or
-               select a "Example view" or a "Cube" from the list on the left.</span>
+            <p> <span style="font-weight: bold;">Explore the example views, or create a new
+               view from scratch selecting "Cubes" from the top menu. New views are added at the bottom.</span>
             </p>
         </section>
 
@@ -199,7 +173,7 @@
         </div>
 
         <footer>
-          <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a> is maintained by <a href="https://github.com/jjmontesl">jjmontesl</a><br>
+          <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a> by <a href="https://github.com/jjmontesl">Jose Juan Montes</a><br>
         </footer>
 
       </div>
