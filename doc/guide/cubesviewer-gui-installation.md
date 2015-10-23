@@ -66,7 +66,7 @@ By default, CubesViewer uses a SQLite database located in the same directory as 
 See [Django Database configuration](https://docs.djangoproject.com/en/dev/ref/settings/#databases) documents for more information
 on the database configuration.
 
-**Edit the web/cvapp/settings.py file**, and review the following sections according to your Cubes URL, database config and
+**Edit the web/cvapp/cvapp/settings.py file**, and review the following sections according to your Cubes URL, database config and
 installation path.
 
 ```python
