@@ -20,8 +20,8 @@ CubesViewer has a "Date Filter" option that shows a special cut filter for date 
 to work, you need to add information to your model, using also the "role" attribute of dimension and levels.
 
 1. For each date dimension, add an "role" attribute with "time" value.
-2. Optionally, also add an "info" dictionary, with a "cv-datefilter-hierarchy" attribute pointing to
-   your desired date filtering hierarchy, if it is not "default".
+2. Also add an "info" dictionary, with a "cv-datefilter" set to the boolean value *true*, and a "cv-datefilter-hierarchy"   
+   attribute pointing to your desired date filtering hierarchy, if it is not "default".
 3. For each *level* involved in your date filtering, add a "role" attribute
    identifying the unit of date value (one of "year", "quarter", "month", "week" or "day").
 
@@ -36,6 +36,7 @@ This is an example dimension "date_created" showing this configuration:
             "label": "Date Created",
             "role": "time",
             "info": {
+                "cv-datefilter": true,
                 "cv-datefilter-hierarchy": "weekly"
             },
             "levels": [
