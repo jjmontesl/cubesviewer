@@ -1,4 +1,5 @@
 0.11-devel
+    + Fixed bug causing datefilter to unnecessarily require 'cv-datefilter: true'.
     + Moved GUI interface to top sticky menu (warning: could break existing
       integrations of the interface).
     + Changed chart resize method to a fixed set of height choices.

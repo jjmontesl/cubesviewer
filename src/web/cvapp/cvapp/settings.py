@@ -37,6 +37,11 @@ DATABASES = {
 CUBESVIEWER_CUBES_URL="http://localhost:5000"
 
 # CubesViewer Store backend URL. It should point to this application.
+# Note that this must match the URL that you use to access the application,
+# otherwise you may hit security issues. If you access your server
+# via http://localhost:8000, use the same here. Note that 127.0.0.1 and
+# 'localhost' are different strings for this purpose. (If you wish to accept
+# requests from different URLs, you may need to add CORS support).
 CUBESVIEWER_BACKEND_URL="http://localhost:8000/cubesviewer"
 
 # Optional user and password tuple to access the backend, or False

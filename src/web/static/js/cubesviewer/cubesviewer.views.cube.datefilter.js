@@ -366,7 +366,7 @@ cubes.Dimension.prototype.isDateDimension = function()  {
 	// Inform if a dimension is a date dimension and can be used as a date
 	// filter (i.e. with range selection tool).
 	return ((this.role == "time") &&
-			((! "cv-datefilter" in this.info) || (this.info["cv-datefilter"] == true)) );
+			((! ("cv-datefilter" in this.info)) || (this.info["cv-datefilter"] == true)) );
 
 };
 
