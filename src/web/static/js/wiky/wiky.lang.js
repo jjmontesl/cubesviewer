@@ -22,12 +22,12 @@ Wiky.rules.lang.xml = [
       { rex:/<script([^>]*)>(.*?)<\/script>/g, tmplt:function($0,$1,$2){return "<script"+$1+">"+Wiky.store(Wiky.apply($2, Wiky.rules.lang.js))+"</script>";} }, // script blocks ..
       { rex:/<!\[CDATA\[(.*?)\]\]>/g, tmplt:function($0,$1){return Wiky.store("&lt;![CDATA["+$1+"]]&gt;");} }, // CDATA sections, ..
       { rex:/<!(.*?)>/g, tmplt:function($0,$1){return Wiky.store("<span class=\"cmt\">&lt;!"+$1+"&gt;</span>");} }, // inline xml comments, doctypes, ..
-      { rex:/</g, tmplt:"\xAB"}, // replace '<' by '«'
-      { rex:/>/g, tmplt:"\xBB"}, // replace '>' by '»'
+      { rex:/</g, tmplt:"\xAB"}, // replace '<' by 'Â«'
+      { rex:/>/g, tmplt:"\xBB"}, // replace '>' by 'Â»'
       { rex:/([-A-Za-z0-9_:]+)[ ]*=[ ]*\"(.*?)\"/g, tmplt:"<span class=\"xnam\">$1</span>=<span class=\"xval\">&quot;$2&quot;</span>"}, // "xml attribute value strings ..
       { rex:/(\xAB[\/]?)([-A-Za-z0-9_:]+)/g, tmplt:"$1<span class=\"xtag\">$2</span>"}, // "xml tag ..
-      { rex:/\xAB/g, tmplt:"&lt;"}, // replace '«' by '<'
-      { rex:/\xBB/g, tmplt:"&gt;"}, // replace '»' by '>'
+      { rex:/\xAB/g, tmplt:"&lt;"}, // replace 'Â«' by '<'
+      { rex:/\xBB/g, tmplt:"&gt;"}, // replace 'Â»' by '>'
 ];
 Wiky.inverse.lang.js = [
      { rex:/<span class=\"?(cmt|kwd|mbr|obj|str)\"?>|<\/span>/mgi, tmplt:"" },
