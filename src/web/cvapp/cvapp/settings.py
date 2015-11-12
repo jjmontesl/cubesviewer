@@ -101,6 +101,9 @@ ROOT_URLCONF = 'testing.urls'
 
 WSGI_APPLICATION = 'cvapp.wsgi.application'
 
+# Django auth settings
+LOGIN_REDIRECT_URL = CUBESVIEWER_BACKEND_URL
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
