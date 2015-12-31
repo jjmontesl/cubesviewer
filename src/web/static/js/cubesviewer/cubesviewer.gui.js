@@ -66,6 +66,16 @@ function cubesviewerGui () {
 
 	};
 
+	this.cvinfo = function(cubeinfo) {
+		info = {}
+		$.each(cubeinfo, function(key, value) {
+			if (key.indexOf("cv-") == 0) {
+				info[key.substr(3)] = value;
+		  }
+		});
+		return info;
+	};
+
 	// Adds a new clean view for a cube
 	this.addViewCube = function(cubename) {
 
@@ -77,7 +87,12 @@ function cubesviewerGui () {
 		// Find cube name
 		var cubeinfo = cubesviewer.cubesserver.cubeinfo (cubename);
 
-		var view = this.cubesviewer.views.createView(viewId, $('.cv-gui-viewcontent', container), "cube", { "cubename": cubename, "name": "Cube " + cubeinfo.label });
+		var data = $.extend(this.cvinfo(cubeinfo.info), {
+			"cubename": cubename,
+			"name": "Cube " + cubeinfo.label,
+		});
+
+		var view = this.cubesviewer.views.createView(viewId, $('.cv-gui-viewcontent', container), "cube", data);
 		this.views.push (view);
 
 		// Bind close button
