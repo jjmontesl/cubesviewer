@@ -378,6 +378,44 @@ function cubesviewerViewCubeExplore() {
 		};
 	};
 
+	this.getMaxOfMeasure = function(selector) {
+		var total = 0;
+		$(selector).each(function() {
+			total += parseFloat($(this).text());
+		});
+		return total;
+	};
+
+	this.getAvgOfMeasure = function(selector) {
+		var total = 0.0;
+		var count = 0.0;
+		$(selector).each(function() {
+			total += parseFloat($(this).text());
+			count += 1;
+		});
+		return total / count;
+	};
+
+	//algorithm from https://moz.com/blog/build-your-own-weighted-sort
+	this.weightedSort = function(cell, obj, thisMeasureKey, countMeasureKey, view_id) {
+		//this row's count measure and thing we're sorting
+		var countMeasure = parseFloat(obj[countMeasureKey]);
+		var thisMeasure = parseFloat(cell);
+
+		//max value of the count measure and the average of this measure
+		var countAria = 'summaryTable-' + view_id + '_' + countMeasureKey;
+		var thisAria = 'summaryTable-' + view_id + '_' + thisMeasureKey;
+		var maxCountMeasure = this.getMaxOfMeasure('td[aria-describedby="' + countAria + '"]');
+		var avgThisMeasure = this.getAvgOfMeasure('td[aria-describedby="' + thisAria + '"]');
+
+		//a higher count favours the real value, but a lower count will
+		//tend towards the average instead. Extreme values with low counts
+		//will be weighted less favourably
+		W = countMeasure / maxCountMeasure;
+		ETV = (W * thisMeasure) + ((1 - W) * avgThisMeasure);
+		return ETV;
+	};
+
 	/*
 	 * Show received summary
 	 */
@@ -402,7 +440,14 @@ function cubesviewerViewCubeExplore() {
 				name : ag.ref,
 				index : ag.ref,
 				align : "right",
-				sorttype : "number",
+				sorttype : function(cell, obj) {
+					//use weighted sort if defined in model.
+					if ('cv-weighted-sort' in ag.info) {
+						return cubesviewer.views.cube.explore.weightedSort(cell, obj, ag.ref, ag.info['cv-weighted-sort'], view.id);
+					} else {
+						return cell;
+					}
+				},
 				width : cubesviewer.views.cube.explore.defineColumnWidth(view, ag.ref, 95),
 				formatter: 'number',
 				cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
