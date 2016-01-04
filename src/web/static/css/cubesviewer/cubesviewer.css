@@ -31,7 +31,10 @@ Ported from blueprint to make sure embedded views work without blueprint.
 .cv-view-panel a:link {
 	text-decoration: none;
 }
-.cv-view-panel a:visited {
+
+.cv-view-panel .ui-state-active a,
+.cv-view-panel .ui-state-active a:link,
+.cv-view-panel .ui-state-active a:visited {
     color: inherit;
 }
 
