@@ -638,7 +638,7 @@ function cubesviewerViewCubeChart() {
     		}
 
 	    });
-	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+	    d.sort(function(a,b) { return a.y < b.y ? -1 : (a.y > b.y ? +1 : 0) });
 
 	    xticks = [];
 	    for (var i = 1; i < colNames.length; i++) {
