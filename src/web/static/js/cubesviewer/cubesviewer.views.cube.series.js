@@ -257,7 +257,7 @@ function cubesviewerViewCubeSeries() {
 		);
 
 		var colNames = [];
-        var colLabels = [];
+		var colLabels = [];
 		var colModel = [];
 		var dataRows = [];
 		var dataTotals = [];
@@ -266,25 +266,25 @@ function cubesviewerViewCubeSeries() {
 		view.cubesviewer.views.cube.explore._sortData (view, data.cells, view.params.xaxis != null ? true : false);
 		view.cubesviewer.views.cube.series._addRows (view, dataRows, dataTotals, colNames, colModel, data);
 
-        colNames.forEach(function (e) {
-            var colLabel = null;
-            $(view.cube.aggregates).each(function (idx, ag) {
-                if (ag.name == e) {
-                    colLabel = ag.label||ag.name;
-                    return false;
-                }
-            });
-            if (!colLabel) {
-                $(view.cube.measures).each(function (idx, me) {
-                    if (me.name == e) {
-                        colLabel = me.label||ag.name;
-                        return false;
-                    }
-                });
-            }
-            //colLabel = view.cube.getDimension(e).label
-            colLabels.push(colLabel||e);
-        });
+		colNames.forEach(function (e) {
+			var colLabel = null;
+			$(view.cube.aggregates).each(function (idx, ag) {
+				if (ag.name == e) {
+					colLabel = ag.label||ag.name;
+					return false;
+				}
+			});
+			if (!colLabel) {
+				$(view.cube.measures).each(function (idx, me) {
+					if (me.name == e) {
+						colLabel = me.label||ag.name;
+						return false;
+					}
+				});
+			}
+			//colLabel = view.cube.getDimension(e).label
+			colLabels.push(colLabel||e);
+		});
 
 		$('#seriesTable-' + view.id).jqGrid({
 			data: dataRows,
@@ -295,30 +295,30 @@ function cubesviewerViewCubeSeries() {
 			rowList: cubesviewer.options.pagingOptions,
 			colNames: colLabels,
 			colModel: colModel,
-	        pager: "#seriesPager-" + view.id,
-	        sortname: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[0],
-	        viewrecords: true,
-	        sortorder: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[1],
-	        //footerrow: true,
-	        userDataOnFooter: true,
-	        forceFit: false,
-	        shrinkToFit: false,
-	        width: cubesviewer.options.tableResizeHackMinWidth,
-	        //multiselect: true,
-	        //multiboxonly: true,
+			pager: "#seriesPager-" + view.id,
+			sortname: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[0],
+			viewrecords: true,
+			sortorder: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[1],
+			//footerrow: true,
+			userDataOnFooter: true,
+			forceFit: false,
+			shrinkToFit: false,
+			width: cubesviewer.options.tableResizeHackMinWidth,
+			//multiselect: true,
+			//multiboxonly: true,
 
-	        //caption: "Current selection data" ,
-	        beforeSelectRow : function () { return false; },
+			//caption: "Current selection data" ,
+			beforeSelectRow : function () { return false; },
 
 			loadComplete : function() {
 				// Call hook
 				view.cubesviewer.views.cube.explore.onTableLoaded (view);
 			},
 
-	        resizeStop: view.cubesviewer.views.cube.explore._onTableResize (view),
+			resizeStop: view.cubesviewer.views.cube.explore._onTableResize (view),
 			onSortCol: view.cubesviewer.views.cube.explore._onTableSort (view),
 
-	    } );
+		} );
 
 		this.cubesviewer.views.cube._adjustGridSize();
 
@@ -387,11 +387,15 @@ function cubesviewerViewCubeSeries() {
 
 			if (colNames.indexOf(colKey) < 0) {
 				colNames.push (colKey);
-				colModel.push ({
+				var col = {
 					name: colKey, index: colKey, align: "right", sorttype: "number", width: cubesviewer.views.cube.explore.defineColumnWidth(view, colKey, 75),
-			        formatter: 'number',
-			        formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
-				});
+							formatter: 'number',
+							formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
+				};
+
+				var ag = $.grep(view.cube.aggregates, function(ag) { return ag.name == view.params.yaxis })[0];
+				$.extend(col, cubesviewer.views.cube.columnFormatOptions(ag));
+				colModel.push (col);
 			}
 
 

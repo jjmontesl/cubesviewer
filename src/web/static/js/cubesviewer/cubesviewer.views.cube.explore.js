@@ -378,41 +378,6 @@ function cubesviewerViewCubeExplore() {
 		};
 	};
 
-	this.aggregateFormatOptions = function(ag) {
-		switch(ag.info['cv-formatter']) {
-		case 'percent':
-			return {
-				formatter: function(cellValue, options, rowObject) {
-					return (cellValue * 100).toFixed(2) + "%";
-				},
-				formatoptions: {},
-			};
-			break;
-		case 'integer':
-			return {
-				formatter: 'integer',
-				formatoptions: { thousandsSeparator: " " }
-			}
-			break;
-		case 'currency':
-			prefix = ag.info['cv-currency-prefix'] === undefined ? '$' : ag.info['cv-currency-prefix'];
-			suffix = ag.info['cv-currency-suffix'] === undefined ? '' : ag.info['cv-currency-suffix'];
-			return {
-				formatter: 'currency',
-				formatoptions: {
-					decimalSeparator: ".",
-					thousandsSeparator: " ",
-					decimalPlaces: 2,
-					prefix: prefix,
-					suffix: suffix
-				}
-			};
-			break;
-		default:
-			return {}; //use defaults
-		}
-	};
-
 	/*
 	 * Show received summary
 	 */
@@ -444,7 +409,7 @@ function cubesviewerViewCubeExplore() {
 				formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: (ag.ref=="record_count" ? 0 : 2) }
 			};
 
-			$.extend(col, cubesviewer.views.cube.explore.aggregateFormatOptions(ag));
+			$.extend(col, cubesviewer.views.cube.columnFormatOptions(ag));
 			colModel.push(col);
 			if (data.summary) dataTotals[ag.ref] = data.summary[ag.ref];
 		});
