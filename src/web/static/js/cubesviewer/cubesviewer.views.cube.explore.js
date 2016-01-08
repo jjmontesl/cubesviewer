@@ -321,7 +321,9 @@ function cubesviewerViewCubeExplore() {
 				var dim = view.cube.cvdim_dim(view.params.drilldown[i]);
 
 				var parts = view.cube.cvdim_parts(view.params.drilldown[i]);
-				var infos = parts.hierarchy.readCell(e, parts.level);
+				var infos = parts.hierarchy.readCell(e, parts.level).map(function(info) {
+					return cubesviewer.views.cube.applyInfoFormatting(info, dim);
+				});
 
 				// Values and Labels
 				var drilldown_level_values = [];
