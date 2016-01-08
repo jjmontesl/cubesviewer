@@ -47,7 +47,7 @@ function cubesviewerViewCube () {
 		
 		var jqxhr = cubesviewer.cubesserver.get_cube(view.params.cubename, function(cube) {
 			view.cube = cube;
-		    if (view.state == cubesviewer.views.STATE_INITIALIZED) cubesviewer.views.redrawView(view);
+				if (view.state == cubesviewer.views.STATE_INITIALIZED) cubesviewer.views.redrawView(view);
 		});
 		if (jqxhr) {
 			jqxhr.fail(function() {
@@ -270,7 +270,11 @@ function cubesviewerViewCube () {
 		case 'percent':
 			return {
 				formatter: function(cellValue, options, rowObject) {
-					return (cellValue * 100).toFixed(2) + "%";
+					if (cellValue === undefined) {
+						return "---%";
+					} else {
+						return (cellValue * 100).toFixed(2) + "%";
+					}
 				},
 				formatoptions: {},
 			};
