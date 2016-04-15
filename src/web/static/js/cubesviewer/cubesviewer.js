@@ -72,6 +72,17 @@ function cubesviewer () {
 		return cubesviewer.cubesRequest(settings.url, settings.data || [], settings.success);
 	};
 
+  /*
+   * Save typing while debugging - get a view object with: cubesviewer.getView(1)
+   */
+  
+  this.getView = function(id) {
+    var viewid = id.toString();
+    viewid = viewid.indexOf('view') === 0 ? viewid : 'view' + viewid;
+    viewid = viewid[0] === '#' ? viewid : '#' + viewid;
+  
+    return $(viewid + ' .cv-gui-viewcontent').data('cubesviewer-view');
+  };
 
 	/*
 	 * Cubes centralized request

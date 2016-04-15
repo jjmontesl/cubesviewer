@@ -240,6 +240,11 @@ div.cv-view-info-panel {
     padding-right: 5px;
 }
 
+.cv-view-dimensionfilter-cont .filter-option {
+  margin: 5px;
+  display: inline-block;
+}
+
 div.cv-view-dimensionfilter-item {
     white-space: nowrap;
     display: inline-block;
