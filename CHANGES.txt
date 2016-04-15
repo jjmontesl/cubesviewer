@@ -1,0 +1,110 @@
+[0.11]
+
+    * Fixed bug causing datefilter to unnecessarily require 'cv-datefilter: true'.
+    * Moved GUI interface to top sticky menu (warning: could break existing
+      integrations of the interface).
+    * Changed chart resize method to a fixed set of height choices.
+    * Using less technical menu and button labels (cut = filter).
+    * Facts table now includes fact details.
+    * Fixed export facts feature.
+
+[0.10]
+
+    * Updated to work with Cubes 1.0 (note: dropped support for Cubes 0.10.x).
+    * Upgraded to Django 1.7.3 (your settings.py may need updating).
+    * Datefilter now uses dimension role "time" in Cubes 1.0.
+    * First version using Django migrations.
+    * Use cubes.js official client library (altered).
+    * Modified jQueryUI theme.
+    * Updated to latest jQuery version 1.10.2.
+    * Switched from django-piston to django-rest-framework.
+    * Dropped notes system.
+
+[0.9]
+
+    * Last version supporting cubes 0.10.x.
+    * Fix dimensionfilter bug causing wrong values to
+      be selected when updating from the current filter.
+    * Added Google Analityics events plugin.
+
+[0.8]
+
+    * Charts now save view configuration (status and disabledseries).
+    * New rangefilter plugin (closes #21).
+    * Added support for a cv-ignore option in the model for dimensions.
+    * Separated datefilter as a plugin (closes #8).
+    * Cutting over a drilled dimension no longer removes the drill.
+    * Added shortcuts (select all) and drilldown from filters.
+    * Menus now open on hover if already open.
+    * Charts now using nvd3.js!
+
+[0.7]
+
+    * Always send dimension level for drilldown (solves
+      issue about single-point cut * drilldown combination)
+    * Updated the pure-html examples (embedded views).
+    * Ajax global error handler is no longer used.
+    * More user friendly error handling if server not available.
+    * Fixed table resizing not fitting parent.
+    * Added week information to datepickers.
+    * Added measures to facts view.
+
+[0.6]
+
+    * Added facts view (and support for column size saving).
+    * Added dimension filter icons (shortcuts) to info pieces.
+    * Fixed bug causing wrong hierarchy name to be displayed
+    * Added the dimensionfilter plugin, which introduces a
+      more advanced filtering interface.
+    * Sort order in tables is now preserved.
+    * Added column chooser for Explore mode, saved with view.
+    * Column widths saved with view via new plugin.
+    * Added tooltips to table values.
+    * Added wiki plugin for public notes for cubes and views.
+    * Menu buttons now require click to activate.
+    * Fixed a few UI glitches.
+
+[0.5]
+
+    * Removed the "global shared views" concept.
+    * Experimental Cubes proxy (with ACLs).
+    * Initial version of cache system.
+    * Measure aggregations are now shown in submenus.
+    * Fixed bug causing drilldowns to incorrectly drill to latest level.
+    * Changed "loading" approach, now blocks the interface where appropriate.
+    * Changed redraw strategy trying to minimize size changes.
+    * Fixed wrong extra columns in some charts.
+    * Fixed multiple drill dimensions that were ignored in charts.
+
+[0.4]
+
+    * Added a locale switcher plugin.
+    * Added documentation and examples for embedding views
+      in other web applications.
+    * Added the serialization plugin.
+
+[0.3]
+
+    * Added undo/redo plugin.
+    * Improved export plugin (now exports all pages of tables).
+    * Updated Flotr2 library to support stacked lines.
+    * Date dimensions are now correctly configured at model level.
+    * Added support for dimension hierarchies.
+    * Added some Cubes model javascript support classes.
+    * Added support for labels and label attributes.
+    * Added (draft) examples of local HTML usage.
+    * Added installation documentation.
+    * Application settings now have default values that work out of the box.
+    * Added support for measures with no aggregations.
+
+[0.2]
+
+    * Initial import into repository.
+    * Added basic saving/sharing capabilities.
+    * Initial separation of components.
+    * Refactored Javascript code to be more object-oriented.
+    * Finished functional application prototype (exploration, tables and charts).
+
+[0.1]
+
+    * Application prototype and proof of concept.
