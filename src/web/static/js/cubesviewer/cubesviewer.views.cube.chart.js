@@ -40,6 +40,9 @@ function cubesviewerViewCubeChart() {
 
 		$.extend(view.params, {
 			"charttype" : "bars-vertical",
+			"chartoptions": {
+				showLegend: true,
+			},
 		});
 
 	};
@@ -97,7 +100,6 @@ function cubesviewerViewCubeChart() {
 
 		if (view.params.mode != "chart") return;
 
-
 		// Draw areas
 		view.cubesviewer.views.cube.chart.drawInfo(view);
 
@@ -139,6 +141,11 @@ function cubesviewerViewCubeChart() {
   		  '<div></div>'
 	  	);
 
+		menu.append(
+			'<div></div>' +
+			'<li><a href="#" class="cv-view-chart-toggle-legend"><span class="ui-icon ui-icon-script"></span>Toggle Legend</a></li>'
+		);
+
 		/*
 		menu.append(
 	  	  '<div></div>' +
@@ -150,6 +157,11 @@ function cubesviewerViewCubeChart() {
 		$(menu).addClass("ui-menu-icons");
 
 		var serieschart = view.cubesviewer.views.cube.chart;
+		$(view.container).find('.cv-view-chart-toggle-legend').click(function() {
+			view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend;
+			view.cubesviewer.views.redrawView(view);
+			return false;
+		});
 		$(view.container).find('.cv-view-chart-export').click(function() {
 			view.cubesviewer.views.cube.chart.exportChart(view) ;
 			return false;
@@ -358,6 +370,7 @@ function cubesviewerViewCubeChart() {
 	        chart = nv.models.multiBarChart()
 	          //.margin({bottom: 100})
 	          .transitionDuration(300)
+	          .showLegend(view.params.chartoptions.showLegend)
 	          .margin({left: 120})
 	          ;
 
@@ -448,6 +461,7 @@ function cubesviewerViewCubeChart() {
 		    nv.addGraph(function() {
 		    	var chart = nv.models.lineChart()
 		    		.useInteractiveGuideline(true)
+		    		.showLegend(!!view.params.chartoptions.showLegend)
 		    		.margin({left: 120})
 		    		;
 
@@ -489,6 +503,7 @@ function cubesviewerViewCubeChart() {
 	    	  var chart = nv.models.stackedAreaChart()
 	    	                //.x(function(d) { return d[0] })
 	    	                //.y(function(d) { return d[1] })
+	    	  				.showLegend(!!view.params.chartoptions.showLegend)
 	    	  				.margin({left: 130})
 	    	                .clipEdge(true)
 	    	                .useInteractiveGuideline(true);
@@ -565,6 +580,7 @@ function cubesviewerViewCubeChart() {
 	        var chart = nv.models.cumulativeLineChart()
                           //.x(function(d) { return d.x })
 		                  //.y(function(d) { return d.y })
+		                  .showLegend(!!view.params.chartoptions.showLegend)
 		                  .color(d3.scale.category20().range())
 	                      //.color(d3.scale.category10().range())
 		                  .useInteractiveGuideline(true)
@@ -638,7 +654,7 @@ function cubesviewerViewCubeChart() {
     		}
 
 	    });
-	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+	    d.sort(function(a,b) { return a.y < b.y ? -1 : (a.y > b.y ? +1 : 0) });
 
 	    xticks = [];
 	    for (var i = 1; i < colNames.length; i++) {
@@ -650,6 +666,7 @@ function cubesviewerViewCubeChart() {
 	        var chart = nv.models.pieChart()
 	            .x(function(d) { return d.key })
 	            .y(function(d) { return d.y })
+	            .showLegend(!!view.params.chartoptions.showLegend)
 	            //.color(d3.scale.category20().range())
 	            //.width(width)
 	            //.height(height)
