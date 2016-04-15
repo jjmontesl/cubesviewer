@@ -130,4 +130,42 @@ in the example below. Ignored dimensions will not be shown by CubesViewer.
         ...
 ```
 
+Aggregate Formatting
+--------------------
 
+You can apply limited formatting options to your aggergates as shown in the
+example below. This will affect the explore view and the series view.
+
+```
+    "aggregates": [
+        {
+            "name": "units_sold_sum",
+            "measure": "units_sold",
+            "function": "sum",
+            "info": {
+                "cv-formatter": "integer"
+            }
+        },
+        {
+            "name": "percentage_sum",
+            "measure": "percentage",
+            "function": "sum",
+            "info": {
+                "cv-formatter": "percent"
+            }
+        },
+        {
+            "name": "revenue_sum",
+            "measure": "revenue",
+            "function": "sum",
+            "info": {
+                "cv-formatter": "currency",
+                "cv-currency-prefix": "",   // defaults to '$'
+                "cv-currency-suffix": "元"  // defaults to ''
+            }
+        }
+    ]
+```
+
+The integer and percent formatters accept no additional options. The currency
+formatter accepts an optional prefix and an optional suffix.

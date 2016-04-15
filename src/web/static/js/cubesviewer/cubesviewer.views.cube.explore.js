@@ -171,7 +171,7 @@ function cubesviewerViewCubeExplore() {
 		// Filter selected option (to filter in the values of the selected rows in the Explore table)
 		if (view.params.mode == "explore") {
 			menu.append('<li><a href="#" class="explore-filterselected" ><span class="ui-icon ui-icon-zoomin"></span>Filter selected</a></li>' +
-					    '<div></div>');
+							'<div></div>');
 		}
 
 		// Separator and "clear filters". The datefilter uses this class to place itself in the menu.
@@ -398,7 +398,7 @@ function cubesviewerViewCubeExplore() {
 
 		$(view.cube.aggregates).each(function(idx, ag) {
 			colNames.push(ag.label);
-			colModel.push({
+			var col = {
 				name : ag.ref,
 				index : ag.ref,
 				align : "right",
@@ -406,8 +406,11 @@ function cubesviewerViewCubeExplore() {
 				width : cubesviewer.views.cube.explore.defineColumnWidth(view, ag.ref, 95),
 				formatter: 'number',
 				cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-				formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: (ag.ref=="record_count" ? 0 : 2)  }
-			});
+				formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: (ag.ref=="record_count" ? 0 : 2) }
+			};
+
+			$.extend(col, cubesviewer.views.cube.columnFormatOptions(ag));
+			colModel.push(col);
 			if (data.summary) dataTotals[ag.ref] = data.summary[ag.ref];
 		});
 
@@ -610,10 +613,10 @@ function cubesviewerViewCubeExplore() {
 		});
 
 		$(view.params.cuts).each(function(idx, e) {
-			var dimparts = view.cube.cvdim_parts(e.dimension.replace(":",  "@"));
+			var dimparts = view.cube.cvdim_parts(e.dimension.replace(":", "@"));
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-cut'), "#ffcccc", 480, readonly,
-				'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Filter: </b> ' + dimparts.label  + ' = ' + '</span>' +
+				'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Filter: </b> ' + dimparts.label + ' = ' + '</span>' +
 				'<span title="' + e.value + '">' + e.value + '</span>'
 			);
 			piece.addClass("cv-view-infopiece-cut");
@@ -673,7 +676,7 @@ function cubesviewerViewCubeExplore() {
 				if (existing_cut.length > 0) {
 					//view.cubesviewer.alert("Cannot cut dataset. Dimension '" + dimension + "' is already filtered.");
 					//return;
-				}  else {*/
+				} else {*/
 					view.params.cuts = $.grep(view.params.cuts, function(e) {
 						return e.dimension == dimension;
 					}, true);
