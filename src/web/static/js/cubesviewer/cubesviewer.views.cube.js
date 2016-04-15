@@ -265,6 +265,22 @@ function cubesviewerViewCube () {
 		return cuts;
 	};
 
+	/*
+	 * Apply dimension value formatting specified in the model
+   * to the info in the argument list, and return it
+	 */
+	this.applyInfoFormatting = function (value, dimension) {
+		if (!('cv-format' in dimension.info)) {
+			return value; //unchanged
+		}
+
+		var format = dimension.info['cv-format'];
+		if (value in format) {
+			return format[value];
+		} else {
+			return value;
+		}//if
+	};
 };
 
 /*

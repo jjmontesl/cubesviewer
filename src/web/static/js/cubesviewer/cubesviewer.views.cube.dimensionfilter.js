@@ -283,7 +283,10 @@ function cubesviewerViewCubeDimensionFilter () {
 
 			// Get dimension
 			var parts = view.cube.cvdim_parts(tdimension);
-			var infos = parts.hierarchy.readCell(e, parts.level);
+			var infos = parts.hierarchy.readCell(e, parts.level).map(function(info) {
+				info.label = cubesviewer.views.cube.applyInfoFormatting(info.label, dimension);
+				return info;
+			});
 
 			// Values and Labels
 			var drilldown_level_values = [];

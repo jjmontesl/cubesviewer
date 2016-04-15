@@ -321,7 +321,10 @@ function cubesviewerViewCubeExplore() {
 				var dim = view.cube.cvdim_dim(view.params.drilldown[i]);
 
 				var parts = view.cube.cvdim_parts(view.params.drilldown[i]);
-				var infos = parts.hierarchy.readCell(e, parts.level);
+				var infos = parts.hierarchy.readCell(e, parts.level).map(function(info) {
+					info.label = cubesviewer.views.cube.applyInfoFormatting(info.label, dim);
+					return info;
+				});
 
 				// Values and Labels
 				var drilldown_level_values = [];
@@ -611,10 +614,11 @@ function cubesviewerViewCubeExplore() {
 
 		$(view.params.cuts).each(function(idx, e) {
 			var dimparts = view.cube.cvdim_parts(e.dimension.replace(":",  "@"));
+			var dim = view.cube.cvdim_dim(e.dimension);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-cut'), "#ffcccc", 480, readonly,
 				'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Filter: </b> ' + dimparts.label  + ' = ' + '</span>' +
-				'<span title="' + e.value + '">' + e.value + '</span>'
+				'<span title="' + e.value + '">' + cubesviewer.views.cube.applyInfoFormatting(e.value, dim) + '</span>'
 			);
 			piece.addClass("cv-view-infopiece-cut");
 			piece.attr("data-dimension", e.dimension);
