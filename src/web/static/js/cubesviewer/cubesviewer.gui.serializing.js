@@ -47,7 +47,7 @@ function cubesviewerGuiSerializing() {
 
 		$(gui.options.container).find('.cv-gui-tools-menu').prepend(
 			'<li><a href="#" class="cv-gui-addserialized">Add view from JSON</a></li>'
-	    );
+		);
 		$(gui.options.container).find('.cv-gui-tools-menu').menu('refresh');
 		//$('.cv-gui-addserialized', gui.options.container).button();
 		$('.cv-gui-addserialized', gui.options.container).click(function() {
@@ -94,12 +94,38 @@ function cubesviewerGuiSerializing() {
 	 * Save a view.
 	 */
 	this.serializeView = function (view) {
-
 		var serialized = view.cubesviewer.views.serialize(view);
 		console.log(serialized);
-		view.cubesviewer.alert (serialized);
-		// TODO: Show serialized info properly
+		this.jqueryUiPopup(serialized);
+	};
 
+	this.jqueryUiPopup = function (text) {
+		$('<p/>', {
+			text: text
+		}).dialog({
+			buttons: [{
+					text: "Close",
+					click: function() {
+						$(this).dialog("close");
+					},
+			}],
+			open: function() {
+				//autoselect text for copying
+				window.getSelection().removeAllRanges();
+				var range = document.createRange();
+				range.selectNode($(this)[0]);
+				window.getSelection().addRange(range);
+			},
+			create: function() {
+				var dialog = $(this);
+				var click_id = 'click.' + $(dialog).attr('id');
+
+				$('div#body').bind(click_id, function() {
+					$(dialog).dialog('close');
+					$(this).unbind(click_id);
+				});
+			},
+		});
 	};
 
 	/*
