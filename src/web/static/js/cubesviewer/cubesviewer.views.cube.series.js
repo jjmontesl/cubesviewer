@@ -385,16 +385,23 @@ function cubesviewerViewCubeSeries() {
 				rows.push ( newrow );
 			}
 
+			var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+			var colFormatter = cubesviewer.views.cube.columnFormatFunction(view, ag);
+
 			if (colNames.indexOf(colKey) < 0) {
 				colNames.push (colKey);
 				var col = {
-					name: colKey, index: colKey, align: "right", sorttype: "number", width: cubesviewer.views.cube.explore.defineColumnWidth(view, colKey, 75),
-							formatter: 'number',
-							formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
+					name: colKey,
+					index: colKey,
+					align: "right",
+					sorttype: "number",
+					width: cubesviewer.views.cube.explore.defineColumnWidth(view, colKey, 75),
+					formatter: function(cellValue, options, rowObject) {
+						return colFormatter(cellValue);
+					}
+					//formatoptions: {},
 				};
 
-				var ag = $.grep(view.cube.aggregates, function(ag) { return ag.name == view.params.yaxis })[0];
-				$.extend(col, cubesviewer.views.cube.columnFormatOptions(ag));
 				colModel.push (col);
 			}
 

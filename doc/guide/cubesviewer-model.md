@@ -151,42 +151,33 @@ in the example below. Ignored dimensions will not be shown by CubesViewer.
         ...
 ```
 
-Aggregate Formatting
---------------------
+Meassure Formatting
+-------------------
 
-You can apply limited formatting options to your aggergates as shown in the
-example below. This will affect the explore view and the series view.
+You can apply a formatting expression to your measures as shown in the
+example below.
 
 ```
-    "aggregates": [
+    "measures": [
         {
-            "name": "units_sold_sum",
-            "measure": "units_sold",
-            "function": "sum",
+            "label": "expense_total",
+            "name": "expense_total",
             "info": {
-                "cv-formatter": "integer"
+              "cv-formatter": "Math.formatnumber(value, 2) + (value != undefined ? ' €' : '')"
             }
         },
-        {
-            "name": "percentage_sum",
-            "measure": "percentage",
-            "function": "sum",
-            "info": {
-                "cv-formatter": "percent"
-            }
-        },
-        {
-            "name": "revenue_sum",
-            "measure": "revenue",
-            "function": "sum",
-            "info": {
-                "cv-formatter": "currency",
-                "cv-currency-prefix": "",   // defaults to '$'
-                "cv-currency-suffix": "元"  // defaults to ''
-            }
-        }
-    ]
+        ...
 ```
 
-The integer and percent formatters accept no additional options. The currency
-formatter accepts an optional prefix and an optional suffix.
+The `cv-formatter` value is a Javascript expression that returns a formatted
+string.
+
+You can use the `Math.formatnumber` function, added by CubesViewer, which
+formats a number with thousands separator and the given number of decimal
+places.
+
+Remember to restart your Cubes server when changing cube metadata in order
+for the changes to be picked up.
+
+
+

@@ -269,44 +269,56 @@ function cubesviewerViewCube () {
 		return cuts;
 	};
 
-	this.columnFormatOptions = function(ag) {
-		switch(ag.info['cv-formatter']) {
-		case 'percent':
-			return {
-				formatter: function(cellValue, options, rowObject) {
-					if (cellValue === undefined) {
-						return "---%";
-					} else {
-						return (cellValue * 100).toFixed(2) + "%";
-					}
-				},
-				formatoptions: {},
-			};
-			break;
-		case 'integer':
-			return {
-				formatter: 'integer',
-				formatoptions: { thousandsSeparator: " " }
-			}
-			break;
-		case 'currency':
-			prefix = ag.info['cv-currency-prefix'] === undefined ? '$' : ag.info['cv-currency-prefix'];
-			suffix = ag.info['cv-currency-suffix'] === undefined ? '' : ag.info['cv-currency-suffix'];
-			return {
-				formatter: 'currency',
-				formatoptions: {
-					decimalSeparator: ".",
-					thousandsSeparator: " ",
-					decimalPlaces: 2,
-					prefix: prefix,
-					suffix: suffix
-				}
-			};
-			break;
-		default:
-			return {}; //use defaults
+	/**
+	 * Accepts an aggregation or a measure and returns the formatter function.
+	 */
+	this.columnFormatFunction = function(view, agmes) {
+
+		var measure = agmes;
+		if ('measure' in agmes) {
+			measure = $.grep(view.cube.measures, function(item, idx) { return item.ref == agmes.measure })[0];
 		}
+
+		var formatterFunction = null;
+		if (measure && ('cv-formatter' in measure.info)) {
+			formatterFunction = function(value) {
+				return eval(measure.info['cv-formatter']);
+			};
+		} else {
+			formatterFunction = function(value) {
+				return Math.formatnumber(value, (agmes.ref=="record_count" ? 0 : 2));
+			};
+		}
+
+		return formatterFunction;
 	};
+
+
+};
+
+Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSeparator) {
+
+
+	if (value === undefined) return "";
+
+	if (decimalPlaces === undefined) decimalPlaces = 2;
+	if (decimalSeparator === undefined) decimalSeparator = ".";
+	if (thousandsSeparator === undefined) thousandsSeparator = " ";
+
+	var result = "";
+
+
+	var intString = Math.floor(value).toString();
+	for (var i = 0; i < intString.length; i++) {
+		result = result + intString[i];
+		var invPos = (intString.length - i - 1);
+		if (invPos > 0 && invPos % 3 == 0) result = result + thousandsSeparator;
+	}
+	if (decimalPlaces > 0) {
+		result = result + parseFloat(value - Math.floor(value)).toFixed(decimalPlaces).toString().replace(".", decimalSeparator).substring(1);
+	}
+
+	return result;
 };
 
 /*

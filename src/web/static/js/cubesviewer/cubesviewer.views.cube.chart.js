@@ -365,6 +365,9 @@ function cubesviewerViewCubeChart() {
 	    	  //staggerLabels: true
 	    };
 
+	    var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+		var colFormatter = cubesviewer.views.cube.columnFormatFunction(view, ag);
+
 	    nv.addGraph(function() {
 	        var chart;
 	        chart = nv.models.multiBarChart()
@@ -388,7 +391,10 @@ function cubesviewerViewCubeChart() {
 	            //.tickFormat(d3.format(',0f'))
 	            ;
 
-	        chart.yAxis.tickFormat(d3.format(',.2f'));
+	        //chart.yAxis.tickFormat(d3.format(',.2f'));
+	        chart.yAxis.tickFormat(function(d,i) {
+	        	return colFormatter(d);
+	        });
 
 	        d3.select(container)
 	            .datum(d)
@@ -456,6 +462,9 @@ function cubesviewerViewCubeChart() {
 	    }
 	    */
 
+	    var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+		var colFormatter = cubesviewer.views.cube.columnFormatFunction(view, ag);
+
 	    if (view.params.charttype != "lines-stacked") {
 
 		    nv.addGraph(function() {
@@ -471,10 +480,9 @@ function cubesviewerViewCubeChart() {
 				                return (colNames[d]);
 				     })	;
 
-		    	chart.yAxis
-		    		//.axisLabel("Y-axis Label")
-		    		.tickFormat(d3.format(',.2f'));
-		    		;
+	    		chart.yAxis.tickFormat(function(d,i) {
+		        	return colFormatter(d);
+		        });
 
 		    	d3.select(container)
 		    		.datum(d)
@@ -519,8 +527,9 @@ function cubesviewerViewCubeChart() {
 			                return (colNames[d]);
 			       })	;
 
-	    	  chart.yAxis
-	    	      .tickFormat(d3.format(',.2f'));
+	    	  chart.yAxis.tickFormat(function(d,i) {
+	    		  return colFormatter(d);
+	    	  });
 
 	    	  d3.select(container)
 	    	    .datum(d)
@@ -661,6 +670,9 @@ function cubesviewerViewCubeChart() {
     		xticks.push([ i - 1, colNames[i] ]);
 	    }
 
+	    var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+		var colFormatter = cubesviewer.views.cube.columnFormatFunction(view, ag);
+
 	    nv.addGraph(function() {
 
 	        var chart = nv.models.pieChart()
@@ -670,7 +682,7 @@ function cubesviewerViewCubeChart() {
 	            //.color(d3.scale.category20().range())
 	            //.width(width)
 	            //.height(height)
-	            .labelType("percent")
+	            .labelType("percent");
 	            //.donut(true);
 
 	        /*
@@ -678,6 +690,10 @@ function cubesviewerViewCubeChart() {
 		        .startAngle(function(d) { return d.startAngle/2 -Math.PI/2 })
 		        .endAngle(function(d) { return d.endAngle/2 -Math.PI/2 });
 		        */
+
+	        chart.valueFormat(function(d,i) {
+	        	return colFormatter(d);
+	        });
 
 	          d3.select(container)
 	              .datum(d)

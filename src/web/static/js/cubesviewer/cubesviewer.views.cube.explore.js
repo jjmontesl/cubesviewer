@@ -398,19 +398,22 @@ function cubesviewerViewCubeExplore() {
 
 		$(view.cube.aggregates).each(function(idx, ag) {
 			colNames.push(ag.label);
+
+			var colFormatter = cubesviewer.views.cube.columnFormatFunction(view, ag);
 			var col = {
 				name : ag.ref,
 				index : ag.ref,
 				align : "right",
 				sorttype : "number",
 				width : cubesviewer.views.cube.explore.defineColumnWidth(view, ag.ref, 95),
-				formatter: 'number',
+				formatter: function(cellValue, options, rowObject) {
+					return colFormatter(cellValue);
+				},
+				//formatoptions: {},
 				cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-				formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: (ag.ref=="record_count" ? 0 : 2) }
 			};
-
-			$.extend(col, cubesviewer.views.cube.columnFormatOptions(ag));
 			colModel.push(col);
+
 			if (data.summary) dataTotals[ag.ref] = data.summary[ag.ref];
 		});
 

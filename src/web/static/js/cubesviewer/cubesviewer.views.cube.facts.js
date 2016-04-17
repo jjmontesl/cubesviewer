@@ -177,7 +177,7 @@ function cubesviewerViewCubeFacts() {
 			sorttype : "number",
 		});
 
-		for ( var dimensionIndex in dimensions) {
+		for (var dimensionIndex in dimensions) {
 			// Get dimension
 			var dimension = dimensions[dimensionIndex];
 
@@ -201,20 +201,24 @@ function cubesviewerViewCubeFacts() {
 		for (var measureIndex in measures) {
 			var measure = measures[measureIndex];
 
-			colNames.push(measure.name);
-			colModel.push({
+			colNames.push(measure.label);
+
+			var colFormatter = cubesviewer.views.cube.columnFormatFunction(view, measure);
+			var col = {
 				name : measure.ref,
 				index : measure.ref,
 				align : "right",
 				sorttype : "number",
 				width : cubesviewer.views.cube.explore.defineColumnWidth(view, measure.ref, 75),
-				formatter: 'number',
-				//cellattr: this.columnTooltipAttr(column),
-				formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
-			});
+				formatter: function(cellValue, options, rowObject) {
+					return colFormatter(cellValue);
+				}
+				//formatoptions: {}
+			};
+			colModel.push(col);
 		}
 
-        for (var detailIndex in details){
+        for (var detailIndex in details) {
             var detail = details[detailIndex];
 
             colNames.push(detail.name);
@@ -232,7 +236,7 @@ function cubesviewerViewCubeFacts() {
 
 
 		// Process cells
-		view.cubesviewer.views.cube.facts._addRows (view, dataRows, data);
+		view.cubesviewer.views.cube.facts._addRows(view, dataRows, data);
 
 		$('#factsTable-' + view.id).jqGrid({
 			data: dataRows,
@@ -260,7 +264,7 @@ function cubesviewerViewCubeFacts() {
 
 			loadComplete : function() {
 				// Call hook
-				view.cubesviewer.views.cube.explore.onTableLoaded (view);
+				view.cubesviewer.views.cube.explore.onTableLoaded(view);
 			},
 
 	        resizeStop: view.cubesviewer.views.cube.explore._onTableResize (view),
