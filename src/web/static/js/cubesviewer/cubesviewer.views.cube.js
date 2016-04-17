@@ -269,6 +269,44 @@ function cubesviewerViewCube () {
 		return cuts;
 	};
 
+	this.columnFormatOptions = function(ag) {
+		switch(ag.info['cv-formatter']) {
+		case 'percent':
+			return {
+				formatter: function(cellValue, options, rowObject) {
+					if (cellValue === undefined) {
+						return "---%";
+					} else {
+						return (cellValue * 100).toFixed(2) + "%";
+					}
+				},
+				formatoptions: {},
+			};
+			break;
+		case 'integer':
+			return {
+				formatter: 'integer',
+				formatoptions: { thousandsSeparator: " " }
+			}
+			break;
+		case 'currency':
+			prefix = ag.info['cv-currency-prefix'] === undefined ? '$' : ag.info['cv-currency-prefix'];
+			suffix = ag.info['cv-currency-suffix'] === undefined ? '' : ag.info['cv-currency-suffix'];
+			return {
+				formatter: 'currency',
+				formatoptions: {
+					decimalSeparator: ".",
+					thousandsSeparator: " ",
+					decimalPlaces: 2,
+					prefix: prefix,
+					suffix: suffix
+				}
+			};
+			break;
+		default:
+			return {}; //use defaults
+		}
+	};
 };
 
 /*
