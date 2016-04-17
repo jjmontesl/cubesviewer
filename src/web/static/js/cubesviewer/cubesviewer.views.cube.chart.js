@@ -370,7 +370,7 @@ function cubesviewerViewCubeChart() {
 	        chart = nv.models.multiBarChart()
 	          //.margin({bottom: 100})
 	          .transitionDuration(300)
-	          .showLegend(view.params.chartoptions.showLegend)
+	          .showLegend(!!view.params.chartoptions.showLegend)
 	          .margin({left: 120})
 	          ;
 

@@ -1,70 +1,77 @@
-Wishlist:
-    + Support multiple servers and multiple versions.
-    + Improve dimension search (current approach is very slow). Text search?
-    + Geocoding Support, views, filters, charts...
-Roadmap 1.0
-    + Tag 1.0 release.
-Roadmap 0.17 ?
-    + Rework comments / ACLs / ownership / revisions if not done yet.
+
+    * Support multiple servers and multiple versions.
+    * Improve dimension search (current approach is very slow). Text search?
+    * Geocoding Support, views, filters, charts...
+
+
+    * Rework comments / ACLs / ownership / revisions if not done yet.
       (new module / website: annotate) (?)
-    + Charts with time/sortable with series zoom?
-Roadmap 0.16
-    + Translation site / tool / ask for help.
-    + Interface available in English and one more language (Spanish?).
-    + Implement i18n.
-Roadmap 0.15
-    + Reviewed and improved doc
-    + Move doc to site (but import from repository markdown, to keep
+    * Charts with time/sortable with series zoom?
+
+    * Translation site / tool / ask for help.
+    * Interface available in English and one more language (Spanish?).
+    * Implement i18n.
+
+    * Reviewed and improved doc
+    * Move doc to site (but import from repository markdown, to keep
       doc sources along with the  project).
-    + Link from viewer to online doc.
-    + Create site, update readme, and site screenshots.
-Roadmap 0.14
-    + Implemented build system, concat simple file, minifying, etc.
-Roadmap 0.13
-    + Support more authentication scenarios for embedded views / IFRAME,
+    * Link from viewer to online doc.
+    * Create site, update readme, and site screenshots.
+
+    * Implemented build system, concat simple file, minifying, etc.
+
+    * Support more authentication scenarios for embedded views / IFRAME,
       via CubesViewer server app (note upcoming Cubes auth framework).
-    + App support for IFRAME embedding.
-    + GUI support for browser back button, correct URL usage, links to GUI.
-Roadmap 0.12
-    + Changed GUI loading (gui initializes cubesviewer, breaks existing
+    * App support for IFRAME embedding.
+    * GUI support for browser back button, correct URL usage, links to GUI.
+
+    * Changed GUI loading (gui initializes cubesviewer, breaks existing
       GUI HTML integrations!), in order to fix loading events ordering issue.
-    + Loading to be less destructive reusing existing DOM elements (up to the plugin).
-    + Support dimension attributes, and fact details in fact view etc..
-    + Support better exploration of facts
-    + Drop notes system 2: use metadata for info and add a comments system
-    + Analytics plugin to ignore first N seconds of events as for bounce rate calculation.
-    + jQGrid has changed licence (had to patch it). Change table component?!
-Roadmap 0.11
-    + Ability to filter from chart filter / synchronize filter and chart filter (?).
-    + HTML, CSS and dynamic class usage sanitized (closes #14).
-    + Data formatters (color, decimals, abbreviations, units, etc...). Allow client side changes?
-    + Allow to show blank for zeros (can be changed client side for the view)
-    + Implement limits to items shown in charts or dimension filters...?
-    + GUI options (and all other plugin options) now as cubesviewer options
+    * Loading to be less destructive reusing existing DOM elements (up to the plugin).
+    * Support dimension attributes, and fact details in fact view etc..
+    * Support better exploration of facts
+    * Drop notes system 2: use metadata for info and add a comments system
+    * Analytics plugin to ignore first N seconds of events as for bounce rate calculation.
+    * jQGrid has changed licence (had to patch it). Change table component?!
+
+    * Ability to filter from chart filter / synchronize filter and chart filter (?).
+    * Data formatters (color, decimals, abbreviations, units, etc...). Allow client side changes?
+    * Allow to show blank for zeros (can be changed client side for the view)
+    * Implement limits to items shown in charts or dimension filters...?
+    * GUI options (and all other plugin options) now as cubesviewer options
       (with plugin namespace?).
-    + New set of *color* icons .
-    + Bring back locale support!
-    + View UI interface reworked (reminder: ajaxloader usage in many places...).
-    + Horizontal dimension and measure dropdown from infobox (?) (see gui interface reworked)
-    + Hide interface mode (also, make these programmable options for the views)
-    + Fix too many series in legend issue (limit? alternate legend?).
-    + Use bootstrap as JS template ??
-    + Avoid leaving the page inadvertedely (also make back/forward/url_links work?)
-    + Jump to added view when creating a view (also make back/forward/url_links work?)
-    + Dialogs (serialize, others...) are no longer javascript alerts.
-    + GUI Interface, don't use menus (use divs, resizable when necessary). Also put messages here.
-    + Make the entry point (gui.html, ...) more accessible (also review grunt branch)?
+    * Bring back locale support!
+    * View UI interface reworked (reminder: ajaxloader usage in many places...).
+    * Horizontal dimension and measure dropdown from infobox (?) (see gui interface reworked)
+    * Hide interface mode (also, make these programmable options for the views)
+    * Fix too many series in legend issue (limit? alternate legend?).
+    * Avoid leaving the page inadvertedely (also make back/forward/url_links work?)
+    * Jump to added view when creating a view (also make back/forward/url_links work?)
+    * Dialogs (serialize, others...) are no longer javascript alerts.
+    * GUI Interface, don't use menus (use divs, resizable when necessary). Also put messages here.
+    * Make the entry point (gui.html, ...) more accessible (also review grunt branch)?
       Separate client from backend in dif folders at least? Client GUI with index.html, samples in separate folder.
       Package!
-    + Make it clear when the results limit has been hit (for dimension values and aggregations).
-    + Support negated cuts (also quick "invert" button in the cut-box).
-    + Cut and remove option from horizontal dimension (?) (see gui interface reworked)
-    + Show filter icon from "horizontal dimension". Also show its detail level (and perhaps not the hierarchy).
-    + Scroll to recently open view on GUI (also provide function to do it from code for standalone views).
-    + Short list cubes.js status for the list (fixes I had to do, not easy to add caching or get jQuery promise,
+    * Make it clear when the results limit has been hit (for dimension values and aggregations).
+    * Support negated cuts (also quick "invert" button in the cut-box).
+    * Cut and remove option from horizontal dimension (?) (see gui interface reworked)
+    * Show filter icon from "horizontal dimension". Also show its detail level (and perhaps not the hierarchy).
+    * Scroll to recently open view on GUI (also provide function to do it from code for standalone views).
+    * Short list cubes.js status for the list (fixes I had to do, not easy to add caching or get jQuery promise,
       not easy to get the path to be reused, missing facts I had to add, support for export/format,
       support for several servers desirable, inconsistent use of Cell/Browser interface or missing
       methods to transform drilldown_string<->drilldown object, same for cuts, documentation!!!!)
-    + Dimensions were somehow promoted to be kind of a top-level UI objects to be selectable/draggable
-    + Refactor libs to static/lib, join cubesviewer js and css in cubesviewer/js and cubesviewer/css  .
+    * Dimensions were somehow promoted to be kind of a top-level UI objects to be selectable/draggable
+    * Refactor libs to static/lib, join cubesviewer js and css in cubesviewer/js and cubesviewer/css  .
 
+    * Tag 2.0 release?
+    * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
+    * Add anonymous-save service to backend and client (dedup).
+    * Add carets to dropdown menus.
+    * Export facts is failing.
+    * HTML, CSS and dynamic class usage sanitized (closes #14).
+    * New set of icons (color?).
+    * Separate chart plugin in files.
+    * Fix menu items changing to bold and white.
+    * Upgrade libraries (D3, jquery, etc)
+    * Merge remaining assigned Pull Requests.

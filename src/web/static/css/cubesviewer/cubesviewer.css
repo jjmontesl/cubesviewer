@@ -32,10 +32,14 @@ Ported from blueprint to make sure embedded views work without blueprint.
 	text-decoration: none;
 }
 
+.cv-view-panel .ui-menu-item,
+.cv-view-panel .ui-menu-item span,
 .cv-view-panel .ui-state-active a,
 .cv-view-panel .ui-state-active a:link,
+.cv-view-panel .ui-state-active a:hover,
 .cv-view-panel .ui-state-active a:visited {
     color: inherit;
+    font-weight: normal;
 }
 
 .cv-view-panel table, .cv-view-panel tr, .cv-view-panel td {
@@ -47,7 +51,7 @@ Ported from blueprint to make sure embedded views work without blueprint.
     user-select: initial;
 }
 
-.cv-view-panel li.ui-menu-item .cv-gui-panel li.ui-menu-item {
+.cv-view-panel .ui-menu-item, .cv-gui-panel li.ui-menu-item {
   list-style: none;
   font-weight: normal !important;
   /*padding-left: 20px;*/
@@ -61,9 +65,11 @@ li.ui-menu-item a {
     font-size: 13px;
 }
 
+/*
 .cv-view-panel label {
     font-weight: bold;
 }
+*/
 
 .ui-slider-range {
     background-color: red;

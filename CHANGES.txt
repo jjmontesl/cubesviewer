@@ -1,4 +1,9 @@
-[0.0.12]
+[1.0.1]
+
+
+    * Option to show/hide chart labels.
+    * Sort pie charts by size of slice.
+    * Serializing now shows code in a floating dialog box easier to copy.
 
 [0.0.11]
 

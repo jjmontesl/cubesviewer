@@ -6,13 +6,15 @@ CubesViewer is written and maintained by Jose Juan Montes.
 Development:
 
 * José Juan Montes <jjmontes@gmail.com>
-  http://inmensosofa.blogspot.com/ 
+  http://inmensosofa.blogspot.com/
 
 * Stefan Urbanek <stefan@stiivi.com>
-  http://stiivi.com/ 
+  http://stiivi.com/
 
 Other contributors:
 
 * Enrique Hernández
 * Alexander Bessonov
+* Devin Howard
+
 
