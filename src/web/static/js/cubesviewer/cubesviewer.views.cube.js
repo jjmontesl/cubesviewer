@@ -263,7 +263,8 @@ function cubesviewerViewCube () {
 		// Include cuts
 		var cuts = [];
 		$(view.params.cuts).each(function(idx, e) {
-			cuts.push(cubes.cut_from_string (view.cube, e.dimension + ":" + e.value));
+			var invert = e.invert ? "!" : "";
+			cuts.push(cubes.cut_from_string (view.cube, invert + e.dimension + ":" + e.value));
 		});
 
 		return cuts;

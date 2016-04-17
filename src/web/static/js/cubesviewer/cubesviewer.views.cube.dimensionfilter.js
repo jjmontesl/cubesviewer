@@ -147,8 +147,11 @@ function cubesviewerViewCubeDimensionFilter () {
 		// Draw value container
 
 		$(view.container).find('.cv-view-dimensionfilter-cont').append (
-				'<div style="margin-top: 5px; margin-bottom: 5px;">' +
+				'<div class="filter-option">' +
 				' Search: <input style="width: 270px;" name="dimensionfilter-list-search" />' +
+				'</div>' +
+				'<div class="filter-option">' +
+				'<label>Invert: <input type="checkbox" class="invert-cut" /></label>' +
 				'</div>' +
 				'<div class="cv-view-dimensionfilter-list" style="max-height: 300px; overflow-x: hidden; overflow-y: auto; max-width: 580px; "><i>Loading...</i></div>'
 		);
@@ -330,12 +333,18 @@ function cubesviewerViewCubeDimensionFilter () {
 		var parts = view.cube.cvdim_parts(dimensionString);
 		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
 
+		var invert = false;
 		var filterValues = [];
 		for (var i = 0; i < view.params.cuts.length ; i++) {
 			if (view.params.cuts[i].dimension == cutDimension) {
+				invert = view.params.cuts[i].invert;
 				filterValues = view.params.cuts[i].value.split(";");
 				break;
 			}
+		}
+
+		if (invert) {
+			$(view.container).find(".cv-view-dimensionfilter-cont .invert-cut").attr("checked", "checked");
 		}
 
 		if (filterValues.length > 0) {
@@ -357,7 +366,7 @@ function cubesviewerViewCubeDimensionFilter () {
 
 		var parts = view.cube.cvdim_parts(dimensionString);
 
-		checked = $(view.container).find(".cv-view-dimensionfilter-list").find("input:checked");
+		var checked = $(view.container).find(".cv-view-dimensionfilter-list").find("input:checked");
 
 		// Empty selection would yield no result
 		/*
@@ -375,8 +384,10 @@ function cubesviewerViewCubeDimensionFilter () {
 			});
 		}
 
+		var invert = $(view.container).find(".cv-view-dimensionfilter .invert-cut").is(":checked");
+
 		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
-		cubesviewer.views.cube.explore.selectCut(view, cutDimension, filterValues.join(";"));
+		cubesviewer.views.cube.explore.selectCut(view, cutDimension, filterValues.join(";"), invert);
 
 	};
 

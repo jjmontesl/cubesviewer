@@ -210,7 +210,7 @@ function cubesviewerViewCubeExplore() {
 			return false;
 		});
 		$(view.container).find('.selectCut').click( function() {
-			cubesviewer.views.cube.explore.selectCut(view, $(this).attr('data-dimension'), $(this).attr('data-value'));
+			cubesviewer.views.cube.explore.selectCut(view, $(this).attr('data-dimension'), $(this).attr('data-value'), $(this).attr('data-invert'));
 			return false;
 		});
 
@@ -335,7 +335,7 @@ function cubesviewerViewCubeExplore() {
 				nid.push(drilldown_level_values.join("-"));
 
 				var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
-				key.push('<a href="#" class="cv-grid-link" onclick="' + "cubesviewer.views.cube.explore.selectCut(cubesviewer.views.getParentView(this), $(this).attr('data-dimension'), $(this).attr('data-value')); return false;" +
+				key.push('<a href="#" class="cv-grid-link" onclick="' + "cubesviewer.views.cube.explore.selectCut(cubesviewer.views.getParentView(this), $(this).attr('data-dimension'), $(this).attr('data-value'), $(this).attr('data-invert')); return false;" +
 						 '" class="selectCut" data-dimension="' + cutDimension + '" ' +
 						 'data-value="' + drilldown_level_values.join(",") + '">' +
 						 drilldown_level_labels.join(" / ") + '</a>');
@@ -616,17 +616,19 @@ function cubesviewerViewCubeExplore() {
 		});
 
 		$(view.params.cuts).each(function(idx, e) {
-			var dimparts = view.cube.cvdim_parts(e.dimension.replace(":", "@"));
+			var dimparts = view.cube.cvdim_parts(e.dimension.replace(":",  "@"));
+			var equality = e.invert ? ' != ' : ' = ';
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 				$(view.container).find('.cv-view-viewinfo-cut'), "#ffcccc", 480, readonly,
-				'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Filter: </b> ' + dimparts.label + ' = ' + '</span>' +
+				'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Filter: </b> ' + dimparts.label  + equality + '</span>' +
 				'<span title="' + e.value + '">' + e.value + '</span>'
 			);
 			piece.addClass("cv-view-infopiece-cut");
 			piece.attr("data-dimension", e.dimension);
 			piece.attr("data-value", e.value);
+			piece.attr("data-invert", e.invert || false);
 			piece.find('.cv-view-infopiece-close').click(function() {
-				view.cubesviewer.views.cube.explore.selectCut(view, e.dimension, "");
+				view.cubesviewer.views.cube.explore.selectCut(view, e.dimension, "", e.invert);
 			});
 		});
 
@@ -663,12 +665,13 @@ function cubesviewerViewCubeExplore() {
 			filterValues.push($(dom).attr("data-value"));
 		});
 
-		this.selectCut(view, $(dom).attr("data-dimension"), filterValues.join(";"));
+		var invert = false;
+		this.selectCut(view, $(dom).attr("data-dimension"), filterValues.join(";"), invert);
 
 	};
 
 	// Select a cut
-	this.selectCut = function(view, dimension, value) {
+	this.selectCut = function(view, dimension, value, invert) {
 
 		if (dimension != "") {
 			if (value != "") {
@@ -685,7 +688,8 @@ function cubesviewerViewCubeExplore() {
 					}, true);
 					view.params.cuts.push({
 						"dimension" : dimension,
-						"value" : value
+						"value" : value,
+						"invert" : invert
 					});
 				/*}*/
 			} else {
