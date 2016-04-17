@@ -24,6 +24,14 @@ module.exports = function(grunt) {
     qunit: {
       files: ['test/**/*.html']
     },
+    bower: {
+	  dev: {
+	    dest: 'build/lib'
+	    //options: {
+	    //    expand: true
+	    //}
+	  }
+	},
     jshint: {
       files: ['Gruntfile.js', 'src/web/static/js/cubesviewer/**/*.js', 'test/**/*.js'],
       options: {
@@ -47,10 +55,11 @@ module.exports = function(grunt) {
   //grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-bower-task')
 
   grunt.registerTask('test', ['jshint', 'qunit']);
 
-  grunt.registerTask('default', ['concat', 'uglify']); // 'jshint'
+  grunt.registerTask('default', ['bower', 'concat', 'uglify']); // 'jshint'
 
 };
 

@@ -61,8 +61,8 @@ like sharing/saving and user notes. Requires Django 1.7, but it is optional
 (only needed if you wish to use the full application with user authentication, user notes
 or save/load/share support).
 
-Of course you need a configured and running [Cubes Server](http://databrewery.org/cubes.html) version 1.0.x or later.
-Note that your cubes model needs some extra configuration if you wish to use features like date
+You need a configured and running [Cubes Server](http://databrewery.org/cubes.html) version 1.0.x or later.
+your Cubes model may need some extra configuration if you wish to use features like date
 filters and range filters (see Documentation below).
 
 To be able for CubesViewer to connect to the slicer server, your `slicer.ini` should allow cross origin resource
@@ -105,7 +105,10 @@ If you are using or trying CubesViewer, we'd love to hear from you (tweet #cubes
 Source
 ======
 
-Github source repository: https://github.com/jjmontesl/cubesviewer
+Github source repository:
+
+* https://github.com/jjmontesl/cubesviewer
+* https://github.com/jjmontesl/cubesviewer-server
 
 Authors
 =======

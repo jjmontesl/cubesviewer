@@ -1,5 +1,0 @@
-Django==1.7.3
-argparse==1.2.1
-djangorestframework==3.0.3
-requests==2.5.1
-wsgiref==0.1.2

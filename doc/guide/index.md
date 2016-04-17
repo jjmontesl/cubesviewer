@@ -1,7 +1,7 @@
 CubesViewer - OLAP Visual Viewer and Explore Tool
 =================================================
 
-[CubesViewer](https://github.com/jjmontesl/cubesviewer) is a visual, web-based tool application 
+[CubesViewer](https://github.com/jjmontesl/cubesviewer) is a visual, web-based tool application
 for exploring and analyzing OLAP databases served by the Cubes OLAP Framework.
 
 
@@ -20,7 +20,9 @@ CubesViewer Documentation
 
 * CubesViewer User Guide - _to be done_
 
-**Main page**:
+**Links**:
+
+* [CubesViewer Demo](http://jjmontesl.github.io/cubesviewer/)
 
 * [CubesViewer](https://github.com/jjmontesl/cubesviewer)
-
+* [CubesViewer Server](https://github.com/jjmontesl/cubesviewer-server)

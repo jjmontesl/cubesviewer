@@ -1,0 +1,30 @@
+{
+  "name": "cubesviewer",
+  "description": "CubesViewer JS client app",
+  "main": "cubesviewer",
+  "authors": [
+    "Jose Juan Montes <jjmontes@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "olap",
+    "visualization"
+  ],
+  "homepage": "https://github.com/jjmontesl/cubesviewer",
+  "moduleType": [
+    "amd"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^2.2.3",
+    "nvd3": "^1.8.2",
+    "blockUI": "*",
+    "qtip2": "^2.2.1"
+  }
+}
