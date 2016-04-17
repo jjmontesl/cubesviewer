@@ -1,5 +1,7 @@
 [1.2.1]
 
+    * Added support for negated cuts (inverse filters).
+    * Added support for custom values formatting.
     * Added cube metadata option to set view default params.
     * Option to show/hide chart labels.
     * Sort pie charts by size of slice.

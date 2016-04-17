@@ -3,7 +3,6 @@
     * Improve dimension search (current approach is very slow). Text search?
     * Geocoding Support, views, filters, charts...
 
-
     * Rework comments / ACLs / ownership / revisions if not done yet.
       (new module / website: annotate) (?)
     * Charts with time/sortable with series zoom?
@@ -53,8 +52,7 @@
       Separate client from backend in dif folders at least? Client GUI with index.html, samples in separate folder.
       Package!
     * Make it clear when the results limit has been hit (for dimension values and aggregations).
-    * Support negated cuts (also quick "invert" button in the cut-box).
-    * Cut and remove option from horizontal dimension (?) (see gui interface reworked)
+    * Support negated cuts (add quick "invert" button in the cut-box?).
     * Show filter icon from "horizontal dimension". Also show its detail level (and perhaps not the hierarchy).
     * Scroll to recently open view on GUI (also provide function to do it from code for standalone views).
     * Short list cubes.js status for the list (fixes I had to do, not easy to add caching or get jQuery promise,
@@ -63,6 +61,8 @@
       methods to transform drilldown_string<->drilldown object, same for cuts, documentation!!!!)
     * Dimensions were somehow promoted to be kind of a top-level UI objects to be selectable/draggable
     * Refactor libs to static/lib, join cubesviewer js and css in cubesviewer/js and cubesviewer/css  .
+
+    * Mapping (openlayers).
 
     * Tag 2.0 release?
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
@@ -74,4 +74,3 @@
     * Separate chart plugin in files.
     * Fix menu items changing to bold and white.
     * Upgrade libraries (D3, jquery, etc)
-    * Merge remaining assigned Pull Requests.
