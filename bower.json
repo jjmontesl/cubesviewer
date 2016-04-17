@@ -8,11 +8,12 @@
   "license": "MIT",
   "keywords": [
     "olap",
-    "visualization"
+    "visualization",
+    "cubes"
   ],
   "homepage": "https://github.com/jjmontesl/cubesviewer",
   "moduleType": [
-    "amd"
+    "globals"
   ],
   "ignore": [
     "**/.*",
@@ -22,9 +23,21 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "^2.2.3",
-    "nvd3": "^1.8.2",
+    "jquery": "2.2.3",
+    "nvd3": "1.8.2",
     "blockUI": "*",
-    "qtip2": "^2.2.1"
+    "qtip2": "2.2.1",
+    "bootstrap": "3.3.6",
+    "jquery-ui": "1.11.4",
+    "jquery-sticky": "1.0.3",
+    "free-jqgrid": "4.13.2"
+  },
+  "exportsOverride": {
+    "jquery": {
+      "/": "dist/**/*.*"
+    },
+    "bootstrap": {
+      "/": "dist/**/*.*"
+    }
   }
 }

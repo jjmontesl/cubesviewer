@@ -7,6 +7,10 @@
     * Sort pie charts by size of slice.
     * Serializing now shows code in a floating dialog box easier to copy.
 
+    * Replaced YUI and BluePrint for Bootstrap.
+    * Introduced Grunt/Bower build system.
+    * Refactored: separated cubesviewer-server from client.
+
 [0.0.11]
 
     * Fixed bug causing datefilter to unnecessarily require 'cv-datefilter: true'.

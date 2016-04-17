@@ -2,70 +2,66 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
 <head>
 
-    <title>CubesViewer GUI Local</title>
+    <title>CubesViewer GUI - Local</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="robots" content="NONE,NOARCHIVE" />
 
+    <!--
+    OLD:
 	<link rel="stylesheet" href="../web/static/css/blueprint/screen.css" type="text/css" media="screen, projection">
 	<link rel="stylesheet" href="../web/static/css/blueprint/print.css" type="text/css" media="print">
 	<!--[if lt IE 8]> <link rel="stylesheet" href="../web/static/css/blueprint/ie.css" type="text/css" media="screen, projection"> <!¡[endif]-->
 
-	<link rel="stylesheet" type="text/css" href="../web/static/css/cvapp.css" />
-
-
-    <!-- CubesViewer CSS resources -->
+    <!-- OLD: CubesViewer CSS resources -->
+    <!--
     <link type="text/css" rel="stylesheet" href="../web/static/js/jqueryui/jquery-ui.min.css" />
     <link type="text/css" rel="stylesheet" href="../web/static/css/jqgrid/ui.jqgrid.css" media="screen" />
     <link type="text/css" rel="stylesheet" href="../web/static/js/qtip/jquery.qtip.css"  />
     <link type="text/css" rel="stylesheet" href="../web/static/js/wiky/wiky.math.css" />
-    <link type="text/css" rel="stylesheet" href="../web/static/js/nvd3/nv.d3.min.css" />
+    -->
 
-    <link type="text/css" rel="stylesheet" href="../web/static/css/cubesviewer/cubesviewer.css" />
+    <link rel="stylesheet" href="../lib/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" href="../lib/jquery-ui/themes/base/all.css" />
+    <link rel="stylesheet" href="../lib/free-jqgrid/ui.jqgrid.css" />
+    <link rel="stylesheet" href="../lib/nvd3/nv.d3.css" />
+
+    <link rel="stylesheet" href="../dist/cubesviewer.css" />
+
+
 
     <!-- CubesViewer JS dependencies -->
-
-    <script type="text/javascript" src="../web/static/js/jquery/jquery.js"></script>
+    <!--
     <script type="text/javascript" src="../web/static/js/jquery/jquery.cookie.js"></script>
     <script type="text/javascript" src="../web/static/js/jqueryui/jquery-ui.min.js"></script>
 
     <script type="text/javascript" src="../web/static/js/dateformat/dateformat.js"></script>
 
-    <script type="text/javascript" src="../web/static/js/jquery/jquery.sticky.js"></script> <!-- for CubesViewer GUI -->
+    <script type="text/javascript" src="../web/static/js/jquery/jquery.sticky.js"></script>
     <script type="text/javascript" src="../web/static/js/jquery/jquery.blockUI.js"></script>
 
     <script type="text/javascript" src="../web/static/js/wiky/wiky.js"></script>
     <script type="text/javascript" src="../web/static/js/wiky/wiky.math.js"></script>
     <script type="text/javascript" src="../web/static/js/flotr2/flotr2.min.js"></script>
 
-    <script type="text/javascript" src="../web/static/js/d3js/d3.v3.js"></script>
-    <script type="text/javascript" src="../web/static/js/nvd3/nv.d3.js"></script>
-    <script type="text/javascript" src="../web/static/js/qtip/jquery.qtip.js"></script>
-
     <script type="text/javascript" src="../web/static/js/jqgrid/i18n/grid.locale-en.js" ></script>
     <script type="text/javascript" src="../web/static/js/jqgrid/migrate-jquery-browser.js" ></script>
     <script type="text/javascript" src="../web/static/js/jqgrid/jquery.jqGrid.min.js" ></script>
+     -->
 
-    <script type="text/javascript" src="../web/static/js/cubes/cubes.js"></script>
 
-    <!-- Cubesviewer modules -->
+    <script src="../lib/jquery/jquery.js"></script>
+    <script src="../lib/jquery-ui/jquery-ui.js"></script>
+    <script src="../lib/jquery-sticky/jquery.sticky.js"></script>
+    <script src="../lib/bootstrap/bootstrap.js"></script>
+    <script src="../lib/d3/d3.js"></script>
+    <script src="../lib/nvd3/nv.d3.js"></script>
+    <script src="../lib/blockUI/jquery.blockUI.js"></script>
+    <script src="../lib/ev-emitter/ev-emitter.js"></script>
+    <script src="../lib/imagesloaded/imagesloaded.js"></script>
+    <script src="../lib/qtip2/jquery.qtip.js"></script>
+    <script src="../lib/qtip2/basic/jquery.qtip.js"></script>
+    <script src="../lib/free-jqgrid/jquery.jqgrid.min.js"></script>
 
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.cache.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.explore.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.datefilter.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.rangefilter.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.series.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.chart.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.facts.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.dimensionfilter.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.columns.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.export.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.undo.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.gui.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.gui.serializing.js"></script>
-    <!-- <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.gui.localeswitcher.js"></script>  -->
+    <script src="../dist/cubesviewer.js"></script>
 
 
 <script type="text/javascript">
@@ -105,7 +101,7 @@
 
 <div id="header"  class="ui-widget ui-widget-content ui-corner-all">
     <div style="float: left;">
-        <img id="cv-logo" title="CubesViewer" src="../web/static/img/cubesviewer-logo.png" />
+        <img id="cv-logo" title="CubesViewer" src="img/cubesviewer-logo.png" />
     </div>
 
     <h1 id="site-name">CubesViewer GUI Local</h1>
@@ -141,8 +137,8 @@
 	<div style="height: 1px; border-top: 1px solid #DDDDDD; padding-top: 4px;"></div>
 	<div style="float: right; white-space: nowrap;">
 		<p style="vertical-align: middle;">
-		<a href="http://databrewery.org/" target="_blank"><img title="Powered by Databrewery Cubes" style="width: 60px; height: 30px;" src="../web/static/img/cubes-logo.png" /></a>
-        <a href="https://github.com/jjmontesl/cubesviewer" target="_blank"><img title="Powered by CubesViewer" style="width: 55px; height: 30px;" src="../web/static/img/cubesviewer-logo.png" /></a>
+		<a href="http://databrewery.org/" target="_blank"><img title="Powered by Databrewery Cubes" style="width: 70px; height: 30px;" src="img/cubes-logo.png" /></a>
+        <a href="https://github.com/jjmontesl/cubesviewer" target="_blank"><img title="Powered by CubesViewer" style="width: 55px; height: 30px;" src="img/cubesviewer-logo.png" /></a>
 		</p>
 	</div>
 	<div>

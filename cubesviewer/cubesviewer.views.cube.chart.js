@@ -64,6 +64,8 @@ function cubesviewerViewCubeChart() {
 	};
 
 	this.cleanupNvd3 = function() {
+		console.debug("WARNING! Cleanup function disabled: review.");
+		/*
 		var len = nv.graphs.length;
 		while (len--) {
 			if (! ($.contains(document.documentElement, nv.graphs[len].container))) {
@@ -71,6 +73,7 @@ function cubesviewerViewCubeChart() {
 				nv.graphs.splice (len,1);
 			}
 		}
+		*/
 	};
 
 	/*
@@ -372,7 +375,7 @@ function cubesviewerViewCubeChart() {
 	        var chart;
 	        chart = nv.models.multiBarChart()
 	          //.margin({bottom: 100})
-	          .transitionDuration(300)
+	          .options({duration: 300})
 	          .showLegend(!!view.params.chartoptions.showLegend)
 	          .margin({left: 120})
 	          ;
@@ -486,7 +489,8 @@ function cubesviewerViewCubeChart() {
 
 		    	d3.select(container)
 		    		.datum(d)
-		    		.transition().duration(500).call(chart);
+		    		.options({duration: 300})
+		    		.call(chart);
 
 		    	nv.utils.windowResize(chart.update);
 
@@ -533,7 +537,8 @@ function cubesviewerViewCubeChart() {
 
 	    	  d3.select(container)
 	    	    .datum(d)
-	    	      .transition().duration(500).call(chart);
+	    	      .options({duration: 300})
+	    	      .call(chart);
 
 	    	  nv.utils.windowResize(chart.update);
 
@@ -697,7 +702,7 @@ function cubesviewerViewCubeChart() {
 
 	          d3.select(container)
 	              .datum(d)
-	            .transition().duration(1200)
+	              .options({duration: 300})
 	              //.attr('width', width)
 	              //.attr('height', height)
 	              .call(chart);
