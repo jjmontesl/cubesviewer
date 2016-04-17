@@ -112,6 +112,27 @@ This is an example dimension "year" showing this configuration:
         ...
 ```
 
+Per-cube default configuration
+------------------------------
+
+Sometimes you may wish to define an initial configuration for each cube. You can do so
+by adding a "cv-view-params" dictionary to the cube "info". This way you can, for
+example, hide some columns, apply a datefilter or show a chart view for a given cube:
+
+```
+        "name": "cube_name",
+        "info": {
+            "cv-view-params": {
+                "mode": "chart",
+                "xaxis": "date:quarter",
+                "yaxis": "record_count"
+            }
+        }
+        ...
+```
+
+
+
 Ignored Dimensions
 ------------------
 

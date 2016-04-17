@@ -1,6 +1,6 @@
 [1.0.1]
 
-
+    * Added cube metadata option to set view default params.
     * Option to show/hide chart labels.
     * Sort pie charts by size of slice.
     * Serializing now shows code in a floating dialog box easier to copy.

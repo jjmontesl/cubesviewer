@@ -11,11 +11,11 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * If your version of the Software supports interaction with it remotely through
  * a computer network, the above copyright notice and this permission notice
  * shall be accessible to all users.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,27 +26,31 @@
  */
 
 /*
- * Cube view. 
+ * Cube view.
  */
 function cubesviewerViewCube () {
 
 	this.cubesviewer = cubesviewer;
 
 	this.onViewCreate = function(event, view) {
-		
+
 		$.extend(view.params, {
-	
+
 			"mode" : "explore",
-			
+
 			"drilldown" : [],
 			"cuts" : []
-			
+
 		});
-		
+
 		view.cube = null;
-		
+
 		var jqxhr = cubesviewer.cubesserver.get_cube(view.params.cubename, function(cube) {
 			view.cube = cube;
+
+			// Apply parameters if cube metadata contains specific cv-view-params
+			if ('cv-view-params' in cube.info) $.extend(view.params, cube.info['cv-view-params']);
+
 		    if (view.state == cubesviewer.views.STATE_INITIALIZED) cubesviewer.views.redrawView(view);
 		});
 		if (jqxhr) {
@@ -55,35 +59,35 @@ function cubesviewerViewCube () {
 				cubesviewer.views.redrawView(view);
 			});
 		}
-		
+
 	};
-	
-	
+
+
 	/*
 	 * Draw cube view menu
 	 */
 	this.drawMenu = function(view) {
-		
+
 		// Add view menu options button
 		$(view.container).find('.cv-view-toolbar').append(
 			'<button class="viewbutton" title="View" style="margin-right: 5px;">View</button>'
 		);
-		
+
 		$(view.container).find('.cv-view-viewmenu').append(
-			'<ul class="cv-view-menu cv-view-menu-view" style="float: right; width: 180px;">' + 
+			'<ul class="cv-view-menu cv-view-menu-view" style="float: right; width: 180px;">' +
 			//'<li><a href="#" class="aboutBox">About CubesViewer...</a></li>' +
 			//'<div></div>' +
 			'</ul>'
 		);
-		
+
 		// Buttonize
 		$(view.container).find('.viewbutton').button();
-		
+
 		// Menu functionality
 		view.cubesviewer.views.cube._initMenu(view, '.viewbutton', '.cv-view-menu-view');
 
 	}
-	
+
 	/*
 	 * Draw cube view structure.
 	 */
@@ -96,21 +100,21 @@ function cubesviewerViewCube () {
 			return;
 		}
 
-		
+
 		if ($(".cv-view-viewdata", view.container).size() == 0) {
 
 			$(view.container).empty();
 			$(view.container).append(
-					'<div class="cv-view-panel">' + 
+					'<div class="cv-view-panel">' +
 					'<div class="cv-view-viewmenu"></div>' +
 					'<div class="cv-view-viewinfo"></div>' +
 					'<div class="cv-view-viewdata" style="clear: both;"></div>' +
 					'<div class="cv-view-viewfooter" style="clear: both;"></div>' +
 					'</div>'
 			);
-			
+
 		}
-		
+
 		// Check if the model/cube is loaded.
 		// TODO: Review if this code is needed
 		/*
@@ -119,13 +123,13 @@ function cubesviewerViewCube () {
 			return;
 		}
 		*/
-		
+
 		// Menu toolbar
 		$(view.container).find('.cv-view-viewmenu').empty().append(
 			'<div style="float: right; z-index: 9990; margin-bottom: 5px;"><div class="cv-view-toolbar ui-widget-header ui-corner-all" style="display: inline-block; padding: 2px;">' +
 			'</div></div>'
 		);
-		
+
 		// Draw menu
 		view.cubesviewer.views.cube.drawMenu(view);
 
@@ -144,7 +148,7 @@ function cubesviewerViewCube () {
 					return;
 				}
 			}
-			
+
 			if (ev.type == "click") {
 				if ($('.cv-view-menu', view.container).is(":visible")) {
 					// Hide the menu and return
@@ -152,7 +156,7 @@ function cubesviewerViewCube () {
 					return;
 				}
 			}
-			
+
 			// Hide all menus (only one context menu open at once)
 			$('.cv-view-menu').hide();
 
@@ -173,9 +177,9 @@ function cubesviewerViewCube () {
 		});
 
 		$(menuSelector, $(view.container)).menu({}).hide();
-		
+
 	};
-	
+
 	/**
 	 * Hide menus when mouse clicks outside them, but not when inside.
 	 */
@@ -188,7 +192,7 @@ function cubesviewerViewCube () {
 			}
 		}
 	};
-	
+
 	/*
 	 * Adjusts grids size
 	 */
@@ -196,36 +200,36 @@ function cubesviewerViewCube () {
 
 		// TODO: use appropriate container width!
 		//var newWidth = $(window).width() - 350;
-		
+
 		$(".cv-view-panel").each(function (idx, e) {
-		
+
 			$(".ui-jqgrid-btable", e).each(function(idx, el) {
-				
+
 				$(el).setGridWidth(cubesviewer.options.tableResizeHackMinWidth);
-				
+
 				var newWidth = $( e ).innerWidth() - 20;
 				//var newWidth = $( el ).parents(".ui-jqgrid").first().innerWidth();
 				if (newWidth < cubesviewer.options.tableResizeHackMinWidth) newWidth = cubesviewer.options.tableResizeHackMinWidth;
 
 				$(el).setGridWidth(newWidth);
-				
+
 			});
-			
+
 		});
-		
+
 	};
-	
+
 	/*
 	 * Builds Cubes Server query parameters based on current view values.
 	 */
 	this.buildBrowserArgs = function(view, includeXAxis, onlyCuts) {
-		
+
 		// "lang": view.cubesviewer.options.cubesLang
-		
+
 		var args = {};
-		
+
 		if (!onlyCuts) {
-			
+
 			var drilldowns = view.params.drilldown.slice(0);
 
 			// Include X Axis if necessary
@@ -237,7 +241,7 @@ function cubesviewerViewCube () {
 			for (var i = 0; i < drilldowns.length; i++) {
 				drilldowns[i] = cubes.drilldown_from_string(view.cube, view.cube.cvdim_parts(drilldowns[i]).fullDrilldownValue);
 			}
-			
+
 			// Include drilldown array
 			if (drilldowns.length > 0)
 				args.drilldown = cubes.drilldowns_to_string(drilldowns);
@@ -248,20 +252,20 @@ function cubesviewerViewCube () {
 		if (cuts.length > 0) args.cut = new cubes.Cell(view.cube, cuts);
 
 		return args;
-		
+
 	}
-	
+
 	/*
 	 * Builds Query Cuts
 	 */
 	this.buildQueryCuts = function(view) {
-		
+
 		// Include cuts
 		var cuts = [];
 		$(view.params.cuts).each(function(idx, e) {
 			cuts.push(cubes.cut_from_string (view.cube, e.dimension + ":" + e.value));
 		});
-		
+
 		return cuts;
 	};
 
