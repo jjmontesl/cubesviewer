@@ -84,16 +84,16 @@ function cubesviewerViewCubeExporter() {
 	 */
 	this.exportFacts = function(view) {
 
-		var params = {}
 		var args = view.cubesviewer.views.cube.buildBrowserArgs(view, false, true);
 
-		params = args;
-        if(args && args.cut)
-            params.data.cut = params.data.cut.toString();
+        var http_args = {};
+        http_args["format"] = "csv";
 
-		params["format"] = "csv";
+        if (args.cut) http_args.cut = args.cut.toString();
+        if (args.order) http_args.order = args.order.toString();
 
-		var url = view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/facts?" + $.param(params);
+
+		var url = view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/facts?" + $.param(http_args);
 		window.open(url, '_blank');
 		window.focus();
 
