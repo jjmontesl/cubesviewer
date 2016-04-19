@@ -1,115 +1,28 @@
 /*
- * Cubesviewer Application CSS
- * Note that the application is also based on blueprint CSS framework, which is included separately.  
+ * Cubesviewer sites CSS
+ * This file must not be included needed if you are embedding cubesviewer in your site, as it
+ * contains global CSS selectors.
  */
 
-img#cv-logo {
-	margin-left: 10px; 
-	margin-right: 20px;
-	height: 65px;
-	width: 135px;
+img.cv-logo {
+	margin: 5px;
+	height: 40px;
+	width: 85px;
 }
 
-h1 {
-    font-variant: small-caps;
-    font-weight: bold;
-    margin: 0px 0px 10px 0px;
-    color: #8686BF;
-    font-size: 20pt;
+#cubesviewer {
+    margin-top: 5px;
 }
 
-h2 {
-    font-variant: small-caps;
-    font-weight: bold;
-    margin: 0px 0px 10px 0px;
-    color: #8686BF;
-    font-size: 16pt;
-}
+.cv-gui-panel {
+    /*
+    position: fixed;
+    border-bottom: 2px solid black;
+    background-color: #ffffff;
+    left: 0px;
+    right: 0px;
+    padding: 3px 5px 3px 5px;
+    */
 
-h3 {
-    font-variant: small-caps;
-    font-weight: bold;
-    margin: 0px 0px 10px 0px;
-    color: #8686BF;
-    font-size: 12pt;
+    margin-bottom: 5px;
 }
-
-p {
-	margin-bottom: 8px;
-}
-
-div#body {
-	margin: 10px;
-}
-
-div#header {
-	height: 48px;
-	padding: 4px;
-	margin-bottom: 10px;
-}
-
-h1#site-name {
-	padding-top: 10px;
-	font-weight: bold;
-	font-size: 22pt;
-	color: #8686BF;
-	white-space: nowrap;
-}
-
-#footer {
-	color: #8686BF;
-	font-style: italic;
-}
-
-.form-separator {
-	height: 6px;
-}
-.form-label {
-	font-weight: bold;
-	margin-bottom: 2px;
-	width: 200px;
-	display: inline-block;
-}
-.content {
-	padding: 2px 8px 2px 8px;	
-}
-.form-inline .form-field {
-	display: inline-block;
-	margin-left: 8px;
-	margin-right: 8px;
-}
-
-form p {
-	margin: 2px 0px 6px 2px;
-}
-input, textarea, select {
-    margin: 2px 0px !important;
-}
-input.disabled {
-	background-color: #eeeeee;
-}
-/*form label {
-	float: left;
-	min-width: 160px;
-	text-align: right;
-	padding-right: 8px;	
-}*/
-form div {
-	margin-top: 3px;
-	margin-bottom: 5px;
-}
-div.form-buttons {
-	margin-left: 168px;
-}
-ul.errorlist {
-	margin-left: 168px;
-	margin-top: 6px;
-	margin-bottom: 0px;
-	padding-left: 2px;
-}
-ul.errorlist li {
-	color: red;
-	list-style-type: none;
-	font-weight: bold;
-}
-

@@ -36,7 +36,8 @@ function cubesviewerGui () {
 	// Default options
 	this.options = {
 		container : null,
-		user : null
+		user : null,
+		showAbout: true
 	};
 
 	// Current views array
@@ -117,20 +118,16 @@ function cubesviewerGui () {
 	 */
 	this.createContainer = function(viewId) {
 
-		$(this.options.container).children('.cv-gui-workspace').append(
-			'<div id="'+ viewId + '" class="cv-gui-viewcontainer"></div>'
-		);
-
-		// Add view parts (header and body)
-		$('#' + viewId).append(
-			'<div class="cv-gui-cubesview" ><h3 class="sorthandle">' +
-			'<span style="float: right; margin-left: 20px;" class="cv-gui-closeview ui-icon ui-icon-close"></span>' +
-			'<span class="cv-gui-container-name" style="margin-left: 30px; margin-right: 20px;">' + /* view.name + */ '</span> <span style="float: right;" class="cv-gui-container-state"></span>' + /* viewstate + */
-			'</h3><div class="cv-gui-viewcontent" style="overflow: hidden;"></div></div>'
-		);
+		var containerRactive = new Ractive({
+			el: $(cubesviewer.gui.options.container).children('.cv-gui-workspace')[0],
+			append: true,
+			template: cvtemplates.gui_container,
+			partials: cvtemplates,
+			data: { 'cv': cubesviewer, 'viewId': viewId }
+		});
 
 		// Configure collapsible
-
+		/*
 		$('#' + viewId + " .cv-gui-cubesview").accordion({
 			collapsible : true,
 			autoHeight : false
@@ -144,7 +141,7 @@ function cubesviewerGui () {
 				evt.stopImmediatePropagation();
 			}
 		});
-
+		*/
 
 		return $('#' + viewId);
 	};
@@ -252,23 +249,13 @@ function cubesviewerGui () {
 
 	this.drawCubesList = function() {
 
-		// Clean list
-		$('.cv-gui-cubeslist-menu', $(cubesviewer.gui.options.container)).empty();
-
-		// Add cubes
-		$(cubesviewer.cubesserver._cube_list).each(
-			function(idx, cube) {
-				$('.cv-gui-cubeslist-menu', $(cubesviewer.gui.options.container)).append(
-						'<li><a href="#" data-cubename="' + cube.name + '" class="cv-gui-addviewcube">' + cube.label + '</a></li>'
-				);
-			}
-		);
-		$('.cv-gui-cubeslist-menu', $(cubesviewer.gui.options.container)).menu("refresh");
+		//cubesviewer.gui.menuRactive.set("cubesserver._cube_list", cubesviewer.cubesserver._cube_list);
+		cubesviewer.gui.menuRactive.reset({ 'cv': cubesviewer });
 
 		// Add handlers for clicks
 		$('.cv-gui-cubeslist-menu', $(cubesviewer.gui.options.container)).find('.cv-gui-addviewcube').click(function() {
 			var view = cubesviewer.gui.addViewCube(  $(this).attr('data-cubename') );
-			view.cubesviewer.views.redrawView (view);
+			//view.cubesviewer.showAboutviews.redrawView (view);
 			return false;
 		});
 
@@ -280,78 +267,18 @@ function cubesviewerGui () {
 	};
 
 	/*
-	 * Draw About info box.
-	 */
-	this.showAbout = function() {
-		this.cubesviewer.alert(
-				"CubesViewer - Version " + this.cubesviewer.version + "\n" +
-				"https://github.com/jjmontesl/cubesviewer/\n" +
-				"\n" +
-				"By José Juan Montes and others (see AUTHORS)\n" +
-				"2012-2015\n"
-		);
-	};
-
-	/*
-	 * Draws a section in the main GUI menu.
-	 */
-	this.drawSection = function(gui, title, cssClass) {
-
-		$(gui.options.container).children('.cv-gui-panel').append(
-			'<button class="' + cssClass + '" title="' + title + '" style="margin-right: 15px;">' + title + '</button>' +
-			'<ul class="' + cssClass + '-menu cv-view-menu"></ul>'
-		);
-		//$("." + cssClass + "-menu", gui.options.container).appendTo(document.body);
-		$("." + cssClass, gui.options.container).button();
-		$("." + cssClass, gui.options.container).click(function(ev) {
-
-			// Hide all other menus
-			$('.cv-view-menu').hide();
-
-			$("." + cssClass + "-menu", gui.options.container).css("position", "absolute");
-			$("." + cssClass + "-menu", gui.options.container).css("z-index", "9990");
-			$("." + cssClass + "-menu", gui.options.container).show();
-			$("." + cssClass + "-menu", gui.options.container).fadeIn().position({
-				my : "left top",
-				at : "left bottom",
-				of : this
-			});
-
-			ev.stopPropagation();
-			$(document).one("click", function () {
-				$("." + cssClass + "-menu", gui.options.container).fadeOut();
-			});
-
-		});
-
-		$("." + cssClass + "-menu", gui.options.container).menu({}).hide();
-
-		// Menu functionality
-		//view.cubesviewer.views.cube._initMenu(view, "." + cssClass, "." + cssClass + "-menu");
-
-	};
-
-	/*
 	 * Render initial (constant) elements for the GUI
 	 */
 	this.onGuiDraw = function(event, gui) {
 
-		// Draw cubes section
-		gui.drawSection (gui, "Cubes", "cv-gui-cubeslist");
-		gui.drawSection (gui, "Tools", "cv-gui-tools");
+		gui.menuRactive = new Ractive({
+			el: $(gui.options.container).children('.cv-gui-panel')[0],
+			template: cvtemplates.gui_menu,
+			partials: cvtemplates,
+			data: { 'cv': cubesviewer }
+		});
 
-
-		if (! ((gui.options.showAbout != undefined) && (gui.options.showAbout == false))) {
-			$(gui.options.container).find('.cv-gui-tools-menu').append(
-				'<div></div>' +
-				'<li><a href="#" class="cv-gui-about">About CubesViewer...</a></li>'
-		    );
-			$(gui.options.container).find('.cv-gui-tools-menu').menu('refresh');
-			$('.cv-gui-about', gui.options.container).click(function() {
-				gui.showAbout();
-				return false;
-			});
-		}
+		$('[data-submenu]', gui.options.container).submenupicker();
 
 
 		// Configure sortable panel
@@ -374,8 +301,6 @@ function cubesviewerGui () {
 		// forcePlaceholderSize: true,
 		// forceHlperSize: true,
 		});
-
-
 
 	}
 

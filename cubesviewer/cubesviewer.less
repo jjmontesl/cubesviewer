@@ -2,31 +2,21 @@
  * Cubesviewer CSS
  */
 
-/*
- * YUI context css reset
- */
-/*.yui3-cssreset html{color:#000;background:#FFF}.yui3-cssreset body,.yui3-cssreset div,.yui3-cssreset dl,.yui3-cssreset dt,.yui3-cssreset dd,.yui3-cssreset ul,.yui3-cssreset ol,.yui3-cssreset li,.yui3-cssreset h1,.yui3-cssreset h2,.yui3-cssreset h3,.yui3-cssreset h4,.yui3-cssreset h5,.yui3-cssreset h6,.yui3-cssreset pre,.yui3-cssreset code,.yui3-cssreset form,.yui3-cssreset fieldset,.yui3-cssreset legend,.yui3-cssreset input,.yui3-cssreset textarea,.yui3-cssreset p,.yui3-cssreset blockquote,.yui3-cssreset th,.yui3-cssreset td{margin:0;padding:0}.yui3-cssreset table{border-collapse:collapse;border-spacing:0}.yui3-cssreset fieldset,.yui3-cssreset img{border:0}.yui3-cssreset address,.yui3-cssreset caption,.yui3-cssreset cite,.yui3-cssreset code,.yui3-cssreset dfn,.yui3-cssreset em,.yui3-cssreset strong,.yui3-cssreset th,.yui3-cssreset var{font-style:normal;font-weight:normal}.yui3-cssreset ol,.yui3-cssreset ul{list-style:none}.yui3-cssreset caption,.yui3-cssreset th{text-align:left}.yui3-cssreset h1,.yui3-cssreset h2,.yui3-cssreset h3,.yui3-cssreset h4,.yui3-cssreset h5,.yui3-cssreset h6{font-size:100%;font-weight:normal}.yui3-cssreset q:before,.yui3-cssreset q:after{content:''}.yui3-cssreset abbr,.yui3-cssreset acronym{border:0;font-variant:normal}.yui3-cssreset sup{vertical-align:text-top}.yui3-cssreset sub{vertical-align:text-bottom}.yui3-cssreset input,.yui3-cssreset textarea,.yui3-cssreset select{font-family:inherit;font-size:inherit;font-weight:inherit}.yui3-cssreset input,.yui3-cssreset textarea,.yui3-cssreset select{*font-size:100%}.yui3-cssreset legend{color:#000}#yui3-css-stamp.cssreset-context{display:none}*/
+.cv-view-panel {
+    @import "bower_components/bootstrap/less/bootstrap.less";
+    @import "bower_components/bootstrap/less/responsive-embed.less";
+    /*@import "bower_components/bootstrap-submenu/less/bootstrap-submenu.less";*/
+    @font-size-base: 12px;
+    @panel-heading-padding: 5px 5px;
+    @panel-body-padding: 5px;
 
-/*
-.bootstrap {
-    @import "/path-to-bootstrap-less.less"
-    @import "/path-to-bootstrap-responsive-less.less"
 }
-*/
+
 
 /*
-Ported from blueprint to make sure embedded views work without blueprint.
 */
 
 .cv-view-panel {
-	font-size: 13px;
-	color: #222;
-	/*background: #fff;*/
-	/*font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;*/
-	vertical-align: middle;
-	line-height: 1em;
-	text-shadow: none;
-
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -35,19 +25,16 @@ Ported from blueprint to make sure embedded views work without blueprint.
 	user-select: none;
 }
 
+.cv-view-panel .dropdown-menu {
+    cursor: pointer;
+}
+
+/*
 .cv-view-panel a:link {
 	text-decoration: none;
 }
+*/
 
-.cv-view-panel .ui-menu-item,
-.cv-view-panel .ui-menu-item span,
-.cv-view-panel .ui-state-active a,
-.cv-view-panel .ui-state-active a:link,
-.cv-view-panel .ui-state-active a:hover,
-.cv-view-panel .ui-state-active a:visited {
-    color: inherit;
-    font-weight: normal;
-}
 
 .cv-view-panel table, .cv-view-panel tr, .cv-view-panel td {
 	-webkit-touch-callout: initial;
@@ -58,12 +45,7 @@ Ported from blueprint to make sure embedded views work without blueprint.
     user-select: initial;
 }
 
-.cv-view-panel .ui-menu-item, .cv-gui-panel li.ui-menu-item {
-  list-style: none;
-  font-weight: normal !important;
-  /*padding-left: 20px;*/
-}
-
+/*
 li.ui-menu-item a {
 	display: block;
 }
@@ -72,18 +54,17 @@ li.ui-menu-item a {
     font-size: 13px;
 }
 
-/*
 .cv-view-panel label {
     font-weight: bold;
 }
 */
 
+/*
 .ui-slider-range {
     background-color: red;
     background-image: none;
 }
 
-/*
 .cv-view-panel div {
 	margin: 0px;
 	padding: 0px;
@@ -100,18 +81,16 @@ li.ui-menu-item a {
     margin: 0px !important;
 }
 
-.cv-view-panel button {
-    margin: 0px 2px 0px 0px;
-}
-
 /* Override blueprint highlight */
+/*
 .cv-view-panel .highlight {background: inherit;}
-
+*/
 
 /*
 Custom Cubesviewer styles
 */
 
+/*
 .cv-view-panel input {
     vertical-align: middle;
 }
@@ -145,15 +124,17 @@ Custom Cubesviewer styles
     font-size: 12pt;
 }
 
+.cv-view-panel label {
+    font-weight: inherit;
+}
+*/
 
 
 .cv-view-panel th {
     white-space: nowrap;
 }
 
-.cv-view-panel label {
-	font-weight: inherit;
-}
+
 
 .nobreak {
     overflow: hidden;
@@ -181,31 +162,15 @@ a.ui-state-focus {
 
 /* GUI Elements */
 
-#cubesviewer {
-	margin-top: 5px;
-}
-
-#cubesviewer a:link {
-	text-decoration: none;
-}
-
 .cv-gui-panel {
-    /*
-    width: 200px;
-    float: left;
-    height: 40px;
-    */
-    padding: 3px;
-    z-index: 9995;
-    border: 1px solid white;
-    background-color: #fffff;
-    margin-bottom: 5px;
+    z-index: 9999;
 }
 
 .cv-gui-workspace {
     /*margin-left: 230px;*/
     min-height: 320px;
 }
+
 
 div.cv-gui-viewcontainer {
 	margin-bottom: 10px;

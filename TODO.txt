@@ -31,7 +31,6 @@
     * Support better exploration of facts
     * Drop notes system 2: use metadata for info and add a comments system
     * Analytics plugin to ignore first N seconds of events as for bounce rate calculation.
-    * jQGrid has changed licence (had to patch it). Change table component?!
 
     * Ability to filter from chart filter / synchronize filter and chart filter (?).
     * Data formatters (color, decimals, abbreviations, units, etc...). Allow client side changes?
@@ -64,11 +63,12 @@
 
     * Mapping (openlayers).
 
-    * Tag 2.0 release?
+    * Tag release.
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
     * Add anonymous-save service to backend and client (dedup).
     * Add carets to dropdown menus.
     * Export facts is failing.
+    * Use strict.
     * HTML, CSS and dynamic class usage sanitized (closes #14).
     * New set of icons (color?).
     * Separate chart plugin in files.

@@ -15,8 +15,8 @@ var
 sdist
 develop-eggs
 .installed.cfg
-lib
-lib64
+#lib
+#lib64
 node_modules
 bower_components
 
@@ -54,3 +54,4 @@ local_settings.py
 *.DS_Store
 
 
+/dist

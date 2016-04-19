@@ -375,7 +375,6 @@ function cubesviewerViewCubeChart() {
 	        var chart;
 	        chart = nv.models.multiBarChart()
 	          //.margin({bottom: 100})
-	          .options({duration: 300})
 	          .showLegend(!!view.params.chartoptions.showLegend)
 	          .margin({left: 120})
 	          ;
@@ -489,7 +488,6 @@ function cubesviewerViewCubeChart() {
 
 		    	d3.select(container)
 		    		.datum(d)
-		    		.options({duration: 300})
 		    		.call(chart);
 
 		    	nv.utils.windowResize(chart.update);
@@ -537,7 +535,6 @@ function cubesviewerViewCubeChart() {
 
 	    	  d3.select(container)
 	    	    .datum(d)
-	    	      .options({duration: 300})
 	    	      .call(chart);
 
 	    	  nv.utils.windowResize(chart.update);
@@ -702,7 +699,6 @@ function cubesviewerViewCubeChart() {
 
 	          d3.select(container)
 	              .datum(d)
-	              .options({duration: 300})
 	              //.attr('width', width)
 	              //.attr('height', height)
 	              .call(chart);
@@ -760,9 +756,11 @@ function cubesviewerViewCubeChart() {
     		xticks.push([ i - 1, colNames[i] ]);
 	    }
 
+	    $(container).height(350);
 	    view.flotrDraw = Flotr.draw(container, d, {
 	    	HtmlText: ! view.doExport,
 	    	shadowSize: 2,
+	    	height: 350,
 	        radar: {
 	            show: true
 	        },

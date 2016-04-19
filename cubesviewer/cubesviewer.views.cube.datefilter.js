@@ -150,20 +150,20 @@ function cubesviewerViewCubeDateFilter () {
 		$(container)
 				.append(
 						' '
-								+ '<select name="date_mode" >'
-								+ '<option value="custom">Custom</option>'
-								//+ '<option value="linked" disabled="true">Linked to main</option>'
-								+ '<optgroup label="Auto">'
-								+ '<option value="auto-last1m">Last month</option>'
-								+ '<option value="auto-last3m">Last 3 months</option>'
-								+ '<option value="auto-last6m">Last 6 months</option>'
-								+ '<option value="auto-last12m">Last year</option>'
-								+ '<option value="auto-last24m">Last 2 years</option>'
-								+ '<option value="auto-january1st">From January 1st</option>'
-								+ '<option value="auto-yesterday">Yesterday</option>'
-								+ '</optgroup>' + '</select> ' + 'Range: '
-								+ '<input name="date_start" /> - '
-								+ '<input name="date_end" /> ');
+						+ '<select name="date_mode" >'
+						+ '<option value="custom">Custom</option>'
+						//+ '<option value="linked" disabled="true">Linked to main</option>'
+						+ '<optgroup label="Auto">'
+						+ '<option value="auto-last1m">Last month</option>'
+						+ '<option value="auto-last3m">Last 3 months</option>'
+						+ '<option value="auto-last6m">Last 6 months</option>'
+						+ '<option value="auto-last12m">Last year</option>'
+						+ '<option value="auto-last24m">Last 2 years</option>'
+						+ '<option value="auto-january1st">From January 1st</option>'
+						+ '<option value="auto-yesterday">Yesterday</option>'
+						+ '</optgroup>' + '</select> ' + 'Range: '
+						+ '<input name="date_start" /> - '
+						+ '<input name="date_end" /> ');
 
 		$("[name='date_start']", container).datepicker({
 			changeMonth : true,

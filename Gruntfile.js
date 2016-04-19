@@ -9,6 +9,7 @@ module.exports = function(grunt) {
       },
       dist: {
         src: [
+              'cubesviewer/cubesviewer.templates.js',
               'cubesviewer/cubes.js',
               'cubesviewer/cubesviewer.js',
               'cubesviewer/cubesviewer.cache.js',
@@ -51,13 +52,19 @@ module.exports = function(grunt) {
         }
       }
     },
+    copy: {
+      	dist: {
+    		files: [
+	        ]
+    	}
+    },
     qunit: {
       files: ['test/**/*.html']
     },
     bower: {
     	install: {
     		options: {
-    			targetDir: 'lib/',
+    			targetDir: 'html/lib/',
     			layout: 'byComponent',
     			verbose: true
 		    }
@@ -98,6 +105,17 @@ module.exports = function(grunt) {
     watch: {
       files: ['<%= jshint.files %>', 'bower.json', 'cubesviewer/**/*.*'],
       tasks: ['default']
+    },
+    filesToJavascript: {
+    	default_options: {
+    		options: {
+    			inputFilesFolder: 'cubesviewer/html/',
+    			inputFileExtension: 'html',
+    			outputBaseFile: 'cubesviewer/cubesviewer.templates.js.tmpl',
+    			outputBaseFileVariable: 'cvtemplates',
+    			outputFile: 'cubesviewer/cubesviewer.templates.js'
+    		}
+    	}
     }
   });
 
@@ -105,14 +123,16 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   //grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-bower-task')
   grunt.loadNpmTasks('grunt-wiredep');
+  grunt.loadNpmTasks('grunt-files-to-javascript-variables');
 
   grunt.registerTask('test', ['jshint', 'qunit']);
 
-  grunt.registerTask('default', ['bower', 'less', 'concat', 'uglify']);
+  grunt.registerTask('default', ['less', 'filesToJavascript', 'concat', 'uglify']); // 'bower',
 
 };
 
