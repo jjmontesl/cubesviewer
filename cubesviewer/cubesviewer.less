@@ -2,14 +2,23 @@
  * Cubesviewer CSS
  */
 
-.cv-view-panel {
+.cv-bootstrap {
+
     @import "bower_components/bootstrap/less/bootstrap.less";
     @import "bower_components/bootstrap/less/responsive-embed.less";
     /*@import "bower_components/bootstrap-submenu/less/bootstrap-submenu.less";*/
+
+    @font-family-sans-serif:  Helvetica, Arial, sans-serif;
+    @font-family-serif:       Georgia, "Times New Roman", Times, serif;
+    @font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace;
+    @font-family-base:        @font-family-sans-serif;
+
     @font-size-base: 12px;
     @panel-heading-padding: 5px 5px;
     @panel-body-padding: 5px;
 
+    font-size: 12px;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 
@@ -25,8 +34,23 @@
 	user-select: none;
 }
 
-.cv-view-panel .dropdown-menu {
+.cv-view-panel {
+    min-height: 120px;
+}
+
+.cv-gui-panel .dropdown-menu {
     cursor: pointer;
+}
+
+.cv-gui-title {
+    font-weight: bold;
+}
+
+.cv-alerts {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: 5000;
 }
 
 /*
@@ -71,6 +95,7 @@ li.ui-menu-item a {
 }
 */
 
+/*
 .cv-view-panel td, th {
     vertical-align: middle;
     text-align: inherit;
@@ -80,6 +105,7 @@ li.ui-menu-item a {
 .cv-view-panel input[type=checkbox] {
     margin: 0px !important;
 }
+*/
 
 /* Override blueprint highlight */
 /*
@@ -141,23 +167,9 @@ Custom Cubesviewer styles
     white-space: nowrap;
 }
 
-.ui-icon {
-    display: inline-block;
-    vertical-align: middle;
-}
-
 .ui-jqgrid tr.jqgrow td {
     white-space: nowrap !important;
     /*overflow: hidden;*/
-}
-
-a.ui-state-disabled {
-	margin-top: 0px !important;
-	margin-bottom: 0px !important;
-}
-a.ui-state-focus {
-    margin-top: -1px !important;
-    margin-bottom: -1px !important;
 }
 
 /* GUI Elements */
@@ -182,7 +194,6 @@ a.cv-grid-link {
 }
 
 div.cv-gui-viewcontent {
-	padding: 3px !important;
 	overflow: hidden;
 }
 
@@ -194,24 +205,16 @@ div.cv-view-viewinfo {
 	margin-bottom: 10px;
 }
 
-.ajaxloader {
-	background-image: url(ajax-loader.gif);
-	background-repeat: no-repeat;
-	width: 16px;
-	height: 16px;
-	margin: 8px;
-	display: inline-block;
-}
-
 .fixed {
    position: fixed;
 }
+
+/*
 
 div.cv-view-info-panel {
 	clear: both;
     margin-top: 10px;
     margin-bottom: 10px;
-    /*border: 1px solid rgb(221, 221, 221);*/
     padding-top: 3px;
     padding-bottom: 3px;
     padding-left: 5px;
@@ -230,6 +233,7 @@ div.cv-view-dimensionfilter-item {
     overflow: hidden;
     margin-right: 5px;
 }
+*/
 
 .nvtooltip table {
 	margin: 0px ;

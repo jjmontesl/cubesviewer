@@ -26,6 +26,7 @@ Features:
 * View management, cloning, saving and sharing.
 * User Interface allows for multiple views on-screen.
 * Multiple modes: explore, data series, chart, facts.
+* Export data.
 * Undo / Redo.
 * Multi-user.
 * Views can be embedded in other web sites.
@@ -40,9 +41,9 @@ Online Demos
 Download
 ------------
 
-Current CubesViewer stable version is 0.11-devel.
+Current CubesViewer stable version is 2.0.0.
 
-[CubesViewer version 0.11-devel](https://github.com/jjmontesl/cubesviewer/archive/master.zip) - Works with Cubes 1.0.x
+[CubesViewer version 2.0.0](https://github.com/jjmontesl/cubesviewer/archive/cubesviewer-2.0.0.zip) - Works with Cubes 1.0.x
 
 (Use older [CubesViewer version 0.9](https://github.com/jjmontesl/cubesviewer/archive/v0.9.zip) if you need to work with Cubes 0.10.x)
 
@@ -51,22 +52,23 @@ Requirements
 
 CubesViewer consists of two parts:
 
-**CubesViewer Client** is a HTML5 application and can run directly in the browser.
+**CubesViewer Client** is a HTML5 application that runs directly in the browser.
 It can run without server side support as a standalone application, and
 views can be embedded in other websites. Simply
-download and open the src/htmlviews/gui.html file in your favourite browser.
+download the package and open the `html/gui.html` file in your favorite browser.
 
-The **full CubesViewer application** includes a server side Python Django application which supports features
-like sharing/saving and user notes. Requires Django 1.7, but it is optional
-(only needed if you wish to use the full application with user authentication, user notes
-or save/load/share support).
+CubesViewer also features an optional server side application
+which provides a full web application and supports features like sharing/saving and user notes.
+This project lives on a separate repository:
+[CubesViewer Server](https://github.com/jjmontesl/cubesviewer-server)
+(not to be confused with Cubes Server itself).
 
 You need a configured and running [Cubes Server](http://databrewery.org/cubes.html) version 1.0.x or later.
 your Cubes model may need some extra configuration if you wish to use features like date
 filters and range filters (see Documentation below).
 
 To be able for CubesViewer to connect to the slicer server, your `slicer.ini` should allow cross origin resource
-sharing. To enable this option, put `allow_cors_origin: http://localhost:8000` (or the URL from wich your app will work,
+sharing. To enable this option, add `allow_cors_origin: http://localhost:8000` (or the URL from wich your app will work,
 or an asterisk *) under the `[server]` section.
 
 For further information, see the Documentation section below.

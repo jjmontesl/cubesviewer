@@ -15,6 +15,7 @@ module.exports = function(grunt) {
               'cubesviewer/cubesviewer.cache.js',
               'cubesviewer/cubesviewer.views.js',
               'cubesviewer/cubesviewer.views.cube.js',
+              /*
               'cubesviewer/cubesviewer.views.cube.explore.js',
               'cubesviewer/cubesviewer.views.cube.datefilter.js',
               'cubesviewer/cubesviewer.views.cube.rangefilter.js',
@@ -25,9 +26,10 @@ module.exports = function(grunt) {
               'cubesviewer/cubesviewer.views.cube.columns.js',
               'cubesviewer/cubesviewer.views.cube.export.js',
               'cubesviewer/cubesviewer.views.undo.js',
+              */
 
-              'cubesviewer/cubesviewer.gui.js',
-              'cubesviewer/cubesviewer.gui.serializing.js',
+              'cubesviewer/gui/gui.js',
+              'cubesviewer/gui/serialize.js',
         ],
         dest: 'dist/<%= pkg.name %>.js'
       }

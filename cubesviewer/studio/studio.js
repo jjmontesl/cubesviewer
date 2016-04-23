@@ -250,7 +250,7 @@ function cubesviewerGui () {
 	this.drawCubesList = function() {
 
 		//cubesviewer.gui.menuRactive.set("cubesserver._cube_list", cubesviewer.cubesserver._cube_list);
-		cubesviewer.gui.menuRactive.reset({ 'cv': cubesviewer });
+		cubesviewer.gui._ractive.reset({ 'cv': cubesviewer });
 
 		// Add handlers for clicks
 		$('.cv-gui-cubeslist-menu', $(cubesviewer.gui.options.container)).find('.cv-gui-addviewcube').click(function() {
@@ -271,7 +271,7 @@ function cubesviewerGui () {
 	 */
 	this.onGuiDraw = function(event, gui) {
 
-		gui.menuRactive = new Ractive({
+		gui._ractive = new Ractive({
 			el: $(gui.options.container).children('.cv-gui-panel')[0],
 			template: cvtemplates.gui_menu,
 			partials: cvtemplates,
@@ -282,6 +282,7 @@ function cubesviewerGui () {
 
 
 		// Configure sortable panel
+		/*
 		$(gui.options.container).children('.cv-gui-workspace').sortable({
 			placeholder : "ui-state-highlight",
 			// containment: "parent",
@@ -301,6 +302,7 @@ function cubesviewerGui () {
 		// forcePlaceholderSize: true,
 		// forceHlperSize: true,
 		});
+		*/
 
 	}
 

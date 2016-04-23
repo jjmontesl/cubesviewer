@@ -32,8 +32,6 @@
     <script src="lib/blockUI/jquery.blockUI.js"></script>
     <script src="lib/ev-emitter/ev-emitter.js"></script>
     <script src="lib/imagesloaded/imagesloaded.js"></script>
-    <script src="lib/qtip2/jquery.qtip.js"></script>
-    <script src="lib/qtip2/basic/jquery.qtip.js"></script>
     <script src="lib/free-jqgrid/jquery.jqgrid.min.js"></script>
     <script src="../dist/cubesviewer.js"></script>
 
@@ -46,7 +44,8 @@
     // Initialize CubesViewer when document is ready
     $(document).ready(function() {
 
-        var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
+        //var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
+        var cubesUrl = "http://localhost:5000";
 
         cubesviewer.init({
             cubesUrl: cubesUrl

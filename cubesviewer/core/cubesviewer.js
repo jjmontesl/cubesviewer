@@ -26,6 +26,8 @@
  */
 
 
+"use strict";
+
 /*
  * Main cubesviewer object. It is created by the library and made
  * available as the global "cubesviewer" variable.
@@ -33,7 +35,7 @@
 function cubesviewer () {
 
 	// CubesViewer version
-	this.version = "1.2.1-devel";
+	this.version = "2.0.0-devel";
 
 	// Default options
 	this.options = {
@@ -49,6 +51,11 @@ function cubesviewer () {
 	// Cubes server.
 	this.cubesserver = null;
 
+	// Alerts component
+	this._alerts = null;
+
+	// Current alerts
+	this.alerts = [];
 
 
 	/*
@@ -75,12 +82,12 @@ function cubesviewer () {
   /*
    * Save typing while debugging - get a view object with: cubesviewer.getView(1)
    */
-  
+
   this.getView = function(id) {
     var viewid = id.toString();
     viewid = viewid.indexOf('view') === 0 ? viewid : 'view' + viewid;
     viewid = viewid[0] === '#' ? viewid : '#' + viewid;
-  
+
     return $(viewid + ' .cv-gui-viewcontent').data('cubesviewer-view');
   };
 
@@ -119,7 +126,7 @@ function cubesviewer () {
 		} else if (xhr.status == 400) {
 			cubesviewer.alert($.parseJSON(xhr.responseText).message);
 		} else {
-			console.debug (xhr);
+			console.debug(xhr);
 			cubesviewer.showInfoMessage("CubesViewer: An error occurred while accessing the data server.\n\n" +
 										"Please try again or contact the application administrator if the problem persists.\n");
 		}
@@ -166,40 +173,22 @@ function cubesviewer () {
 	 */
 	this.showInfoMessage = function(message, delay) {
 
-		if (delay == undefined) delay = 5000;
+		if (this._alerts == null) {
 
-		if ($('#cv-cache-indicator').size() < 1) {
-
-			$("body").append('<div id="cv-cache-indicator" class="cv-view-panel yui3-cssreset" style="display: none;"></div>')
-			$('#cv-cache-indicator').qtip({
-				   content: 'NO MESSAGE DEFINED',
-				   position: {
-					   my: 'bottom right',
-					   at: 'bottom right',
-					   target: $(window),
-					   adjust: {
-						   x: -10,
-						   y: -10
-					   }
-				   },
-				   style: {
-					   classes: 'fixed',
-					   tip: {
-						   corner: false
-					   }
-				   },
-				   show: {
-					   delay: 0,
-					   event: ''
-				   },
-				   hide: {
-					   inactive: delay
-				   }
+			this._alerts = new Ractive({
+				el: $("body")[0],
+				append: true,
+				template: cvtemplates.alerts,
+				partials: cvtemplates,
+				data: { 'cv': this }
 			});
 		}
 
-		$('#cv-cache-indicator').qtip('option', 'content.text', message);
-		$('#cv-cache-indicator').qtip('toggle', true);
+		if (delay == undefined) delay = 5000;
+
+		this.alerts.push({ 'text': message });
+		this._alerts.reset({ 'cv': this });
+
 	};
 
 };

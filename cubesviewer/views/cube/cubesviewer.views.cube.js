@@ -62,32 +62,6 @@ function cubesviewerViewCube () {
 
 	};
 
-
-	/*
-	 * Draw cube view menu
-	 */
-	this.drawMenu = function(view) {
-
-		// Add view menu options button
-		$(view.container).find('.cv-view-toolbar').append(
-			'<button class="viewbutton" title="View" style="margin-right: 5px;">View</button>'
-		);
-
-		$(view.container).find('.cv-view-viewmenu').append(
-			'<ul class="cv-view-menu cv-view-menu-view" style="float: right; width: 180px;">' +
-			//'<li><a href="#" class="aboutBox">About CubesViewer...</a></li>' +
-			//'<div></div>' +
-			'</ul>'
-		);
-
-		// Buttonize
-		$(view.container).find('.viewbutton').button();
-
-		// Menu functionality
-		view.cubesviewer.views.cube._initMenu(view, '.viewbutton', '.cv-view-menu-view');
-
-	}
-
 	/*
 	 * Draw cube view structure.
 	 */
@@ -100,97 +74,21 @@ function cubesviewerViewCube () {
 			return;
 		}
 
-
-		if ($(".cv-view-viewdata", view.container).size() == 0) {
-
-			$(view.container).empty();
-			$(view.container).append(
-					'<div class="cv-view-panel">' +
-					'<div class="cv-view-viewmenu"></div>' +
-					'<div class="cv-view-viewinfo"></div>' +
-					'<div class="cv-view-viewdata" style="clear: both;"></div>' +
-					'<div class="cv-view-viewfooter" style="clear: both;"></div>' +
-					'</div>'
-			);
-
-		}
-
-		// Check if the model/cube is loaded.
-		// TODO: Review if this code is needed
 		/*
-		if (view.cube == null) {
-			cubesviewer.views.showFatal (view.container, 'Cannot present cube view: could not load model or cube <b>' + view.params.cubename + '</b>.');
-			return;
+		if ($(".cv-view-viewdata", view.container).size() == 0) {
+			$(view.container).empty();
 		}
 		*/
 
-		// Menu toolbar
-		$(view.container).find('.cv-view-viewmenu').empty().append(
-			'<div style="float: right; z-index: 9990; margin-bottom: 5px;"><div class="cv-view-toolbar ui-widget-header ui-corner-all" style="display: inline-block; padding: 2px;">' +
-			'</div></div>'
-		);
-
-		// Draw menu
-		view.cubesviewer.views.cube.drawMenu(view);
-
-	};
-
-	/*
-	 * Helper to configure a context menu opening reaction.
-	 */
-	this._initMenu = function (view, buttonSelector, menuSelector) {
-		//view.cubesviewer.views.initMenu('.panelbutton', '.cv-view-menu-panel');
-		$('.cv-view-toolbar', $(view.container)).find(buttonSelector).on("click mouseenter", function(ev) {
-
-			if (ev.type == "mouseenter") {
-				if (! $('.cv-view-menu', view.container).is(":visible")) {
-					// Only if a menu was open we allow mouseenter to open a menu
-					return;
-				}
-			}
-
-			if (ev.type == "click") {
-				if ($('.cv-view-menu', view.container).is(":visible")) {
-					// Hide the menu and return
-					$('.cv-view-menu', view.container).hide();
-					return;
-				}
-			}
-
-			// Hide all menus (only one context menu open at once)
-			$('.cv-view-menu').hide();
-
-			var menu = $(menuSelector, $(view.container));
-
-			menu.css("position", "absolute");
-			menu.css("z-index", "9990");
-			menu.show();
-
-			menu.fadeIn().position({
-				my : "right top",
-				at : "right bottom",
-				of : this
-			});
-			$(document).one("click", cubesviewer.views.cube._hideMenu(menu));
-
-			return false;
+		view._ractive = new Ractive({
+			el: view.container,
+			template: cvtemplates.views_cube,
+			partials: cvtemplates,
+			data: { 'view': view }
 		});
+		$('[data-submenu]', view.container).submenupicker();
 
-		$(menuSelector, $(view.container)).menu({}).hide();
 
-	};
-
-	/**
-	 * Hide menus when mouse clicks outside them, but not when inside.
-	 */
-	this._hideMenu = function (menu) {
-		return function(evt) {
-			if ($(menu).find(evt.target).size() == 0) {
-				menu.fadeOut();
-			} else {
-				$(document).one("click", cubesviewer.views.cube._hideMenu(menu));
-			}
-		}
 	};
 
 	/*

@@ -36,38 +36,10 @@ function cubesviewerViewCubeExplore() {
 
 		if (view.cube == null) return;
 
-		// Add icon to toolbar
-		$(view.container).find('.cv-view-toolbar').prepend(
-			'<button class="explorebutton" title="Explore" style="margin-right: 10px;"><span class="ui-icon ui-icon-circle-arrow-s"></span></button>'
-		);
-
-		// Add view menu options button
-		$(view.container).find('.viewbutton').before(
-			'<button class="drilldownbutton" title="Drilldown" style="margin-right: 5px;"><span class="ui-icon ui-icon-arrowthick-1-s"></span> Drilldown</button>' +
-			'<button class="cutbutton" title="Filter" style="margin-right: 15px;"><span class="ui-icon ui-icon-zoomin"></span> Filter</button>'
-		);
-		$(view.container).find('.cv-view-viewmenu').append(
-			'<ul class="cv-view-menu cv-view-menu-drilldown" style="float: right; width: 180px;"></ul>'
-		);
-		$(view.container).find('.cv-view-viewmenu').append(
-			'<ul class="cv-view-menu cv-view-menu-cut" style="float: right; width: 180px;"></ul>'
-		);
-
-		// Buttonize
-		$(view.container).find('.drilldownbutton').button();
-		$(view.container).find('.cutbutton').button();
-
-		$(view.container).find('.explorebutton').button();
 		$(view.container).find('.explorebutton').click(function() {
 			view.cubesviewer.views.cube.explore.modeExplore(view);
 			return false;
 		});
-		$(view.container).find('.explorebutton').mouseenter(function() {
-			$('.cv-view-menu').hide();
-		});
-
-		// Explore menu
-		view.cubesviewer.views.cube.explore.drawExploreMenu(view);
 
 		// Draw minimum (explore) info pieces
 		view.cubesviewer.views.cube.explore.drawInfo(view);
@@ -76,7 +48,7 @@ function cubesviewerViewCubeExplore() {
 
 
 		// Highlight
-		$(view.container).find('.explorebutton').button("option", "disabled", "true").addClass('ui-state-active');
+		$(view.container).find('.explorebutton').button("option", "disabled", "true").addClass('active');
 
 		// Only if data section is empty
 		if ($(view.container).find('.cv-view-viewdata').children().size() == 0) {
