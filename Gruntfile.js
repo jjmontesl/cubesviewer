@@ -9,12 +9,14 @@ module.exports = function(grunt) {
       },
       dist: {
         src: [
-              'cubesviewer/cubesviewer.templates.js',
-              'cubesviewer/cubes.js',
-              'cubesviewer/cubesviewer.js',
-              'cubesviewer/cubesviewer.cache.js',
-              'cubesviewer/cubesviewer.views.js',
-              'cubesviewer/cubesviewer.views.cube.js',
+              'cubesviewer/cubes/cubes.js',
+              'cubesviewer/cubes/cubes-cvextensions.js',
+              'cubesviewer/cubes/cubes-service.js',
+              'cubesviewer/core/cubesviewer.js',
+//              'cubesviewer/core/cache.js',
+//              'cubesviewer/views/views.js',
+//              'cubesviewer/views/cube.js',
+//              'cubesviewer/views/explore.js',
               /*
               'cubesviewer/cubesviewer.views.cube.explore.js',
               'cubesviewer/cubesviewer.views.cube.datefilter.js',
@@ -28,8 +30,11 @@ module.exports = function(grunt) {
               'cubesviewer/cubesviewer.views.undo.js',
               */
 
-              'cubesviewer/gui/gui.js',
-              'cubesviewer/gui/serialize.js',
+              'cubesviewer/studio/studio.js',
+//              'cubesviewer/studio/serialize.js',
+//              'cubesviewer/studio/app.js',
+
+              'cubesviewer/cubesviewer.templates.js'
         ],
         dest: 'dist/<%= pkg.name %>.js'
       }
@@ -105,20 +110,19 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      files: ['<%= jshint.files %>', 'bower.json', 'cubesviewer/**/*.*'],
+      files: ['<%= jshint.files %>', 'bower.json', 'cubesviewer/**/**.*'],
       tasks: ['default']
     },
-    filesToJavascript: {
-    	default_options: {
-    		options: {
-    			inputFilesFolder: 'cubesviewer/html/',
-    			inputFileExtension: 'html',
-    			outputBaseFile: 'cubesviewer/cubesviewer.templates.js.tmpl',
-    			outputBaseFileVariable: 'cvtemplates',
-    			outputFile: 'cubesviewer/cubesviewer.templates.js'
-    		}
+    ngtemplates:  {
+    	  app:        {
+    	    cwd:      'cubesviewer',
+    	    src:      '**/**.html',
+    	    dest:     'cubesviewer/cubesviewer.templates.js',
+    	    options: {
+    	    	module:	  "cv",
+    	    }
+    	  }
     	}
-    }
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -129,12 +133,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-bower-task')
-  grunt.loadNpmTasks('grunt-wiredep');
-  grunt.loadNpmTasks('grunt-files-to-javascript-variables');
+  //grunt.loadNpmTasks('grunt-wiredep');
+  grunt.loadNpmTasks('grunt-angular-templates');
 
   grunt.registerTask('test', ['jshint', 'qunit']);
 
-  grunt.registerTask('default', ['less', 'filesToJavascript', 'concat', 'uglify']); // 'bower',
+  grunt.registerTask('default', ['less', 'ngtemplates', 'concat', 'uglify']); // 'bower',
 
 };
 

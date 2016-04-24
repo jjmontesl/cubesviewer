@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
 <head>
 
-    <title>CubesViewer GUI - Local</title>
+    <title>CubesViewer Studio (Local)</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 
@@ -18,20 +18,17 @@
     <link rel="stylesheet" href="cvapp.css" />
 
     <script src="lib/jquery/jquery.js"></script>
-<!--     <script src="lib/mustache.js/mustache.js"></script> -->
-<!--     <script src="lib/jquery-Mustache/jquery.mustache.js"></script> -->
-    <script src="lib/ractive/ractive.js"></script>
-    <script src="lib/jquery-ui/jquery-ui.js"></script>
-<!--     <script src="lib/jquery-sticky/jquery.sticky.js"></script> -->
-    <!-- <script src="lib/jquery/jquery.cookie.js"></script> -->
     <script src="lib/bootstrap/bootstrap.js"></script>
     <script src="lib/bootstrap-submenu/js/bootstrap-submenu.js"></script>
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="lib/jquery-ui/jquery-ui.js"></script>
     <script src="lib/d3/d3.js"></script>
     <script src="lib/nvd3/nv.d3.js"></script>
     <script src="lib/flotr2/flotr2.min.js"></script>
     <script src="lib/blockUI/jquery.blockUI.js"></script>
-    <script src="lib/ev-emitter/ev-emitter.js"></script>
-    <script src="lib/imagesloaded/imagesloaded.js"></script>
+<!--     <script src="lib/ev-emitter/ev-emitter.js"></script> -->
+<!--     <script src="lib/imagesloaded/imagesloaded.js"></script> -->
     <script src="lib/free-jqgrid/jquery.jqgrid.min.js"></script>
     <script src="../dist/cubesviewer.js"></script>
 
@@ -44,21 +41,13 @@
     // Initialize CubesViewer when document is ready
     $(document).ready(function() {
 
-        //var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
+    	//var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
         var cubesUrl = "http://localhost:5000";
 
-        cubesviewer.init({
-            cubesUrl: cubesUrl
-        });
-
-        cubesviewer.gui.init({
+        cubesviewer.studio.init({
+        	cubesUrl: cubesUrl,
             container: $('#cubesviewer').get(0)
         });
-
-        // Start Cubesviewer system
-        cubesviewer.refresh();
-
-        //$('.cv-gui-panel').sticky({topSpacing:0});
 
     });
 
@@ -71,18 +60,15 @@
             <img class="cv-logo" title="CubesViewer" src="img/cubesviewer-logo.png" />
         </div>
 
-        <h1>CubesViewer GUI Local</h1>
+        <h1>CubesViewer Studio</h1>
+        <small>Local HTML version (with reduced functionality and no server-side support).</small>
 
     </div>
 
     <div style="clear: both;"></div>
 
-    <!-- Cubes Viewer GUI container -->
+    <!-- Cubes Viewer container -->
     <div id="cubesviewer">
-        <div class="cv-gui-panel" >
-        </div>
-        <div class="cv-gui-workspace">
-        </div>
     </div>
 
     <div class="footer" style="clear: both; padding-top: 20px;">

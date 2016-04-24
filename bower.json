@@ -26,19 +26,14 @@
     "jquery": "2.2.3",
     "nvd3": "1.8.2",
     "blockUI": "*",
-    "qtip2": "2.2.1",
     "bootstrap": "3.3.6",
     "jquery-ui": "1.11.4",
-    "jquery-sticky": "1.0.3",
     "free-jqgrid": "4.13.2",
     "flotr2": "*",
-    "jqueryui-bootstrap": "1.0.0",
     "font-awesome": "Font-Awesome#4.6.1",
     "bootstrap-submenu": "^2.0.4",
-    "mustache.js": "mustache#^2.2.1",
-    "jquery-Mustache": "^0.2.7",
-    "ractive": "^0.7.3",
-    "angular": "^1.5.5"
+    "angular": "^1.5.5",
+    "angular-bootstrap": "1.3.2"
   },
   "exportsOverride": {
     "jquery": {

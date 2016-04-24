@@ -25,13 +25,34 @@
  * SOFTWARE.
  */
 
+angular.module('cv.cubes', []);
 
-"use strict";
+angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
+                                                    function ($rootScope, cvOptions) {
 
-var App = angular.module('App', ['App.tools']);
-angular.module('App.tools', ['tools.home', 'tools.profile']);
+	var cubesService = this;
 
+	this.cubesserver = null;
 
+	this.initialize = function() {
+	};
 
+	/**
+	 * Connects this service to the Cubes server.
+	 */
+	this.connect = function() {
+		// Initialize Cubes client library
+		this.cubesserver = new cubes.Server(cubesviewer.cubesAjaxHandler);
+		console.debug("Cubes client connecting to: " + cvOptions.cubesUrl);
+		this.cubesserver.connect (cvOptions.cubesUrl, function() {
+			console.debug('Cubes client initialized (server version: ' + cubesService.cubesserver.server_version + ')');
+			//$(document).trigger ("cubesviewerInitialized", [ this ]);
+			$rootScope.$apply();
+		} );
+	};
+
+	this.initialize();
+
+}]);
 
 

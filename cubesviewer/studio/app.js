@@ -31,52 +31,5 @@
 
 
 // Declare app level module which depends on filters, directives and services
-var cvStudioApp = angular.module('cv.studio', ['ui.bootstrap', 'ui.bootstrap-slider', 'ui.validate', 'ngAnimate',
-                                    'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',
-                                    'nvd3',
-                                    'cubesviewer.services', 'cubesviewer.directives', 'cubesviewer.filters' ]);
 
 
-
-// Disable Debug Info (for production)
-cvStudioApp.config(['$compileProvider', function ($compileProvider) {
-	// TODO: Enable debug optionally
-	//$compileProvider.debugInfoEnabled(false);
-}]);
-
-
-// Configure moment.js
-angular.module('cv').constant('angularMomentConfig', {
-    //preprocess: 'unix', // optional
-    //timezone: 'Europe/London' // optional
-});
-
-
-cvStudioApp.run(['$timeout', 'editableOptions', 'editableThemes', function($timeout, editableOptions, editableThemes) {
-
-	// XEditable bootstrap3 theme. Can be also 'bs2', 'default'
-	editableThemes.bs3.inputClass = 'input-sm';
-	editableThemes.bs3.buttonsClass = 'btn-sm';
-	editableOptions.theme = 'bs3';
-
-	// Initialize Cubes service
-	cubesService.connect();
-
-}]);
-
-// Services and Directives
-//var services = angular.module('cvStudioApp.services', []);
-//#var directives = angular.module('cvStudioApp.directives', []);
-
-cubesviewer.prototype.studio = {
-
-	init: function(params) {
-		angular.element(document).ready(function() {
-			angular.bootstrap(document, ['cvStudioApp']);
-		});
-	}
-
-}
-
-// For backwards compatibilty
-cubesviewer.prototype.gui = cubesviewer.prototype.studio;

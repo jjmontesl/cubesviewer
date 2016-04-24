@@ -1,0 +1,78 @@
+<div class="cv-bootstrap" ng-controller="CubesViewerStudioController">
+
+    <div class="cv-gui-panel" >
+
+        <div class="dropdown m-b" style="display: inline-block;">
+          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" data-submenu>
+            <i class="fa fa-fw fa-cube"></i> Cubes <span class="caret"></span>
+          </button>
+
+          <ul class="dropdown-menu cv-gui-cubeslist-menu">
+
+            <li ng-repeat="cube in cubesService.cubesserver._cube_list" ng-click="addViewCube(cube.name)"><a>{{ cube.label }}</a></li>
+
+          </ul>
+        </div>
+
+
+        <div class="dropdown m-b" style="display: inline-block;">
+          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" data-submenu>
+            <i class="fa fa-fw fa-wrench"></i> Tools <span class="caret"></span>
+          </button>
+
+          <ul class="dropdown-menu">
+          <li class="dropdown-submenu">
+          <a tabindex="0">Action</a>
+
+          <ul class="dropdown-menu">
+            <li><a tabindex="0">Sub action</a></li>
+            <li class="dropdown-submenu">
+              <a tabindex="0">Another sub action</a>
+
+              <ul class="dropdown-menu">
+                <li><a tabindex="0">Sub action</a></li>
+                <li><a tabindex="0">Another sub action</a></li>
+                <li><a tabindex="0">Something else here</a></li>
+              </ul>
+            </li>
+            <li><a tabindex="0">Something else here</a></li>
+            <li class="disabled"><a tabindex="-1">Disabled action</a></li>
+            <li class="dropdown-submenu">
+              <a tabindex="0">Another action</a>
+
+              <ul class="dropdown-menu">
+                <li><a tabindex="0">Sub action</a></li>
+                <li><a tabindex="0">Another sub action</a></li>
+                <li><a tabindex="0">Something else here</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li class="dropdown-header">Dropdown header</li>
+        <li class="dropdown-submenu">
+          <a tabindex="0">Another action</a>
+
+          <ul class="dropdown-menu">
+            <li><a tabindex="0">Sub action</a></li>
+            <li><a tabindex="0">Another sub action</a></li>
+            <li><a tabindex="0">Something else here</a></li>
+          </ul>
+        </li>
+        <li><a tabindex="0">Something else here</a></li>
+
+        <div class="divider" ng-if="cvOptions.showAbout"></div>
+        <li class="" ng-if="cvOptions.showAbout"><a data-toggle="modal" data-target="#cvAboutModal">About CubesViewer</a></li>
+
+        </ul>
+        </div>
+
+        <div ng-include="'studio/about.html'"></div>
+
+    </div>
+
+    <div class="cv-gui-workspace">
+    </div>
+
+</div>
+
+

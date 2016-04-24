@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,20 +25,18 @@
  * SOFTWARE.
  */
 
-/*
- * Cubes Viewer GUI
- */
-function cubesviewerGui () {
 
-	// Cubesviewer
-	this.cubesviewer = cubesviewer;
+angular.module('cv.studio', ['ui.bootstrap', 'cv', 'cv.studio' /*'ui.bootstrap-slider', 'ui.validate', 'ngAnimate', */
+                             /*'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',
+                             'nvd3' */ ]);
 
-	// Default options
-	this.options = {
-		container : null,
-		user : null,
-		showAbout: true
-	};
+
+angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', 'cvOptions', 'cubesService',
+                                                                       function ($rootScope, $scope, cvOptions, cubesService) {
+
+	$scope.cvVersion = cubesviewer.version;
+	$scope.cvOptions = cvOptions;
+	$scope.cubesService = cubesService;
 
 	// Current views array
 	this.views = [];
@@ -46,29 +44,23 @@ function cubesviewerGui () {
 	// View counter (used to assign different ids to each spawned view)
 	this.lastViewId = 0;
 
-	// Track sorting state
-	this._sorting = false;
 
-	this.onRefresh = function() {
-		cubesviewer.gui.drawCubesList();
-	};
-
-
-	/*
+	/**
 	 * Closes a view.
 	 */
-	this.closeView = function(view) {
+	$scope.closeView = function(view) {
 		for ( var i = 0; (i < this.views.length) && (this.views[i].id != view.id); i++) ;
 
 		$('#' + view.id).remove();
 		this.views.splice(i, 1);
 
 		cubesviewer.views.destroyView (view);
-
 	};
 
-	// Adds a new clean view for a cube
-	this.addViewCube = function(cubename) {
+	/**
+	 * Adds a new clean view for a cube
+	 */
+	$scope.addViewCube = function(cubename) {
 
 		this.lastViewId++;
 		var viewId = "view" + this.lastViewId;
@@ -94,7 +86,7 @@ function cubesviewerGui () {
 	/*
 	 * Adds a view given its params descriptor.
 	 */
-	this.addViewObject = function(data) {
+	$scope.addViewObject = function(data) {
 
 		this.lastViewId++;
 		var viewId = "view" + this.lastViewId;
@@ -117,14 +109,6 @@ function cubesviewerGui () {
 	 * Creates a container for a view.
 	 */
 	this.createContainer = function(viewId) {
-
-		var containerRactive = new Ractive({
-			el: $(cubesviewer.gui.options.container).children('.cv-gui-workspace')[0],
-			append: true,
-			template: cvtemplates.gui_container,
-			partials: cvtemplates,
-			data: { 'cv': cubesviewer, 'viewId': viewId }
-		});
 
 		// Configure collapsible
 		/*
@@ -249,9 +233,6 @@ function cubesviewerGui () {
 
 	this.drawCubesList = function() {
 
-		//cubesviewer.gui.menuRactive.set("cubesserver._cube_list", cubesviewer.cubesserver._cube_list);
-		cubesviewer.gui._ractive.reset({ 'cv': cubesviewer });
-
 		// Add handlers for clicks
 		$('.cv-gui-cubeslist-menu', $(cubesviewer.gui.options.container)).find('.cv-gui-addviewcube').click(function() {
 			var view = cubesviewer.gui.addViewCube(  $(this).attr('data-cubename') );
@@ -270,13 +251,6 @@ function cubesviewerGui () {
 	 * Render initial (constant) elements for the GUI
 	 */
 	this.onGuiDraw = function(event, gui) {
-
-		gui._ractive = new Ractive({
-			el: $(gui.options.container).children('.cv-gui-panel')[0],
-			template: cvtemplates.gui_menu,
-			partials: cvtemplates,
-			data: { 'cv': cubesviewer }
-		});
 
 		$('[data-submenu]', gui.options.container).submenupicker();
 
@@ -306,27 +280,61 @@ function cubesviewerGui () {
 
 	}
 
-	// Initialize Cubes Viewer GUI
-	this.init = function(options) {
+}]);
 
-		$.extend(this.options, options);
 
-		// Redraw
-		$(document).trigger ("cubesviewerGuiDraw", [ this ]);
+// Disable Debug Info (for production)
+angular.module('cv.studio').config([ '$compileProvider', function($compileProvider) {
+	// TODO: Enable debug optionally
+	// $compileProvider.debugInfoEnabled(false);
+} ]);
 
+
+angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http', '$templateCache', 'cvOptions',
+           function($rootScope, $compile, $controller, $http, $templateCache, cvOptions) {
+
+	console.debug("Bootstrapping CubesViewer Studio.");
+
+    // Add default options
+	var defaultOptions = {
+        container: null,
+        user: null,
+        showAbout: true
+    };
+	$.extend(defaultOptions, cvOptions);
+	$.extend(cvOptions, defaultOptions);;
+
+    // Get main template from template cache and compile it
+	$http.get( "studio/main.html", { cache: $templateCache } ).then(function(response) {
+
+		var scope = angular.element(cvOptions.container).scope();
+
+		var templateScope = scope.$new();
+		$(cvOptions.container).html(response.data);
+
+		//templateCtrl = $controller("CubesViewerStudioController", { $scope: templateScope } );
+		//$(cvOptions.container).children().data('$ngControllerController', templateCtrl);
+
+		$compile($(cvOptions.container).contents())(scope);
+	});
+
+}]);
+
+
+/**
+ * CubesViewer Studio entry point.
+ */
+cubesviewer.studio = {
+
+	_configure: function(options) {
+		cubesviewer._configure(options);
+	},
+
+	init: function(options) {
+		this._configure(options);
+   		angular.element(document).ready(function() {
+   			angular.bootstrap(options.container, ['cv.studio']);
+   		});
 	}
 
 };
-
-/*
- * Create object.
- */
-cubesviewer.gui = new cubesviewerGui();
-
-/*
- * Bind events.
- */
-$(document).bind("cubesviewerRefresh", { "gui": cubesviewer.gui }, cubesviewer.gui.onRefresh);
-$(document).bind("cubesviewerGuiDraw", { "gui": cubesviewer.gui }, cubesviewer.gui.onGuiDraw);
-$(document).bind("cubesviewerViewDraw", { }, cubesviewer.gui.onViewDraw);
-$(document).bind("cubesviewerInitialized", { }, cubesviewer.gui.onCubesViewerInitialized);

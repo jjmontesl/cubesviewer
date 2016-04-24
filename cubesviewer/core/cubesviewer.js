@@ -32,10 +32,7 @@
  * Main cubesviewer object. It is created by the library and made
  * available as the global "cubesviewer" variable.
  */
-function cubesviewer () {
-
-	// CubesViewer version
-	this.version = "2.0.0-devel";
+function cubesviewerController () {
 
 	// Default options
 	this.options = {
@@ -148,27 +145,6 @@ function cubesviewer () {
 	};
 
 	/*
-	 * Initialize CubesViewer library.
-	 */
-	this.init = function (options) {
-
-		$.extend(cubesviewer.options, options);
-
-		// Avoid square brackets in serialized array params
-		$.ajaxSetup({
-			traditional : true
-		});
-
-		// Initialize Cubes client library
-		cubesviewer.cubesserver = new cubes.Server(cubesviewer.cubesAjaxHandler);
-		cubesviewer.cubesserver.connect (this.options["cubesUrl"], function() {
-			cubesviewer.showInfoMessage ('Cubes client initialized (server version: ' + cubesviewer.cubesserver.server_version + ')');
-			$(document).trigger ("cubesviewerInitialized", [ this ]);
-		} );
-
-	};
-
-	/*
 	 * Show quick tip message.
 	 */
 	this.showInfoMessage = function(message, delay) {
@@ -193,111 +169,70 @@ function cubesviewer () {
 
 };
 
+// Main CubesViewer angular module
+angular.module('cv', ['cv.cubes']);
 
-/* Extensions to cubesviewer client lib */
-cubes.Dimension.prototype.hierarchies_count = function()  {
+// Configure moment.js
+angular.module('cv').constant('angularMomentConfig', {
+	// preprocess: 'unix', // optional
+	// timezone: 'Europe/London' // optional
+});
 
-	var count = 0;
-	for (hiename in this.hierarchies) {
-		if (this.hierarchies.hasOwnProperty(hiename)) {
-			count++;
-		}
-	}
-	return count;
-};
-cubes.Dimension.prototype.default_hierarchy = function()  {
-	return this.hierarchies[this.default_hierarchy_name];
-};
-cubes.Cube.prototype.cvdim_dim = function(dimensionString) {
-	// Get a dimension by name. Accepts dimension hierarchy and level in the input string.
-	var dimname = dimensionString;
-	if (dimensionString.indexOf('@') > 0) {
-		dimname = dimensionString.split("@")[0];
-	} else if (dimensionString.indexOf(':') > 0) {
-		dimname = dimensionString.split(":")[0];
-	}
+angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', /* 'editableOptions', 'editableThemes', */
+                           function($timeout, cvOptions, cubesService /*, editableOptions, editableThemes */) {
 
-	return this.dimension(dimname);
-};
-cubes.Cube.prototype.cvdim_parts = function(dimensionString) {
-	// Get a dimension info by name. Accepts dimension hierarchy and level in the input string.
+	//console.debug("Bootstrapping CubesViewer.");
 
-	var dim = this.cvdim_dim(dimensionString);
-	var hie = dim.default_hierarchy();
+    var defaultOptions = {
+            cubesUrl : null,
+            cubesLang : null,
+            pagingOptions: [15, 30, 100, 250],
+            datepickerShowWeek: true,
+            datepickerFirstDay: 1,
+            tableResizeHackMinWidth: 350 ,
+            jsonRequestType: "json" // "json | jsonp"
+    };
+	$.extend(defaultOptions, cvOptions);
+	$.extend(cvOptions, defaultOptions);
 
-	if (dimensionString.indexOf("@") > 0) {
-		var hierarchyName = dimensionString.split("@")[1].split(":")[0];
-		hie = dim.hierarchy(hierarchyName);
-	}
-
-	var lev = null;
-	if (dimensionString.indexOf(":") > 0) {
-		var levelname = dimensionString.split(":")[1];
-		lev = dim.level(levelname);
-	} else {
-		lev = dim.level(hie.levels[0]);
-	}
-
-	var depth = null;
-	for (var i = 0; i < hie.levels.length; i++) {
-		if (lev.name == hie.levels[i]) {
-			depth = i + 1;
-			break;
-		}
-	}
-
-	return {
-		dimension: dim,
-		level: lev,
-		depth: depth,
-		hierarchy: hie,
-		label: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ) + ( hie.levels.length > 1 ? (": " + lev.label) : "" ),
-		labelNoLevel: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ),
-		fullDrilldownValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" ) + ":" + lev.name
-	};
-
-};
-/*
- * Processes a cell and returns an object with a stable information:
- * o.key
- * o.label
- * o.info[]
- */
-cubes.Level.prototype.readCell = function(cell) {
-
-	if (!(this.key().ref in cell)) return null;
-
-	var result = {};
-	result.key = cell[this.key().ref];
-	result.label = cell[this.label_attribute().ref];
-	result.info = {};
-	$(this.attributes).each(function(idx, attribute) {
-		result.info[attribute.ref] = cell[attribute.ref];
+	// Avoid square brackets in serialized array params
+	/*
+	$.ajaxSetup({
+		traditional : true
 	});
-	return result;
-};
-cubes.Hierarchy.prototype.readCell = function(cell, level_limit) {
+	*/
 
-	var result = [];
-	var hie = this;
+	// XEditable bootstrap3 theme. Can be also 'bs2', 'default'
+	/*
+	editableThemes.bs3.inputClass = 'input-sm';
+	editableThemes.bs3.buttonsClass = 'btn-sm';
+	editableOptions.theme = 'bs3';
+	*/
 
-	for (var i = 0; i < this.levels.length; i ++) {
-		var level = this.levels[i];
-		info = level.readCell(cell);
-		if (info != null) result.push(info);
+	// Initialize Cubes service
+	cubesService.connect();
 
-		// Stop if we reach level_limit
-		if ((level_limit != undefined) && (level_limit != null)) {
-			if (level_limit.name == level.name) break;
-		}
+}]);
+
+
+// Cubesviewer Javascript entry point
+var cubesviewer = {
+
+	// CubesViewer version
+	version: "2.0.0-devel",
+
+	_configure: function(options) {
+		angular.module('cv').constant('cvOptions', options);
+	},
+
+	init: function(options) {
+		this._configure(options);
+		angular.element(document).ready(function() {
+			angular.bootstrap(document, ['cv']);
+		});
 	}
-	return result;
+
 };
 
-
-/*
- * Global cubesviewer variable.
- */
-cubesviewer = new cubesviewer();
 
 

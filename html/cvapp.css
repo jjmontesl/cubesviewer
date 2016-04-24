@@ -5,13 +5,17 @@
  */
 
 img.cv-logo {
-	margin: 5px;
+	margin: 0px;
 	height: 40px;
 	width: 85px;
 }
 
+.header h1 {
+	margin-bottom: 5px;
+}
+
 #cubesviewer {
-    margin-top: 5px;
+    margin-top: 10px;
 }
 
 .cv-gui-panel {
