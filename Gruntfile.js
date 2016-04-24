@@ -9,14 +9,15 @@ module.exports = function(grunt) {
       },
       dist: {
         src: [
+              'cubesviewer/angular-bootstrap-submenu/angular-bootstrap-submenu.js',
               'cubesviewer/cubes/cubes.js',
               'cubesviewer/cubes/cubes-cvextensions.js',
               'cubesviewer/cubes/cubes-service.js',
               'cubesviewer/core/cubesviewer.js',
 //              'cubesviewer/core/cache.js',
-//              'cubesviewer/views/views.js',
-//              'cubesviewer/views/cube.js',
-//              'cubesviewer/views/explore.js',
+              'cubesviewer/views/views.js',
+              'cubesviewer/views/cube/cube.js',
+              'cubesviewer/views/cube/explore/explore.js',
               /*
               'cubesviewer/cubesviewer.views.cube.explore.js',
               'cubesviewer/cubesviewer.views.cube.datefilter.js',

@@ -1,7 +1,7 @@
+[HEAD]
 
     * Support multiple servers and multiple versions.
     * Improve dimension search (current approach is very slow). Text search?
-    * Geocoding Support, views, filters, charts...
 
     * Rework comments / ACLs / ownership / revisions if not done yet.
       (new module / website: annotate) (?)
@@ -11,22 +11,13 @@
     * Interface available in English and one more language (Spanish?).
     * Implement i18n.
 
-    * Reviewed and improved doc
-    * Move doc to site (but import from repository markdown, to keep
-      doc sources along with the  project).
-    * Link from viewer to online doc.
-    * Create site, update readme, and site screenshots.
-
-    * Implemented build system, concat simple file, minifying, etc.
+    * Implement build system, concat simple file, minifying, etc.
 
     * Support more authentication scenarios for embedded views / IFRAME,
       via CubesViewer server app (note upcoming Cubes auth framework).
     * App support for IFRAME embedding.
     * GUI support for browser back button, correct URL usage, links to GUI.
 
-    * Changed GUI loading (gui initializes cubesviewer, breaks existing
-      GUI HTML integrations!), in order to fix loading events ordering issue.
-    * Loading to be less destructive reusing existing DOM elements (up to the plugin).
     * Support dimension attributes, and fact details in fact view etc..
     * Support better exploration of facts
     * Drop notes system 2: use metadata for info and add a comments system
@@ -39,7 +30,6 @@
     * GUI options (and all other plugin options) now as cubesviewer options
       (with plugin namespace?).
     * Bring back locale support!
-    * View UI interface reworked (reminder: ajaxloader usage in many places...).
     * Horizontal dimension and measure dropdown from infobox (?) (see gui interface reworked)
     * Hide interface mode (also, make these programmable options for the views)
     * Fix too many series in legend issue (limit? alternate legend?).
@@ -47,9 +37,6 @@
     * Jump to added view when creating a view (also make back/forward/url_links work?)
     * Dialogs (serialize, others...) are no longer javascript alerts.
     * GUI Interface, don't use menus (use divs, resizable when necessary). Also put messages here.
-    * Make the entry point (gui.html, ...) more accessible (also review grunt branch)?
-      Separate client from backend in dif folders at least? Client GUI with index.html, samples in separate folder.
-      Package!
     * Make it clear when the results limit has been hit (for dimension values and aggregations).
     * Support negated cuts (add quick "invert" button in the cut-box?).
     * Show filter icon from "horizontal dimension". Also show its detail level (and perhaps not the hierarchy).
@@ -59,18 +46,22 @@
       support for several servers desirable, inconsistent use of Cell/Browser interface or missing
       methods to transform drilldown_string<->drilldown object, same for cuts, documentation!!!!)
     * Dimensions were somehow promoted to be kind of a top-level UI objects to be selectable/draggable
-    * Refactor libs to static/lib, join cubesviewer js and css in cubesviewer/js and cubesviewer/css  .
 
-    * Mapping (openlayers).
-
-    * Tag release.
-    * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
     * Add anonymous-save service to backend and client (dedup).
-    * Add carets to dropdown menus.
-    * Export facts is failing.
+    * Map charts.
+
+[2.0.1]
+
+    * Reviewed and improved doc
+    * Move doc to site (but import from repository markdown, to keep
+      doc sources along with the  project).
+    * Link from viewer to online doc.
+    * Create site, update readme, and site screenshots.
+
+    * Cleanup code, review headers (2016).
     * Use strict.
-    * HTML, CSS and dynamic class usage sanitized (closes #14).
-    * New set of icons (color?).
+    * Review if cube or menu loading is happening before initialization if views are created eagerly (views.html).
+    * Add loading indicators / block-ui (check angular plugins) as necessary.
+    * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
+    * Review alerts in code and use alert service.
     * Separate chart plugin in files.
-    * Fix menu items changing to bold and white.
-    * Upgrade libraries (D3, jquery, etc)

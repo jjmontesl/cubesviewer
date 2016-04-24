@@ -9,7 +9,7 @@
 
           <ul class="dropdown-menu cv-gui-cubeslist-menu">
 
-            <li ng-repeat="cube in cubesService.cubesserver._cube_list" ng-click="addViewCube(cube.name)"><a>{{ cube.label }}</a></li>
+            <li ng-repeat="cube in cubesService.cubesserver._cube_list" ng-click="studioViewsService.addViewCube(cube.name)"><a>{{ cube.label }}</a></li>
 
           </ul>
         </div>
@@ -71,6 +71,11 @@
     </div>
 
     <div class="cv-gui-workspace">
+
+        <div ng-repeat="studioView in studioViewsService.views">
+            <div cv-studio-view view="studioView"></div>
+        </div>
+
     </div>
 
 </div>

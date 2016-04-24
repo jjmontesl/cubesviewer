@@ -1,0 +1,24 @@
+<div class="cv-bootstrap cv-gui-viewcontainer" ng-controller="CubesViewerStudioViewController">
+
+    <div class="panel panel-primary">
+        <div class="panel-heading" style="ver">
+
+            <button type="button" ng-click="studioViewsService.closeView(view)" class="btn btn-danger btn-xs" style="margin-right: 10px;"><i class="fa fa-fw fa-close"></i></button>
+
+            <button type="button" class="btn btn-primary btn-xs" style="margin-right: 10px;"><i class="fa fa-fw fa-caret-up"></i></button>
+            <span class="cv-gui-title">{{ view.params.name }}</span>
+
+
+            <span class="badge badge-primary pull-right cv-gui-container-state" style="margin-right: 10px;">Test</span>
+
+        </div>
+        <div class="panel-body">
+            <div class="cv-gui-viewcontent">
+
+                <div cv-view-cube view="view"></div>
+
+            </div>
+        </div>
+    </div>
+
+</div>

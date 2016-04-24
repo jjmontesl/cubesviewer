@@ -1,4 +1,4 @@
-[2.0.0]
+[2.0.1]
 
     * Added support for negated cuts (inverse filters).
     * Added support for custom values formatting.
@@ -7,9 +7,11 @@
     * Sort pie charts by size of slice.
     * Serializing now shows code in a floating dialog box easier to copy.
 
-    * Replaced YUI and BluePrint for Bootstrap.
+    * Using templating for HTML views.
+    * Refactored to Angular (dropped jQueryUI).
+    * Now using Bootstrap for styles, without impacting page styles (no global selectors).
     * Introduced Grunt/Bower build system.
-    * Refactored: separated cubesviewer-server from client.
+    * Separated cubesviewer-server from client.
 
 [0.0.11]
 

@@ -32,21 +32,7 @@
  * Main cubesviewer object. It is created by the library and made
  * available as the global "cubesviewer" variable.
  */
-function cubesviewerController () {
-
-	// Default options
-	this.options = {
-		cubesUrl : null,
-		cubesLang : null,
-		pagingOptions: [15, 30, 100, 250],
-		datepickerShowWeek: true,
-		datepickerFirstDay: 1,
-		tableResizeHackMinWidth: 350 ,
-		jsonRequestType: "json" // "json | jsonp"
-	};
-
-	// Cubes server.
-	this.cubesserver = null;
+function cubesviewerOLD() {
 
 	// Alerts component
 	this._alerts = null;
@@ -69,13 +55,6 @@ function cubesviewerController () {
 		$(document).trigger("cubesviewerRefresh");
 	}
 
-	/*
-	 * Ajax handler for cubes library
-	 */
-	this.cubesAjaxHandler = function (settings) {
-		return cubesviewer.cubesRequest(settings.url, settings.data || [], settings.success);
-	};
-
   /*
    * Save typing while debugging - get a view object with: cubesviewer.getView(1)
    */
@@ -87,48 +66,6 @@ function cubesviewerController () {
 
     return $(viewid + ' .cv-gui-viewcontent').data('cubesviewer-view');
   };
-
-	/*
-	 * Cubes centralized request
-	 */
-	this.cubesRequest = function(path, params, successCallback) {
-
-		// TODO: normalize how URLs are used (full URL shall come from client code)
-		if (path.charAt(0) == '/') path = this.options["cubesUrl"] + path;
-
-		var jqxhr = $.get(path, params, this._cubesRequestCallback(successCallback), cubesviewer.options.jsonRequestType);
-
-		jqxhr.fail (cubesviewer.defaultRequestErrorHandler);
-
-		return jqxhr;
-
-	}
-
-	this._cubesRequestCallback = function(pCallback) {
-		var callback = pCallback;
-		return function(data, status) {
-			pCallback(data);
-		}
-	};
-
-	/*
-	 * Default XHR error handler for CubesRequests
-	 */
-	this.defaultRequestErrorHandler = function(xhr, textStatus, errorThrown) {
-		// TODO: These alerts are not acceptable.
-		if (xhr.status == 401) {
-			cubesviewer.alert("Unauthorized.");
-		} else if (xhr.status == 403) {
-			cubesviewer.alert("Forbidden.");
-		} else if (xhr.status == 400) {
-			cubesviewer.alert($.parseJSON(xhr.responseText).message);
-		} else {
-			console.debug(xhr);
-			cubesviewer.showInfoMessage("CubesViewer: An error occurred while accessing the data server.\n\n" +
-										"Please try again or contact the application administrator if the problem persists.\n");
-		}
-		//$('.ajaxloader').hide();
-	};
 
 
 	/*
@@ -170,7 +107,7 @@ function cubesviewerController () {
 };
 
 // Main CubesViewer angular module
-angular.module('cv', ['cv.cubes']);
+angular.module('cv', ['bootstrapSubmenu', 'ui.grid', 'cv.cubes', 'cv.views']);
 
 // Configure moment.js
 angular.module('cv').constant('angularMomentConfig', {
@@ -196,6 +133,7 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', /* 'editable
 	$.extend(cvOptions, defaultOptions);
 
 	// Avoid square brackets in serialized array params
+	// TODO: Shall be done for $http instead?
 	/*
 	$.ajaxSetup({
 		traditional : true
@@ -219,7 +157,11 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', /* 'editable
 var cubesviewer = {
 
 	// CubesViewer version
-	version: "2.0.0-devel",
+	version: "2.0.1-devel",
+
+	VIEW_STATE_INITIALIZING: 1,
+	VIEW_STATE_INITIALIZED: 2,
+	VIEW_STATE_ERROR: 3,
 
 	_configure: function(options) {
 		angular.module('cv').constant('cvOptions', options);

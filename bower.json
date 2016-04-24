@@ -33,7 +33,8 @@
     "font-awesome": "Font-Awesome#4.6.1",
     "bootstrap-submenu": "^2.0.4",
     "angular": "^1.5.5",
-    "angular-bootstrap": "1.3.2"
+    "angular-bootstrap": "1.3.2",
+    "angular-ui-grid": "^3.1.1"
   },
   "exportsOverride": {
     "jquery": {

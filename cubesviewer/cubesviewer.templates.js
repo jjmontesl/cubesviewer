@@ -49,22 +49,27 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
   );
 
 
-  $templateCache.put('studio/container.html',
-    "<div id=\"{{viewId}}\" class=\"cv-bootstrap cv-gui-viewcontainer\">\n" +
+  $templateCache.put('studio/panel.html',
+    "<div class=\"cv-bootstrap cv-gui-viewcontainer\" ng-controller=\"CubesViewerStudioViewController\">\n" +
     "\n" +
     "    <div class=\"panel panel-primary\">\n" +
     "        <div class=\"panel-heading\" style=\"ver\">\n" +
     "\n" +
-    "            <span class=\"cv-gui-title\">Test {{name}}</span>\n" +
+    "            <button type=\"button\" ng-click=\"studioViewsService.closeView(view)\" class=\"btn btn-danger btn-xs\" style=\"margin-right: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "\n" +
-    "            <button type=\"button\" class=\"btn btn-primary btn-xs pull-right\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
-    "            <button type=\"button\" class=\"btn btn-primary btn-xs pull-right\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-caret-up\"></i></button>\n" +
+    "            <button type=\"button\" class=\"btn btn-primary btn-xs\" style=\"margin-right: 10px;\"><i class=\"fa fa-fw fa-caret-up\"></i></button>\n" +
+    "            <span class=\"cv-gui-title\">{{ view.params.name }}</span>\n" +
     "\n" +
-    "            <span class=\"label label-info pull-right cv-gui-container-state\">Test2</span>\n" +
+    "\n" +
+    "            <span class=\"badge badge-primary pull-right cv-gui-container-state\" style=\"margin-right: 10px;\">Test</span>\n" +
     "\n" +
     "        </div>\n" +
     "        <div class=\"panel-body\">\n" +
-    "            <div class=\"cv-gui-viewcontent\" style=\"overflow: hidden;\"></div>\n" +
+    "            <div class=\"cv-gui-viewcontent\">\n" +
+    "\n" +
+    "                <div cv-view-cube view=\"view\"></div>\n" +
+    "\n" +
+    "            </div>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
@@ -72,7 +77,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
   );
 
 
-  $templateCache.put('studio/main.html',
+  $templateCache.put('studio/studio.html',
     "<div class=\"cv-bootstrap\" ng-controller=\"CubesViewerStudioController\">\n" +
     "\n" +
     "    <div class=\"cv-gui-panel\" >\n" +
@@ -84,7 +89,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "          <ul class=\"dropdown-menu cv-gui-cubeslist-menu\">\n" +
     "\n" +
-    "            <li ng-repeat=\"cube in cubesService.cubesserver._cube_list\" ng-click=\"addViewCube(cube.name)\"><a>{{ cube.label }}</a></li>\n" +
+    "            <li ng-repeat=\"cube in cubesService.cubesserver._cube_list\" ng-click=\"studioViewsService.addViewCube(cube.name)\"><a>{{ cube.label }}</a></li>\n" +
     "\n" +
     "          </ul>\n" +
     "        </div>\n" +
@@ -146,6 +151,11 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    </div>\n" +
     "\n" +
     "    <div class=\"cv-gui-workspace\">\n" +
+    "\n" +
+    "        <div ng-repeat=\"studioView in studioViewsService.views\">\n" +
+    "            <div cv-studio-view view=\"studioView\"></div>\n" +
+    "        </div>\n" +
+    "\n" +
     "    </div>\n" +
     "\n" +
     "</div>\n" +
@@ -154,15 +164,15 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
   );
 
 
-  $templateCache.put('views/cube/views_cube.html',
-    "<div class=\"cv-view-panel\">\n" +
+  $templateCache.put('views/cube/cube.html',
+    "<div class=\"cv-view-panel\" ng-controller=\"CubesViewerViewsCubeController\">\n" +
     "\n" +
     "    <div class=\"cv-view-viewmenu\">\n" +
     "\n" +
     "        <div class=\"panel panel-primary pull-right\" style=\"padding: 3px;\">\n" +
     "\n" +
     "            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n" +
-    "              <button type=\"button\" class=\"btn btn-primary btn-sm explorebutton\"><i class=\"fa fa-arrow-circle-down\"></i></button>\n" +
+    "              <button type=\"button\" ng-click=\"setViewMode('explore')\" ng-class=\"{'active': view.params.mode == 'explore'}\" class=\"btn btn-primary btn-sm explorebutton\"><i class=\"fa fa-arrow-circle-down\"></i></button>\n" +
     "            </div>\n" +
     "\n" +
     "           <div class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 10px;\">\n" +
@@ -170,9 +180,35 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                <i class=\"fa fa-fw fa-arrow-down\"></i> Drilldown <span class=\"caret\"></span>\n" +
     "              </button>\n" +
     "\n" +
-    "              <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-drilldown\">\n" +
-    "                <li ><a>Test 1</a></li>\n" +
+    "              <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu-drilldown\">\n" +
+    "\n" +
+    "                  <!-- if ((grayout_drill) && ((($.grep(view.params.drilldown, function(ed) { return ed == dimension.name; })).length > 0))) { -->\n" +
+    "                  <li on-repeat-done ng-repeat-start=\"dimension in view.cube.dimensions\" ng-if=\"dimension.levels.length == 1\" ng-click=\"selectDrill(dimension);\">\n" +
+    "                    <a href=\"\">{{ dimension.label }}</a>\n" +
+    "                  </li>\n" +
+    "                  <li ng-repeat-end ng-if=\"dimension.levels.length != 1\" class=\"dropdown-submenu\">\n" +
+    "                    <a tabindex=\"0\">{{ dimension.label }}</a>\n" +
+    "\n" +
+    "                    <ul ng-if=\"dimension.hierarchies_count() != 1\" class=\"dropdown-menu\">\n" +
+    "                        <li ng-repeat=\"(hikey,hi) in dimension.hierarchies\" class=\"dropdown-submenu\">\n" +
+    "                            <a tabindex=\"0\" href=\"\" onclick=\"return false;\">{{ hi.label }}</a>\n" +
+    "                            <ul class=\"dropdown-menu\">\n" +
+    "                                <li ng-repeat=\"level in hi.levels\" ng-click=\"selectDrill(dimension.name + '@' + hi.name + ':' + level.name)\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                            </ul>\n" +
+    "                        </li>\n" +
+    "                    </ul>\n" +
+    "\n" +
+    "                    <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
+    "                        <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectDrill(dimension.name + ':' + level.name)\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                    </ul>\n" +
+    "\n" +
+    "                  </li>\n" +
+    "\n" +
+    "                  <div class=\"divider\"></div>\n" +
+    "                  <li ng-click=\"selectDrill(null)\"><a href=\"\"><i class=\"fa fa-fw fa-close\"></i> None</a></li>\n" +
+    "\n" +
     "              </ul>\n" +
+    "\n" +
     "            </div>\n" +
     "\n" +
     "\n" +
@@ -182,8 +218,14 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "              </button>\n" +
     "\n" +
     "              <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut\">\n" +
-    "                <li ><a>Test 1</a></li>\n" +
-    "                <li ><a>Test 3</a></li>\n" +
+    "\n" +
+    "                <li><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected</a></li>\n" +
+    "                <div class=\"divider\"></div>\n" +
+    "\n" +
+    "                <div class=\"divider\"></div>\n" +
+    "                <li><a href=\"\"><i class=\"fa fa-fw fa-close\"></i> Clear filters</a></li>\n" +
+    "\n" +
+    "\n" +
     "              </ul>\n" +
     "            </div>\n" +
     "\n" +
@@ -207,10 +249,25 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    </div>\n" +
     "    <div class=\"clearfix\"></div>\n" +
     "\n" +
-    "    <div class=\"cv-view-viewdata\"></div>\n" +
+    "    <div class=\"cv-view-viewdata\">\n" +
+    "\n" +
+    "        <div ng-if=\"view.params.mode == 'explore'\" ng-include=\"'views/cube/explore/explore.html'\"></div>\n" +
+    "        <div ng-if=\"view.params.mode == 'chart'\" ng-include=\"'views/cube/explore/chart.html'\"></div>\n" +
+    "\n" +
+    "    </div>\n" +
     "    <div class=\"clearfix\"></div>\n" +
     "\n" +
     "    <div class=\"cv-view-viewfooter\"></div>\n" +
+    "\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('views/cube/explore/explore.html',
+    "<div ng-controller=\"CubesViewerViewsCubeExploreController\">\n" +
+    "\n" +
+    "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
+    "    <h3>Aggregated Data</h3>\n" +
     "\n" +
     "</div>\n"
   );

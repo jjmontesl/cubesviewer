@@ -25,71 +25,79 @@
  * SOFTWARE.
  */
 
-/*
- * Cube view.
+'use strict';
+
+/**
+ * CubesViewer view module.
  */
-function cubesviewerViewCube () {
+angular.module('cv.views.cube', []);
 
-	this.cubesviewer = cubesviewer;
 
-	this.onViewCreate = function(event, view) {
+/**
+ * cvViewCube directive and controller.
+ */
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
 
-		$.extend(view.params, {
+	/**
+	 * Define view mode ('explore', 'series', 'facts', 'chart').
+	 */
+	$scope.setViewMode = function(mode) {
+		$scope.view.params.mode = mode;
+	};
 
+
+	$scope.initCube = function() {
+
+		$scope.view.cube = null;
+
+		// Apply default cube view parameters
+		var cubeViewDefaultParams = {
 			"mode" : "explore",
-
 			"drilldown" : [],
 			"cuts" : []
+		};
+		$scope.view.params = $.extend(true, {}, cubeViewDefaultParams, $scope.view.params);
 
-		});
+		var jqxhr = cubesService.cubesserver.get_cube($scope.view.params.cubename, function(cube) {
 
-		view.cube = null;
-
-		var jqxhr = cubesviewer.cubesserver.get_cube(view.params.cubename, function(cube) {
-			view.cube = cube;
+			$scope.view.cube = cube;
 
 			// Apply parameters if cube metadata contains specific cv-view-params
-			if ('cv-view-params' in cube.info) $.extend(view.params, cube.info['cv-view-params']);
+			// TODO: Don't do this if this was a saved or pre-initialized view, only for new views
+			if ('cv-view-params' in $scope.view.cube.info) $.extend($scope.view.params, $scope.view.cube.info['cv-view-params']);
 
-		    if (view.state == cubesviewer.views.STATE_INITIALIZED) cubesviewer.views.redrawView(view);
+			$rootScope.$apply();
+
 		});
 		if (jqxhr) {
 			jqxhr.fail(function() {
-				view.state = cubesviewer.views.STATE_ERROR;
-				cubesviewer.views.redrawView(view);
+				$scope.view.state = cubesviewer.STATE_ERROR;
+				$rootScope.$apply();
 			});
 		}
-
 	};
 
-	/*
-	 * Draw cube view structure.
-	 */
-	this.onViewDraw = function(event, view) {
 
-		// Check if the model/cube is loaded.
-		if (view.cube == null) {
-			$(view.container).append("Loading...");
-			event.stopImmediatePropagation();
-			return;
+}]).directive("cvViewCube", function() {
+	return {
+		restrict: 'A',
+		templateUrl: 'views/cube/cube.html',
+		scope: {
+			view: "="
+		},
+		controller: "CubesViewerViewsCubeController",
+		link: function(scope, iElement, iAttrs) {
+			console.debug(scope);
+			scope.initCube();
 		}
-
-		/*
-		if ($(".cv-view-viewdata", view.container).size() == 0) {
-			$(view.container).empty();
-		}
-		*/
-
-		view._ractive = new Ractive({
-			el: view.container,
-			template: cvtemplates.views_cube,
-			partials: cvtemplates,
-			data: { 'view': view }
-		});
-		$('[data-submenu]', view.container).submenupicker();
-
-
 	};
+});
+
+
+
+function cubesviewerViewCube () {
+
 
 	/*
 	 * Adjusts grids size
@@ -115,57 +123,6 @@ function cubesviewerViewCube () {
 
 		});
 
-	};
-
-	/*
-	 * Builds Cubes Server query parameters based on current view values.
-	 */
-	this.buildBrowserArgs = function(view, includeXAxis, onlyCuts) {
-
-		// "lang": view.cubesviewer.options.cubesLang
-
-		var args = {};
-
-		if (!onlyCuts) {
-
-			var drilldowns = view.params.drilldown.slice(0);
-
-			// Include X Axis if necessary
-			if (includeXAxis) {
-				drilldowns.splice(0, 0, view.params.xaxis);
-			}
-
-			// Preprocess
-			for (var i = 0; i < drilldowns.length; i++) {
-				drilldowns[i] = cubes.drilldown_from_string(view.cube, view.cube.cvdim_parts(drilldowns[i]).fullDrilldownValue);
-			}
-
-			// Include drilldown array
-			if (drilldowns.length > 0)
-				args.drilldown = cubes.drilldowns_to_string(drilldowns);
-		}
-
-		// Cuts
-		var cuts = cubesviewer.views.cube.buildQueryCuts(view);
-		if (cuts.length > 0) args.cut = new cubes.Cell(view.cube, cuts);
-
-		return args;
-
-	}
-
-	/*
-	 * Builds Query Cuts
-	 */
-	this.buildQueryCuts = function(view) {
-
-		// Include cuts
-		var cuts = [];
-		$(view.params.cuts).each(function(idx, e) {
-			var invert = e.invert ? "!" : "";
-			cuts.push(cubes.cut_from_string (view.cube, invert + e.dimension + ":" + e.value));
-		});
-
-		return cuts;
 	};
 
 	/**
@@ -221,18 +178,13 @@ Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSe
 };
 
 /*
- * Create object.
- */
-cubesviewer.views.cube = new cubesviewerViewCube();
-
-/*
  * Bind events.
  */
-$(document).bind("cubesviewerViewCreate", { }, cubesviewer.views.cube.onViewCreate);
-$(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.cube.onViewDraw);
 
 // Resize grids as appropriate
+/*
 $(window).bind('resize', function() {
 	cubesviewer.views.cube._adjustGridSize();
 }).trigger('resize');
+*/
 

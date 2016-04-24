@@ -26,17 +26,80 @@
  */
 
 
-angular.module('cv.studio', ['ui.bootstrap', 'cv', 'cv.studio' /*'ui.bootstrap-slider', 'ui.validate', 'ngAnimate', */
+angular.module('cv.studio', ['ui.bootstrap', 'cv' /*'ui.bootstrap-slider', 'ui.validate', 'ngAnimate', */
                              /*'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',
                              'nvd3' */ ]);
 
 
-angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', 'cvOptions', 'cubesService',
-                                                                       function ($rootScope, $scope, cvOptions, cubesService) {
+angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOptions', 'cubesService', 'viewsService',
+                                                            function ($rootScope, cvOptions, cubesService, viewsService) {
+
+	this.views = [];
+
+	this.lastViewId = 0;
+
+	/**
+	 * Adds a new clean view for a cube
+	 */
+	this.addViewCube = function(cubename) {
+
+		this.lastViewId++;
+		var viewId = "view" + this.lastViewId;
+
+
+		// Find cube name
+		var cubeinfo = cubesService.cubesserver.cubeinfo(cubename);
+
+		//var container = this.createContainer(viewId);
+		//$('.cv-gui-viewcontent', container),
+
+		var view = viewsService.createView(viewId, "cube", { "cubename": cubename, "name": cubeinfo.label + " (" + this.lastViewId + ")" });
+		this.views.push(view);
+
+		return view;
+	};
+
+	/**
+	 * Closes the panel of the given view.
+	 */
+	this.closeView = function(view) {
+		var viewIndex = this.views.indexOf(view);
+		if (viewIndex >= 0) {
+			this.views.splice(viewIndex, 1);
+		}
+	};
+
+}]);
+
+
+/**
+ * cvStudioView directive. Shows a Studio panel containing the corresponding view.
+ */
+angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'studioViewsService',
+                                                     function ($rootScope, $scope, cvOptions, cubesService, studioViewsService) {
+
+	$scope.studioViewsService = studioViewsService;
+
+}]).directive("cvStudioView", function() {
+	return {
+		restrict: 'A',
+		templateUrl: 'studio/panel.html',
+		scope: {
+			view: "="
+		}
+
+	};
+});
+
+
+
+angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'studioViewsService',
+                                                                       function ($rootScope, $scope, cvOptions, cubesService, studioViewsService) {
 
 	$scope.cvVersion = cubesviewer.version;
 	$scope.cvOptions = cvOptions;
 	$scope.cubesService = cubesService;
+	$scope.studioViewsService = studioViewsService;
 
 	// Current views array
 	this.views = [];
@@ -57,31 +120,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 		cubesviewer.views.destroyView (view);
 	};
 
-	/**
-	 * Adds a new clean view for a cube
-	 */
-	$scope.addViewCube = function(cubename) {
 
-		this.lastViewId++;
-		var viewId = "view" + this.lastViewId;
-
-		var container = this.createContainer(viewId);
-
-		// Find cube name
-		var cubeinfo = cubesviewer.cubesserver.cubeinfo (cubename);
-
-		var view = this.cubesviewer.views.createView(viewId, $('.cv-gui-viewcontent', container), "cube", { "cubename": cubename, "name": "Cube " + cubeinfo.label });
-		this.views.push (view);
-
-		// Bind close button
-		$(container).find('.cv-gui-closeview').click(function() {
-			cubesviewer.gui.closeView(view);
-			return false;
-		});
-
-		return view;
-
-	};
 
 	/*
 	 * Adds a view given its params descriptor.
@@ -305,7 +344,7 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
 	$.extend(cvOptions, defaultOptions);;
 
     // Get main template from template cache and compile it
-	$http.get( "studio/main.html", { cache: $templateCache } ).then(function(response) {
+	$http.get( "studio/studio.html", { cache: $templateCache } ).then(function(response) {
 
 		var scope = angular.element(cvOptions.container).scope();
 

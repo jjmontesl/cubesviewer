@@ -1,0 +1,95 @@
+<div class="cv-view-panel" ng-controller="CubesViewerViewsCubeController">
+
+    <div class="cv-view-viewmenu">
+
+        <div class="panel panel-primary pull-right" style="padding: 3px;">
+
+            <div class="btn-group" role="group" aria-label="...">
+              <button type="button" ng-click="setViewMode('explore')" ng-class="{'active': view.params.mode == 'explore'}" class="btn btn-primary btn-sm explorebutton"><i class="fa fa-arrow-circle-down"></i></button>
+            </div>
+
+           <div class="dropdown m-b" style="display: inline-block; margin-left: 10px;">
+              <button class="btn btn-primary btn-sm dropdown-toggle drilldownbutton" type="button" data-toggle="dropdown" data-submenu>
+                <i class="fa fa-fw fa-arrow-down"></i> Drilldown <span class="caret"></span>
+              </button>
+
+              <ul class="dropdown-menu dropdown-menu-right cv-view-menu-drilldown">
+
+                  <!-- if ((grayout_drill) && ((($.grep(view.params.drilldown, function(ed) { return ed == dimension.name; })).length > 0))) { -->
+                  <li on-repeat-done ng-repeat-start="dimension in view.cube.dimensions" ng-if="dimension.levels.length == 1" ng-click="selectDrill(dimension);">
+                    <a href="">{{ dimension.label }}</a>
+                  </li>
+                  <li ng-repeat-end ng-if="dimension.levels.length != 1" class="dropdown-submenu">
+                    <a tabindex="0">{{ dimension.label }}</a>
+
+                    <ul ng-if="dimension.hierarchies_count() != 1" class="dropdown-menu">
+                        <li ng-repeat="(hikey,hi) in dimension.hierarchies" class="dropdown-submenu">
+                            <a tabindex="0" href="" onclick="return false;">{{ hi.label }}</a>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="level in hi.levels" ng-click="selectDrill(dimension.name + '@' + hi.name + ':' + level.name)"><a href="">{{ level.label }}</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <ul ng-if="dimension.hierarchies_count() == 1" class="dropdown-menu">
+                        <li ng-repeat="level in dimension.default_hierarchy().levels" ng-click="selectDrill(dimension.name + ':' + level.name)"><a href="">{{ level.label }}</a></li>
+                    </ul>
+
+                  </li>
+
+                  <div class="divider"></div>
+                  <li ng-click="selectDrill(null)"><a href=""><i class="fa fa-fw fa-close"></i> None</a></li>
+
+              </ul>
+
+            </div>
+
+
+            <div class="dropdown m-b" style="display: inline-block;">
+              <button class="btn btn-primary btn-sm dropdown-toggle cutbutton" type="button" data-toggle="dropdown" data-submenu>
+                <i class="fa fa-fw fa-search"></i> Filter <span class="caret"></span>
+              </button>
+
+              <ul class="dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut">
+
+                <li><a href=""><i class="fa fa-fw fa-filter"></i> Filter selected</a></li>
+                <div class="divider"></div>
+
+                <div class="divider"></div>
+                <li><a href=""><i class="fa fa-fw fa-close"></i> Clear filters</a></li>
+
+
+              </ul>
+            </div>
+
+
+            <div class="dropdown m-b" style="display: inline-block; margin-left: 5px;">
+              <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" data-submenu>
+                <i class="fa fa-fw fa-file"></i> View <span class="caret"></span>
+              </button>
+
+              <ul class="dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view">
+                <li ><a>Test 2</a></li>
+              </ul>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="cv-view-viewinfo">
+
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="cv-view-viewdata">
+
+        <div ng-if="view.params.mode == 'explore'" ng-include="'views/cube/explore/explore.html'"></div>
+        <div ng-if="view.params.mode == 'chart'" ng-include="'views/cube/explore/chart.html'"></div>
+
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="cv-view-viewfooter"></div>
+
+</div>

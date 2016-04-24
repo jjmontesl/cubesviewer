@@ -25,205 +25,45 @@
  * SOFTWARE.
  */
 
+
+/**
+ * cvViewCube directive and controller.
+ */
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
+
+	$scope.data = null;
+
+	$scope.initialize = function() {
+		//$scope.loadData();
+	};
+
+	$scope.loadData = function() {
+
+		//$scope.view.cubesviewer.views.blockViewLoading(view);
+
+		var browser_args = cubesService.buildBrowserArgs($scope.view, false, false);
+		var browser = new cubes.Browser(cubesService.cubesserver, view.cube);
+		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback(view));
+		jqxhr.always(function() {
+			//view.cubesviewer.views.unblockView(view);
+		});
+
+	};
+
+	$scope._loadDataCallback = function(data, status) {
+		$scope.data = data;
+	};
+
+	$scope.initialize();
+
+}]);
+
+
+
+
 function cubesviewerViewCubeExplore() {
 
-	this.cubesviewer = cubesviewer;
-
-	/*
-	 * Draw cube view structure.
-	 */
-	this.onViewDraw = function(event, view) {
-
-		if (view.cube == null) return;
-
-		$(view.container).find('.explorebutton').click(function() {
-			view.cubesviewer.views.cube.explore.modeExplore(view);
-			return false;
-		});
-
-		// Draw minimum (explore) info pieces
-		view.cubesviewer.views.cube.explore.drawInfo(view);
-
-		if (view.params.mode != "explore") return;
-
-
-		// Highlight
-		$(view.container).find('.explorebutton').button("option", "disabled", "true").addClass('active');
-
-		// Only if data section is empty
-		if ($(view.container).find('.cv-view-viewdata').children().size() == 0) {
-			$(view.container).find('.cv-view-viewdata').append('<h3>Aggregated Data</h3>');
-		}
-
-		// Load data
-		view.cubesviewer.views.cube.explore.loadData(view);
-
-	};
-
-	this.getDrillElementsList = function(view, cssclass, grayout_drill) {
-
-		var menu = $(".cv-view-menu-drilldown", $(view.container));
-		var cube = view.cube;
-
-		var drillElements = "";
-
-		$(cube.dimensions).each( function(idx, dimension) {
-
-			if (dimension.levels.length == 1) {
-				// Don't show drilldown option if dimension is
-				// filtered (besides, this query causes a server error)
-				// TODO: Handle this for non-flat dimensions too
-				var disabled = "";
-				if ((grayout_drill) && ((($.grep(view.params.drilldown, function(ed) { return ed == dimension.name; })).length > 0))) {
-					disabled = "ui-state-disabled";
-				}
-				drillElements =
-					drillElements +
-					'<li><a href="#" class="' + cssclass + ' ' + disabled + '" data-dimension="' + dimension.name + '" data-value="1">' + dimension.label + '</a></li>';
-			} else {
-				drillElements = drillElements + '<li><a href="#" onclick="return false;">' + dimension.label +
-					'</a><ul class="drillList" style="width: 170px; z-index: 9999;">';
-
-				if (dimension.hierarchies_count() > 1) {
-					for (var hikey in dimension.hierarchies) {
-						var hi = dimension.hierarchies[hikey];
-						drillElements = drillElements + '<li><a href="#" onclick="return false;">' + hi.label +
-						'</a><ul class="drillList" style="width: 160px; z-index: 9999;">';
-						$(hi.levels).each(function(idx, level) {
-							drillElements = drillElements + '<li><a href="#" class="' + cssclass + '" data-dimension="' +
-								dimension.name + '@' + hi.name + ':'+ level.name + '" data-value="1">' + level.label + '</a></li>';
-						});
-						drillElements = drillElements + '</ul></li>';
-					}
-				} else {
-					$(dimension.default_hierarchy().levels).each(function(idx, level) {
-						drillElements = drillElements + '<li><a href="#" class="' + cssclass + '" data-dimension="' + dimension.name + ':'+
-						level.name + '" data-value="1">' + level.label + '</a></li>';
-					});
-				}
-
-				drillElements = drillElements + '</ul></li>';
-			}
-
-		});
-
-		return drillElements;
-
-	}
-
-	/*
-	 * Builds the explore menu drilldown options.
-	 */
-	this.drawExploreMenuDrilldown = function(view) {
-
-		var menu = $(".cv-view-menu-drilldown", $(view.container));
-		var cube = view.cube;
-
-		var drillElements = this.getDrillElementsList(view, "selectDrill", true);
-
-		menu.append(
-			'' +
-			drillElements + '<div></div>' + '<li><a href="#" class="selectDrill" data-dimension=""><span class="ui-icon ui-icon-arrowthick-1-n" >' +
-			'</span><i>None</i></a></li>' + ''
-		);
-
-		// Menu functionality
-		view.cubesviewer.views.cube._initMenu(view, '.drilldownbutton', '.cv-view-menu-drilldown');
-
-	}
-
-	/*
-	 * Builds the explore menu drilldown options.
-	 */
-	this.drawExploreMenuFilter = function(view) {
-
-		var menu = $(".cv-view-menu-cut", $(view.container));
-		var cube = view.cube;
-
-		// Filter selected option (to filter in the values of the selected rows in the Explore table)
-		if (view.params.mode == "explore") {
-			menu.append('<li><a href="#" class="explore-filterselected" ><span class="ui-icon ui-icon-zoomin"></span>Filter selected</a></li>' +
-							'<div></div>');
-		}
-
-		// Separator and "clear filters". The datefilter uses this class to place itself in the menu.
-		menu.append(
-				'<div class="ui-explore-cut-clearsep"></div>' +
-				'<li><a href="#" class="selectCut" data-dimension="" data-value="" ><span class="ui-icon ui-icon-close"></span>Clear filters</a></li>'
-		);
-
-		// Menu functionality
-		view.cubesviewer.views.cube._initMenu(view, '.cutbutton', '.cv-view-menu-cut');
-
-
-	};
-
-	/*
-	 * Draw view options as appropriate.
-	 */
-	this.drawExploreMenu = function(view) {
-
-		var menu = $(".cv-view-menu-view", $(view.container));
-		var cube = view.cube;
-
-		this.drawExploreMenuDrilldown (view);
-		this.drawExploreMenuFilter (view);
-
-		$(menu).menu("refresh");
-		$(menu).addClass("ui-menu-icons");
-
-		// Events
-		$(view.container).find('.selectDrill').click( function() {
-			cubesviewer.views.cube.explore.selectDrill(view, $(this).attr('data-dimension'), $(this).attr('data-value'));
-			return false;
-		});
-		$(view.container).find('.explore-filterselected').click(function() {
-			cubesviewer.views.cube.explore.filterSelected(view);
-			return false;
-		});
-		$(view.container).find('.selectCut').click( function() {
-			cubesviewer.views.cube.explore.selectCut(view, $(this).attr('data-dimension'), $(this).attr('data-value'), $(this).attr('data-invert'));
-			return false;
-		});
-
-	};
-
-	/*
-	 * Change to explore mode.
-	 */
-	this.modeExplore = function(view) {
-		view.params.mode = "explore";
-		view.cubesviewer.views.redrawView(view);
-	};
-
-	/*
-	 * Load and draw current data in explore mode.
-	 */
-	this.loadData = function(view) {
-
-		view.cubesviewer.views.blockViewLoading(view);
-
-		var browser_args = this.cubesviewer.views.cube.buildBrowserArgs(view, false, false);
-		var browser = new cubes.Browser(view.cubesviewer.cubesserver, view.cube);
-		var jqxhr = browser.aggregate(browser_args, view.cubesviewer.views.cube.explore._loadDataCallback(view));
-		jqxhr.always(function() {
-			view.cubesviewer.views.unblockView(view);
-		});
-
-	};
-
-	/*
-	 * Updates info after loading data.
-	 */
-	this._loadDataCallback = function(view) {
-		var view = view;
-		return function(data, status) {
-			$(view.container).find('.cv-view-viewdata').empty();
-			view.cubesviewer.views.cube.explore.drawSummary(view, data);
-			//view.cubesviewer.views.cube._adjustGridSize();
-		}
-
-	};
 
 	// Sort data according to current drilldown ordering
 	this._sortData = function(view, data, includeXAxis) {
@@ -711,12 +551,3 @@ function cubesviewerViewCubeExplore() {
 };
 
 
-/*
- * Create object.
- */
-cubesviewer.views.cube.explore = new cubesviewerViewCubeExplore();
-
-/*
- * Bind events.
- */
-$(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.cube.explore.onViewDraw);

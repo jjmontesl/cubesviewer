@@ -1,4 +1,47 @@
-/* Cubes.js
+/*
+ * angular-bootstrap-submenu
+ * Copyright (c) 2016 Jose Juan Montes
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * If your version of the Software supports interaction with it remotely through
+ * a computer network, the above copyright notice and this permission notice
+ * shall be accessible to all users.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+
+/* 'use strict'; */
+
+
+angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', function($timeout) {
+	return {
+		restrict: 'A',
+		link: function(scope, iElement, iAttrs) {
+			// FIXME: This is not a proper way of waiting for the menu to be constructed.
+			$timeout(function() {
+				$(iElement).submenupicker();
+			}, 250);
+		}
+	};
+}]);
+
+;/* Cubes.js
  *
  * JavaScript library for Cubes OLAP.
  *
@@ -971,7 +1014,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 	 */
 	this.connect = function() {
 		// Initialize Cubes client library
-		this.cubesserver = new cubes.Server(cubesviewer.cubesAjaxHandler);
+		this.cubesserver = new cubes.Server(cubesService.cubesAjaxHandler);
 		console.debug("Cubes client connecting to: " + cvOptions.cubesUrl);
 		this.cubesserver.connect (cvOptions.cubesUrl, function() {
 			console.debug('Cubes client initialized (server version: ' + cubesService.cubesserver.server_version + ')');
@@ -979,6 +1022,112 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 			$rootScope.$apply();
 		} );
 	};
+
+
+	/*
+	 * Ajax handler for cubes library
+	 */
+	this.cubesAjaxHandler = function (settings) {
+		return cubesService.cubesRequest(settings.url, settings.data || [], settings.success);
+	};
+
+
+	/*
+	 * Cubes centralized request
+	 */
+	this.cubesRequest = function(path, params, successCallback) {
+
+		// TODO: normalize how URLs are used (full URL shall come from client code)
+		if (path.charAt(0) == '/') path = cvOptions.cubesUrl + path;
+
+		var jqxhr = $.get(path, params, cubesService._cubesRequestCallback(successCallback), cvOptions.jsonRequestType);
+
+		jqxhr.fail(cubesService.defaultRequestErrorHandler);
+
+		return jqxhr;
+
+	}
+
+	this._cubesRequestCallback = function(pCallback) {
+		var callback = pCallback;
+		return function(data, status) {
+			pCallback(data);
+		}
+	};
+
+	/*
+	 * Default XHR error handler for CubesRequests
+	 */
+	this.defaultRequestErrorHandler = function(xhr, textStatus, errorThrown) {
+		// TODO: These alerts are not acceptable.
+		if (xhr.status == 401) {
+			cubesviewer.alert("Unauthorized.");
+		} else if (xhr.status == 403) {
+			cubesviewer.alert("Forbidden.");
+		} else if (xhr.status == 400) {
+			cubesviewer.alert($.parseJSON(xhr.responseText).message);
+		} else {
+			console.debug(xhr);
+			cubesviewer.showInfoMessage("CubesViewer: An error occurred while accessing the data server.\n\n" +
+										"Please try again or contact the application administrator if the problem persists.\n");
+		}
+		//$('.ajaxloader').hide();
+	};
+
+
+	/*
+	 * Builds Cubes Server query parameters based on current view values.
+	 */
+	this.buildBrowserArgs = function(view, includeXAxis, onlyCuts) {
+
+		// "lang": view.cubesviewer.options.cubesLang
+
+		console.debug(view);
+
+		var args = {};
+
+		if (!onlyCuts) {
+
+			var drilldowns = view.params.drilldown.slice(0);
+
+			// Include X Axis if necessary
+			if (includeXAxis) {
+				drilldowns.splice(0, 0, view.params.xaxis);
+			}
+
+			// Preprocess
+			for (var i = 0; i < drilldowns.length; i++) {
+				drilldowns[i] = cubes.drilldown_from_string(view.cube, view.cube.cvdim_parts(drilldowns[i]).fullDrilldownValue);
+			}
+
+			// Include drilldown array
+			if (drilldowns.length > 0)
+				args.drilldown = cubes.drilldowns_to_string(drilldowns);
+		}
+
+		// Cuts
+		var cuts = this.buildQueryCuts(view);
+		if (cuts.length > 0) args.cut = new cubes.Cell(view.cube, cuts);
+
+		return args;
+
+	}
+
+	/*
+	 * Builds Query Cuts
+	 */
+	this.buildQueryCuts = function(view) {
+
+		// Include cuts
+		var cuts = [];
+		$(view.params.cuts).each(function(idx, e) {
+			var invert = e.invert ? "!" : "";
+			cuts.push(cubes.cut_from_string (view.cube, invert + e.dimension + ":" + e.value));
+		});
+
+		return cuts;
+	};
+
 
 	this.initialize();
 
@@ -1019,21 +1168,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
  * Main cubesviewer object. It is created by the library and made
  * available as the global "cubesviewer" variable.
  */
-function cubesviewerController () {
-
-	// Default options
-	this.options = {
-		cubesUrl : null,
-		cubesLang : null,
-		pagingOptions: [15, 30, 100, 250],
-		datepickerShowWeek: true,
-		datepickerFirstDay: 1,
-		tableResizeHackMinWidth: 350 ,
-		jsonRequestType: "json" // "json | jsonp"
-	};
-
-	// Cubes server.
-	this.cubesserver = null;
+function cubesviewerOLD() {
 
 	// Alerts component
 	this._alerts = null;
@@ -1056,13 +1191,6 @@ function cubesviewerController () {
 		$(document).trigger("cubesviewerRefresh");
 	}
 
-	/*
-	 * Ajax handler for cubes library
-	 */
-	this.cubesAjaxHandler = function (settings) {
-		return cubesviewer.cubesRequest(settings.url, settings.data || [], settings.success);
-	};
-
   /*
    * Save typing while debugging - get a view object with: cubesviewer.getView(1)
    */
@@ -1074,48 +1202,6 @@ function cubesviewerController () {
 
     return $(viewid + ' .cv-gui-viewcontent').data('cubesviewer-view');
   };
-
-	/*
-	 * Cubes centralized request
-	 */
-	this.cubesRequest = function(path, params, successCallback) {
-
-		// TODO: normalize how URLs are used (full URL shall come from client code)
-		if (path.charAt(0) == '/') path = this.options["cubesUrl"] + path;
-
-		var jqxhr = $.get(path, params, this._cubesRequestCallback(successCallback), cubesviewer.options.jsonRequestType);
-
-		jqxhr.fail (cubesviewer.defaultRequestErrorHandler);
-
-		return jqxhr;
-
-	}
-
-	this._cubesRequestCallback = function(pCallback) {
-		var callback = pCallback;
-		return function(data, status) {
-			pCallback(data);
-		}
-	};
-
-	/*
-	 * Default XHR error handler for CubesRequests
-	 */
-	this.defaultRequestErrorHandler = function(xhr, textStatus, errorThrown) {
-		// TODO: These alerts are not acceptable.
-		if (xhr.status == 401) {
-			cubesviewer.alert("Unauthorized.");
-		} else if (xhr.status == 403) {
-			cubesviewer.alert("Forbidden.");
-		} else if (xhr.status == 400) {
-			cubesviewer.alert($.parseJSON(xhr.responseText).message);
-		} else {
-			console.debug(xhr);
-			cubesviewer.showInfoMessage("CubesViewer: An error occurred while accessing the data server.\n\n" +
-										"Please try again or contact the application administrator if the problem persists.\n");
-		}
-		//$('.ajaxloader').hide();
-	};
 
 
 	/*
@@ -1157,7 +1243,7 @@ function cubesviewerController () {
 };
 
 // Main CubesViewer angular module
-angular.module('cv', ['cv.cubes']);
+angular.module('cv', ['bootstrapSubmenu', 'ui.grid', 'cv.cubes', 'cv.views']);
 
 // Configure moment.js
 angular.module('cv').constant('angularMomentConfig', {
@@ -1183,6 +1269,7 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', /* 'editable
 	$.extend(cvOptions, defaultOptions);
 
 	// Avoid square brackets in serialized array params
+	// TODO: Shall be done for $http instead?
 	/*
 	$.ajaxSetup({
 		traditional : true
@@ -1206,7 +1293,11 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', /* 'editable
 var cubesviewer = {
 
 	// CubesViewer version
-	version: "2.0.0-devel",
+	version: "2.0.1-devel",
+
+	VIEW_STATE_INITIALIZING: 1,
+	VIEW_STATE_INITIALIZED: 2,
+	VIEW_STATE_ERROR: 3,
 
 	_configure: function(options) {
 		angular.module('cv').constant('cvOptions', options);
@@ -1221,6 +1312,941 @@ var cubesviewer = {
 
 };
 
+
+
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * If your version of the Software supports interaction with it remotely through
+ * a computer network, the above copyright notice and this permission notice
+ * shall be accessible to all users.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+
+'use strict';
+
+
+angular.module('cv.views', ['cv.views.cube']);
+
+angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', 'cubesService',
+                                                    function ($rootScope, cvOptions, cubesService) {
+
+	this.views = [];
+
+	/**
+	 * Adds a new clean view for a cube.
+	 * This accepts parameters as an object or as a serialized string.
+	 */
+	this.createView = function(id, type, data) {
+
+		// Create view
+
+		var params = {};
+
+		if (typeof data == "string") {
+			try {
+				params = $.parseJSON(data);
+			} catch (err) {
+				alert ('Error: could not process serialized data (JSON parse error).');
+				params["name"] = "Undefined view";
+			}
+		} else {
+			params = data;
+		}
+
+		var view = {
+			"id": id,
+			"type": type,
+			"state": cubesviewer.STATE_INITIALIZING,
+			"params": {}
+		};
+
+		$.extend(view.params, params);
+		$(document).trigger("cubesviewerViewCreate", [ view ] );
+		$.extend(view.params, params);
+
+
+		if (view.state == cubesviewer.STATE_INITIALIZING) view.state = cubesviewer.STATE_INITIALIZED;
+
+		return view;
+	};
+
+
+}]);
+
+
+/**
+ * cvView directive. This is the core CubesViewer directive, which shows
+ * a configured view.
+ */
+/* */
+
+
+function cubesviewerViews () {
+
+	/*
+	 * Shows an error message on a view container.
+	 */
+	this.showFatal = function (container, message) {
+		container.empty().append (
+				'<div class="ui-widget">' +
+				'<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">' +
+				'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' +
+				'<strong>Error</strong><br/><br/>' + message +
+				'</p></div></div>'
+		);
+	}
+
+
+
+	/**
+	 * Destroys a view
+	 */
+	this.destroyView = function(view) {
+
+		// Do cleanup
+
+		// Trigger destroyed event
+		$(document).trigger("cubesviewerViewDestroyed", [ view ] );
+
+	};
+
+	/*
+	 * Locates a view object walking up the parents chain of an element.
+	 */
+	this.getParentView = function(node) {
+		var view = null;
+		$(node).parents().each(function(idx, el) {
+			if (($(el).data("cubesviewer-view") != undefined) && (view == null)) {
+				view = $(el).data("cubesviewer-view");
+			}
+		});
+		return view;
+	}
+
+	/*
+	 * Block the view interface.
+	 */
+	this.blockView = function (view, message) {
+		if (message == "undef") message = null;
+		$(view.container).block({
+			"message": message,
+			"fadeOut": 200,
+			"onUnblock": function() {
+				// Fix conflict with jqBlock which makes menus to not overflow off the view (makes menus innacessible)
+				$(view.container).css("position", "inherit");
+			}
+		});
+	}
+
+	/*
+	 * Block the view interface with a loading message
+	 */
+	this.blockViewLoading = function (view) {
+		this.blockView (view, '<span class="ajaxloader" title="Loading..." >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Loading</span>');
+	}
+
+	/*
+	 * Unblock the view interface.
+	 */
+	this.unblockView = function (view) {
+
+		$(view.container).unblock();
+
+	}
+
+
+	/*
+	 * Triggers redraw for a given view.
+	 */
+	this.redrawView = function (view) {
+		// TODO: Review if if below is needed
+		//if (view == null) return;
+		$(document).trigger ("cubesviewerViewDraw", [ view ]);
+	}
+
+	/*
+	 * Updates view when the view is refreshed.
+	 */
+	this.onViewDraw = function (event, view) {
+
+		if (view.state == cubesviewer.views.STATE_ERROR) {
+			cubesviewer.views.showFatal (view.container, 'An error has occurred. Cannot present view.');
+			event.stopImmediatePropagation();
+			return;
+		}
+
+	}
+
+	/*
+	 * Serialize view data.
+	 */
+	this.serialize = function (view) {
+		return JSON.stringify(view.params);
+	};
+
+};
+
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * If your version of the Software supports interaction with it remotely through
+ * a computer network, the above copyright notice and this permission notice
+ * shall be accessible to all users.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+'use strict';
+
+/**
+ * CubesViewer view module.
+ */
+angular.module('cv.views.cube', []);
+
+
+/**
+ * cvViewCube directive and controller.
+ */
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
+
+	/**
+	 * Define view mode ('explore', 'series', 'facts', 'chart').
+	 */
+	$scope.setViewMode = function(mode) {
+		$scope.view.params.mode = mode;
+	};
+
+
+	$scope.initCube = function() {
+
+		$scope.view.cube = null;
+
+		// Apply default cube view parameters
+		var cubeViewDefaultParams = {
+			"mode" : "explore",
+			"drilldown" : [],
+			"cuts" : []
+		};
+		$scope.view.params = $.extend(true, {}, cubeViewDefaultParams, $scope.view.params);
+
+		var jqxhr = cubesService.cubesserver.get_cube($scope.view.params.cubename, function(cube) {
+
+			$scope.view.cube = cube;
+
+			// Apply parameters if cube metadata contains specific cv-view-params
+			// TODO: Don't do this if this was a saved or pre-initialized view, only for new views
+			if ('cv-view-params' in $scope.view.cube.info) $.extend($scope.view.params, $scope.view.cube.info['cv-view-params']);
+
+			$rootScope.$apply();
+
+		});
+		if (jqxhr) {
+			jqxhr.fail(function() {
+				$scope.view.state = cubesviewer.STATE_ERROR;
+				$rootScope.$apply();
+			});
+		}
+	};
+
+
+}]).directive("cvViewCube", function() {
+	return {
+		restrict: 'A',
+		templateUrl: 'views/cube/cube.html',
+		scope: {
+			view: "="
+		},
+		controller: "CubesViewerViewsCubeController",
+		link: function(scope, iElement, iAttrs) {
+			console.debug(scope);
+			scope.initCube();
+		}
+	};
+});
+
+
+
+function cubesviewerViewCube () {
+
+
+	/*
+	 * Adjusts grids size
+	 */
+	this._adjustGridSize = function() {
+
+		// TODO: use appropriate container width!
+		//var newWidth = $(window).width() - 350;
+
+		$(".cv-view-panel").each(function (idx, e) {
+
+			$(".ui-jqgrid-btable", e).each(function(idx, el) {
+
+				$(el).setGridWidth(cubesviewer.options.tableResizeHackMinWidth);
+
+				var newWidth = $( e ).innerWidth() - 20;
+				//var newWidth = $( el ).parents(".ui-jqgrid").first().innerWidth();
+				if (newWidth < cubesviewer.options.tableResizeHackMinWidth) newWidth = cubesviewer.options.tableResizeHackMinWidth;
+
+				$(el).setGridWidth(newWidth);
+
+			});
+
+		});
+
+	};
+
+	/**
+	 * Accepts an aggregation or a measure and returns the formatter function.
+	 */
+	this.columnFormatFunction = function(view, agmes) {
+
+		var measure = agmes;
+		if ('measure' in agmes) {
+			measure = $.grep(view.cube.measures, function(item, idx) { return item.ref == agmes.measure })[0];
+		}
+
+		var formatterFunction = null;
+		if (measure && ('cv-formatter' in measure.info)) {
+			formatterFunction = function(value) {
+				return eval(measure.info['cv-formatter']);
+			};
+		} else {
+			formatterFunction = function(value) {
+				return Math.formatnumber(value, (agmes.ref=="record_count" ? 0 : 2));
+			};
+		}
+
+		return formatterFunction;
+	};
+
+
+};
+
+Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSeparator) {
+
+
+	if (value === undefined) return "";
+
+	if (decimalPlaces === undefined) decimalPlaces = 2;
+	if (decimalSeparator === undefined) decimalSeparator = ".";
+	if (thousandsSeparator === undefined) thousandsSeparator = " ";
+
+	var result = "";
+
+
+	var intString = Math.floor(value).toString();
+	for (var i = 0; i < intString.length; i++) {
+		result = result + intString[i];
+		var invPos = (intString.length - i - 1);
+		if (invPos > 0 && invPos % 3 == 0) result = result + thousandsSeparator;
+	}
+	if (decimalPlaces > 0) {
+		result = result + parseFloat(value - Math.floor(value)).toFixed(decimalPlaces).toString().replace(".", decimalSeparator).substring(1);
+	}
+
+	return result;
+};
+
+/*
+ * Bind events.
+ */
+
+// Resize grids as appropriate
+/*
+$(window).bind('resize', function() {
+	cubesviewer.views.cube._adjustGridSize();
+}).trigger('resize');
+*/
+
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * If your version of the Software supports interaction with it remotely through
+ * a computer network, the above copyright notice and this permission notice
+ * shall be accessible to all users.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+
+/**
+ * cvViewCube directive and controller.
+ */
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
+
+	$scope.data = null;
+
+	$scope.initialize = function() {
+		//$scope.loadData();
+	};
+
+	$scope.loadData = function() {
+
+		//$scope.view.cubesviewer.views.blockViewLoading(view);
+
+		var browser_args = cubesService.buildBrowserArgs($scope.view, false, false);
+		var browser = new cubes.Browser(cubesService.cubesserver, view.cube);
+		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback(view));
+		jqxhr.always(function() {
+			//view.cubesviewer.views.unblockView(view);
+		});
+
+	};
+
+	$scope._loadDataCallback = function(data, status) {
+		$scope.data = data;
+	};
+
+	$scope.initialize();
+
+}]);
+
+
+
+
+function cubesviewerViewCubeExplore() {
+
+
+	// Sort data according to current drilldown ordering
+	this._sortData = function(view, data, includeXAxis) {
+		//data.sort(cubesviewer._drilldownSortFunction(view.id, includeXAxis));
+	};
+
+	/*
+	 *
+	 */
+	this._drilldownSortFunction = function(view, includeXAxis) {
+
+		var drilldown = view.params.drilldown.slice(0);
+
+		// Include X Axis if necessary
+		if (includeXAxis) {
+			drilldown.splice(0, 0, view.params.xaxis);
+		}
+
+		return function(a, b) {
+
+			// For the horizontal axis drilldown level, if present
+			for ( var i = 0; i < drilldown.length; i++) {
+
+				// Get dimension
+				var dimension = view.cube.cvdim_dim(drilldown[i]);
+
+				// row["key"] = ((e[view.params.drilldown_field] != null) &&
+				// (e[view.params.drilldown] != "")) ? e[view.params.drilldown] : "Undefined";
+				if (dimension.is_flat == true) {
+					if (a[dimension.name] < b[dimension.name])
+						return -1;
+					if (a[dimension.name] > b[dimension.name])
+						return 1;
+				} else {
+					var drilldown_level_value = [];
+					for ( var j = 0; j < dimension.levels.length; j++) {
+						var fieldname = dimension.name + "."
+								+ dimension.levels[j].name;
+						if ((fieldname in a) && (fieldname in b)) {
+							if (a[fieldname] < b[fieldname])
+								return -1;
+							if (a[fieldname] > b[fieldname])
+								return 1;
+						} else {
+							break;
+						}
+					}
+				}
+			}
+
+			return 0;
+		};
+	},
+
+	this._addRows = function(view, rows, data) {
+
+		$(data.cells).each( function(idx, e) {
+
+			var nid = [];
+			var row = [];
+			var key = [];
+
+			// For each drilldown level
+			for ( var i = 0; i < view.params.drilldown.length; i++) {
+
+				// Get dimension
+				var dim = view.cube.cvdim_dim(view.params.drilldown[i]);
+
+				var parts = view.cube.cvdim_parts(view.params.drilldown[i]);
+				var infos = parts.hierarchy.readCell(e, parts.level);
+
+				// Values and Labels
+				var drilldown_level_values = [];
+				var drilldown_level_labels = [];
+
+				$(infos).each(function(idx, info) {
+					drilldown_level_values.push (info.key);
+					drilldown_level_labels.push (info.label);
+				});
+
+				nid.push(drilldown_level_values.join("-"));
+
+				var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+				key.push('<a href="#" class="cv-grid-link" onclick="' + "cubesviewer.views.cube.explore.selectCut(cubesviewer.views.getParentView(this), $(this).attr('data-dimension'), $(this).attr('data-value'), $(this).attr('data-invert')); return false;" +
+						 '" class="selectCut" data-dimension="' + cutDimension + '" ' +
+						 'data-value="' + drilldown_level_values.join(",") + '">' +
+						 drilldown_level_labels.join(" / ") + '</a>');
+			}
+
+			// Set key
+			row["key"] = key.join (" / ");
+			for (var i = 0; i < key.length; i++) {
+				row["key" + i] = key[i];
+			}
+			//row["key"] = key.join(' / ');
+
+			// Add columns
+			$(view.cube.aggregates).each(function(idx, ag) {
+				row[ag.ref] = e[ag.ref];
+			});
+
+			row["id"] = nid.join('-');
+			rows.push(row);
+		});
+
+		// Copy summary if there's no data
+		// This allows a scrollbar to appear in jqGrid when only the summary row is shown.
+		if ((rows.length == 0) && (data.summary)) {
+			var row = [];
+			row["key0"] = "Summary";
+
+			$(view.cube.aggregates).each(function(idx, ag) {
+				row[ag.ref] = data.summary[ag.ref];
+			});
+
+			rows.push(row);
+		}
+
+	};
+
+	this.columnTooltipAttr = function(column) {
+		return function (rowId, val, rawObject) {
+			return 'title="' + column + ' = ' + val + '"';
+		};
+	};
+
+	/*
+	 * Show received summary
+	 */
+	this.drawSummary = function(view, data) {
+
+		var cubesviewer = view.cubesviewer;
+
+		$(view.container).find('.cv-view-viewdata').empty();
+		$(view.container).find('.cv-view-viewdata').append(
+				'<h3>Aggregated Data</h3>' + '<table id="summaryTable-'
+						+ view.id + '"></table>' + '<div id="summaryPager-'
+						+ view.id + '"></div>');
+
+		var colNames = [];
+		var colModel = [];
+		var dataRows = [];
+		var dataTotals = [];
+
+		$(view.cube.aggregates).each(function(idx, ag) {
+			colNames.push(ag.label);
+
+			var colFormatter = cubesviewer.views.cube.columnFormatFunction(view, ag);
+			var col = {
+				name : ag.ref,
+				index : ag.ref,
+				align : "right",
+				sorttype : "number",
+				width : cubesviewer.views.cube.explore.defineColumnWidth(view, ag.ref, 95),
+				formatter: function(cellValue, options, rowObject) {
+					return colFormatter(cellValue);
+				},
+				//formatoptions: {},
+				cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+			};
+			colModel.push(col);
+
+			if (data.summary) dataTotals[ag.ref] = data.summary[ag.ref];
+		});
+
+		/*
+		colNames.sort();
+		colModel.sort(function(a, b) {
+			return (a.name < b.name ? -1 : (a.name == b.name ? 0 : 1));
+		});
+		*/
+
+		// If there are cells, show them
+		cubesviewer.views.cube.explore._sortData(view, data.cells, false);
+		cubesviewer.views.cube.explore._addRows(view, dataRows, data);
+
+		var label = [];
+		$(view.params.drilldown).each(function(idx, e) {
+			label.push(view.cube.cvdim_dim(e).label);
+		})
+		for (var i = 0; i < view.params.drilldown.length; i++) {
+
+			colNames.splice(i, 0, label[i]);
+
+			colModel.splice(i, 0, {
+				name : "key" + i,
+				index : "key" + i,
+				align : "left",
+				width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + i, 130)
+			});
+		}
+		if (view.params.drilldown.length == 0) {
+			colNames.splice(0, 0, "");
+			colModel.splice(0, 0, {
+				name : "key" + 0,
+				index : "key" + 0,
+				align : "left",
+				width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + 0, 110)
+			});
+		}
+
+		dataTotals["key0"] = (cubesviewer.views.cube.buildQueryCuts(view).length == 0) ? "<b>Summary</b>"
+				: "<b>Summary <i>(Filtered)</i></b>";
+
+		$('#summaryTable-' + view.id).get(0).updateIdsOfSelectedRows = function(
+				id, isSelected) {
+			var index = $.inArray(id,
+					$('#summaryTable-' + view.id).get(0).idsOfSelectedRows);
+			if (!isSelected && index >= 0) {
+				$('#summaryTable-' + view.id).get(0).idsOfSelectedRows.splice(
+						index, 1); // remove id from the list
+			} else if (index < 0) {
+				$('#summaryTable-' + view.id).get(0).idsOfSelectedRows.push(id);
+			}
+		};
+
+		$('#summaryTable-' + view.id).get(0).idsOfSelectedRows = [];
+		$('#summaryTable-' + view.id)
+				.jqGrid(
+						{
+							data : dataRows,
+							userData : (data.summary ? dataTotals : null),
+							datatype : "local",
+							height : 'auto',
+							rowNum : cubesviewer.options.pagingOptions[0],
+							rowList : cubesviewer.options.pagingOptions,
+							colNames : colNames,
+							colModel : colModel,
+							pager : "#summaryPager-" + view.id,
+							sortname : cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[0],
+							viewrecords : true,
+							sortorder : cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[1],
+							footerrow : true,
+							userDataOnFooter : true,
+							forceFit : false,
+							shrinkToFit : false,
+							width: cubesviewer.options.tableResizeHackMinWidth,
+							// autowidth: true,
+							multiselect : true,
+							multiboxonly : true,
+
+							// caption: "Current selection data" ,
+							// beforeSelectRow : function () { return false; }
+
+							onSelectRow : $('#summaryTable-' + view.id).get(0).updateIdsOfSelectedRows,
+							onSelectAll : function(aRowids, isSelected) {
+								var i, count, id;
+								for (i = 0, count = aRowids.length; i < count; i++) {
+									id = aRowids[i];
+									$('#summaryTable-' + view.id).get(0)
+											.updateIdsOfSelectedRows(id,
+													isSelected);
+								}
+							},
+							loadComplete : function() {
+								var i, count;
+								for (
+										i = 0,
+										count = $('#summaryTable-' + view.id)
+												.get(0).idsOfSelectedRows.length; i < count; i++) {
+									$(this)
+											.jqGrid(
+													'setSelection',
+													$('#summaryTable-' + view.id)
+															.get(0).idsOfSelectedRows[i],
+													false);
+								}
+								// Call hook
+								view.cubesviewer.views.cube.explore.onTableLoaded (view);
+							},
+							resizeStop: view.cubesviewer.views.cube.explore._onTableResize (view),
+							onSortCol: view.cubesviewer.views.cube.explore._onTableSort (view),
+
+						});
+
+		this.cubesviewer.views.cube._adjustGridSize(); // remember to copy also the window.bind-resize init
+
+
+	};
+
+	this._onTableSort = function (view) {
+		return function (index, iCol, sortorder) {
+			view.cubesviewer.views.cube.explore.onTableSort (view, index, iCol, sortorder);
+		}
+	}
+
+	this._onTableResize = function (view) {
+		return function(width, index) {
+			view.cubesviewer.views.cube.explore.onTableResize (view, width, index);
+		};
+	};
+
+	this.onTableResize = function (view, width, index) {
+		// Empty implementation, to be overrided
+		//alert("resize column " + index + " to " + width + " pixels");
+	};
+	this.onTableLoaded = function (view) {
+		// Empty implementation, to be overrided
+	};
+	this.onTableSort = function (view, key, index, iCol, sortorder) {
+		// Empty implementation, to be overrided
+	};
+
+	this.defineColumnWidth = function (view, column, vdefault) {
+		// Simple implementation. Overrided by the columns plugin.
+		return vdefault;
+	};
+	this.defineColumnSort = function (view, vdefault) {
+		// Simple implementation. Overrided by the columns plugin.
+		return vdefault;
+	};
+
+
+	this.drawInfoPiece = function(selector, color, maxwidth, readonly, content) {
+
+		var maxwidthStyle = "";
+		if (maxwidth != null) {
+			maxwidthStyle = "max-width: " + maxwidth + "px;";
+		}
+		selector.append(
+			'<div class="infopiece" style="background-color: ' + color + '; white-space: nowrap;">' +
+			'<div style="white-space: nowrap; overflow: hidden; display: inline-block; vertical-align: middle; ' + maxwidthStyle + '">' +
+			content + '</div>' +
+			( ! readonly ? ' <button style="display: inline-block; vertical-align: middle;" class="cv-view-infopiece-close"><span class="ui-icon ui-icon-close"></span></button></div>' : '' )
+		);
+
+		selector.children().last().addClass('ui-widget').css('margin', '2px').css('padding', '3px').css('display', 'inline-block').addClass('ui-corner-all');
+		selector.children().last().find('button').button().find('span').css('padding', '0px');
+
+		return selector.children().last();
+	};
+
+	// Draw information bubbles
+	this.drawInfo = function(view, readonly) {
+
+		$(view.container).find('.cv-view-viewinfo').empty();
+
+		$(view.container).find('.cv-view-viewinfo').append(
+			'<div><div class="cv-view-viewinfo-drill"></div>' +
+			'<div class="cv-view-viewinfo-cut"></div>' +
+			'<div class="cv-view-viewinfo-extra"></div></div>'
+		);
+
+		var piece = view.cubesviewer.views.cube.explore.drawInfoPiece(
+			$(view.container).find('.cv-view-viewinfo-drill'), "#000000", 200, true,
+			'<span class="ui-icon ui-icon-info"></span> <span style="color: white;" class="cv-view-viewinfo-cubename"><b>Cube:</b> ' + view.cube.label + '</span>'
+		);
+
+		$(view.params.drilldown).each(function(idx, e) {
+
+			var dimparts = view.cube.cvdim_parts(e);
+			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
+				$(view.container).find('.cv-view-viewinfo-drill'), "#ccffcc", 360, readonly,
+				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Drilldown:</b> ' + dimparts.label
+			);
+			piece.addClass("cv-view-infopiece-drilldown");
+			piece.attr("data-dimension", e);
+			piece.find('.cv-view-infopiece-close').click(function() {
+				view.cubesviewer.views.cube.explore.selectDrill(view, e, "");
+			});
+
+		});
+
+		$(view.params.cuts).each(function(idx, e) {
+			var dimparts = view.cube.cvdim_parts(e.dimension.replace(":",  "@"));
+			var equality = e.invert ? ' != ' : ' = ';
+			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
+				$(view.container).find('.cv-view-viewinfo-cut'), "#ffcccc", 480, readonly,
+				'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Filter: </b> ' + dimparts.label  + equality + '</span>' +
+				'<span title="' + e.value + '">' + e.value + '</span>'
+			);
+			piece.addClass("cv-view-infopiece-cut");
+			piece.attr("data-dimension", e.dimension);
+			piece.attr("data-value", e.value);
+			piece.attr("data-invert", e.invert || false);
+			piece.find('.cv-view-infopiece-close').click(function() {
+				view.cubesviewer.views.cube.explore.selectCut(view, e.dimension, "", e.invert);
+			});
+		});
+
+		if (readonly) {
+			$(view.container).find('.infopiece').find('.ui-icon-close')
+					.parent().remove();
+		}
+
+	};
+
+
+	/*
+	 * Filters current selection
+	 */
+	this.filterSelected = function(view) {
+
+		if (view.params.drilldown.length != 1) {
+			view.cubesviewer.alert('Can only filter multiple values in a view with one level of drilldown.');
+			return;
+		}
+		if ($('#summaryTable-' + view.id).get(0).idsOfSelectedRows.length <= 0) {
+			view.cubesviewer.alert('Cannot filter. No rows are selected.');
+			return;
+		}
+
+		var dom = null;
+		var filterValues = [];
+		var idsOfSelectedRows = $('#summaryTable-' + view.id).get(0).idsOfSelectedRows;
+		var filterData = $.grep($('#summaryTable-' + view.id).jqGrid('getGridParam','data'), function (gd) {
+			return ($.inArray(gd.id, idsOfSelectedRows) != -1);
+		} );
+		$(filterData).each( function(idx, gd) {
+			dom = $(gd["key0"]);
+			filterValues.push($(dom).attr("data-value"));
+		});
+
+		var invert = false;
+		this.selectCut(view, $(dom).attr("data-dimension"), filterValues.join(";"), invert);
+
+	};
+
+	// Select a cut
+	this.selectCut = function(view, dimension, value, invert) {
+
+		if (dimension != "") {
+			if (value != "") {
+				/*
+				var existing_cut = $.grep(view.params.cuts, function(e) {
+					return e.dimension == dimension;
+				});
+				if (existing_cut.length > 0) {
+					//view.cubesviewer.alert("Cannot cut dataset. Dimension '" + dimension + "' is already filtered.");
+					//return;
+				} else {*/
+					view.params.cuts = $.grep(view.params.cuts, function(e) {
+						return e.dimension == dimension;
+					}, true);
+					view.params.cuts.push({
+						"dimension" : dimension,
+						"value" : value,
+						"invert" : invert
+					});
+				/*}*/
+			} else {
+				view.params.cuts = $.grep(view.params.cuts, function(e) {
+					return e.dimension == dimension;
+				}, true);
+			}
+		} else {
+			view.params.cuts = [];
+		}
+
+		view.cubesviewer.views.redrawView (view);
+
+	};
+
+	// Select a drilldown
+	this.selectDrill = function(view, dimension, value) {
+
+		var cube = view.cube;
+
+		// view.params.drilldown = (drilldown == "" ? null : drilldown);
+		if (dimension == "") {
+			view.params.drilldown = [];
+		} else {
+			cubesviewer.views.cube.explore.removeDrill(view, dimension);
+			if (value == "1") {
+				view.params.drilldown.push(dimension);
+			}
+		}
+
+		view.cubesviewer.views.redrawView (view);
+
+	};
+
+	this.removeDrill = function(view, drilldown) {
+
+		var drilldowndim = drilldown.split(':')[0];
+
+		for ( var i = 0; i < view.params.drilldown.length; i++) {
+			if (view.params.drilldown[i].split(':')[0] == drilldowndim) {
+				view.params.drilldown.splice(i, 1);
+				break;
+			}
+		}
+	};
+
+};
 
 
 ;/*
@@ -1251,17 +2277,80 @@ var cubesviewer = {
  */
 
 
-angular.module('cv.studio', ['ui.bootstrap', 'cv', 'cv.studio' /*'ui.bootstrap-slider', 'ui.validate', 'ngAnimate', */
+angular.module('cv.studio', ['ui.bootstrap', 'cv' /*'ui.bootstrap-slider', 'ui.validate', 'ngAnimate', */
                              /*'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',
                              'nvd3' */ ]);
 
 
-angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', 'cvOptions', 'cubesService',
-                                                                       function ($rootScope, $scope, cvOptions, cubesService) {
+angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOptions', 'cubesService', 'viewsService',
+                                                            function ($rootScope, cvOptions, cubesService, viewsService) {
+
+	this.views = [];
+
+	this.lastViewId = 0;
+
+	/**
+	 * Adds a new clean view for a cube
+	 */
+	this.addViewCube = function(cubename) {
+
+		this.lastViewId++;
+		var viewId = "view" + this.lastViewId;
+
+
+		// Find cube name
+		var cubeinfo = cubesService.cubesserver.cubeinfo(cubename);
+
+		//var container = this.createContainer(viewId);
+		//$('.cv-gui-viewcontent', container),
+
+		var view = viewsService.createView(viewId, "cube", { "cubename": cubename, "name": cubeinfo.label + " (" + this.lastViewId + ")" });
+		this.views.push(view);
+
+		return view;
+	};
+
+	/**
+	 * Closes the panel of the given view.
+	 */
+	this.closeView = function(view) {
+		var viewIndex = this.views.indexOf(view);
+		if (viewIndex >= 0) {
+			this.views.splice(viewIndex, 1);
+		}
+	};
+
+}]);
+
+
+/**
+ * cvStudioView directive. Shows a Studio panel containing the corresponding view.
+ */
+angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'studioViewsService',
+                                                     function ($rootScope, $scope, cvOptions, cubesService, studioViewsService) {
+
+	$scope.studioViewsService = studioViewsService;
+
+}]).directive("cvStudioView", function() {
+	return {
+		restrict: 'A',
+		templateUrl: 'studio/panel.html',
+		scope: {
+			view: "="
+		}
+
+	};
+});
+
+
+
+angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'studioViewsService',
+                                                                       function ($rootScope, $scope, cvOptions, cubesService, studioViewsService) {
 
 	$scope.cvVersion = cubesviewer.version;
 	$scope.cvOptions = cvOptions;
 	$scope.cubesService = cubesService;
+	$scope.studioViewsService = studioViewsService;
 
 	// Current views array
 	this.views = [];
@@ -1282,31 +2371,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 		cubesviewer.views.destroyView (view);
 	};
 
-	/**
-	 * Adds a new clean view for a cube
-	 */
-	$scope.addViewCube = function(cubename) {
 
-		this.lastViewId++;
-		var viewId = "view" + this.lastViewId;
-
-		var container = this.createContainer(viewId);
-
-		// Find cube name
-		var cubeinfo = cubesviewer.cubesserver.cubeinfo (cubename);
-
-		var view = this.cubesviewer.views.createView(viewId, $('.cv-gui-viewcontent', container), "cube", { "cubename": cubename, "name": "Cube " + cubeinfo.label });
-		this.views.push (view);
-
-		// Bind close button
-		$(container).find('.cv-gui-closeview').click(function() {
-			cubesviewer.gui.closeView(view);
-			return false;
-		});
-
-		return view;
-
-	};
 
 	/*
 	 * Adds a view given its params descriptor.
@@ -1530,7 +2595,7 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
 	$.extend(cvOptions, defaultOptions);;
 
     // Get main template from template cache and compile it
-	$http.get( "studio/main.html", { cache: $templateCache } ).then(function(response) {
+	$http.get( "studio/studio.html", { cache: $templateCache } ).then(function(response) {
 
 		var scope = angular.element(cvOptions.container).scope();
 
@@ -1614,22 +2679,27 @@ cubesviewer.studio = {
   );
 
 
-  $templateCache.put('studio/container.html',
-    "<div id=\"{{viewId}}\" class=\"cv-bootstrap cv-gui-viewcontainer\">\n" +
+  $templateCache.put('studio/panel.html',
+    "<div class=\"cv-bootstrap cv-gui-viewcontainer\" ng-controller=\"CubesViewerStudioViewController\">\n" +
     "\n" +
     "    <div class=\"panel panel-primary\">\n" +
     "        <div class=\"panel-heading\" style=\"ver\">\n" +
     "\n" +
-    "            <span class=\"cv-gui-title\">Test {{name}}</span>\n" +
+    "            <button type=\"button\" ng-click=\"studioViewsService.closeView(view)\" class=\"btn btn-danger btn-xs\" style=\"margin-right: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "\n" +
-    "            <button type=\"button\" class=\"btn btn-primary btn-xs pull-right\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
-    "            <button type=\"button\" class=\"btn btn-primary btn-xs pull-right\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-caret-up\"></i></button>\n" +
+    "            <button type=\"button\" class=\"btn btn-primary btn-xs\" style=\"margin-right: 10px;\"><i class=\"fa fa-fw fa-caret-up\"></i></button>\n" +
+    "            <span class=\"cv-gui-title\">{{ view.params.name }}</span>\n" +
     "\n" +
-    "            <span class=\"label label-info pull-right cv-gui-container-state\">Test2</span>\n" +
+    "\n" +
+    "            <span class=\"badge badge-primary pull-right cv-gui-container-state\" style=\"margin-right: 10px;\">Test</span>\n" +
     "\n" +
     "        </div>\n" +
     "        <div class=\"panel-body\">\n" +
-    "            <div class=\"cv-gui-viewcontent\" style=\"overflow: hidden;\"></div>\n" +
+    "            <div class=\"cv-gui-viewcontent\">\n" +
+    "\n" +
+    "                <div cv-view-cube view=\"view\"></div>\n" +
+    "\n" +
+    "            </div>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
@@ -1637,7 +2707,7 @@ cubesviewer.studio = {
   );
 
 
-  $templateCache.put('studio/main.html',
+  $templateCache.put('studio/studio.html',
     "<div class=\"cv-bootstrap\" ng-controller=\"CubesViewerStudioController\">\n" +
     "\n" +
     "    <div class=\"cv-gui-panel\" >\n" +
@@ -1649,7 +2719,7 @@ cubesviewer.studio = {
     "\n" +
     "          <ul class=\"dropdown-menu cv-gui-cubeslist-menu\">\n" +
     "\n" +
-    "            <li ng-repeat=\"cube in cubesService.cubesserver._cube_list\" ng-click=\"addViewCube(cube.name)\"><a>{{ cube.label }}</a></li>\n" +
+    "            <li ng-repeat=\"cube in cubesService.cubesserver._cube_list\" ng-click=\"studioViewsService.addViewCube(cube.name)\"><a>{{ cube.label }}</a></li>\n" +
     "\n" +
     "          </ul>\n" +
     "        </div>\n" +
@@ -1711,6 +2781,11 @@ cubesviewer.studio = {
     "    </div>\n" +
     "\n" +
     "    <div class=\"cv-gui-workspace\">\n" +
+    "\n" +
+    "        <div ng-repeat=\"studioView in studioViewsService.views\">\n" +
+    "            <div cv-studio-view view=\"studioView\"></div>\n" +
+    "        </div>\n" +
+    "\n" +
     "    </div>\n" +
     "\n" +
     "</div>\n" +
@@ -1719,15 +2794,15 @@ cubesviewer.studio = {
   );
 
 
-  $templateCache.put('views/cube/views_cube.html',
-    "<div class=\"cv-view-panel\">\n" +
+  $templateCache.put('views/cube/cube.html',
+    "<div class=\"cv-view-panel\" ng-controller=\"CubesViewerViewsCubeController\">\n" +
     "\n" +
     "    <div class=\"cv-view-viewmenu\">\n" +
     "\n" +
     "        <div class=\"panel panel-primary pull-right\" style=\"padding: 3px;\">\n" +
     "\n" +
     "            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n" +
-    "              <button type=\"button\" class=\"btn btn-primary btn-sm explorebutton\"><i class=\"fa fa-arrow-circle-down\"></i></button>\n" +
+    "              <button type=\"button\" ng-click=\"setViewMode('explore')\" ng-class=\"{'active': view.params.mode == 'explore'}\" class=\"btn btn-primary btn-sm explorebutton\"><i class=\"fa fa-arrow-circle-down\"></i></button>\n" +
     "            </div>\n" +
     "\n" +
     "           <div class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 10px;\">\n" +
@@ -1735,9 +2810,35 @@ cubesviewer.studio = {
     "                <i class=\"fa fa-fw fa-arrow-down\"></i> Drilldown <span class=\"caret\"></span>\n" +
     "              </button>\n" +
     "\n" +
-    "              <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-drilldown\">\n" +
-    "                <li ><a>Test 1</a></li>\n" +
+    "              <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu-drilldown\">\n" +
+    "\n" +
+    "                  <!-- if ((grayout_drill) && ((($.grep(view.params.drilldown, function(ed) { return ed == dimension.name; })).length > 0))) { -->\n" +
+    "                  <li on-repeat-done ng-repeat-start=\"dimension in view.cube.dimensions\" ng-if=\"dimension.levels.length == 1\" ng-click=\"selectDrill(dimension);\">\n" +
+    "                    <a href=\"\">{{ dimension.label }}</a>\n" +
+    "                  </li>\n" +
+    "                  <li ng-repeat-end ng-if=\"dimension.levels.length != 1\" class=\"dropdown-submenu\">\n" +
+    "                    <a tabindex=\"0\">{{ dimension.label }}</a>\n" +
+    "\n" +
+    "                    <ul ng-if=\"dimension.hierarchies_count() != 1\" class=\"dropdown-menu\">\n" +
+    "                        <li ng-repeat=\"(hikey,hi) in dimension.hierarchies\" class=\"dropdown-submenu\">\n" +
+    "                            <a tabindex=\"0\" href=\"\" onclick=\"return false;\">{{ hi.label }}</a>\n" +
+    "                            <ul class=\"dropdown-menu\">\n" +
+    "                                <li ng-repeat=\"level in hi.levels\" ng-click=\"selectDrill(dimension.name + '@' + hi.name + ':' + level.name)\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                            </ul>\n" +
+    "                        </li>\n" +
+    "                    </ul>\n" +
+    "\n" +
+    "                    <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
+    "                        <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectDrill(dimension.name + ':' + level.name)\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                    </ul>\n" +
+    "\n" +
+    "                  </li>\n" +
+    "\n" +
+    "                  <div class=\"divider\"></div>\n" +
+    "                  <li ng-click=\"selectDrill(null)\"><a href=\"\"><i class=\"fa fa-fw fa-close\"></i> None</a></li>\n" +
+    "\n" +
     "              </ul>\n" +
+    "\n" +
     "            </div>\n" +
     "\n" +
     "\n" +
@@ -1747,8 +2848,14 @@ cubesviewer.studio = {
     "              </button>\n" +
     "\n" +
     "              <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut\">\n" +
-    "                <li ><a>Test 1</a></li>\n" +
-    "                <li ><a>Test 3</a></li>\n" +
+    "\n" +
+    "                <li><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected</a></li>\n" +
+    "                <div class=\"divider\"></div>\n" +
+    "\n" +
+    "                <div class=\"divider\"></div>\n" +
+    "                <li><a href=\"\"><i class=\"fa fa-fw fa-close\"></i> Clear filters</a></li>\n" +
+    "\n" +
+    "\n" +
     "              </ul>\n" +
     "            </div>\n" +
     "\n" +
@@ -1772,10 +2879,25 @@ cubesviewer.studio = {
     "    </div>\n" +
     "    <div class=\"clearfix\"></div>\n" +
     "\n" +
-    "    <div class=\"cv-view-viewdata\"></div>\n" +
+    "    <div class=\"cv-view-viewdata\">\n" +
+    "\n" +
+    "        <div ng-if=\"view.params.mode == 'explore'\" ng-include=\"'views/cube/explore/explore.html'\"></div>\n" +
+    "        <div ng-if=\"view.params.mode == 'chart'\" ng-include=\"'views/cube/explore/chart.html'\"></div>\n" +
+    "\n" +
+    "    </div>\n" +
     "    <div class=\"clearfix\"></div>\n" +
     "\n" +
     "    <div class=\"cv-view-viewfooter\"></div>\n" +
+    "\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('views/cube/explore/explore.html',
+    "<div ng-controller=\"CubesViewerViewsCubeExploreController\">\n" +
+    "\n" +
+    "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
+    "    <h3>Aggregated Data</h3>\n" +
     "\n" +
     "</div>\n"
   );

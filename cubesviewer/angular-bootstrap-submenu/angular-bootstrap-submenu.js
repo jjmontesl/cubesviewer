@@ -1,6 +1,6 @@
 /*
- * CubesViewer
- * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+ * angular-bootstrap-submenu
+ * Copyright (c) 2016 Jose Juan Montes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,19 @@
  * SOFTWARE.
  */
 
-/*
- * Cubes Viewer GUI
- */
+
+/* 'use strict'; */
 
 
-// Declare app level module which depends on filters, directives and services
-
+angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', function($timeout) {
+	return {
+		restrict: 'A',
+		link: function(scope, iElement, iAttrs) {
+			// FIXME: This is not a proper way of waiting for the menu to be constructed.
+			$timeout(function() {
+				$(iElement).submenupicker();
+			}, 250);
+		}
+	};
+}]);
 

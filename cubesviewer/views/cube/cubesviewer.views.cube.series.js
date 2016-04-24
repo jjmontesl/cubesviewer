@@ -156,14 +156,6 @@ function cubesviewerViewCubeSeries() {
 	};
 
 	/*
-	 * Change to series mode.
-	 */
-	this.modeSeries = function(view) {
-		view.params.mode = "series";
-		view.cubesviewer.views.redrawView(view);
-	};
-
-	/*
 	 * Selects measure axis
 	 */
 	this.selectYAxis = function(view, measure) {

@@ -6725,6 +6725,13 @@ button.cv-bootstrap .close {
 .cv-bootstrap .embed-responsive-4by3 {
   padding-bottom: 75%;
 }
+.cv-bootstrap .panel {
+  margin-bottom: 10px;
+}
+.cv-bootstrap h3 {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
 /*
 */
 .cv-view-panel {
@@ -6765,19 +6772,6 @@ button.cv-bootstrap .close {
   -ms-user-select: initial;
   user-select: initial;
 }
-/*
-li.ui-menu-item a {
-	display: block;
-}
-
-.ui-widget {
-    font-size: 13px;
-}
-
-.cv-view-panel label {
-    font-weight: bold;
-}
-*/
 /*
 .ui-slider-range {
     background-color: red;
@@ -6859,6 +6853,7 @@ Custom Cubesviewer styles
 /* GUI Elements */
 .cv-gui-panel {
   z-index: 9999;
+  margin-bottom: 10px;
 }
 .cv-gui-workspace {
   /*margin-left: 230px;*/
@@ -6870,9 +6865,6 @@ div.cv-gui-viewcontainer {
 a.cv-grid-link {
   text-decoration: none;
   color: blue;
-}
-div.cv-gui-viewcontent {
-  overflow: hidden;
 }
 div.cv-gui-panelsection {
   margin-bottom: 10px;
