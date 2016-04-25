@@ -1,5 +1,5 @@
 CubesViewer
-Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -10,10 +10,6 @@ furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
-
-If your version of the Software supports interaction with it remotely through
-a computer network, the above copyright notice and this permission notice
-shall be accessible to all users.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,

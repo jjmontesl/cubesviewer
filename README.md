@@ -123,15 +123,7 @@ See AUTHORS file for more information.
 License
 =======
 
-Cubes is licensed under MIT license with following addition:
-
-    If your version of the Software supports interaction with it remotely
-    through a computer network, the above copyright notice and this permission
-    notice shall be accessible to all users.
-
-Simply said, that if you use it as part of software as a service (SaaS) you
-have to provide the copyright notice in an about, legal info, credits or some
-similar kind of page or info box.
+CubesViewer is licensed under MIT license.
 
 For full license see the LICENSE file.
 
