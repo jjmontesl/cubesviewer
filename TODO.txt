@@ -61,6 +61,7 @@
     * Cleanup code, review headers (2016).
     * Use strict.
     * Review if cube or menu loading is happening before initialization if views are created eagerly (views.html).
+    * Review readonly menus and pills, and invalid combinations and info messages.
     * Add loading indicators / block-ui (check angular plugins) as necessary.
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
     * Review alerts in code and use alert service.

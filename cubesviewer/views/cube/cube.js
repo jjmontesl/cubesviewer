@@ -39,6 +39,8 @@ angular.module('cv.views.cube', []);
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
 
+	$scope.view._cubeDataUpdated = false;
+
 	/**
 	 * Define view mode ('explore', 'series', 'facts', 'chart').
 	 */
@@ -67,6 +69,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			// TODO: Don't do this if this was a saved or pre-initialized view, only for new views
 			if ('cv-view-params' in $scope.view.cube.info) $.extend($scope.view.params, $scope.view.cube.info['cv-view-params']);
 
+			$scope.view._cubeDataUpdated = true;
+
 			$rootScope.$apply();
 
 		});
@@ -78,66 +82,66 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		}
 	};
 
-
-}]).directive("cvViewCube", function() {
-	return {
-		restrict: 'A',
-		templateUrl: 'views/cube/cube.html',
-		scope: {
-			view: "="
-		},
-		controller: "CubesViewerViewsCubeController",
-		link: function(scope, iElement, iAttrs) {
-			console.debug(scope);
-			scope.initCube();
-		}
-	};
-});
-
-
-
-function cubesviewerViewCube () {
-
-
-	/*
-	 * Adjusts grids size
+	/**
+	 * Adds a drilldown level.
+	 * Dimension is encoded using Cubes notation: dimension[@hierarchy][:level]
 	 */
-	this._adjustGridSize = function() {
+	$scope.selectDrill = function(dimension, value) {
 
-		// TODO: use appropriate container width!
-		//var newWidth = $(window).width() - 350;
+		var cube = $scope.view.cube;
 
-		$(".cv-view-panel").each(function (idx, e) {
+		// view.params.drilldown = (drilldown == "" ? null : drilldown);
+		if (dimension == "") {
+			$scope.view.params.drilldown = [];
+		} else {
+			$scope.removeDrill(dimension);
+			if (value == true) {
+				$scope.view.params.drilldown.push(dimension);
+			}
+		}
 
-			$(".ui-jqgrid-btable", e).each(function(idx, el) {
+		$scope.view._cubeDataUpdated = true;
+	};
 
-				$(el).setGridWidth(cubesviewer.options.tableResizeHackMinWidth);
+	/**
+	 * Removes a level from the view.
+	 */
+	$scope.removeDrill = function(drilldown) {
 
-				var newWidth = $( e ).innerWidth() - 20;
-				//var newWidth = $( el ).parents(".ui-jqgrid").first().innerWidth();
-				if (newWidth < cubesviewer.options.tableResizeHackMinWidth) newWidth = cubesviewer.options.tableResizeHackMinWidth;
+		var drilldowndim = drilldown.split(':')[0];
 
-				$(el).setGridWidth(newWidth);
+		for ( var i = 0; i < $scope.view.params.drilldown.length; i++) {
+			if ($scope.view.params.drilldown[i].split(':')[0] == drilldowndim) {
+				$scope.view.params.drilldown.splice(i, 1);
+				break;
+			}
+		}
 
-			});
-
-		});
-
+		$scope.view._cubeDataUpdated = true;
 	};
 
 	/**
 	 * Accepts an aggregation or a measure and returns the formatter function.
 	 */
-	this.columnFormatFunction = function(view, agmes) {
+	$scope.columnFormatFunction = function(agmes) {
+
+		var view = $scope.view;
 
 		var measure = agmes;
+
+		if (!measure) {
+			return function(value) {
+				return value;
+			};
+		}
+
 		if ('measure' in agmes) {
 			measure = $.grep(view.cube.measures, function(item, idx) { return item.ref == agmes.measure })[0];
 		}
 
 		var formatterFunction = null;
 		if (measure && ('cv-formatter' in measure.info)) {
-			formatterFunction = function(value) {
+			formatterFunction = function(value, row) {
 				return eval(measure.info['cv-formatter']);
 			};
 		} else {
@@ -150,7 +154,22 @@ function cubesviewerViewCube () {
 	};
 
 
-};
+
+}]).directive("cvViewCube", function() {
+	return {
+		restrict: 'A',
+		templateUrl: 'views/cube/cube.html',
+		scope: {
+			view: "="
+		},
+		controller: "CubesViewerViewsCubeController",
+		link: function(scope, iElement, iAttrs) {
+			//console.debug(scope);
+			scope.initCube();
+		}
+	};
+});
+
 
 Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSeparator) {
 
@@ -176,15 +195,4 @@ Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSe
 
 	return result;
 };
-
-/*
- * Bind events.
- */
-
-// Resize grids as appropriate
-/*
-$(window).bind('resize', function() {
-	cubesviewer.views.cube._adjustGridSize();
-}).trigger('resize');
-*/
 

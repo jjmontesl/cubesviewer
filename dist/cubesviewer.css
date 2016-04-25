@@ -6743,7 +6743,7 @@ button.cv-bootstrap .close {
   user-select: none;
 }
 .cv-view-panel {
-  min-height: 120px;
+  min-height: 80px;
 }
 .cv-gui-panel .dropdown-menu {
   cursor: pointer;
@@ -6870,7 +6870,16 @@ div.cv-gui-panelsection {
   margin-bottom: 10px;
 }
 div.cv-view-viewinfo {
+  margin-top: 5px;
   margin-bottom: 10px;
+}
+div.label.cv-infopiece {
+  font-size: inherit;
+  margin-right: 5px;
+}
+div.label.cv-infopiece button {
+  line-height: 1.0;
+  padding: 1px;
 }
 .fixed {
   position: fixed;

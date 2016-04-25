@@ -110,7 +110,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 
 		// "lang": view.cubesviewer.options.cubesLang
 
-		console.debug(view);
+		//console.debug(view);
 
 		var args = {};
 

@@ -32,19 +32,25 @@
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
 
-	$scope.data = null;
+	$scope.gridData = [];
+	$scope.gridOptions = {};
 
 	$scope.initialize = function() {
-		//$scope.loadData();
 	};
+
+	$scope.$watch("view._cubeDataUpdated", function(newVal) {
+		if (newVal) {
+			$scope.view._cubeDataUpdated = false;
+			$scope.loadData();
+		}
+	});
 
 	$scope.loadData = function() {
 
 		//$scope.view.cubesviewer.views.blockViewLoading(view);
-
 		var browser_args = cubesService.buildBrowserArgs($scope.view, false, false);
-		var browser = new cubes.Browser(cubesService.cubesserver, view.cube);
-		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback(view));
+		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
+		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
 		jqxhr.always(function() {
 			//view.cubesviewer.views.unblockView(view);
 		});
@@ -52,182 +58,50 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 	};
 
 	$scope._loadDataCallback = function(data, status) {
-		$scope.data = data;
+		$scope.processData(data);
+		$rootScope.$apply();
 	};
 
-	$scope.initialize();
+	$scope.processData = function(data) {
 
-}]);
+		var view = $scope.view;
 
+		$scope.gridData = [];
+		$scope.gridFormatters = {};
 
-
-
-function cubesviewerViewCubeExplore() {
-
-
-	// Sort data according to current drilldown ordering
-	this._sortData = function(view, data, includeXAxis) {
-		//data.sort(cubesviewer._drilldownSortFunction(view.id, includeXAxis));
-	};
-
-	/*
-	 *
-	 */
-	this._drilldownSortFunction = function(view, includeXAxis) {
-
-		var drilldown = view.params.drilldown.slice(0);
-
-		// Include X Axis if necessary
-		if (includeXAxis) {
-			drilldown.splice(0, 0, view.params.xaxis);
-		}
-
-		return function(a, b) {
-
-			// For the horizontal axis drilldown level, if present
-			for ( var i = 0; i < drilldown.length; i++) {
-
-				// Get dimension
-				var dimension = view.cube.cvdim_dim(drilldown[i]);
-
-				// row["key"] = ((e[view.params.drilldown_field] != null) &&
-				// (e[view.params.drilldown] != "")) ? e[view.params.drilldown] : "Undefined";
-				if (dimension.is_flat == true) {
-					if (a[dimension.name] < b[dimension.name])
-						return -1;
-					if (a[dimension.name] > b[dimension.name])
-						return 1;
-				} else {
-					var drilldown_level_value = [];
-					for ( var j = 0; j < dimension.levels.length; j++) {
-						var fieldname = dimension.name + "."
-								+ dimension.levels[j].name;
-						if ((fieldname in a) && (fieldname in b)) {
-							if (a[fieldname] < b[fieldname])
-								return -1;
-							if (a[fieldname] > b[fieldname])
-								return 1;
-						} else {
-							break;
-						}
-					}
-				}
-			}
-
-			return 0;
-		};
-	},
-
-	this._addRows = function(view, rows, data) {
-
-		$(data.cells).each( function(idx, e) {
-
-			var nid = [];
-			var row = [];
-			var key = [];
-
-			// For each drilldown level
-			for ( var i = 0; i < view.params.drilldown.length; i++) {
-
-				// Get dimension
-				var dim = view.cube.cvdim_dim(view.params.drilldown[i]);
-
-				var parts = view.cube.cvdim_parts(view.params.drilldown[i]);
-				var infos = parts.hierarchy.readCell(e, parts.level);
-
-				// Values and Labels
-				var drilldown_level_values = [];
-				var drilldown_level_labels = [];
-
-				$(infos).each(function(idx, info) {
-					drilldown_level_values.push (info.key);
-					drilldown_level_labels.push (info.label);
-				});
-
-				nid.push(drilldown_level_values.join("-"));
-
-				var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
-				key.push('<a href="#" class="cv-grid-link" onclick="' + "cubesviewer.views.cube.explore.selectCut(cubesviewer.views.getParentView(this), $(this).attr('data-dimension'), $(this).attr('data-value'), $(this).attr('data-invert')); return false;" +
-						 '" class="selectCut" data-dimension="' + cutDimension + '" ' +
-						 'data-value="' + drilldown_level_values.join(",") + '">' +
-						 drilldown_level_labels.join(" / ") + '</a>');
-			}
-
-			// Set key
-			row["key"] = key.join (" / ");
-			for (var i = 0; i < key.length; i++) {
-				row["key" + i] = key[i];
-			}
-			//row["key"] = key.join(' / ');
-
-			// Add columns
-			$(view.cube.aggregates).each(function(idx, ag) {
-				row[ag.ref] = e[ag.ref];
-			});
-
-			row["id"] = nid.join('-');
-			rows.push(row);
-		});
-
-		// Copy summary if there's no data
-		// This allows a scrollbar to appear in jqGrid when only the summary row is shown.
-		if ((rows.length == 0) && (data.summary)) {
-			var row = [];
-			row["key0"] = "Summary";
-
-			$(view.cube.aggregates).each(function(idx, ag) {
-				row[ag.ref] = data.summary[ag.ref];
-			});
-
-			rows.push(row);
-		}
-
-	};
-
-	this.columnTooltipAttr = function(column) {
-		return function (rowId, val, rawObject) {
-			return 'title="' + column + ' = ' + val + '"';
-		};
-	};
-
-	/*
-	 * Show received summary
-	 */
-	this.drawSummary = function(view, data) {
-
-		var cubesviewer = view.cubesviewer;
-
-		$(view.container).find('.cv-view-viewdata').empty();
-		$(view.container).find('.cv-view-viewdata').append(
-				'<h3>Aggregated Data</h3>' + '<table id="summaryTable-'
-						+ view.id + '"></table>' + '<div id="summaryPager-'
-						+ view.id + '"></div>');
-
-		var colNames = [];
-		var colModel = [];
-		var dataRows = [];
-		var dataTotals = [];
+	    // Configure grid
+	    $scope.gridOptions = {
+    		data: $scope.gridData,
+    		enableColumnResizing: true,
+    		showColumnFooter: true,
+    		enableRowSelection: true,
+    		multiSelect: true,
+    		//selectionRowHeaderWidth: 20,
+    		//rowHeight: 50,
+    		columnDefs: []
+	    };
 
 		$(view.cube.aggregates).each(function(idx, ag) {
-			colNames.push(ag.label);
-
-			var colFormatter = cubesviewer.views.cube.columnFormatFunction(view, ag);
 			var col = {
-				name : ag.ref,
+				title: ag.label,
+				field: ag.ref,
 				index : ag.ref,
-				align : "right",
-				sorttype : "number",
-				width : cubesviewer.views.cube.explore.defineColumnWidth(view, ag.ref, 95),
-				formatter: function(cellValue, options, rowObject) {
-					return colFormatter(cellValue);
-				},
+				cellClass : "text-right",
+				//sorttype : "number",
+				//width : view.cube.explore.defineColumnWidth(view, ag.ref, 95),
+				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
+				formatter: $scope.columnFormatFunction(ag)
 				//formatoptions: {},
-				cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 			};
-			colModel.push(col);
+			$scope.gridOptions.columnDefs.push(col);
 
-			if (data.summary) dataTotals[ag.ref] = data.summary[ag.ref];
+			//if (data.summary) dataTotals[ag.ref] = data.summary[ag.ref];
 		});
+
+		// If there are cells, show them
+		$scope._sortData($scope.view, data.cells, false);
+		$scope._addRows($scope.view, $scope.gridData, data);
 
 		/*
 		colNames.sort();
@@ -236,34 +110,53 @@ function cubesviewerViewCubeExplore() {
 		});
 		*/
 
-		// If there are cells, show them
-		cubesviewer.views.cube.explore._sortData(view, data.cells, false);
-		cubesviewer.views.cube.explore._addRows(view, dataRows, data);
-
 		var label = [];
 		$(view.params.drilldown).each(function(idx, e) {
 			label.push(view.cube.cvdim_dim(e).label);
-		})
+		});
 		for (var i = 0; i < view.params.drilldown.length; i++) {
 
-			colNames.splice(i, 0, label[i]);
+			// Get dimension
+			var dim = view.cube.cvdim_dim(view.params.drilldown[i]);
+			var parts = view.cube.cvdim_parts(view.params.drilldown[i]);
+			var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
 
-			colModel.splice(i, 0, {
-				name : "key" + i,
-				index : "key" + i,
-				align : "left",
-				width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + i, 130)
+			//nid.push(drilldown_level_values.join("-"));
+
+			$scope.gridOptions.columnDefs.splice(i, 0, {
+				title: label[i],
+				field: "key" + i,
+				index: "key" + i,
+				cutDimension: cutDimension,
+				//width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + i, 130)
+				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><a href="" ng-click="selectCut(col.colDef.cutDimension, COL_FIELD.cutValue, false)">{{ COL_FIELD.title }}</a></div>',
+				/*
+				key.push('<a href="" class="cv-grid-link" onclick="' + "cubesviewer.views.cube.explore.selectCut(cubesviewer.views.getParentView(this), $(this).attr('data-dimension'), $(this).attr('data-value'), $(this).attr('data-invert')); return false;" +
+						 '" class="selectCut" data-dimension="' + cutDimension + '" ' +
+						 'data-value="' + drilldown_level_values.join(",") + '">' +
+						 drilldown_level_labels.join(" / ") + '</a>');
+				*/
+
 			});
 		}
+
 		if (view.params.drilldown.length == 0) {
-			colNames.splice(0, 0, "");
-			colModel.splice(0, 0, {
-				name : "key" + 0,
-				index : "key" + 0,
-				align : "left",
-				width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + 0, 110)
+			$scope.gridOptions.columnDefs.splice(0, 0, {
+				name: view.cube.label,
+				field: "key" + 0,
+				index: "key" + 0,
+				align: "left",
+				//width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + 0, 110)
 			});
 		}
+
+
+	};
+
+	/*
+	 * Show received summary
+	 */
+	this.drawSummary = function(view, data) {
 
 		dataTotals["key0"] = (cubesviewer.views.cube.buildQueryCuts(view).length == 0) ? "<b>Summary</b>"
 				: "<b>Summary <i>(Filtered)</i></b>";
@@ -344,6 +237,140 @@ function cubesviewerViewCubeExplore() {
 
 	};
 
+	$scope._addRows = function(view, rows, data) {
+
+		$(data.cells).each( function(idx, e) {
+
+			var nid = [];
+			var row = {};
+			var key = [];
+
+			// For each drilldown level
+			for ( var i = 0; i < view.params.drilldown.length; i++) {
+
+				// Get dimension
+				var dim = view.cube.cvdim_dim(view.params.drilldown[i]);
+
+				var parts = view.cube.cvdim_parts(view.params.drilldown[i]);
+				var infos = parts.hierarchy.readCell(e, parts.level);
+
+				// Values and Labels
+				var drilldown_level_values = [];
+				var drilldown_level_labels = [];
+
+				$(infos).each(function(idx, info) {
+					drilldown_level_values.push (info.key);
+					drilldown_level_labels.push (info.label);
+				});
+
+				nid.push(drilldown_level_values.join("-"));
+
+				var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+				key.push({ cutValue: drilldown_level_values.join(","), title: drilldown_level_labels.join(" / ")});
+			}
+
+			// Set key
+			row["key"] = key.join (" / ");
+			for (var i = 0; i < key.length; i++) {
+				row["key" + i] = key[i];
+			}
+			//row["key"] = key.join(' / ');
+
+			// Add columns
+			$(view.cube.aggregates).each(function(idx, ag) {
+				row[ag.ref] = e[ag.ref];
+			});
+
+			row["id"] = nid.join('-');
+			rows.push(row);
+		});
+
+		// Copy summary if there's no data
+		// This allows a scrollbar to appear in jqGrid when only the summary row is shown.
+		if ((rows.length == 0) && (data.summary)) {
+			var row = {};
+			row["key0"] = "Summary";
+
+			$(view.cube.aggregates).each(function(idx, ag) {
+				row[ag.ref] = data.summary[ag.ref];
+			});
+
+			rows.push(row);
+		}
+
+	};
+
+	// Sort data according to current view
+	$scope._sortData = function(view, data, includeXAxis) {
+		//data.sort(cubesviewer._drilldownSortFunction(view.id, includeXAxis));
+	};
+
+	$scope.initialize();
+
+}]);
+
+
+
+
+function cubesviewerViewCubeExplore() {
+
+
+	/*
+	 *
+	 */
+	this._drilldownSortFunction = function(view, includeXAxis) {
+
+		var drilldown = view.params.drilldown.slice(0);
+
+		// Include X Axis if necessary
+		if (includeXAxis) {
+			drilldown.splice(0, 0, view.params.xaxis);
+		}
+
+		return function(a, b) {
+
+			// For the horizontal axis drilldown level, if present
+			for ( var i = 0; i < drilldown.length; i++) {
+
+				// Get dimension
+				var dimension = view.cube.cvdim_dim(drilldown[i]);
+
+				// row["key"] = ((e[view.params.drilldown_field] != null) &&
+				// (e[view.params.drilldown] != "")) ? e[view.params.drilldown] : "Undefined";
+				if (dimension.is_flat == true) {
+					if (a[dimension.name] < b[dimension.name])
+						return -1;
+					if (a[dimension.name] > b[dimension.name])
+						return 1;
+				} else {
+					var drilldown_level_value = [];
+					for ( var j = 0; j < dimension.levels.length; j++) {
+						var fieldname = dimension.name + "."
+								+ dimension.levels[j].name;
+						if ((fieldname in a) && (fieldname in b)) {
+							if (a[fieldname] < b[fieldname])
+								return -1;
+							if (a[fieldname] > b[fieldname])
+								return 1;
+						} else {
+							break;
+						}
+					}
+				}
+			}
+
+			return 0;
+		};
+	},
+
+	this.columnTooltipAttr = function(column) {
+		return function (rowId, val, rawObject) {
+			return 'title="' + column + ' = ' + val + '"';
+		};
+	};
+
+
+
 	this._onTableSort = function (view) {
 		return function (index, iCol, sortorder) {
 			view.cubesviewer.views.cube.explore.onTableSort (view, index, iCol, sortorder);
@@ -398,34 +425,6 @@ function cubesviewerViewCubeExplore() {
 
 	// Draw information bubbles
 	this.drawInfo = function(view, readonly) {
-
-		$(view.container).find('.cv-view-viewinfo').empty();
-
-		$(view.container).find('.cv-view-viewinfo').append(
-			'<div><div class="cv-view-viewinfo-drill"></div>' +
-			'<div class="cv-view-viewinfo-cut"></div>' +
-			'<div class="cv-view-viewinfo-extra"></div></div>'
-		);
-
-		var piece = view.cubesviewer.views.cube.explore.drawInfoPiece(
-			$(view.container).find('.cv-view-viewinfo-drill'), "#000000", 200, true,
-			'<span class="ui-icon ui-icon-info"></span> <span style="color: white;" class="cv-view-viewinfo-cubename"><b>Cube:</b> ' + view.cube.label + '</span>'
-		);
-
-		$(view.params.drilldown).each(function(idx, e) {
-
-			var dimparts = view.cube.cvdim_parts(e);
-			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
-				$(view.container).find('.cv-view-viewinfo-drill'), "#ccffcc", 360, readonly,
-				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Drilldown:</b> ' + dimparts.label
-			);
-			piece.addClass("cv-view-infopiece-drilldown");
-			piece.attr("data-dimension", e);
-			piece.find('.cv-view-infopiece-close').click(function() {
-				view.cubesviewer.views.cube.explore.selectDrill(view, e, "");
-			});
-
-		});
 
 		$(view.params.cuts).each(function(idx, e) {
 			var dimparts = view.cube.cvdim_parts(e.dimension.replace(":",  "@"));
@@ -515,37 +514,6 @@ function cubesviewerViewCubeExplore() {
 
 		view.cubesviewer.views.redrawView (view);
 
-	};
-
-	// Select a drilldown
-	this.selectDrill = function(view, dimension, value) {
-
-		var cube = view.cube;
-
-		// view.params.drilldown = (drilldown == "" ? null : drilldown);
-		if (dimension == "") {
-			view.params.drilldown = [];
-		} else {
-			cubesviewer.views.cube.explore.removeDrill(view, dimension);
-			if (value == "1") {
-				view.params.drilldown.push(dimension);
-			}
-		}
-
-		view.cubesviewer.views.redrawView (view);
-
-	};
-
-	this.removeDrill = function(view, drilldown) {
-
-		var drilldowndim = drilldown.split(':')[0];
-
-		for ( var i = 0; i < view.params.drilldown.length; i++) {
-			if (view.params.drilldown[i].split(':')[0] == drilldowndim) {
-				view.params.drilldown.splice(i, 1);
-				break;
-			}
-		}
 	};
 
 };

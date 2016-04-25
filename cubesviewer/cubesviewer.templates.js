@@ -183,7 +183,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "              <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu-drilldown\">\n" +
     "\n" +
     "                  <!-- if ((grayout_drill) && ((($.grep(view.params.drilldown, function(ed) { return ed == dimension.name; })).length > 0))) { -->\n" +
-    "                  <li on-repeat-done ng-repeat-start=\"dimension in view.cube.dimensions\" ng-if=\"dimension.levels.length == 1\" ng-click=\"selectDrill(dimension);\">\n" +
+    "                  <li on-repeat-done ng-repeat-start=\"dimension in view.cube.dimensions\" ng-if=\"dimension.levels.length == 1\" ng-click=\"selectDrill(dimension.name, true);\">\n" +
     "                    <a href=\"\">{{ dimension.label }}</a>\n" +
     "                  </li>\n" +
     "                  <li ng-repeat-end ng-if=\"dimension.levels.length != 1\" class=\"dropdown-submenu\">\n" +
@@ -193,13 +193,13 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                        <li ng-repeat=\"(hikey,hi) in dimension.hierarchies\" class=\"dropdown-submenu\">\n" +
     "                            <a tabindex=\"0\" href=\"\" onclick=\"return false;\">{{ hi.label }}</a>\n" +
     "                            <ul class=\"dropdown-menu\">\n" +
-    "                                <li ng-repeat=\"level in hi.levels\" ng-click=\"selectDrill(dimension.name + '@' + hi.name + ':' + level.name)\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                                <li ng-repeat=\"level in hi.levels\" ng-click=\"selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)\"><a href=\"\">{{ level.label }}</a></li>\n" +
     "                            </ul>\n" +
     "                        </li>\n" +
     "                    </ul>\n" +
     "\n" +
     "                    <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
-    "                        <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectDrill(dimension.name + ':' + level.name)\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                        <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectDrill(dimension.name + ':' + level.name, true)\"><a href=\"\">{{ level.label }}</a></li>\n" +
     "                    </ul>\n" +
     "\n" +
     "                  </li>\n" +
@@ -245,7 +245,22 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    </div>\n" +
     "\n" +
     "    <div class=\"cv-view-viewinfo\">\n" +
+    "        <div>\n" +
+    "            <div class=\"cv-view-viewinfo-drill\">\n" +
     "\n" +
+    "                <div class=\"label label-secondary cv-infopiece cv-view-viewinfo-cubename\" style=\"color: white; background-color: black;\">\n" +
+    "                    <span><i class=\"fa fa-fw fa-cube\"></i><b>Cube:</b> {{ view.cube.label }}</span>\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div ng-repeat=\"drilldown in view.params.drilldown\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-drill\" style=\"color: black; background-color: #ccffcc;\">\n" +
+    "                    <span><i class=\"fa fa-fw fa-arrow-down\"></i><b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>\n" +
+    "                    <button type=\"button\" ng-click=\"selectDrill(drilldown, \"\")\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
+    "                </div>\n" +
+    "\n" +
+    "            </div>\n" +
+    "            <div class=\"cv-view-viewinfo-cut\"></div>\n" +
+    "            <div class=\"cv-view-viewinfo-extra\"></div>\n" +
+    "        </div>\n" +
     "    </div>\n" +
     "    <div class=\"clearfix\"></div>\n" +
     "\n" +
@@ -267,7 +282,10 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "<div ng-controller=\"CubesViewerViewsCubeExploreController\">\n" +
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
-    "    <h3>Aggregated Data</h3>\n" +
+    "    <h3><i class=\"fa fa-fw fa-arrow-circle-down\"></i> Aggregated Data</h3>\n" +
+    "\n" +
+    "    <div ui-grid=\"gridOptions\" ui-grid-resize-columns ui-grid-move-columns ui-grid-selection style=\"width: 100%;\">\n" +
+    "    </div>\n" +
     "\n" +
     "</div>\n"
   );

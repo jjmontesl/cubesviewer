@@ -4,6 +4,11 @@
  * contains global CSS selectors.
  */
 
+html {
+    font-size: 13px;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
 img.cv-logo {
 	margin: 0px;
 	height: 40px;
