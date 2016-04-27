@@ -5,7 +5,7 @@
         <div class="panel panel-primary pull-right" style="padding: 3px;">
 
             <div class="btn-group" role="group" aria-label="...">
-              <button type="button" ng-click="setViewMode('explore')" ng-class="{'active': view.params.mode == 'explore'}" class="btn btn-primary btn-sm explorebutton"><i class="fa fa-arrow-circle-down"></i></button>
+              <button type="button" ng-click="setViewMode('explore')" ng-class="{'active': view.params.mode == 'explore'}" class="btn btn-primary btn-sm explorebutton" title="Explore"><i class="fa fa-arrow-circle-down"></i></button>
             </div>
 
             <div ng-include="'views/cube/menu-drilldown.html'" class="dropdown m-b" style="display: inline-block; margin-left: 10px;"></div>
@@ -84,18 +84,19 @@
             <div class="cv-view-viewinfo-drill">
 
                 <div class="label label-secondary cv-infopiece cv-view-viewinfo-cubename" style="color: white; background-color: black;">
-                    <span><i class="fa fa-fw fa-cube"></i><b>Cube:</b> {{ view.cube.label }}</span>
+                    <span><i class="fa fa-fw fa-cube"></i> <b>Cube:</b> {{ view.cube.label }}</span>
+                    <button type="button" class="btn btn-info btn-xs" style="visibility: hidden;"><i class="fa fa-fw fa-info"></i></button>
                 </div>
 
                 <div ng-repeat="drilldown in view.params.drilldown" class="label label-secondary cv-infopiece cv-view-viewinfo-drill" style="color: black; background-color: #ccffcc;">
-                    <span><i class="fa fa-fw fa-arrow-down"></i><b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>
+                    <span><i class="fa fa-fw fa-arrow-down"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>
                     <button type="button" ng-click="selectDrill(drilldown, '')" class="btn btn-danger btn-xs" style="margin-left: 5px;"><i class="fa fa-fw fa-close"></i></button>
                 </div>
 
             </div>
             <div class="cv-view-viewinfo-cut">
                 <div ng-repeat="cut in view.params.cuts" ng-init="dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' != ' : ' = ';" class="label label-secondary cv-infopiece cv-view-viewinfo-cut" style="color: black; background-color: #ffcccc;">
-                    <span style="max-width: 480px;"><i class="fa fa-fw fa-filter"></i><b>Filter:</b> {{ dimparts.label }} {{ equality }} <span title="{{ cut.value }}">{{ cut.value }}</span></span>
+                    <span style="max-width: 480px;"><i class="fa fa-fw fa-filter"></i> <b>Filter:</b> {{ dimparts.label }} {{ equality }} <span title="{{ cut.value }}">{{ cut.value }}</span></span>
                     <button type="button" ng-click="selectCut(cut.dimension, '',cut.invert )" class="btn btn-danger btn-xs" style="margin-left: 5px;"><i class="fa fa-fw fa-close"></i></button>
                 </div>
             </div>

@@ -7,10 +7,11 @@
     * Sort pie charts by size of slice.
     * Serializing now shows code in a floating dialog box easier to copy.
 
-    * Introduced new better grid component.
     * Using templating for HTML views.
-    * Refactored to Angular (dropped jQueryUI).
-    * Now using Bootstrap for styles, without impacting page styles (no global selectors).
+    * Moved from jQGrid to more versatile Angular ui-grid.
+    * Refactored to Angular and dropped jQueryUI.
+    * Now using Bootstrap for styles, without impacting page styles
+      (no global selectors) and better avoidance of being impacted by page styles.
     * Introduced Grunt/Bower build system.
     * Separated cubesviewer-server from client.
 

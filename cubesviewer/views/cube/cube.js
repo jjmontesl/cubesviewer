@@ -53,7 +53,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
         });
     };
 	$scope.gridApi = null;
-	$scope.gridOptions = { onRegisterApi: $scope.onGridRegisterApi };
+	$scope.gridOptions = { onRegisterApi: $scope.onGridRegisterApi, selectionRowHeaderWidth: 24 /*, enableRowHeaderSelection: false, */ };
 
 	/**
 	 * Define view mode ('explore', 'series', 'facts', 'chart').
@@ -85,7 +85,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 			$scope.view._cubeDataUpdated = true;
 
-			$rootScope.$apply();
+			//$rootScope.$apply();
 
 		});
 		if (jqxhr) {

@@ -11,7 +11,7 @@
   /*! Source: https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css */
   /*@import "bower_components/bootstrap-submenu/less/bootstrap-submenu.less";*/
   font-size: 12px;
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 .cv-bootstrap html {
   font-family: sans-serif;
@@ -6732,6 +6732,18 @@ button.cv-bootstrap .close {
   margin-top: 0px;
   margin-bottom: 5px;
 }
+.cv-bootstrap .ui-grid-pager-panel {
+  margin-bottom: -32px;
+}
+.cv-bootstrap .ui-grid-pager-control-input {
+  width: 70px;
+}
+.cv-bootstrap .ui-grid-pager-max-pages-number {
+  vertical-align: middle;
+}
+.cv-bootstrap .ui-grid-selection-row-header-buttons {
+  margin-left: -2px;
+}
 /*
 */
 .cv-view-panel {
@@ -6900,3 +6912,8 @@ div.label.cv-infopiece button {
 div.nvtooltip {
   background-color: rgba(255, 255, 255, 0.9);
 }
+/*
+.ui-grid .ui-grid-render-container-body .ui-grid-viewport {
+    overflow-x: auto !important;
+}
+*/

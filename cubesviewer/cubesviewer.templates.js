@@ -57,14 +57,14 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "            <button type=\"button\" ng-click=\"studioViewsService.closeView(view)\" class=\"btn btn-danger btn-xs\" style=\"margin-right: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "\n" +
-    "            <button type=\"button\" class=\"btn btn-primary btn-xs\" style=\"margin-right: 10px;\"><i class=\"fa fa-fw fa-caret-up\"></i></button>\n" +
-    "            <span class=\"cv-gui-title\">{{ view.params.name }}</span>\n" +
+    "            <button type=\"button\" ng-click=\"studioViewsService.toggleCollapseView(view)\" class=\"btn btn-primary btn-xs\" style=\"margin-right: 10px;\"><i class=\"fa fa-fw\" ng-class=\"{'fa-caret-up': !view.collapsed, 'fa-caret-down': view.collapsed }\"></i></button>\n" +
     "\n" +
+    "            <span class=\"cv-gui-title\">{{ view.params.name }}</span>\n" +
     "\n" +
     "            <span class=\"badge badge-primary pull-right cv-gui-container-state\" style=\"margin-right: 10px;\">Test</span>\n" +
     "\n" +
     "        </div>\n" +
-    "        <div class=\"panel-body\">\n" +
+    "        <div class=\"panel-body\" ng-hide=\"view.collapsed\">\n" +
     "            <div class=\"cv-gui-viewcontent\">\n" +
     "\n" +
     "                <div cv-view-cube view=\"view\"></div>\n" +
@@ -172,7 +172,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        <div class=\"panel panel-primary pull-right\" style=\"padding: 3px;\">\n" +
     "\n" +
     "            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n" +
-    "              <button type=\"button\" ng-click=\"setViewMode('explore')\" ng-class=\"{'active': view.params.mode == 'explore'}\" class=\"btn btn-primary btn-sm explorebutton\"><i class=\"fa fa-arrow-circle-down\"></i></button>\n" +
+    "              <button type=\"button\" ng-click=\"setViewMode('explore')\" ng-class=\"{'active': view.params.mode == 'explore'}\" class=\"btn btn-primary btn-sm explorebutton\" title=\"Explore\"><i class=\"fa fa-arrow-circle-down\"></i></button>\n" +
     "            </div>\n" +
     "\n" +
     "            <div ng-include=\"'views/cube/menu-drilldown.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 10px;\"></div>\n" +
@@ -251,18 +251,19 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "            <div class=\"cv-view-viewinfo-drill\">\n" +
     "\n" +
     "                <div class=\"label label-secondary cv-infopiece cv-view-viewinfo-cubename\" style=\"color: white; background-color: black;\">\n" +
-    "                    <span><i class=\"fa fa-fw fa-cube\"></i><b>Cube:</b> {{ view.cube.label }}</span>\n" +
+    "                    <span><i class=\"fa fa-fw fa-cube\"></i> <b>Cube:</b> {{ view.cube.label }}</span>\n" +
+    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                </div>\n" +
     "\n" +
     "                <div ng-repeat=\"drilldown in view.params.drilldown\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-drill\" style=\"color: black; background-color: #ccffcc;\">\n" +
-    "                    <span><i class=\"fa fa-fw fa-arrow-down\"></i><b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>\n" +
+    "                    <span><i class=\"fa fa-fw fa-arrow-down\"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>\n" +
     "                    <button type=\"button\" ng-click=\"selectDrill(drilldown, '')\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "                </div>\n" +
     "\n" +
     "            </div>\n" +
     "            <div class=\"cv-view-viewinfo-cut\">\n" +
     "                <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' != ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
-    "                    <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i><b>Filter:</b> {{ dimparts.label }} {{ equality }} <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
+    "                    <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.label }} {{ equality }} <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
     "                    <button type=\"button\" ng-click=\"selectCut(cut.dimension, '',cut.invert )\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "                </div>\n" +
     "            </div>\n" +
@@ -291,8 +292,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
     "    <h3><i class=\"fa fa-fw fa-arrow-circle-down\"></i> Aggregated Data</h3>\n" +
     "\n" +
-    "    <div ui-grid=\"gridOptions\" ui-grid-resize-columns ui-grid-move-columns ui-grid-selection style=\"width: 100%;\">\n" +
+    "    <div ui-grid=\"gridOptions\" ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize ui-grid-pagination style=\"width: 100%;\" ng-style=\"{height: ((gridOptions.data.length < 15 ? gridOptions.data.length : 15) * 24) + 44 + 30 + 'px'}\">\n" +
     "    </div>\n" +
+    "    <div style=\"height: 30px;\">&nbsp;</div>\n" +
     "\n" +
     "</div>\n"
   );

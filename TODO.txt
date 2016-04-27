@@ -1,11 +1,6 @@
 [HEAD]
 
     * Support multiple servers and multiple versions.
-    * Improve dimension search (current approach is very slow). Text search?
-
-    * Rework comments / ACLs / ownership / revisions if not done yet.
-      (new module / website: annotate) (?)
-    * Charts with time/sortable with series zoom?
 
     * Translation site / tool / ask for help.
     * Interface available in English and one more language (Spanish?).
@@ -45,18 +40,38 @@
       not easy to get the path to be reused, missing facts I had to add, support for export/format,
       support for several servers desirable, inconsistent use of Cell/Browser interface or missing
       methods to transform drilldown_string<->drilldown object, same for cuts, documentation!!!!)
-    * Dimensions were somehow promoted to be kind of a top-level UI objects to be selectable/draggable
+    * Dimensions somehow promoted to be kind of a top-level UI objects to be selectable/draggable
+
+    * Separate in directives appropriately, move cube "globals" to directive scopes.
 
     * Add anonymous-save service to backend and client (dedup).
+
+    * X/Y/size bubble charts.
+    * 3rd dimension scrollbar and play mode (for charts and series)
+    * Time filter dynamic (zoomable, etc) when is horizontal dimension in appropriate chart mode (nvd3 does this I think)
+    * Charts with time/sortable with series zoom?
+
+[2.3.1]
+
+    * Fulltext Search (facts, dimension values, extra data)
+
+[2.2]
+
+    * Maintenance and missing stuff? Google Analytics, ~notes~->comments..., info metadata (html/url), etc...
+    * Fact Viewer and fact templates (html/url/angular template?), i.e. including links to documents or etc...
+
+[2.1]
+
     * Map charts.
 
-[2.0.1]
+[2.0]
 
     * Reviewed and improved doc
     * Move doc to site (but import from repository markdown, to keep
       doc sources along with the  project).
     * Link from viewer to online doc.
     * Create site, update readme, and site screenshots.
+    * Server side.
 
     * Cleanup code, review headers (2016).
     * Use strict.
@@ -66,3 +81,6 @@
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
     * Review alerts in code and use alert service.
     * Separate chart plugin in files.
+
+    * Tooltip columnbs: column=val remove columnTooltipAttr, enable tooltips?
+    *

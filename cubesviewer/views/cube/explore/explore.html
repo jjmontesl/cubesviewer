@@ -3,7 +3,8 @@
     <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->
     <h3><i class="fa fa-fw fa-arrow-circle-down"></i> Aggregated Data</h3>
 
-    <div ui-grid="gridOptions" ui-grid-resize-columns ui-grid-move-columns ui-grid-selection style="width: 100%;">
+    <div ui-grid="gridOptions" ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize ui-grid-pagination style="width: 100%;" ng-style="{height: ((gridOptions.data.length < 15 ? gridOptions.data.length : 15) * 24) + 44 + 30 + 'px'}">
     </div>
+    <div style="height: 30px;">&nbsp;</div>
 
 </div>

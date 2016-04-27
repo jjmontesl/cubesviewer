@@ -53,7 +53,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 		//var container = this.createContainer(viewId);
 		//$('.cv-gui-viewcontent', container),
 
-		var view = viewsService.createView(viewId, "cube", { "cubename": cubename, "name": cubeinfo.label + " (" + this.lastViewId + ")" });
+		var view = viewsService.createView(viewId, "cube", { "cubename": cubename, "name": cubeinfo.label + " (" + this.lastViewId + ")", "collapsed": false});
 		this.views.push(view);
 
 		return view;
@@ -67,6 +67,13 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 		if (viewIndex >= 0) {
 			this.views.splice(viewIndex, 1);
 		}
+	};
+
+	/**
+	 * Collapses the panel of the given view.
+	 */
+	this.toggleCollapseView = function(view) {
+		view.collapsed = !view.collapsed;
 	};
 
 }]);

@@ -61,6 +61,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 	$scope._loadDataCallback = function(data, status) {
 		$scope.processData(data);
 		$rootScope.$apply();
+		$scope.gridApi.core.refresh();
+		$rootScope.$apply();
 	};
 
 	$scope.processData = function(data) {
@@ -70,35 +72,43 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		$scope.gridData = [];
 		$scope.gridFormatters = {};
 
+
 	    // Configure grid
 	    angular.extend($scope.gridOptions, {
     		data: $scope.gridData,
+    		//minRowsToShow: 3,
+    		rowHeight: 24,
     		onRegisterApi: $scope.onGridRegisterApi,
     		enableColumnResizing: true,
     		showColumnFooter: true,
-    		showGridFooter:true,
-    		enableRowSelection: true,
+    		//showGridFooter: true,
+    	    paginationPageSizes: cvOptions.pagingOptions,
+    	    paginationPageSize: cvOptions.pagingOptions[0],
+    		//enableHorizontalScrollbar: 0,
+    		//enableVerticalScrollbar: 0,
+    		enableRowSelection: view.params.drilldown.length > 0,
     		//enableRowHeaderSelection: false,
     		//enableSelectAll: false,
     		multiSelect: true,
-    		//selectionRowHeaderWidth: 20,
+    		selectionRowHeaderWidth: 20,
     		//rowHeight: 50,
     		columnDefs: []
 	    });
 
 		$(view.cube.aggregates).each(function(idx, ag) {
 			var col = {
-				title: ag.label,
+				name: ag.label,
 				field: ag.ref,
 				index : ag.ref,
 				cellClass : "text-right",
 				//sorttype : "number",
 				//width : view.cube.explore.defineColumnWidth(view, ag.ref, 95),
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
-				formatter: $scope.columnFormatFunction(ag)
+				formatter: $scope.columnFormatFunction(ag),
 				//formatoptions: {},
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 			};
+			col.footerCellTemplate = '<div class="ui-grid-cell-contents text-right">' + $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col) + '</div>';
 			$scope.gridOptions.columnDefs.push(col);
 
 			//if (data.summary) dataTotals[ag.ref] = data.summary[ag.ref];
@@ -128,13 +138,17 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 
 			//nid.push(drilldown_level_values.join("-"));
 
+			var footer = "";
+			if (i == 0) footer = (cubesService.buildQueryCuts(view).length == 0) ? "<b>Summary</b>" : "<b>Summary <i>(Filtered)</i></b>";
+
 			$scope.gridOptions.columnDefs.splice(i, 0, {
-				title: label[i],
+				name: label[i],
 				field: "key" + i,
 				index: "key" + i,
 				cutDimension: cutDimension,
 				//width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + i, 130)
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><a href="" ng-click="grid.appScope.selectCut(col.colDef.cutDimension, COL_FIELD.cutValue, false)">{{ COL_FIELD.title }}</a></div>',
+				footerCellTemplate: '<div class="ui-grid-cell-contents">' + footer + '</div>',
 			});
 		}
 
@@ -155,9 +169,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 	 * Show received summary
 	 */
 	this.drawSummary = function(view, data) {
-
-		dataTotals["key0"] = (cubesviewer.views.cube.buildQueryCuts(view).length == 0) ? "<b>Summary</b>"
-				: "<b>Summary <i>(Filtered)</i></b>";
 
 		$('#summaryTable-' + view.id).get(0).updateIdsOfSelectedRows = function(
 				id, isSelected) {
