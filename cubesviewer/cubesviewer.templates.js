@@ -175,41 +175,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "              <button type=\"button\" ng-click=\"setViewMode('explore')\" ng-class=\"{'active': view.params.mode == 'explore'}\" class=\"btn btn-primary btn-sm explorebutton\"><i class=\"fa fa-arrow-circle-down\"></i></button>\n" +
     "            </div>\n" +
     "\n" +
-    "           <div class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 10px;\">\n" +
-    "              <button class=\"btn btn-primary btn-sm dropdown-toggle drilldownbutton\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "                <i class=\"fa fa-fw fa-arrow-down\"></i> Drilldown <span class=\"caret\"></span>\n" +
-    "              </button>\n" +
-    "\n" +
-    "              <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu-drilldown\">\n" +
-    "\n" +
-    "                  <!-- if ((grayout_drill) && ((($.grep(view.params.drilldown, function(ed) { return ed == dimension.name; })).length > 0))) { -->\n" +
-    "                  <li on-repeat-done ng-repeat-start=\"dimension in view.cube.dimensions\" ng-if=\"dimension.levels.length == 1\" ng-click=\"selectDrill(dimension.name, true);\">\n" +
-    "                    <a href=\"\">{{ dimension.label }}</a>\n" +
-    "                  </li>\n" +
-    "                  <li ng-repeat-end ng-if=\"dimension.levels.length != 1\" class=\"dropdown-submenu\">\n" +
-    "                    <a tabindex=\"0\">{{ dimension.label }}</a>\n" +
-    "\n" +
-    "                    <ul ng-if=\"dimension.hierarchies_count() != 1\" class=\"dropdown-menu\">\n" +
-    "                        <li ng-repeat=\"(hikey,hi) in dimension.hierarchies\" class=\"dropdown-submenu\">\n" +
-    "                            <a tabindex=\"0\" href=\"\" onclick=\"return false;\">{{ hi.label }}</a>\n" +
-    "                            <ul class=\"dropdown-menu\">\n" +
-    "                                <li ng-repeat=\"level in hi.levels\" ng-click=\"selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)\"><a href=\"\">{{ level.label }}</a></li>\n" +
-    "                            </ul>\n" +
-    "                        </li>\n" +
-    "                    </ul>\n" +
-    "\n" +
-    "                    <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
-    "                        <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectDrill(dimension.name + ':' + level.name, true)\"><a href=\"\">{{ level.label }}</a></li>\n" +
-    "                    </ul>\n" +
-    "\n" +
-    "                  </li>\n" +
-    "\n" +
-    "                  <div class=\"divider\"></div>\n" +
-    "                  <li ng-click=\"selectDrill(null)\"><a href=\"\"><i class=\"fa fa-fw fa-close\"></i> None</a></li>\n" +
-    "\n" +
-    "              </ul>\n" +
-    "\n" +
-    "            </div>\n" +
+    "            <div ng-include=\"'views/cube/menu-drilldown.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 10px;\"></div>\n" +
     "\n" +
     "\n" +
     "            <div class=\"dropdown m-b\" style=\"display: inline-block;\">\n" +
@@ -219,12 +185,48 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "              <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut\">\n" +
     "\n" +
-    "                <li><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected</a></li>\n" +
+    "                <li ng-click=\"filterSelected()\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected</a></li>\n" +
     "                <div class=\"divider\"></div>\n" +
+    "\n" +
+    "                <li class=\"dropdown-submenu\">\n" +
+    "                    <a tabindex=\"0\">Dimension filter</a>\n" +
+    "                    <ul class=\"dropdown-menu\">\n" +
+    "\n" +
+    "                      <!-- if ((grayout_drill) && ((($.grep(view.params.drilldown, function(ed) { return ed == dimension.name; })).length > 0))) { -->\n" +
+    "                      <li on-repeat-done ng-repeat-start=\"dimension in view.cube.dimensions\" ng-if=\"dimension.levels.length == 1\" ng-click=\"selectDrill(dimension.name, true);\">\n" +
+    "                        <a href=\"\">{{ dimension.label }}</a>\n" +
+    "                      </li>\n" +
+    "                      <li ng-repeat-end ng-if=\"dimension.levels.length != 1\" class=\"dropdown-submenu\">\n" +
+    "                        <a tabindex=\"0\">{{ dimension.label }}</a>\n" +
+    "\n" +
+    "                        <ul ng-if=\"dimension.hierarchies_count() != 1\" class=\"dropdown-menu\">\n" +
+    "                            <li ng-repeat=\"(hikey,hi) in dimension.hierarchies\" class=\"dropdown-submenu\">\n" +
+    "                                <a tabindex=\"0\" href=\"\" onclick=\"return false;\">{{ hi.label }}</a>\n" +
+    "                                <ul class=\"dropdown-menu\">\n" +
+    "                                    <li ng-repeat=\"level in hi.levels\" ng-click=\"selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                                </ul>\n" +
+    "                            </li>\n" +
+    "                        </ul>\n" +
+    "\n" +
+    "                        <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
+    "                            <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectDrill(dimension.name + ':' + level.name, true)\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                        </ul>\n" +
+    "\n" +
+    "                      </li>\n" +
+    "\n" +
+    "                    </ul>\n" +
+    "                </li>\n" +
+    "\n" +
+    "                <!--\n" +
+    "                // Events\n" +
+    "                $(view.container).find('.cv-view-show-dimensionfilter').click( function() {\n" +
+    "                    cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, $(this).attr('data-dimension'));\n" +
+    "                    return false;\n" +
+    "                });\n" +
+    "                 -->\n" +
     "\n" +
     "                <div class=\"divider\"></div>\n" +
     "                <li><a href=\"\"><i class=\"fa fa-fw fa-close\"></i> Clear filters</a></li>\n" +
-    "\n" +
     "\n" +
     "              </ul>\n" +
     "            </div>\n" +
@@ -236,7 +238,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "              </button>\n" +
     "\n" +
     "              <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
-    "                <li ><a>Test 2</a></li>\n" +
+    "                <li><a><i class=\"fa fa-fw fa-close\"></i> Close</a></li>\n" +
     "              </ul>\n" +
     "            </div>\n" +
     "\n" +
@@ -254,11 +256,16 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "                <div ng-repeat=\"drilldown in view.params.drilldown\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-drill\" style=\"color: black; background-color: #ccffcc;\">\n" +
     "                    <span><i class=\"fa fa-fw fa-arrow-down\"></i><b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>\n" +
-    "                    <button type=\"button\" ng-click=\"selectDrill(drilldown, \"\")\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
+    "                    <button type=\"button\" ng-click=\"selectDrill(drilldown, '')\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "                </div>\n" +
     "\n" +
     "            </div>\n" +
-    "            <div class=\"cv-view-viewinfo-cut\"></div>\n" +
+    "            <div class=\"cv-view-viewinfo-cut\">\n" +
+    "                <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' != ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
+    "                    <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i><b>Filter:</b> {{ dimparts.label }} {{ equality }} <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
+    "                    <button type=\"button\" ng-click=\"selectCut(cut.dimension, '',cut.invert )\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
     "            <div class=\"cv-view-viewinfo-extra\"></div>\n" +
     "        </div>\n" +
     "    </div>\n" +
@@ -288,6 +295,43 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    </div>\n" +
     "\n" +
     "</div>\n"
+  );
+
+
+  $templateCache.put('views/cube/menu-drilldown.html',
+    "  <button class=\"btn btn-primary btn-sm dropdown-toggle drilldownbutton\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
+    "    <i class=\"fa fa-fw fa-arrow-down\"></i> Drilldown <span class=\"caret\"></span>\n" +
+    "  </button>\n" +
+    "\n" +
+    "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu-drilldown\">\n" +
+    "\n" +
+    "      <!-- if ((grayout_drill) && ((($.grep(view.params.drilldown, function(ed) { return ed == dimension.name; })).length > 0))) { -->\n" +
+    "      <li on-repeat-done ng-repeat-start=\"dimension in view.cube.dimensions\" ng-if=\"dimension.levels.length == 1\" ng-click=\"selectDrill(dimension.name, true);\">\n" +
+    "        <a href=\"\">{{ dimension.label }}</a>\n" +
+    "      </li>\n" +
+    "      <li ng-repeat-end ng-if=\"dimension.levels.length != 1\" class=\"dropdown-submenu\">\n" +
+    "        <a tabindex=\"0\">{{ dimension.label }}</a>\n" +
+    "\n" +
+    "        <ul ng-if=\"dimension.hierarchies_count() != 1\" class=\"dropdown-menu\">\n" +
+    "            <li ng-repeat=\"(hikey,hi) in dimension.hierarchies\" class=\"dropdown-submenu\">\n" +
+    "                <a tabindex=\"0\" href=\"\" onclick=\"return false;\">{{ hi.label }}</a>\n" +
+    "                <ul class=\"dropdown-menu\">\n" +
+    "                    <li ng-repeat=\"level in hi.levels\" ng-click=\"selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                </ul>\n" +
+    "            </li>\n" +
+    "        </ul>\n" +
+    "\n" +
+    "        <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
+    "            <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectDrill(dimension.name + ':' + level.name, true)\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "        </ul>\n" +
+    "\n" +
+    "      </li>\n" +
+    "\n" +
+    "      <div class=\"divider\"></div>\n" +
+    "      <li ng-click=\"selectDrill(null)\"><a href=\"\"><i class=\"fa fa-fw fa-close\"></i> None</a></li>\n" +
+    "\n" +
+    "  </ul>\n" +
+    "\n"
   );
 
 }]);

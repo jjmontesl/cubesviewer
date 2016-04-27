@@ -33,7 +33,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
                                                      function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
 
 	$scope.gridData = [];
-	$scope.gridOptions = {};
 
 	$scope.initialize = function() {
 	};
@@ -44,6 +43,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 			$scope.loadData();
 		}
 	});
+
+
 
 	$scope.loadData = function() {
 
@@ -70,16 +71,20 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		$scope.gridFormatters = {};
 
 	    // Configure grid
-	    $scope.gridOptions = {
+	    angular.extend($scope.gridOptions, {
     		data: $scope.gridData,
+    		onRegisterApi: $scope.onGridRegisterApi,
     		enableColumnResizing: true,
     		showColumnFooter: true,
+    		showGridFooter:true,
     		enableRowSelection: true,
+    		//enableRowHeaderSelection: false,
+    		//enableSelectAll: false,
     		multiSelect: true,
     		//selectionRowHeaderWidth: 20,
     		//rowHeight: 50,
     		columnDefs: []
-	    };
+	    });
 
 		$(view.cube.aggregates).each(function(idx, ag) {
 			var col = {
@@ -129,14 +134,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				index: "key" + i,
 				cutDimension: cutDimension,
 				//width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + i, 130)
-				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><a href="" ng-click="selectCut(col.colDef.cutDimension, COL_FIELD.cutValue, false)">{{ COL_FIELD.title }}</a></div>',
-				/*
-				key.push('<a href="" class="cv-grid-link" onclick="' + "cubesviewer.views.cube.explore.selectCut(cubesviewer.views.getParentView(this), $(this).attr('data-dimension'), $(this).attr('data-value'), $(this).attr('data-invert')); return false;" +
-						 '" class="selectCut" data-dimension="' + cutDimension + '" ' +
-						 'data-value="' + drilldown_level_values.join(",") + '">' +
-						 drilldown_level_labels.join(" / ") + '</a>');
-				*/
-
+				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><a href="" ng-click="grid.appScope.selectCut(col.colDef.cutDimension, COL_FIELD.cutValue, false)">{{ COL_FIELD.title }}</a></div>',
 			});
 		}
 
@@ -403,118 +401,6 @@ function cubesviewerViewCubeExplore() {
 		return vdefault;
 	};
 
-
-	this.drawInfoPiece = function(selector, color, maxwidth, readonly, content) {
-
-		var maxwidthStyle = "";
-		if (maxwidth != null) {
-			maxwidthStyle = "max-width: " + maxwidth + "px;";
-		}
-		selector.append(
-			'<div class="infopiece" style="background-color: ' + color + '; white-space: nowrap;">' +
-			'<div style="white-space: nowrap; overflow: hidden; display: inline-block; vertical-align: middle; ' + maxwidthStyle + '">' +
-			content + '</div>' +
-			( ! readonly ? ' <button style="display: inline-block; vertical-align: middle;" class="cv-view-infopiece-close"><span class="ui-icon ui-icon-close"></span></button></div>' : '' )
-		);
-
-		selector.children().last().addClass('ui-widget').css('margin', '2px').css('padding', '3px').css('display', 'inline-block').addClass('ui-corner-all');
-		selector.children().last().find('button').button().find('span').css('padding', '0px');
-
-		return selector.children().last();
-	};
-
-	// Draw information bubbles
-	this.drawInfo = function(view, readonly) {
-
-		$(view.params.cuts).each(function(idx, e) {
-			var dimparts = view.cube.cvdim_parts(e.dimension.replace(":",  "@"));
-			var equality = e.invert ? ' != ' : ' = ';
-			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
-				$(view.container).find('.cv-view-viewinfo-cut'), "#ffcccc", 480, readonly,
-				'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Filter: </b> ' + dimparts.label  + equality + '</span>' +
-				'<span title="' + e.value + '">' + e.value + '</span>'
-			);
-			piece.addClass("cv-view-infopiece-cut");
-			piece.attr("data-dimension", e.dimension);
-			piece.attr("data-value", e.value);
-			piece.attr("data-invert", e.invert || false);
-			piece.find('.cv-view-infopiece-close').click(function() {
-				view.cubesviewer.views.cube.explore.selectCut(view, e.dimension, "", e.invert);
-			});
-		});
-
-		if (readonly) {
-			$(view.container).find('.infopiece').find('.ui-icon-close')
-					.parent().remove();
-		}
-
-	};
-
-
-	/*
-	 * Filters current selection
-	 */
-	this.filterSelected = function(view) {
-
-		if (view.params.drilldown.length != 1) {
-			view.cubesviewer.alert('Can only filter multiple values in a view with one level of drilldown.');
-			return;
-		}
-		if ($('#summaryTable-' + view.id).get(0).idsOfSelectedRows.length <= 0) {
-			view.cubesviewer.alert('Cannot filter. No rows are selected.');
-			return;
-		}
-
-		var dom = null;
-		var filterValues = [];
-		var idsOfSelectedRows = $('#summaryTable-' + view.id).get(0).idsOfSelectedRows;
-		var filterData = $.grep($('#summaryTable-' + view.id).jqGrid('getGridParam','data'), function (gd) {
-			return ($.inArray(gd.id, idsOfSelectedRows) != -1);
-		} );
-		$(filterData).each( function(idx, gd) {
-			dom = $(gd["key0"]);
-			filterValues.push($(dom).attr("data-value"));
-		});
-
-		var invert = false;
-		this.selectCut(view, $(dom).attr("data-dimension"), filterValues.join(";"), invert);
-
-	};
-
-	// Select a cut
-	this.selectCut = function(view, dimension, value, invert) {
-
-		if (dimension != "") {
-			if (value != "") {
-				/*
-				var existing_cut = $.grep(view.params.cuts, function(e) {
-					return e.dimension == dimension;
-				});
-				if (existing_cut.length > 0) {
-					//view.cubesviewer.alert("Cannot cut dataset. Dimension '" + dimension + "' is already filtered.");
-					//return;
-				} else {*/
-					view.params.cuts = $.grep(view.params.cuts, function(e) {
-						return e.dimension == dimension;
-					}, true);
-					view.params.cuts.push({
-						"dimension" : dimension,
-						"value" : value,
-						"invert" : invert
-					});
-				/*}*/
-			} else {
-				view.params.cuts = $.grep(view.params.cuts, function(e) {
-					return e.dimension == dimension;
-				}, true);
-			}
-		} else {
-			view.params.cuts = [];
-		}
-
-		view.cubesviewer.views.redrawView (view);
-
-	};
 
 };
 

@@ -41,6 +41,20 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	$scope.view._cubeDataUpdated = false;
 
+	// TODO: Move to explore view or grid component as cube view shall be split into directives
+    $scope.onGridRegisterApi = function(gridApi) {
+    	console.debug("Registering grid api");
+        $scope.gridApi = gridApi;
+        gridApi.selection.on.rowSelectionChanged($scope,function(row){
+          console.debug(row.entity);
+        });
+        gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
+          console.debug(rows);
+        });
+    };
+	$scope.gridApi = null;
+	$scope.gridOptions = { onRegisterApi: $scope.onGridRegisterApi };
+
 	/**
 	 * Define view mode ('explore', 'series', 'facts', 'chart').
 	 */
@@ -151,6 +165,77 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		}
 
 		return formatterFunction;
+	};
+
+	/*
+	 * Filters current selection
+	 */
+	$scope.filterSelected = function() {
+
+		console.debug("Filtering");
+
+		var view = $scope.view;
+
+		if (view.params.drilldown.length != 1) {
+			alert('Can only filter multiple values in a view with one level of drilldown.');
+			return;
+		}
+
+		console.debug($scope.gridApi);
+
+		if ($scope.gridApi.selection.getSelectedCount() <= 0) {
+			alert('Cannot filter. No rows are selected.');
+			return;
+		}
+
+		var filterValues = [];
+		var selectedRows = $scope.gridApi.selection.getSelectedRows();
+		$(selectedRows).each( function(idx, gd) {
+			filterValues.push(gd["key0"].cutValue);
+		});
+
+		var invert = false;
+		$scope.selectCut($scope.gridOptions.columnDefs[0].cutDimension, filterValues.join(";"), invert);
+
+	};
+
+	// Select a cut
+	$scope.selectCut = function(dimension, value, invert) {
+
+		console.debug("Filtering");
+
+		var view = $scope.view;
+
+		if (dimension != "") {
+			if (value != "") {
+				/*
+				var existing_cut = $.grep(view.params.cuts, function(e) {
+					return e.dimension == dimension;
+				});
+				if (existing_cut.length > 0) {
+					//view.cubesviewer.alert("Cannot cut dataset. Dimension '" + dimension + "' is already filtered.");
+					//return;
+				} else {*/
+					view.params.cuts = $.grep(view.params.cuts, function(e) {
+						return e.dimension == dimension;
+					}, true);
+					view.params.cuts.push({
+						"dimension" : dimension,
+						"value" : value,
+						"invert" : invert
+					});
+				/*}*/
+			} else {
+				view.params.cuts = $.grep(view.params.cuts, function(e) {
+					return e.dimension == dimension;
+				}, true);
+			}
+		} else {
+			view.params.cuts = [];
+		}
+
+		$scope.view._cubeDataUpdated = true;
+
 	};
 
 
