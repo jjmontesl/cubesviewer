@@ -5,7 +5,10 @@
         <div class="panel panel-primary pull-right" style="padding: 3px;">
 
             <div class="btn-group" role="group" aria-label="...">
-              <button type="button" ng-click="setViewMode('explore')" ng-class="{'active': view.params.mode == 'explore'}" class="btn btn-primary btn-sm explorebutton" title="Explore"><i class="fa fa-arrow-circle-down"></i></button>
+              <button type="button" ng-click="setViewMode('explore')" ng-class="{'active': view.params.mode == 'explore'}" class="btn btn-primary btn-sm explorebutton" title="Explore"><i class="fa fa-fw fa-arrow-circle-down"></i></button>
+              <button type="button" ng-click="setViewMode('facts')" ng-class="{'active': view.params.mode == 'facts'}" class="btn btn-primary btn-sm " title="Facts"><i class="fa fa-fw fa-th"></i></button>
+              <button type="button" ng-click="setViewMode('series')" ng-class="{'active': view.params.mode == 'series'}" class="btn btn-primary btn-sm " title="Series"><i class="fa fa-fw fa-table"></i></button>
+              <button type="button" ng-click="setViewMode('chart')" ng-class="{'active': view.params.mode == 'chart'}" class="btn btn-primary btn-sm " title="Charts"><i class="fa fa-fw fa-area-chart"></i></button>
             </div>
 
             <div ng-include="'views/cube/menu-drilldown.html'" class="dropdown m-b" style="display: inline-block; margin-left: 10px;"></div>
@@ -13,16 +16,16 @@
 
             <div class="dropdown m-b" style="display: inline-block;">
               <button class="btn btn-primary btn-sm dropdown-toggle cutbutton" type="button" data-toggle="dropdown" data-submenu>
-                <i class="fa fa-fw fa-search"></i> Filter <span class="caret"></span>
+                <i class="fa fa-fw fa-filter"></i> Filter <span class="caret"></span>
               </button>
 
               <ul class="dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut">
 
-                <li ng-click="filterSelected()"><a href=""><i class="fa fa-fw fa-filter"></i> Filter selected</a></li>
+                <li ng-click="filterSelected()"><a href=""><i class="fa fa-fw fa-filter"></i> Filter selected rows</a></li>
                 <div class="divider"></div>
 
                 <li class="dropdown-submenu">
-                    <a tabindex="0">Dimension filter</a>
+                    <a tabindex="0"><i class="fa fa-fw fa-bars"></i> Dimension filter</a>
                     <ul class="dropdown-menu">
 
                       <!-- if ((grayout_drill) && ((($.grep(view.params.drilldown, function(ed) { return ed == dimension.name; })).length > 0))) { -->

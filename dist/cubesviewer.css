@@ -12,6 +12,7 @@
   /*@import "bower_components/bootstrap-submenu/less/bootstrap-submenu.less";*/
   font-size: 12px;
   font-family: Arial, Helvetica, sans-serif;
+  /* UI grid hacks */
 }
 .cv-bootstrap html {
   font-family: sans-serif;
@@ -6743,6 +6744,17 @@ button.cv-bootstrap .close {
 }
 .cv-bootstrap .ui-grid-selection-row-header-buttons {
   margin-left: -2px;
+}
+.cv-bootstrap .ui-grid-column-menu-button:focus {
+  outline: none;
+}
+.cv-bootstrap .ui-grid-menu-button {
+  height: 25px;
+}
+.cv-bootstrap .ui-grid-menu-mid {
+  max-height: 200px !important;
+  width: 190px;
+  overflow-x: hidden;
 }
 /*
 */

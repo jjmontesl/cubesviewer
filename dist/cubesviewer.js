@@ -1874,6 +1874,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
     		onRegisterApi: $scope.onGridRegisterApi,
     		enableColumnResizing: true,
     		showColumnFooter: true,
+    		enableGridMenu: true,
     		//showGridFooter: true,
     	    paginationPageSizes: cvOptions.pagingOptions,
     	    paginationPageSize: cvOptions.pagingOptions[0],
@@ -2091,7 +2092,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		// This allows a scrollbar to appear in jqGrid when only the summary row is shown.
 		if ((rows.length == 0) && (data.summary)) {
 			var row = {};
-			row["key0"] = "Summary";
+			var summary = (cubesService.buildQueryCuts(view).length == 0) ? "Summary" : "Summary (Filtered)";
+			row["key0"] = summary;
 
 			$(view.cube.aggregates).each(function(idx, ag) {
 				row[ag.ref] = data.summary[ag.ref];
@@ -2769,7 +2771,10 @@ cubesviewer.studio = {
     "        <div class=\"panel panel-primary pull-right\" style=\"padding: 3px;\">\n" +
     "\n" +
     "            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n" +
-    "              <button type=\"button\" ng-click=\"setViewMode('explore')\" ng-class=\"{'active': view.params.mode == 'explore'}\" class=\"btn btn-primary btn-sm explorebutton\" title=\"Explore\"><i class=\"fa fa-arrow-circle-down\"></i></button>\n" +
+    "              <button type=\"button\" ng-click=\"setViewMode('explore')\" ng-class=\"{'active': view.params.mode == 'explore'}\" class=\"btn btn-primary btn-sm explorebutton\" title=\"Explore\"><i class=\"fa fa-fw fa-arrow-circle-down\"></i></button>\n" +
+    "              <button type=\"button\" ng-click=\"setViewMode('facts')\" ng-class=\"{'active': view.params.mode == 'facts'}\" class=\"btn btn-primary btn-sm \" title=\"Facts\"><i class=\"fa fa-fw fa-th\"></i></button>\n" +
+    "              <button type=\"button\" ng-click=\"setViewMode('series')\" ng-class=\"{'active': view.params.mode == 'series'}\" class=\"btn btn-primary btn-sm \" title=\"Series\"><i class=\"fa fa-fw fa-table\"></i></button>\n" +
+    "              <button type=\"button\" ng-click=\"setViewMode('chart')\" ng-class=\"{'active': view.params.mode == 'chart'}\" class=\"btn btn-primary btn-sm \" title=\"Charts\"><i class=\"fa fa-fw fa-area-chart\"></i></button>\n" +
     "            </div>\n" +
     "\n" +
     "            <div ng-include=\"'views/cube/menu-drilldown.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 10px;\"></div>\n" +
@@ -2777,16 +2782,16 @@ cubesviewer.studio = {
     "\n" +
     "            <div class=\"dropdown m-b\" style=\"display: inline-block;\">\n" +
     "              <button class=\"btn btn-primary btn-sm dropdown-toggle cutbutton\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "                <i class=\"fa fa-fw fa-search\"></i> Filter <span class=\"caret\"></span>\n" +
+    "                <i class=\"fa fa-fw fa-filter\"></i> Filter <span class=\"caret\"></span>\n" +
     "              </button>\n" +
     "\n" +
     "              <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut\">\n" +
     "\n" +
-    "                <li ng-click=\"filterSelected()\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected</a></li>\n" +
+    "                <li ng-click=\"filterSelected()\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected rows</a></li>\n" +
     "                <div class=\"divider\"></div>\n" +
     "\n" +
     "                <li class=\"dropdown-submenu\">\n" +
-    "                    <a tabindex=\"0\">Dimension filter</a>\n" +
+    "                    <a tabindex=\"0\"><i class=\"fa fa-fw fa-bars\"></i> Dimension filter</a>\n" +
     "                    <ul class=\"dropdown-menu\">\n" +
     "\n" +
     "                      <!-- if ((grayout_drill) && ((($.grep(view.params.drilldown, function(ed) { return ed == dimension.name; })).length > 0))) { -->\n" +

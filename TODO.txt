@@ -66,6 +66,9 @@
 
 [2.0]
 
+    * Commit refactor branch, fork repository, commit refactor branch to cubesviewer-client
+      and bring server changes to cubesviewer project. Rename repositories accordingly.
+
     * Reviewed and improved doc
     * Move doc to site (but import from repository markdown, to keep
       doc sources along with the  project).
@@ -83,4 +86,4 @@
     * Separate chart plugin in files.
 
     * Tooltip columnbs: column=val remove columnTooltipAttr, enable tooltips?
-    *
+

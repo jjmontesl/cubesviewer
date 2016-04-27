@@ -81,6 +81,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
     		onRegisterApi: $scope.onGridRegisterApi,
     		enableColumnResizing: true,
     		showColumnFooter: true,
+    		enableGridMenu: true,
     		//showGridFooter: true,
     	    paginationPageSizes: cvOptions.pagingOptions,
     	    paginationPageSize: cvOptions.pagingOptions[0],
@@ -298,7 +299,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		// This allows a scrollbar to appear in jqGrid when only the summary row is shown.
 		if ((rows.length == 0) && (data.summary)) {
 			var row = {};
-			row["key0"] = "Summary";
+			var summary = (cubesService.buildQueryCuts(view).length == 0) ? "Summary" : "Summary (Filtered)";
+			row["key0"] = summary;
 
 			$(view.cube.aggregates).each(function(idx, ag) {
 				row[ag.ref] = data.summary[ag.ref];
