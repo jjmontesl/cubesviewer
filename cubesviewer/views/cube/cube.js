@@ -41,25 +41,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	$scope.view._cubeDataUpdated = false;
 
-	// TODO: Move to explore view or grid component as cube view shall be split into directives
-    $scope.onGridRegisterApi = function(gridApi) {
-    	console.debug("Registering grid api");
-        $scope.gridApi = gridApi;
-        gridApi.selection.on.rowSelectionChanged($scope,function(row){
-          console.debug(row.entity);
-        });
-        gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-          console.debug(rows);
-        });
-    };
-	$scope.gridApi = null;
-	$scope.gridOptions = { onRegisterApi: $scope.onGridRegisterApi, selectionRowHeaderWidth: 24 /*, enableRowHeaderSelection: false, */ };
+	$scope.dimensionFilter = null;
+
 
 	/**
 	 * Define view mode ('explore', 'series', 'facts', 'chart').
 	 */
 	$scope.setViewMode = function(mode) {
 		$scope.view.params.mode = mode;
+		$scope.view._cubeDataUpdated = true;
 	};
 
 
@@ -101,6 +91,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 * Dimension is encoded using Cubes notation: dimension[@hierarchy][:level]
 	 */
 	$scope.selectDrill = function(dimension, value) {
+
+		console.debug(dimension);
 
 		var cube = $scope.view.cube;
 
@@ -238,6 +230,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	};
 
+	$scope.showDimensionFilter = function(dimension) {
+		$scope.view.dimensionFilter = dimension;
+	};
 
 
 }]).directive("cvViewCube", function() {

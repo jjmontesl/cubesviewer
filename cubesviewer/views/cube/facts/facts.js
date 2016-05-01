@@ -1,6 +1,6 @@
 /*
  * CubesViewer
- * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,155 +26,107 @@
  */
 
 
-/*
+/**
  * Facts table. Allows users to see the facts associated to current cut.
  */
-function cubesviewerViewCubeFacts() {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
 
-	this.cubesviewer = cubesviewer;
+	$scope.$parent.gridData = [];
 
-	this.onViewCreate = function(event, view) {
-		$.extend(view.params, {
-		});
-	}
+	// TODO: Move to explore view or grid component as cube view shall be split into directives
+    $scope.$parent.onGridRegisterApi = function(gridApi) {
+    	console.debug("Grid Register Api: Facts");
+        $scope.gridApi = gridApi;
+        gridApi.selection.on.rowSelectionChanged($scope,function(row){
+          console.debug(row.entity);
+        });
+        gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
+          console.debug(rows);
+        });
 
-	/*
-	 * Draw cube view structure.
-	 */
-	this.onViewDraw = function(event, view) {
+    };
+	$scope.$parent.gridApi = null;
+	$scope.$parent.gridOptions = {
+		onRegisterApi: $scope.onGridRegisterApi,
+		selectionRowHeaderWidth: 24,
+		//enableRowHeaderSelection: false,
+	};
 
-		if (view.cube == null) return;
 
-		// Facts Mode button
-		$(view.container).find('.cv-view-toolbar').find(".explorebutton").css("margin-right", "5px").after(
-			'<button class="cv-view-button-facts" title="Facts Table" style="margin-right: 10px;"><span class="ui-icon ui-icon-clipboard"></span></button>'
-		);
+	$scope.initialize = function() {
+	};
 
-		// Buttonize and event
-		$(view.container).find('.cv-view-button-facts').button();
-		$(view.container).find('.cv-view-button-facts').click(function() {
-			view.cubesviewer.views.cube.facts.modeFacts(view);
-			return false;
-		});
-		$(view.container).find('.cv-view-button-facts').mouseenter(function() {
-			$('.cv-view-menu').hide();
-		});
-
-		if (view.params.mode != "facts") return;
-
-		// Draw areas
-		view.cubesviewer.views.cube.facts.drawInfo(view);
-
-		// Highlight
-		$(view.container).find('.cv-view-button-facts').button("option", "disabled", "true").addClass('ui-state-active');
-
-		// Facts menu
-		view.cubesviewer.views.cube.facts.drawFactsMenu(view);
-
-		$(view.container).find('.drilldownbutton').button("disable");
-
-		// Only if data is empty
-		if ($(view.container).find('.cv-view-viewdata').children().size() == 0) {
-			$(view.container).find('.cv-view-viewdata').empty().append('<h3>Facts Table</h3>');
+	$scope.$watch("view._cubeDataUpdated", function(newVal) {
+		if (newVal) {
+			$scope.view._cubeDataUpdated = false;
+			$scope.loadData();
 		}
-
-		// Load data
-		view.cubesviewer.views.cube.facts.loadData(view);
-
-	};
-
-	/*
-	 * Updates view options menus.
-	 */
-	this.drawFactsMenu = function (view) {
-
-		var menu = $(".cv-view-menu-view", $(view.container));
-		var cube = view.cube;
+	});
 
 
-	};
 
-	/*
-	 * Change to facts mode.
-	 */
-	this.modeFacts = function(view) {
-		view.params.mode = "facts";
-		view.cubesviewer.views.redrawView(view);
-	};
+	$scope.loadData = function() {
 
-
-	/*
-	 * Load and draw current data.
-	 */
-	this.loadData = function(view) {
-
-		view.cubesviewer.views.blockViewLoading(view);
-
-		var browser_args = this.cubesviewer.views.cube.buildBrowserArgs(view, false, false);
-		var browser = new cubes.Browser(view.cubesviewer.cubesserver, view.cube);
-		var jqxhr = browser.facts(browser_args, view.cubesviewer.views.cube.facts._loadDataCallback(view));
+		var browser_args = cubesService.buildBrowserArgs($scope.view, false, false);
+		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
+		var jqxhr = browser.facts(browser_args, $scope._loadDataCallback);
 		jqxhr.always(function() {
-			view.cubesviewer.views.unblockView(view);
+			//view.cubesviewer.views.unblockView(view);
 		});
 
 	};
 
-	this._loadDataCallback = function(view) {
-
-		var view = view;
-
-		return function (data, status) {
-			$(view.container).find('.cv-view-viewdata').empty();
-			view.cubesviewer.views.cube.facts.drawTable(view, data);
-		};
-
+	$scope._loadDataCallback = function(data, status) {
+		$scope.processData(data);
+		$rootScope.$apply();
+		$scope.gridApi.core.refresh();
+		$rootScope.$apply();
 	};
 
-	/*
-	 * First calls drawInfo in explore table in order to draw slice info and container.
-	 */
-	this.drawInfo = function(view) {
+	$scope.processData = function(data) {
 
-	};
+		var view = $scope.view;
 
-
-	/*
-	 * Draws facts table.
-	 */
-	this.drawTable = function(view, data) {
-
-		$(view.container).find('.cv-view-viewdata').empty();
-
-		if (data.length == 0) {
-			$(view.container).find('.cv-view-viewdata').append(
-				'<h3>Facts Table</h3>' +
-				'<div>No facts are returned by the current filtering combination.</div>'
-			);
-			return;
-		}
-
-		$(view.container).find('.cv-view-viewdata').append(
-			'<h3>Facts Table</h3>' +
-			'<table id="factsTable-' + view.id + '"></table>' +
-			'<div id="factsPager-' + view.id + '"></div>'
-		);
-
-		var colNames = [];
-		var colModel = [];
-		var dataRows = [];
-		var dataTotals = [];
+		$scope.gridData = [];
+		$scope.gridFormatters = {};
 
 		var dimensions = view.cube.dimensions;
 		var measures = view.cube.measures;
         var details = view.cube.details;
 
-		colNames.push("ID");
-		colModel.push({
-			name : "id",
-			index : "id",
-			align : "left",
-			width : cubesviewer.views.cube.explore.defineColumnWidth(view, "id", 65),
-			sorttype : "number",
+	    // Configure grid
+	    angular.extend($scope.$parent.gridOptions, {
+    		data: $scope.gridData,
+    		//minRowsToShow: 3,
+    		rowHeight: 24,
+    		onRegisterApi: $scope.onGridRegisterApi,
+    		enableColumnResizing: true,
+    		//showColumnFooter: true,
+    		enableGridMenu: true,
+    		//showGridFooter: true,
+    	    paginationPageSizes: cvOptions.pagingOptions,
+    	    paginationPageSize: cvOptions.pagingOptions[0],
+    		//enableHorizontalScrollbar: 0,
+    		//enableVerticalScrollbar: 0,
+    		enableRowSelection: false,
+    		//enableRowHeaderSelection: false,
+    		//enableSelectAll: false,
+    		enablePinning: false,
+    		multiSelect: false,
+    		selectionRowHeaderWidth: 20,
+    		//rowHeight: 50,
+    		columnDefs: []
+	    });
+
+		$scope.gridOptions.columnDefs.push({
+			name: "id",
+			field: "id",
+			index: "id",
+			enableHiding: false,
+			align: "left",
+			width: 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "id", 65),
+			sorttype : "number"
 		});
 
 		for (var dimensionIndex in dimensions) {
@@ -183,60 +135,76 @@ function cubesviewerViewCubeFacts() {
 
 			for (var i = 0; i < dimension.levels.length; i++) {
 				var level = dimension.levels[i];
-
-				colNames.push(level.label);
-				colModel.push({
-					name : level.key().ref,
+				var col = {
+					name: level.label,
+					field: level.key().ref,
 					index : level.key().ref,
-					align : "left",
+					//cellClass : "text-right",
 					//sorttype : "number",
-					width : cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
-					//formatter: 'number',
-					//cellattr: this.columnTooltipAttr(column),
-					//formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
-				});
+					width : 95, //cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
+					cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ row.entity[col.colDef.field] }}</div>',
+					//formatter: $scope.columnFormatFunction(ag),
+					//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
+					//formatoptions: {},
+					//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+				};
+				$scope.gridOptions.columnDefs.push(col);
 			}
 		}
 
 		for (var measureIndex in measures) {
 			var measure = measures[measureIndex];
 
-			colNames.push(measure.label);
-
-			var colFormatter = cubesviewer.views.cube.columnFormatFunction(view, measure);
 			var col = {
-				name : measure.ref,
+				name: measure.label,
+				field: measure.ref,
 				index : measure.ref,
-				align : "right",
+				cellClass : "text-right",
 				sorttype : "number",
-				width : cubesviewer.views.cube.explore.defineColumnWidth(view, measure.ref, 75),
-				formatter: function(cellValue, options, rowObject) {
-					return colFormatter(cellValue);
-				}
-				//formatoptions: {}
+				width : 75, //cubesviewer.views.cube.explore.defineColumnWidth(view, measure.ref, 75),
+				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
+				formatter: $scope.columnFormatFunction(measure),
+				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
+				//formatoptions: {},
+				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 			};
-			colModel.push(col);
+			$scope.gridOptions.columnDefs.push(col);
 		}
 
         for (var detailIndex in details) {
             var detail = details[detailIndex];
 
-            colNames.push(detail.name);
-			colModel.push({
-				name : detail.ref,
-                index : detail.ref,
-                align : "left",
-                //sorttype : "number",
-                width : cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
-                //formatter: 'number',
-                //cellattr: this.columnTooltipAttr(column),
-                //formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: 2 }
-			});
+            var col = {
+				name: detail.name,
+				field: detail.ref,
+				index : detail.ref,
+				//cellClass : "text-right",
+				//sorttype : "number",
+				width : 95, //cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
+				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
+				//formatter: $scope.columnFormatFunction(ag),
+				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
+				//formatoptions: {},
+				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+			};
+			$scope.gridOptions.columnDefs.push(col);
         }
 
+		// If there are cells, show them
+		$scope._addRows(data);
 
-		// Process cells
-		view.cubesviewer.views.cube.facts._addRows(view, dataRows, data);
+
+
+	};
+
+
+	/*
+	 * Draws facts table.
+	 */
+	this.drawTable = function(view, data) {
 
 		$('#factsTable-' + view.id).jqGrid({
 			data: dataRows,
@@ -277,10 +245,12 @@ function cubesviewerViewCubeFacts() {
 	};
 
 	/*
-	 * Adds rows. This case is particular because the first level of drilldown may be the
-	 * horizontal dimension.
+	 * Adds rows.
 	 */
-	this._addRows = function(view, rows, data) {
+	$scope._addRows = function(data) {
+
+		var view = $scope.view;
+		var rows = $scope.gridData;
 
 		var counter = 0;
 		var dimensions = view.cube.dimensions;
@@ -328,15 +298,9 @@ function cubesviewerViewCubeFacts() {
 
 	};
 
-};
+	$scope.initialize();
 
-/*
- * Create object.
- */
-cubesviewer.views.cube.facts = new cubesviewerViewCubeFacts();
+}]);
 
-/*
- * Bind events.
- */
-$(document).bind("cubesviewerViewCreate", { }, cubesviewer.views.cube.facts.onViewCreate);
-$(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.cube.facts.onViewDraw);
+
+

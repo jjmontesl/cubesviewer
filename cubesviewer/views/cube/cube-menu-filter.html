@@ -1,0 +1,51 @@
+  <button class="btn btn-primary btn-sm dropdown-toggle cutbutton" type="button" data-toggle="dropdown" data-submenu>
+    <i class="fa fa-fw fa-filter"></i> Filter <span class="caret"></span>
+  </button>
+
+  <ul class="dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut">
+
+    <li ng-click="filterSelected()"><a href=""><i class="fa fa-fw fa-filter"></i> Filter selected rows</a></li>
+    <div class="divider"></div>
+
+    <li class="dropdown-submenu">
+        <a tabindex="0"><i class="fa fa-fw fa-bars"></i> Dimension filter</a>
+        <ul class="dropdown-menu">
+
+          <li on-repeat-done ng-repeat-start="dimension in view.cube.dimensions" ng-if="dimension.levels.length == 1" ng-click="showDimensionFilter(dimension.name);">
+            <a href="">{{ dimension.label }}</a>
+          </li>
+          <li ng-repeat-end ng-if="dimension.levels.length != 1" class="dropdown-submenu">
+            <a tabindex="0">{{ dimension.label }}</a>
+
+            <ul ng-if="dimension.hierarchies_count() != 1" class="dropdown-menu">
+                <li ng-repeat="(hikey,hi) in dimension.hierarchies" class="dropdown-submenu">
+                    <a tabindex="0" href="" onclick="return false;">{{ hi.label }}</a>
+                    <ul class="dropdown-menu">
+                        <!-- ng-click="selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)"  -->
+                        <li ng-repeat="level in hi.levels" ng-click="showDimensionFilter(dimension.name + '@' + hi.name + ':' + level.name )"><a href="">{{ level.label }}</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <ul ng-if="dimension.hierarchies_count() == 1" class="dropdown-menu">
+                <!--  selectDrill(dimension.name + ':' + level.name, true) -->
+                <li ng-repeat="level in dimension.default_hierarchy().levels" ng-click="showDimensionFilter(level);"><a href="">{{ level.label }}</a></li>
+            </ul>
+
+          </li>
+
+        </ul>
+    </li>
+
+    <!--
+    // Events
+    $(view.container).find('.cv-view-show-dimensionfilter').click( function() {
+        cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, $(this).attr('data-dimension'));
+        return false;
+    });
+     -->
+
+    <div class="divider"></div>
+    <li><a href=""><i class="fa fa-fw fa-close"></i> Clear filters</a></li>
+
+  </ul>

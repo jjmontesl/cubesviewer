@@ -6749,12 +6749,22 @@ button.cv-bootstrap .close {
   outline: none;
 }
 .cv-bootstrap .ui-grid-menu-button {
-  height: 25px;
+  height: 24px;
+  width: 13px;
+  top: 0px;
+  right: 0px;
+  text-align: center;
+}
+.cv-bootstrap .ui-grid-menu-button i::before {
+  margin: 0px;
 }
 .cv-bootstrap .ui-grid-menu-mid {
   max-height: 200px !important;
   width: 190px;
-  overflow-x: hidden;
+  overflow-x: hidden !important;
+}
+.cv-bootstrap .ui-grid-menu .ui-grid-menu-inner ul li button {
+  padding: 6px;
 }
 /*
 */
@@ -6769,7 +6779,10 @@ button.cv-bootstrap .close {
 .cv-view-panel {
   min-height: 80px;
 }
-.cv-gui-panel .dropdown-menu {
+.cv-gui-panel .dropdown-menu li {
+  cursor: pointer;
+}
+.cv-view-panel .dropdown-menu li {
   cursor: pointer;
 }
 .cv-gui-title {

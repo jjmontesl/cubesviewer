@@ -6,11 +6,12 @@
     * Option to show/hide chart labels.
     * Sort pie charts by size of slice.
     * Serializing now shows code in a floating dialog box easier to copy.
+    * New icons and revamped UI (FontAwesome).
 
-    * Using templating for HTML views.
+    * Using templating for HTML views (removed HTML spaguetti code).
     * Moved from jQGrid to more versatile Angular ui-grid.
     * Refactored to Angular and dropped jQueryUI.
-    * Now using Bootstrap for styles, without impacting page styles
+    * Now using embedded Bootstrap for styles, without impacting page styles
       (no global selectors) and better avoidance of being impacted by page styles.
     * Introduced Grunt/Bower build system.
     * Separated cubesviewer-server from client.

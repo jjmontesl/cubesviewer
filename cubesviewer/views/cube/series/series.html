@@ -1,0 +1,16 @@
+<div ng-controller="CubesViewerViewsCubeSeriesController">
+
+    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->
+    <h3><i class="fa fa-fw fa-table"></i> Series table</h3>
+
+    <div ng-if="gridOptions.data.length > 0"
+         ui-grid="gridOptions"
+         ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize
+         ui-grid-pagination ui-grid-pinning
+         style="width: 100%;" ng-style="{height: ((gridOptions.data.length < 15 ? gridOptions.data.length : 15) * 24) + 44 + 30 + 'px'}">
+    </div>
+    <div ng-if="gridOptions.data.length > 0" style="height: 30px;">&nbsp;</div>
+
+    <div ng-if="gridOptions.data.length == 0">No facts are returned by the current filtering combination.</div>
+
+</div>

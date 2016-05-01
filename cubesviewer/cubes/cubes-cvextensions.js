@@ -39,9 +39,11 @@ cubes.Dimension.prototype.hierarchies_count = function()  {
 	}
 	return count;
 };
+
 cubes.Dimension.prototype.default_hierarchy = function()  {
 	return this.hierarchies[this.default_hierarchy_name];
 };
+
 cubes.Cube.prototype.cvdim_dim = function(dimensionString) {
 	// Get a dimension by name. Accepts dimension hierarchy and level in the input string.
 	var dimname = dimensionString;
@@ -53,6 +55,7 @@ cubes.Cube.prototype.cvdim_dim = function(dimensionString) {
 
 	return this.dimension(dimname);
 };
+
 cubes.Cube.prototype.cvdim_parts = function(dimensionString) {
 	// Get a dimension info by name. Accepts dimension hierarchy and level in the input string.
 
@@ -91,8 +94,10 @@ cubes.Cube.prototype.cvdim_parts = function(dimensionString) {
 	};
 
 };
+
+
 /*
- * Processes a cell and returns an object with a stable information:
+ * Processes a cell and returns an object with consistent information:
  * o.key
  * o.label
  * o.info[]
@@ -110,6 +115,7 @@ cubes.Level.prototype.readCell = function(cell) {
 	});
 	return result;
 };
+
 cubes.Hierarchy.prototype.readCell = function(cell, level_limit) {
 
 	var result = [];

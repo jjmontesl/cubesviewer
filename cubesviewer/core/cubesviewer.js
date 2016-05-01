@@ -108,7 +108,8 @@ function cubesviewerOLD() {
 
 // Main CubesViewer angular module
 angular.module('cv', ['bootstrapSubmenu',
-                      'ui.grid', 'ui.grid.resizeColumns', 'ui.grid.selection', 'ui.grid.autoResize', 'ui.grid.pagination',
+                      'ui.grid', 'ui.grid.resizeColumns', 'ui.grid.selection', 'ui.grid.autoResize',
+                      'ui.grid.pagination', 'ui.grid.pinning',
                       'cv.cubes', 'cv.views']);
 
 // Configure moment.js
@@ -166,10 +167,12 @@ var cubesviewer = {
 	VIEW_STATE_ERROR: 3,
 
 	_configure: function(options) {
+		$('#cubesviewerVersion').html(cubesviewer.version);
 		angular.module('cv').constant('cvOptions', options);
 	},
 
 	init: function(options) {
+
 		this._configure(options);
 		angular.element(document).ready(function() {
 			angular.bootstrap(document, ['cv']);

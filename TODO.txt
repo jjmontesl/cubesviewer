@@ -68,6 +68,7 @@
 
     * Commit refactor branch, fork repository, commit refactor branch to cubesviewer-client
       and bring server changes to cubesviewer project. Rename repositories accordingly.
+    * Test CORS issue from server (localhost:8000 -> localhost:5000), test JSONP.
 
     * Reviewed and improved doc
     * Move doc to site (but import from repository markdown, to keep
@@ -77,6 +78,7 @@
     * Server side.
 
     * Cleanup code, review headers (2016).
+    * Fix submenu timer hack: is causing issues already. Watch contents and perhaps debounce menu activation?
     * Use strict.
     * Review if cube or menu loading is happening before initialization if views are created eagerly (views.html).
     * Review readonly menus and pills, and invalid combinations and info messages.
@@ -84,6 +86,7 @@
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
     * Review alerts in code and use alert service.
     * Separate chart plugin in files.
+    * Search and replace s/2015/2016/
 
     * Tooltip columnbs: column=val remove columnTooltipAttr, enable tooltips?
 

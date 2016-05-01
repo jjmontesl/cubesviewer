@@ -418,14 +418,3 @@ function cubesviewerViewCubeSeries() {
 	};
 
 };
-
-/*
- * Create object.
- */
-cubesviewer.views.cube.series = new cubesviewerViewCubeSeries();
-
-/*
- * Bind events.
- */
-$(document).bind("cubesviewerViewCreate", { }, cubesviewer.views.cube.series.onViewCreate);
-$(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.cube.series.onViewDraw);

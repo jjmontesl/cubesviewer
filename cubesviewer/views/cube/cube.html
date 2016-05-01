@@ -11,61 +11,9 @@
               <button type="button" ng-click="setViewMode('chart')" ng-class="{'active': view.params.mode == 'chart'}" class="btn btn-primary btn-sm " title="Charts"><i class="fa fa-fw fa-area-chart"></i></button>
             </div>
 
-            <div ng-include="'views/cube/menu-drilldown.html'" class="dropdown m-b" style="display: inline-block; margin-left: 10px;"></div>
+            <div ng-include="'views/cube/cube-menu-drilldown.html'" class="dropdown m-b" style="display: inline-block; margin-left: 5px;"></div>
 
-
-            <div class="dropdown m-b" style="display: inline-block;">
-              <button class="btn btn-primary btn-sm dropdown-toggle cutbutton" type="button" data-toggle="dropdown" data-submenu>
-                <i class="fa fa-fw fa-filter"></i> Filter <span class="caret"></span>
-              </button>
-
-              <ul class="dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut">
-
-                <li ng-click="filterSelected()"><a href=""><i class="fa fa-fw fa-filter"></i> Filter selected rows</a></li>
-                <div class="divider"></div>
-
-                <li class="dropdown-submenu">
-                    <a tabindex="0"><i class="fa fa-fw fa-bars"></i> Dimension filter</a>
-                    <ul class="dropdown-menu">
-
-                      <!-- if ((grayout_drill) && ((($.grep(view.params.drilldown, function(ed) { return ed == dimension.name; })).length > 0))) { -->
-                      <li on-repeat-done ng-repeat-start="dimension in view.cube.dimensions" ng-if="dimension.levels.length == 1" ng-click="selectDrill(dimension.name, true);">
-                        <a href="">{{ dimension.label }}</a>
-                      </li>
-                      <li ng-repeat-end ng-if="dimension.levels.length != 1" class="dropdown-submenu">
-                        <a tabindex="0">{{ dimension.label }}</a>
-
-                        <ul ng-if="dimension.hierarchies_count() != 1" class="dropdown-menu">
-                            <li ng-repeat="(hikey,hi) in dimension.hierarchies" class="dropdown-submenu">
-                                <a tabindex="0" href="" onclick="return false;">{{ hi.label }}</a>
-                                <ul class="dropdown-menu">
-                                    <li ng-repeat="level in hi.levels" ng-click="selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)"><a href="">{{ level.label }}</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-
-                        <ul ng-if="dimension.hierarchies_count() == 1" class="dropdown-menu">
-                            <li ng-repeat="level in dimension.default_hierarchy().levels" ng-click="selectDrill(dimension.name + ':' + level.name, true)"><a href="">{{ level.label }}</a></li>
-                        </ul>
-
-                      </li>
-
-                    </ul>
-                </li>
-
-                <!--
-                // Events
-                $(view.container).find('.cv-view-show-dimensionfilter').click( function() {
-                    cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, $(this).attr('data-dimension'));
-                    return false;
-                });
-                 -->
-
-                <div class="divider"></div>
-                <li><a href=""><i class="fa fa-fw fa-close"></i> Clear filters</a></li>
-
-              </ul>
-            </div>
+            <div ng-include="'views/cube/cube-menu-filter.html'" class="dropdown m-b" style="display: inline-block; margin-left: 2px;"></div>
 
 
             <div class="dropdown m-b" style="display: inline-block; margin-left: 5px;">
@@ -93,14 +41,22 @@
 
                 <div ng-repeat="drilldown in view.params.drilldown" class="label label-secondary cv-infopiece cv-view-viewinfo-drill" style="color: black; background-color: #ccffcc;">
                     <span><i class="fa fa-fw fa-arrow-down"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>
-                    <button type="button" ng-click="selectDrill(drilldown, '')" class="btn btn-danger btn-xs" style="margin-left: 5px;"><i class="fa fa-fw fa-close"></i></button>
+                    <button type="button" ng-click="showDimensionFilter(drilldown)" class="btn btn-secondary btn-xs" style="margin-left: 3px;"><i class="fa fa-fw fa-search"></i></button>
+                    <button type="button" ng-click="selectDrill(drilldown, '')" class="btn btn-danger btn-xs" style="margin-left: 1px;"><i class="fa fa-fw fa-trash"></i></button>
                 </div>
 
             </div>
             <div class="cv-view-viewinfo-cut">
-                <div ng-repeat="cut in view.params.cuts" ng-init="dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' != ' : ' = ';" class="label label-secondary cv-infopiece cv-view-viewinfo-cut" style="color: black; background-color: #ffcccc;">
+                <!--
+                    var dimensionString = $(this).parents('.cv-view-infopiece-cut').first().attr('data-dimension');
+                    var parts = view.cube.cvdim_parts(dimensionString);
+                    var depth = $(this).parents('.cv-view-infopiece-cut').first().attr('data-value').split(';')[0].split(",").length;
+                    cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, dimensionString + ":" + parts.hierarchy.levels[depth - 1] );
+                 -->
+                <div ng-repeat="cut in view.params.cuts" ng-init="dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';" class="label label-secondary cv-infopiece cv-view-viewinfo-cut" style="color: black; background-color: #ffcccc;">
                     <span style="max-width: 480px;"><i class="fa fa-fw fa-filter"></i> <b>Filter:</b> {{ dimparts.label }} {{ equality }} <span title="{{ cut.value }}">{{ cut.value }}</span></span>
-                    <button type="button" ng-click="selectCut(cut.dimension, '',cut.invert )" class="btn btn-danger btn-xs" style="margin-left: 5px;"><i class="fa fa-fw fa-close"></i></button>
+                    <button type="button" ng-click="showDimensionFilter(cut.dimension)" class="btn btn-secondary btn-xs" style="margin-left: 3px;"><i class="fa fa-fw fa-search"></i></button>
+                    <button type="button" ng-click="selectCut(cut.dimension, '', cut.invert)" class="btn btn-danger btn-xs" style="margin-left: 1px;"><i class="fa fa-fw fa-trash"></i></button>
                 </div>
             </div>
             <div class="cv-view-viewinfo-extra"></div>
@@ -108,9 +64,15 @@
     </div>
     <div class="clearfix"></div>
 
+    <div class="cv-view-viewdialogs">
+        <div ng-if="view.dimensionFilter" ng-include="'views/cube/filter/dimension.html'"></div>
+    </div>
+
     <div class="cv-view-viewdata">
 
         <div ng-if="view.params.mode == 'explore'" ng-include="'views/cube/explore/explore.html'"></div>
+        <div ng-if="view.params.mode == 'facts'" ng-include="'views/cube/facts/facts.html'"></div>
+        <div ng-if="view.params.mode == 'series'" ng-include="'views/cube/series/series.html'"></div>
         <div ng-if="view.params.mode == 'chart'" ng-include="'views/cube/explore/chart.html'"></div>
 
     </div>

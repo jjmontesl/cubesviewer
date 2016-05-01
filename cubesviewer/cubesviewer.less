@@ -46,12 +46,22 @@
         outline: none;
     }
     .ui-grid-menu-button {
-        height: 25px;
+        height: 24px;
+        width: 13px;
+        top: 0px;
+        right: 0px;
+        text-align: center;
+    }
+    .ui-grid-menu-button i::before {
+        margin: 0px;
     }
     .ui-grid-menu-mid {
         max-height: 200px !important;
         width: 190px;
-        overflow-x: hidden;
+        overflow-x: hidden !important;
+    }
+    .ui-grid-menu .ui-grid-menu-inner ul li button {
+        padding: 6px;
     }
 
 }
@@ -73,7 +83,11 @@
     min-height: 80px;
 }
 
-.cv-gui-panel .dropdown-menu {
+.cv-gui-panel .dropdown-menu li {
+    cursor: pointer;
+}
+
+.cv-view-panel .dropdown-menu li {
     cursor: pointer;
 }
 
