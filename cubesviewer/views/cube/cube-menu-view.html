@@ -4,11 +4,11 @@
 
   <ul class="dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view">
 
-    <li class="dropdown-submenu">
+    <li ng-show="view.params.mode == 'chart'" class="dropdown-submenu">
         <a tabindex="0" ><i class="fa fa-fw fa-area-chart"></i> Chart type</a>
         <ul class="dropdown-menu">
-          <li><a href=""><i class="fa fa-fw fa-pie-chart"></i> Pie</a></li>
-          <li><a href=""><i class="fa fa-fw fa-bar-chart"></i> Bars Vertical</a></li>
+          <li ng-click="selectChartType('pie')"><a href=""><i class="fa fa-fw fa-pie-chart"></i> Pie</a></li>
+          <li ng-click="selectChartType('bars-vertical')"><a href=""><i class="fa fa-fw fa-bar-chart"></i> Bars Vertical</a></li>
           <li><a href=""><i class="fa fa-fw fa-line-chart"></i> Lines</a></li>
           <li><a href=""><i class="fa fa-fw fa-area-chart"></i> Areas</a></li>
           <li><a href=""><i class="fa fa-fw fa-bullseye"></i> Radar</a></li>
@@ -24,7 +24,9 @@
         </ul>
     </li>
 
-    <div class="divider"></div>
+    <li ng-show="view.params.mode == 'chart'" ng-click="view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend"><a><i class="fa fa-fw fa-toggle-off"></i> Toggle legend</a></li>
+
+    <div ng-show="view.params.mode == 'chart'" class="divider"></div>
 
     <li class="dropdown-submenu">
         <a tabindex="0"><i class="fa fa-fw fa-long-arrow-right"></i> Horizontal dimension</a>

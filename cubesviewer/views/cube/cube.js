@@ -251,6 +251,13 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		$scope.view._cubeDataUpdated = true;
 	}
 
+	/*
+	 * Selects chart type
+	 */
+	$scope.selectChartType = function(charttype) {
+		$scope.view.params.charttype = charttype;
+	};
+
 
 }]).directive("cvViewCube", function() {
 	return {

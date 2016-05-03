@@ -36,7 +36,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
 			// FIXME: This is not a proper way of waiting for the menu to be constructed.
 			$timeout(function() {
 				$(iElement).submenupicker();
-			}, 250);
+			}, 500);
 		}
 	};
 }]);

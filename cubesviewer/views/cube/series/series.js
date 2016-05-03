@@ -90,8 +90,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 	$scope._loadDataCallback = function(data, status) {
 		$scope.processData(data);
 		$rootScope.$apply();
-		$scope.gridApi.core.refresh();
-		$rootScope.$apply();
+		if ($scope.gridApi) {
+			$scope.gridApi.core.refresh();
+			$rootScope.$apply();
+		}
 	};
 
 	$scope.processData = function(data) {
@@ -99,7 +101,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 		var view = $scope.view;
 
 		$scope.gridData = [];
-		$scope.gridFormatters = {};
 
 		// Configure grid
 	    angular.extend($scope.$parent.gridOptions, {
@@ -123,91 +124,36 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
     		selectionRowHeaderWidth: 20,
     		//rowHeight: 50,
     		columnDefs: []
-	    });
+	    });		$rootScope.$apply();
+
 
 		// Process data
 		//$scope._sortData (data.cells, view.params.xaxis != null ? true : false);
 	    $scope._addRows(data);
 
-
-
 	    /*
-		$scope.gridOptions.columnDefs.push({
-			name: "id",
-			field: "id",
-			index: "id",
-			enableHiding: false,
-			align: "left",
-			width: 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "id", 65),
-			sorttype : "number"
-		});
+	    // TODO: Is this needed?
 
-		for (var dimensionIndex in dimensions) {
-			// Get dimension
-			var dimension = dimensions[dimensionIndex];
-
-			for (var i = 0; i < dimension.levels.length; i++) {
-				var level = dimension.levels[i];
-				var col = {
-					name: level.label,
-					field: level.key().ref,
-					index : level.key().ref,
-					//cellClass : "text-right",
-					//sorttype : "number",
-					width : 95, //cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
-					cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ row.entity[col.colDef.field] }}</div>',
-					//formatter: $scope.columnFormatFunction(ag),
-					//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
-					//formatoptions: {},
-					//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
-				};
-				$scope.gridOptions.columnDefs.push(col);
+		colNames.forEach(function (e) {
+			var colLabel = null;
+			$(view.cube.aggregates).each(function (idx, ag) {
+				if (ag.name == e) {
+					colLabel = ag.label||ag.name;
+					return false;
+				}
+			});
+			if (!colLabel) {
+				$(view.cube.measures).each(function (idx, me) {
+					if (me.name == e) {
+						colLabel = me.label||ag.name;
+						return false;
+					}
+				});
 			}
-		}
-
-		for (var measureIndex in measures) {
-			var measure = measures[measureIndex];
-
-			var col = {
-				name: measure.label,
-				field: measure.ref,
-				index : measure.ref,
-				cellClass : "text-right",
-				sorttype : "number",
-				width : 75, //cubesviewer.views.cube.explore.defineColumnWidth(view, measure.ref, 75),
-				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
-				formatter: $scope.columnFormatFunction(measure),
-				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
-				//formatoptions: {},
-				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
-			};
-			$scope.gridOptions.columnDefs.push(col);
-		}
-
-        for (var detailIndex in details) {
-            var detail = details[detailIndex];
-
-            var col = {
-				name: detail.name,
-				field: detail.ref,
-				index : detail.ref,
-				//cellClass : "text-right",
-				//sorttype : "number",
-				width : 95, //cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
-				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
-				//formatter: $scope.columnFormatFunction(ag),
-				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
-				//formatoptions: {},
-				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
-			};
-			$scope.gridOptions.columnDefs.push(col);
-        }
-
+			//colLabel = view.cube.getDimension(e).label
+			colLabels.push(colLabel||e);
+		});
 		*/
-
 
 	};
 
@@ -350,40 +296,3 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 
 }]);
 
-
-
-
-function cubesviewerViewCubeSeries() {
-
-	/*
-	 * Draws series table.
-	 */
-	this.drawTable = function(view, data) {
-
-
-		colNames.forEach(function (e) {
-			var colLabel = null;
-			$(view.cube.aggregates).each(function (idx, ag) {
-				if (ag.name == e) {
-					colLabel = ag.label||ag.name;
-					return false;
-				}
-			});
-			if (!colLabel) {
-				$(view.cube.measures).each(function (idx, me) {
-					if (me.name == e) {
-						colLabel = me.label||ag.name;
-						return false;
-					}
-				});
-			}
-			//colLabel = view.cube.getDimension(e).label
-			colLabels.push(colLabel||e);
-		});
-
-
-
-	};
-
-
-};

@@ -61,6 +61,8 @@
 
                 <div ng-if="view.params.mode == 'series' || view.params.mode == 'chart'" class="label label-secondary cv-infopiece cv-view-viewinfo-extra" style="color: black; background-color: #ccddff;">
                     <span style="max-width: 350px;"><i class="fa fa-fw fa-long-arrow-right"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None" }}</span>
+                    <!-- <button type="button" ng-click="showDimensionFilter(view.params.xaxis)" class="btn btn-secondary btn-xs" style="margin-left: 3px;"><i class="fa fa-fw fa-search"></i></button>  -->
+                    <!-- <button type="button" ng-click="selectXAxis(null)" class="btn btn-danger btn-xs" style="margin-left: 1px;"><i class="fa fa-fw fa-trash"></i></button>  -->
                     <button type="button" class="btn btn-info btn-xs" style="visibility: hidden;"><i class="fa fa-fw fa-info"></i></button>
                 </div>
 
@@ -78,7 +80,7 @@
         <div ng-if="view.params.mode == 'explore'" ng-include="'views/cube/explore/explore.html'"></div>
         <div ng-if="view.params.mode == 'facts'" ng-include="'views/cube/facts/facts.html'"></div>
         <div ng-if="view.params.mode == 'series'" ng-include="'views/cube/series/series.html'"></div>
-        <div ng-if="view.params.mode == 'chart'" ng-include="'views/cube/explore/chart.html'"></div>
+        <div ng-if="view.params.mode == 'chart'" ng-include="'views/cube/chart/chart.html'"></div>
 
     </div>
     <div class="clearfix"></div>

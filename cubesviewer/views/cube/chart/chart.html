@@ -1,9 +1,30 @@
 <div ng-controller="CubesViewerViewsCubeChartController">
 
-    <div ng-if="">
-        <h3><i class="fa fa-fw fa-clock-o"></i> Series chart</h3>
+    <div ng-if="view.params.charttype == 'pie'">
+        <h3><i class="fa fa-fw fa-pie-chart"></i> Chart</h3>
+        <div ng-include="'views/cube/chart/chart-common.html'"></div>
     </div>
 
+    <div ng-if="view.params.charttype == 'bars-vertical'">
+        <h3><i class="fa fa-fw fa-bar-chart"></i> Chart</h3>
+        <div ng-controller="CubesViewerViewsCubeChartBarsVerticalController">
+            <div ng-include="'views/cube/chart/chart-common.html'"></div>
+        </div>
+    </div>
 
+    <div ng-if="view.params.charttype == 'lines'">
+        <h3><i class="fa fa-fw fa-line-chart"></i> Chart</h3>
+        <div ng-include="'views/cube/chart/chart-common.html'"></div>
+    </div>
+
+    <div ng-if="view.params.charttype == 'lines-stacked'">
+        <h3><i class="fa fa-fw fa-area-chart"></i> Chart</h3>
+        <div ng-include="'views/cube/chart/chart-common.html'"></div>
+    </div>
+
+    <div ng-if="view.params.charttype == 'lines-stacked'">
+        <h3><i class="fa fa-fw fa-bullseye"></i> Chart</h3>
+        <div ng-include="'views/cube/chart/chart-common.html'"></div>
+    </div>
 
 </div>

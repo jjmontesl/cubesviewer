@@ -134,14 +134,59 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
   );
 
 
+  $templateCache.put('views/cube/chart/chart-common.html',
+    "<div ng-if=\"gridOptions.data.length > 0\" style=\"width: 99%;\">\n" +
+    "    <div>\n" +
+    "        <div>\n" +
+    "            <svg style=\"height: 400px;\" />\n" +
+    "        </div>\n" +
+    "        <div style=\"font-size: 8px; float: right;\">\n" +
+    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(400);\">Small</a>\n" +
+    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(550);\">Medium</a>\n" +
+    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(700);\">Tall</a>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "\n" +
+    "<div ng-if=\"view.params.yaxis == null\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "    Cannot present series table: no <b>measure</b> has been selected.\n" +
+    "</div>\n" +
+    "\n" +
+    "<div ng-if=\"view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "    Cannot present series table: no rows are returned by the current filtering, horizontal dimension, and drilldown combination.\n" +
+    "</div>\n"
+  );
+
+
   $templateCache.put('views/cube/chart/chart.html',
     "<div ng-controller=\"CubesViewerViewsCubeChartController\">\n" +
     "\n" +
-    "    <div ng-if=\"\">\n" +
-    "        <h3><i class=\"fa fa-fw fa-clock-o\"></i> Series chart</h3>\n" +
+    "    <div ng-if=\"view.params.charttype == 'pie'\">\n" +
+    "        <h3><i class=\"fa fa-fw fa-pie-chart\"></i> Chart</h3>\n" +
+    "        <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "    </div>\n" +
     "\n" +
+    "    <div ng-if=\"view.params.charttype == 'bars-vertical'\">\n" +
+    "        <h3><i class=\"fa fa-fw fa-bar-chart\"></i> Chart</h3>\n" +
+    "        <div ng-controller=\"CubesViewerViewsCubeChartBarsVerticalController\">\n" +
+    "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
     "\n" +
+    "    <div ng-if=\"view.params.charttype == 'lines'\">\n" +
+    "        <h3><i class=\"fa fa-fw fa-line-chart\"></i> Chart</h3>\n" +
+    "        <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ng-if=\"view.params.charttype == 'lines-stacked'\">\n" +
+    "        <h3><i class=\"fa fa-fw fa-area-chart\"></i> Chart</h3>\n" +
+    "        <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ng-if=\"view.params.charttype == 'lines-stacked'\">\n" +
+    "        <h3><i class=\"fa fa-fw fa-bullseye\"></i> Chart</h3>\n" +
+    "        <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "    </div>\n" +
     "\n" +
     "</div>\n"
   );
@@ -267,11 +312,11 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
     "\n" +
-    "    <li class=\"dropdown-submenu\">\n" +
+    "    <li ng-show=\"view.params.mode == 'chart'\" class=\"dropdown-submenu\">\n" +
     "        <a tabindex=\"0\" ><i class=\"fa fa-fw fa-area-chart\"></i> Chart type</a>\n" +
     "        <ul class=\"dropdown-menu\">\n" +
-    "          <li><a href=\"\"><i class=\"fa fa-fw fa-pie-chart\"></i> Pie</a></li>\n" +
-    "          <li><a href=\"\"><i class=\"fa fa-fw fa-bar-chart\"></i> Bars Vertical</a></li>\n" +
+    "          <li ng-click=\"selectChartType('pie')\"><a href=\"\"><i class=\"fa fa-fw fa-pie-chart\"></i> Pie</a></li>\n" +
+    "          <li ng-click=\"selectChartType('bars-vertical')\"><a href=\"\"><i class=\"fa fa-fw fa-bar-chart\"></i> Bars Vertical</a></li>\n" +
     "          <li><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Lines</a></li>\n" +
     "          <li><a href=\"\"><i class=\"fa fa-fw fa-area-chart\"></i> Areas</a></li>\n" +
     "          <li><a href=\"\"><i class=\"fa fa-fw fa-bullseye\"></i> Radar</a></li>\n" +
@@ -287,7 +332,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +
-    "    <div class=\"divider\"></div>\n" +
+    "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend\"><a><i class=\"fa fa-fw fa-toggle-off\"></i> Toggle legend</a></li>\n" +
+    "\n" +
+    "    <div ng-show=\"view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
     "\n" +
     "    <li class=\"dropdown-submenu\">\n" +
     "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-long-arrow-right\"></i> Horizontal dimension</a>\n" +
@@ -417,6 +464,8 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "                <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccddff;\">\n" +
     "                    <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-long-arrow-right\"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : \"None\" }}</span>\n" +
+    "                    <!-- <button type=\"button\" ng-click=\"showDimensionFilter(view.params.xaxis)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>  -->\n" +
+    "                    <!-- <button type=\"button\" ng-click=\"selectXAxis(null)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>  -->\n" +
     "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                </div>\n" +
     "\n" +
@@ -434,7 +483,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        <div ng-if=\"view.params.mode == 'explore'\" ng-include=\"'views/cube/explore/explore.html'\"></div>\n" +
     "        <div ng-if=\"view.params.mode == 'facts'\" ng-include=\"'views/cube/facts/facts.html'\"></div>\n" +
     "        <div ng-if=\"view.params.mode == 'series'\" ng-include=\"'views/cube/series/series.html'\"></div>\n" +
-    "        <div ng-if=\"view.params.mode == 'chart'\" ng-include=\"'views/cube/explore/chart.html'\"></div>\n" +
+    "        <div ng-if=\"view.params.mode == 'chart'\" ng-include=\"'views/cube/chart/chart.html'\"></div>\n" +
     "\n" +
     "    </div>\n" +
     "    <div class=\"clearfix\"></div>\n" +
@@ -571,11 +620,11 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    </div>\n" +
     "    <div ng-if=\"gridOptions.data.length > 0\" style=\"height: 30px;\">&nbsp;</div>\n" +
     "\n" +
-    "    <div ng-if=\"view.params.yaxis == null\" class=\"alert alert-info\">\n" +
+    "    <div ng-if=\"view.params.yaxis == null\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "        Cannot present series table: no <b>measure</b> has been selected.\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ng-if=\"view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\">\n" +
+    "    <div ng-if=\"view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "        Cannot present series table: no rows are returned by the current filtering, horizontal dimension, and drilldown combination.\n" +
     "    </div>\n" +
     "\n" +
