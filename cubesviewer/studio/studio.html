@@ -9,7 +9,7 @@
 
           <ul class="dropdown-menu cv-gui-cubeslist-menu">
 
-            <li ng-repeat="cube in cubesService.cubesserver._cube_list" ng-click="studioViewsService.addViewCube(cube.name)"><a>{{ cube.label }}</a></li>
+            <li ng-repeat="cube in cubesService.cubesserver._cube_list | orderBy:'label'" ng-click="studioViewsService.addViewCube(cube.name)"><a>{{ cube.label }}</a></li>
 
           </ul>
         </div>
@@ -21,49 +21,15 @@
           </button>
 
           <ul class="dropdown-menu">
-          <li class="dropdown-submenu">
-          <a tabindex="0">Action</a>
 
-          <ul class="dropdown-menu">
-            <li><a tabindex="0">Sub action</a></li>
-            <li class="dropdown-submenu">
-              <a tabindex="0">Another sub action</a>
+                <li><a tabindex="0"><i class="fa fa-fw fa-code"></i> Add view from JSON...</a></li>
 
-              <ul class="dropdown-menu">
-                <li><a tabindex="0">Sub action</a></li>
-                <li><a tabindex="0">Another sub action</a></li>
-                <li><a tabindex="0">Something else here</a></li>
-              </ul>
-            </li>
-            <li><a tabindex="0">Something else here</a></li>
-            <li class="disabled"><a tabindex="-1">Disabled action</a></li>
-            <li class="dropdown-submenu">
-              <a tabindex="0">Another action</a>
+                <div class="divider" ng-if="cvOptions.showAbout"></div>
 
-              <ul class="dropdown-menu">
-                <li><a tabindex="0">Sub action</a></li>
-                <li><a tabindex="0">Another sub action</a></li>
-                <li><a tabindex="0">Something else here</a></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-        <li class="dropdown-header">Dropdown header</li>
-        <li class="dropdown-submenu">
-          <a tabindex="0">Another action</a>
+                <li class=""><a><i class="fa fa-fw fa-question"></i> User Guide</a></li>
+                <li class="" ng-if="cvOptions.showAbout"><a data-toggle="modal" data-target="#cvAboutModal"><i class="fa fa-fw fa-info"></i> About CubesViewer...</a></li>
 
-          <ul class="dropdown-menu">
-            <li><a tabindex="0">Sub action</a></li>
-            <li><a tabindex="0">Another sub action</a></li>
-            <li><a tabindex="0">Something else here</a></li>
-          </ul>
-        </li>
-        <li><a tabindex="0">Something else here</a></li>
-
-        <div class="divider" ng-if="cvOptions.showAbout"></div>
-        <li class="" ng-if="cvOptions.showAbout"><a data-toggle="modal" data-target="#cvAboutModal">About CubesViewer</a></li>
-
-        </ul>
+            </ul>
         </div>
 
         <div ng-include="'studio/about.html'"></div>

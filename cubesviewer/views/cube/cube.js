@@ -234,6 +234,23 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		$scope.view.dimensionFilter = dimension;
 	};
 
+	/*
+	 * Selects measure axis
+	 */
+	$scope.selectMeasure = function(measure) {
+		$scope.view.params.yaxis = measure;
+		$scope.view._cubeDataUpdated = true;
+	}
+
+	/*
+	 * Selects horizontal axis
+	 */
+	$scope.selectXAxis = function(dimension) {
+		console.debug(dimension);
+		$scope.view.params.xaxis = (dimension == "" ? null : dimension);
+		$scope.view._cubeDataUpdated = true;
+	}
+
 
 }]).directive("cvViewCube", function() {
 	return {

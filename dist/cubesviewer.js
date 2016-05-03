@@ -936,6 +936,15 @@ cubes.Cube.prototype.cvdim_parts = function(dimensionString) {
 
 };
 
+/**
+ * Returns the aggregates for the given measure, by name.
+ * If passed null, returns aggregates with no measure.
+ */
+cubes.Cube.prototype.measureAggregates = function(measureName) {
+	var aggregates = $.grep(this.aggregates, function(ia) { return measureName ? ia.measure == measureName : !ia.measure; } );
+	return aggregates;
+};
+
 
 /*
  * Processes a cell and returns an object with consistent information:
@@ -1309,7 +1318,7 @@ var cubesviewer = {
 	VIEW_STATE_ERROR: 3,
 
 	_configure: function(options) {
-		$('#cubesviewerVersion').html(cubesviewer.version);
+		$('.cv-version').html(cubesviewer.version);
 		angular.module('cv').constant('cvOptions', options);
 	},
 
@@ -1728,6 +1737,23 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		$scope.view.dimensionFilter = dimension;
 	};
 
+	/*
+	 * Selects measure axis
+	 */
+	$scope.selectMeasure = function(measure) {
+		$scope.view.params.yaxis = measure;
+		$scope.view._cubeDataUpdated = true;
+	}
+
+	/*
+	 * Selects horizontal axis
+	 */
+	$scope.selectXAxis = function(dimension) {
+		console.debug(dimension);
+		$scope.view.params.xaxis = (dimension == "" ? null : dimension);
+		$scope.view._cubeDataUpdated = true;
+	}
+
 
 }]).directive("cvViewCube", function() {
 	return {
@@ -2110,7 +2136,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 	};
 
 	// Sort data according to current view
-	$scope._sortData = function(view, data, includeXAxis) {
+	$scope._sortData = function(data, includeXAxis) {
 		//data.sort(cubesviewer._drilldownSortFunction(view.id, includeXAxis));
 	};
 
@@ -2548,8 +2574,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 	$scope.$parent.gridApi = null;
 	$scope.$parent.gridOptions = {
 		onRegisterApi: $scope.onGridRegisterApi,
-		selectionRowHeaderWidth: 24,
-		//enableRowHeaderSelection: false,
+		enableRowSelection: false,
+		enableRowHeaderSelection: false,
 	};
 
 
@@ -2609,11 +2635,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
     		//enableHorizontalScrollbar: 0,
     		//enableVerticalScrollbar: 0,
     		enableRowSelection: false,
-    		//enableRowHeaderSelection: false,
+    		enableRowHeaderSelection: false,
     		//enableSelectAll: false,
     		enablePinning: false,
     		multiSelect: false,
-    		selectionRowHeaderWidth: 20,
+    		//selectionRowHeaderWidth: 20,
     		//rowHeight: 50,
     		columnDefs: []
 	    });
@@ -2623,9 +2649,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 			field: "id",
 			index: "id",
 			enableHiding: false,
-			align: "left",
-			width: 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "id", 65),
-			sorttype : "number"
+			width: 80, //cubesviewer.views.cube.explore.defineColumnWidth(view, "id", 65),
 		});
 
 		for (var dimensionIndex in dimensions) {
@@ -2831,301 +2855,204 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
  */
 
 
-/*
+/**
  * SeriesTable object. This is part of the "cube" view. Allows the user to select
  * a dimension to use as horizontal axis of a table. This is later used to generate
  * charts.
  */
-function cubesviewerViewCubeSeries() {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
 
-	this.cubesviewer = cubesviewer;
+	$scope.$parent.gridData = [];
 
-	this.onViewCreate = function(event, view) {
-		$.extend(view.params, {
-			"xaxis" : null,
-			"yaxis" : null
-		});
-	}
+	// TODO: Move to explore view or grid component as cube view shall be split into directives
+    $scope.$parent.onGridRegisterApi = function(gridApi) {
+    	console.debug("Grid Register Api: Series");
+        $scope.gridApi = gridApi;
+        gridApi.selection.on.rowSelectionChanged($scope,function(row){
+          console.debug(row.entity);
+        });
+        gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
+          console.debug(rows);
+        });
 
-	/*
-	 * Draw cube view structure.
-	 */
-	this.onViewDraw = function(event, view) {
-
-		if (view.cube == null) return;
-
-		// Series Mode button
-		$(view.container).find('.cv-view-toolbar').find(".explorebutton").after(
-			'<button class="cv-view-button-series" title="Series Table" style="margin-right: 5px;"><span class="ui-icon ui-icon-clock"></span></button>'
-		);
-
-		// Buttonize and event
-		$(view.container).find('.cv-view-button-series').button();
-		$(view.container).find('.cv-view-button-series').click(function() {
-			view.cubesviewer.views.cube.series.modeSeries(view);
-			return false;
-		});
-		$(view.container).find('.cv-view-button-series').mouseenter(function() {
-			$('.cv-view-menu').hide();
-		});
-
-		if (view.params.mode != "series") return;
-
-		// Draw areas
-		view.cubesviewer.views.cube.series.drawInfo(view);
-
-		// Highlight
-		$(view.container).find('.cv-view-button-series').button("option", "disabled", "true").addClass('ui-state-active');
-
-		// Explore menu
-		view.cubesviewer.views.cube.series.drawSeriesMenu(view);
-
-		// Only if data is empty
-		if ($(view.container).find('.cv-view-viewdata').children().size() == 0) {
-			$(view.container).find('.cv-view-viewdata').empty().append('<h3>Series Table</h3>');
-		}
-
-		// Load data
-		view.cubesviewer.views.cube.series.loadData(view);
-
+    };
+	$scope.$parent.gridApi = null;
+	$scope.$parent.gridOptions = {
+		onRegisterApi: $scope.onGridRegisterApi,
+		enableRowSelection: false,
+		enableRowHeaderSelection: false,
 	};
 
-	/*
-	 * Updates view options menus.
-	 */
-	this.drawSeriesMenu = function (view) {
 
-		var menu = $(".cv-view-menu-view", $(view.container));
-		var cube = view.cube;
-
-		// Add drill menu
-
-		var drillElements = cubesviewer.views.cube.explore.getDrillElementsList(view, "cv-view-series-setxaxis", true);
-
-		// Add measures menu
-		var measuresElements = "";
-		var measuresNames = [];
-		$(view.cube.measures).each(function(idx, e) {
-
-			measuresNames.push(e.name);
-
-			var aggregates = $.grep(view.cube.aggregates, function(ia) { return ia.measure == e.name; } );
-			if (aggregates.length > 0) {
-				measuresElements = measuresElements + '<li><a href="#" onclick="return false;">' + e.label + '</a><ul style="width: 220px; z-index: 9999;">';
-				$(aggregates).each(function(idx, ea) {
-					measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + ea.ref + '">' + ea.label + '</a></li>';
-				});
-                measuresElements = measuresElements + '</ul></li>';
-			}
-
-		});
-
-		var aggregates = $.grep(view.cube.aggregates, function(ia) { return (! ia.measure) || ($.inArray(ia.measure, measuresNames) == -1 ); } );
-		if (aggregates.length > 0) {
-			measuresElements = measuresElements + '<div class="ui-series-measures-sep"></div>';
-			$(aggregates).each(function(idx, ea) {
-				measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + ea.ref + '">' + ea.label + '</a></li>';
-			});
-		}
-
-
-		/*
-		$(view.cube.aggregates).each(function(idx, e) {
-            measuresElements = measuresElements + '<li><a href="#" class="cv-view-series-setyaxis" data-measure="' + e.name + '">' + e.label||e.name + '</a></li>';
-		});
-		*/
-
-		menu.append(
-		  '<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-arrowthick-1-s"></span>Horizontal Dimension</a><ul style="width: 180px;">' +
-		  		drillElements +
-		  		'<div></div>' +
-		  		'<li><a href="#" class="cv-view-series-setxaxis" data-dimension="">None</a></li>' +
-		  '</ul><li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-zoomin"></span>Measure</a><ul style="min-width: 180px;">' +
-	  	  		measuresElements +
-	  	  '</ul></li>'
+	$scope.initialize = function() {
+		$scope.view.params = $.extend(
+			{},
+			{ "xaxis" : null, "yaxis" : null },
+			$scope.view.params
 		);
-
-		$(menu).menu( "refresh" );
-		$(menu).addClass("ui-menu-icons");
-
-		// Events
-		$(view.container).find('.cv-view-series-setyaxis').click(function() {
-			view.cubesviewer.views.cube.series.selectYAxis(view, $(this).attr('data-measure'));
-			return false;
-		});
-		$(view.container).find('.cv-view-series-setxaxis').click(function() {
-			view.cubesviewer.views.cube.series.selectXAxis(view, $(this).attr('data-dimension'));
-			return false;
-		});
-
 	};
 
-	/*
-	 * Selects measure axis
-	 */
-	this.selectYAxis = function(view, measure) {
-		view.params.yaxis = measure;
-		view.cubesviewer.views.redrawView(view);
-	}
+	$scope.$watch("view._cubeDataUpdated", function(newVal) {
+		if (newVal) {
+			$scope.view._cubeDataUpdated = false;
+			$scope.loadData();
+		}
+	});
 
-	/*
-	 * Selects horizontal axis
-	 */
-	this.selectXAxis = function(view, dimension) {
-		view.params.xaxis = (dimension == "" ? null : dimension);
-		view.cubesviewer.views.redrawView(view);
-	}
+	$scope.loadData = function() {
 
-	/*
-	 * Load and draw current data
-	 */
-	this.loadData = function(view) {
+		var view = $scope.view;
 
 		// Check if we can produce a table
-		if (view.params.yaxis == null) {
-			$(view.container).find('.cv-view-viewdata').empty().append(
-					'<h3>Series Table</h3><div><i>Cannot present series table: no <b>measure</b> has been selected.</i></div>'
-			);
-			return;
-		}
+		if (view.params.yaxis == null) return;
 
-		// Build params and include xaxis if present
-		view.cubesviewer.views.blockViewLoading(view);
-
-		var browser_args = this.cubesviewer.views.cube.buildBrowserArgs(view, view.params.xaxis != null ? true : false, false);
-		var browser = new cubes.Browser(view.cubesviewer.cubesserver, view.cube);
-		var jqxhr = browser.aggregate(browser_args, view.cubesviewer.views.cube.series._loadDataCallback(view));
+		var browser_args = cubesService.buildBrowserArgs($scope.view, $scope.view.params.xaxis != null ? true : false, false);
+		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
+		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
 		jqxhr.always(function() {
-			view.cubesviewer.views.unblockView(view);
+			//view.cubesviewer.views.unblockView(view);
 		});
 
 	};
 
-	this._loadDataCallback = function(view) {
-
-		var view = view;
-
-		return function (data, status) {
-			$(view.container).find('.cv-view-viewdata').empty();
-			view.cubesviewer.views.cube.series.drawTable(view, data);
-		};
-
+	$scope._loadDataCallback = function(data, status) {
+		$scope.processData(data);
+		$rootScope.$apply();
+		$scope.gridApi.core.refresh();
+		$rootScope.$apply();
 	};
 
-	/*
-	 * Draws series table information (axis).
-	 * First calls drawInfo in explore table in order to draw slice info and container.
-	 */
-	this.drawInfo = function(view) {
+	$scope.processData = function(data) {
 
-		cubesviewer.views.cube.explore.drawInfoPiece(
-			$(view.container).find('.cv-view-viewinfo-extra'), "#ccccff", 350, true,
-			'<span class="ui-icon ui-icon-zoomin"></span> <b>Measure:</b> ' + ( (view.params.yaxis != null) ? view.params.yaxis : "<i>None</i>")
-		);
+		var view = $scope.view;
 
-		if (view.params.xaxis != null) {
-			cubesviewer.views.cube.explore.drawInfoPiece(
-				$(view.container).find('.cv-view-viewinfo-extra'), "#ccddff", 350, true,
-				'<span class="ui-icon ui-icon-arrowthick-1-s"></span> <b>Horizontal dimension:</b> ' + ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "<i>None</i>")
-			);
-		}
+		$scope.gridData = [];
+		$scope.gridFormatters = {};
 
-	};
+		// Configure grid
+	    angular.extend($scope.$parent.gridOptions, {
+    		data: $scope.gridData,
+    		//minRowsToShow: 3,
+    		rowHeight: 24,
+    		onRegisterApi: $scope.onGridRegisterApi,
+    		enableColumnResizing: true,
+    		//showColumnFooter: true,
+    		enableGridMenu: true,
+    		//showGridFooter: true,
+    	    paginationPageSizes: cvOptions.pagingOptions,
+    	    paginationPageSize: cvOptions.pagingOptions[0],
+    		//enableHorizontalScrollbar: 0,
+    		//enableVerticalScrollbar: 0,
+    		enableRowSelection: false,
+    		enableRowHeaderSelection: false,
+    		//enableSelectAll: false,
+    		enablePinning: false,
+    		multiSelect: false,
+    		selectionRowHeaderWidth: 20,
+    		//rowHeight: 50,
+    		columnDefs: []
+	    });
 
-	/*
-	 * Draws series table.
-	 */
-	this.drawTable = function(view, data) {
+		// Process data
+		//$scope._sortData (data.cells, view.params.xaxis != null ? true : false);
+	    $scope._addRows(data);
 
-		$(view.container).find('.cv-view-viewdata').empty();
 
-		if (data.cells.length == 0) {
-			$(view.container).find('.cv-view-viewdata').append(
-				'<h3>Series Table</h3>' +
-				'<div>Cannot present series table as no rows are returned by the current filtering, horizontal dimension, and drilldown combination.</div>'
-			);
-			return;
-		}
 
-		$(view.container).find('.cv-view-viewdata').append(
-			'<h3>Series Table</h3>' +
-			'<table id="seriesTable-' + view.id + '"></table>' +
-			'<div id="seriesPager-' + view.id + '"></div>'
-		);
+	    /*
+		$scope.gridOptions.columnDefs.push({
+			name: "id",
+			field: "id",
+			index: "id",
+			enableHiding: false,
+			align: "left",
+			width: 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "id", 65),
+			sorttype : "number"
+		});
 
-		var colNames = [];
-		var colLabels = [];
-		var colModel = [];
-		var dataRows = [];
-		var dataTotals = [];
+		for (var dimensionIndex in dimensions) {
+			// Get dimension
+			var dimension = dimensions[dimensionIndex];
 
-		// Process cells
-		view.cubesviewer.views.cube.explore._sortData (view, data.cells, view.params.xaxis != null ? true : false);
-		view.cubesviewer.views.cube.series._addRows (view, dataRows, dataTotals, colNames, colModel, data);
-
-		colNames.forEach(function (e) {
-			var colLabel = null;
-			$(view.cube.aggregates).each(function (idx, ag) {
-				if (ag.name == e) {
-					colLabel = ag.label||ag.name;
-					return false;
-				}
-			});
-			if (!colLabel) {
-				$(view.cube.measures).each(function (idx, me) {
-					if (me.name == e) {
-						colLabel = me.label||ag.name;
-						return false;
-					}
-				});
+			for (var i = 0; i < dimension.levels.length; i++) {
+				var level = dimension.levels[i];
+				var col = {
+					name: level.label,
+					field: level.key().ref,
+					index : level.key().ref,
+					//cellClass : "text-right",
+					//sorttype : "number",
+					width : 95, //cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
+					cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ row.entity[col.colDef.field] }}</div>',
+					//formatter: $scope.columnFormatFunction(ag),
+					//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
+					//formatoptions: {},
+					//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+				};
+				$scope.gridOptions.columnDefs.push(col);
 			}
-			//colLabel = view.cube.getDimension(e).label
-			colLabels.push(colLabel||e);
-		});
+		}
 
-		$('#seriesTable-' + view.id).jqGrid({
-			data: dataRows,
-			//userData: dataTotals,
-			datatype: "local",
-			height: 'auto',
-			rowNum: cubesviewer.options.pagingOptions[0],
-			rowList: cubesviewer.options.pagingOptions,
-			colNames: colLabels,
-			colModel: colModel,
-			pager: "#seriesPager-" + view.id,
-			sortname: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[0],
-			viewrecords: true,
-			sortorder: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[1],
-			//footerrow: true,
-			userDataOnFooter: true,
-			forceFit: false,
-			shrinkToFit: false,
-			width: cubesviewer.options.tableResizeHackMinWidth,
-			//multiselect: true,
-			//multiboxonly: true,
+		for (var measureIndex in measures) {
+			var measure = measures[measureIndex];
 
-			//caption: "Current selection data" ,
-			beforeSelectRow : function () { return false; },
+			var col = {
+				name: measure.label,
+				field: measure.ref,
+				index : measure.ref,
+				cellClass : "text-right",
+				sorttype : "number",
+				width : 75, //cubesviewer.views.cube.explore.defineColumnWidth(view, measure.ref, 75),
+				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
+				formatter: $scope.columnFormatFunction(measure),
+				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
+				//formatoptions: {},
+				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+			};
+			$scope.gridOptions.columnDefs.push(col);
+		}
 
-			loadComplete : function() {
-				// Call hook
-				view.cubesviewer.views.cube.explore.onTableLoaded (view);
-			},
+        for (var detailIndex in details) {
+            var detail = details[detailIndex];
 
-			resizeStop: view.cubesviewer.views.cube.explore._onTableResize (view),
-			onSortCol: view.cubesviewer.views.cube.explore._onTableSort (view),
+            var col = {
+				name: detail.name,
+				field: detail.ref,
+				index : detail.ref,
+				//cellClass : "text-right",
+				//sorttype : "number",
+				width : 95, //cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
+				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
+				//formatter: $scope.columnFormatFunction(ag),
+				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
+				//formatoptions: {},
+				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+			};
+			$scope.gridOptions.columnDefs.push(col);
+        }
 
-		} );
+		*/
 
-		this.cubesviewer.views.cube._adjustGridSize();
 
 	};
 
+
 	/*
-	 * Adds rows. This case is particular because the first level of drilldown may be the
-	 * horizontal dimension.
+	 * Adds rows.
 	 */
-	this._addRows = function (view, rows, dataTotals, colNames, colModel, data) {
+	$scope._addRows = function(data) {
+
+		var view = $scope.view;
+		var rows = $scope.gridData;
+
+		var counter = 0;
+		var dimensions = view.cube.dimensions;
+		var measures = view.cube.measures;
+        var details = view.cube.details;
 
 		// Copy drilldown as we'll modify it
 		var drilldown = view.params.drilldown.slice(0);
@@ -3136,6 +3063,7 @@ function cubesviewerViewCubeSeries() {
 		}
 		var baseidx = ((view.params.xaxis == null) ? 0 : 1);
 
+		var addedCols = [];
 		$(data.cells).each(function (idx, e) {
 
 			var row = [];
@@ -3178,51 +3106,918 @@ function cubesviewerViewCubeSeries() {
 				for (var i = baseidx ; i < key.length; i++) {
 					newrow["key" + (i - baseidx)] = key[i];
 				}
-
 				rows.push ( newrow );
 			}
 
-			var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
-			var colFormatter = cubesviewer.views.cube.columnFormatFunction(view, ag);
 
-			if (colNames.indexOf(colKey) < 0) {
-				colNames.push (colKey);
+			// Add column definition if the column hasn't been added yet
+			if (addedCols.indexOf(colKey) < 0) {
+				addedCols.push(colKey);
+
+				var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+
 				var col = {
 					name: colKey,
-					index: colKey,
-					align: "right",
-					sorttype: "number",
-					width: cubesviewer.views.cube.explore.defineColumnWidth(view, colKey, 75),
-					formatter: function(cellValue, options, rowObject) {
-						return colFormatter(cellValue);
-					}
+					field: colKey,
+					index : colKey,
+					cellClass : "text-right",
+					sorttype : "number",
+					width : 75, //cubesviewer.views.cube.explore.defineColumnWidth(view, colKey, 75),
+					cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
+					formatter: $scope.columnFormatFunction(ag),
+					//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
 					//formatoptions: {},
+					//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 				};
-
-				colModel.push (col);
+				$scope.gridOptions.columnDefs.push(col);
 			}
-
-
 		});
 
 		//var label = [];
 		$(view.params.drilldown).each (function (idx, e) {
-			//label.push (view.cube.cvdim_dim(e).label);
-			colNames.splice(idx, 0, view.cube.cvdim_dim(e).label);
-			colModel.splice(idx, 0, { name: "key" + idx , index: "key" + idx , align: "left", width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + idx, 190) });
+			var col = {
+				name: view.cube.cvdim_dim(e).label,
+				field: "key" + idx,
+				index : "key" + idx,
+				//cellClass : "text-right",
+				//sorttype : "number",
+				width : 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + idx, 190)
+				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
+				//formatter: $scope.columnFormatFunction(ag),
+				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
+				//formatoptions: {},
+				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+			};
+			$scope.gridOptions.columnDefs.splice(idx, 0, col);
 		});
 
-		dataTotals["key0"] = "<b>Summary</b>";
-
-		if (view.params.drilldown.length == 0) {
+		if (view.params.drilldown.length == 0 && rows.length > 0) {
 			rows[0]["key0"] = view.params.yaxis;
-			colNames.splice(0, 0, "Measure");
-			colModel.splice(0, 0, { name: "key0", index: "key0", align: "left", width: cubesviewer.views.cube.explore.defineColumnWidth(view, "key0", 190) });
+
+			var col = {
+				name: "Measure",
+				field: "key0",
+				index : "key0",
+				//cellClass : "text-right",
+				//sorttype : "number",
+				width : 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "key0", 190)
+				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
+				//formatter: $scope.columnFormatFunction(ag),
+				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
+				//formatoptions: {},
+				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+			};
+			$scope.gridOptions.columnDefs.splice(0, 0, col);
 		}
 
 	};
 
+	$scope.initialize();
+
+}]);
+
+
+
+
+function cubesviewerViewCubeSeries() {
+
+	/*
+	 * Draws series table.
+	 */
+	this.drawTable = function(view, data) {
+
+
+		colNames.forEach(function (e) {
+			var colLabel = null;
+			$(view.cube.aggregates).each(function (idx, ag) {
+				if (ag.name == e) {
+					colLabel = ag.label||ag.name;
+					return false;
+				}
+			});
+			if (!colLabel) {
+				$(view.cube.measures).each(function (idx, me) {
+					if (me.name == e) {
+						colLabel = me.label||ag.name;
+						return false;
+					}
+				});
+			}
+			//colLabel = view.cube.getDimension(e).label
+			colLabels.push(colLabel||e);
+		});
+
+
+
+	};
+
+
 };
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * If your version of the Software supports interaction with it remotely through
+ * a computer network, the above copyright notice and this permission notice
+ * shall be accessible to all users.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+/*
+ * Series chart object. Contains view functions for the 'chart' mode.
+ * This is an optional component, part of the cube view.
+ */
+
+function cubesviewerViewCubeChart() {
+
+	this.cubesviewer = cubesviewer;
+
+	/*
+	 * Prepares the view.
+	 */
+	this.onViewCreate = function(event, view) {
+
+		$.extend(view.params, {
+			"charttype" : "bars-vertical",
+			"chartoptions": {
+				showLegend: true,
+			},
+		});
+
+	};
+
+	/*
+	 * View destroyed
+	 */
+	this.onViewDestroyed = function(event, view) {
+		view.cubesviewer.views.cube.chart.cleanupNvd3();
+	};
+
+	/*
+	 * Exports chart.
+	 */
+	this.exportChart = function(view) {
+
+		cubesviewer.alert ("Not implemented");
+
+	};
+
+	this.cleanupNvd3 = function() {
+		console.debug("WARNING! Cleanup function disabled: review.");
+		/*
+		var len = nv.graphs.length;
+		while (len--) {
+			if (! ($.contains(document.documentElement, nv.graphs[len].container))) {
+			    // Element is detached, destroy graph
+				nv.graphs.splice (len,1);
+			}
+		}
+		*/
+	};
+
+	/*
+	 * Draw cube view structure.
+	 */
+	this.onViewDraw = function(event, view) {
+
+		// Cleanup nvd3 graphs
+		view.cubesviewer.views.cube.chart.cleanupNvd3();
+
+		if (view.cube == null) return;
+
+		// Series Mode button
+		$(view.container).find('.cv-view-toolbar').find(".cv-view-button-series").after(
+			'<button class="cv-view-button-chart" title="Chart" style="margin-right: 15px;"><span class="ui-icon ui-icon-image"></span></button>'
+		);
+
+		// Buttonize and event
+		$(view.container).find('.cv-view-button-chart').button();
+		$(view.container).find('.cv-view-button-chart').click(function() {
+			view.cubesviewer.views.cube.chart.modeChart(view);
+			return false;
+		});
+		$(view.container).find('.cv-view-button-chart').mouseenter(function() {
+			$('.cv-view-menu').hide();
+		});
+
+		if (view.params.mode != "chart") return;
+
+		// Draw areas
+		view.cubesviewer.views.cube.chart.drawInfo(view);
+
+		// Highlight
+		$(view.container).find('.cv-view-button-chart').button("option", "disabled", "true").addClass('ui-state-active');
+
+		// Explore menu
+		view.cubesviewer.views.cube.chart.drawChartMenu(view);
+
+		// Only if data section is empty
+		if ($(view.container).find('.cv-view-viewdata').children().size() == 0) {
+			$(view.container).find('.cv-view-viewdata').append('<h3>Series Chart</h3>');
+		}
+
+		// Load data
+		view.cubesviewer.views.cube.chart.loadData(view);
+
+	};
+
+	/*
+	 * Updates view options menus.
+	 */
+	this.drawChartMenu = function (view) {
+
+		this.cubesviewer.views.cube.series.drawSeriesMenu(view);
+
+		var menu = $(".cv-view-menu-view", $(view.container));
+		var cube = view.cube;
+
+		menu.prepend(
+			'<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-calculator"></span>Chart Type</a><ul style="width: 180px;">' +
+	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="pie">Pie</a></li>' +
+	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="bars-vertical">Bars Vertical</a></li>' +
+	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines">Lines</a></li>' +
+	  		//'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines-cumulative">Cumulative lines</a></li>' +
+	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines-stacked">Areas</a></li>' +
+	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="radar">Radar</a></li>' +
+	  	  '</ul></li>' +
+  		  '<div></div>'
+	  	);
+
+		menu.append(
+			'<div></div>' +
+			'<li><a href="#" class="cv-view-chart-toggle-legend"><span class="ui-icon ui-icon-script"></span>Toggle Legend</a></li>'
+		);
+
+		/*
+		menu.append(
+	  	  '<div></div>' +
+  		  '<li><a href="#" class="cv-view-chart-export"><span class="ui-icon ui-icon-script"></span>Export image</a></li>'
+		);
+		*/
+
+		$(menu).menu( "refresh" );
+		$(menu).addClass("ui-menu-icons");
+
+		var serieschart = view.cubesviewer.views.cube.chart;
+		$(view.container).find('.cv-view-chart-toggle-legend').click(function() {
+			view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend;
+			view.cubesviewer.views.redrawView(view);
+			return false;
+		});
+		$(view.container).find('.cv-view-chart-export').click(function() {
+			view.cubesviewer.views.cube.chart.exportChart(view) ;
+			return false;
+		});
+		$(view.container).find('.cv-view-chart-settype').click(function() {
+			view.cubesviewer.views.cube.chart.selectChartType(view, $(this).attr('data-charttype'));
+			return false;
+		});
+	};
+
+	/*
+	 * Change to chart mode.
+	 */
+	this.modeChart = function(view) {
+		view.params.mode = "chart";
+		view.cubesviewer.views.redrawView(view);
+	};
+
+	/*
+	 * Selects chart type
+	 */
+	this.selectChartType = function(view, charttype) {
+		view.params.charttype = charttype;
+		view.cubesviewer.views.redrawView(view);
+	};
+
+	/*
+	 * Draws series table information (axis).
+	 * First calls drawInfo in explore table in order to draw slice info and container.
+	 */
+	this.drawInfo = function(view) {
+		view.cubesviewer.views.cube.series.drawInfo(view);
+	};
+
+	/*
+	 * Load and draw current data
+	 */
+	this.loadData = function(view) {
+
+		// Check if we can produce a table
+		if (view.params.yaxis == null) {
+			$('#' + view.id).find('.cv-view-viewdata').empty().append(
+					'<h3>Series Chart</h3><div><i>Cannot present chart: no <b>measure</b> has been selected.</i></div>'
+			);
+			return;
+		}
+
+		// Build params and include xaxis if present
+		view.cubesviewer.views.blockViewLoading(view);
+
+		var browser_args = this.cubesviewer.views.cube.buildBrowserArgs(view, view.params.xaxis != null ? true : false, false);
+		var browser = new cubes.Browser(view.cubesviewer.cubesserver, view.cube);
+		var jqxhr = browser.aggregate(browser_args, view.cubesviewer.views.cube.chart._loadDataCallback(view));
+		jqxhr.always(function() {
+			view.cubesviewer.views.unblockView(view);
+		});
+
+	};
+
+	this._loadDataCallback = function(view) {
+
+		var view = view;
+
+
+		return function (data, status) {
+			$(view.container).find('.cv-view-viewdata').empty();
+			view.cubesviewer.views.cube.chart.drawChart(view, data);
+		};
+
+	};
+
+	this.resizeChart = function(view, size) {
+		$(view.container).find('#seriesChart-' + view.id).find('svg').height(size);
+		$(view.container).find('#seriesChart-' + view.id).find('svg').resize();
+	};
+
+	/**
+	 * Draws Series Chart.
+	 */
+	this.drawChart = function(view, data) {
+
+		$(view.container).find('.cv-view-viewdata').empty();
+
+		if (data.cells.length == 0) {
+			$(view.container).find('.cv-view-viewdata').empty().append(
+				'<h3>Series Chart</h3>' +
+				'<div>Cannot present chart as no rows are returned by the current filtering, horizontal dimension, and drilldown combination.</div>'
+			);
+			return;
+		}
+
+		$(view.container).find('.cv-view-viewdata').css("width", "99%");
+		$(view.container).find('.cv-view-viewdata').append(
+			'<h3>Series Chart</h3>' +
+			'<div id="seriesChart-' + view.id + '"  ><div><svg style="height: 400px;" /></div>' +
+			'<div style="font-size: 8px; float: right;">' +
+			'<a href="" class="cv-chart-height" data-chart-height="400" >Small</a> ' +
+			'<a href="" class="cv-chart-height" data-chart-height="550" >Medium</a> ' +
+			'<a href="" class="cv-chart-height" data-chart-height="700" >Tall</a>' +
+			'</div></div>'
+		);
+		$(view.container).find('.cv-chart-height').click(function (e) {
+			e.preventDefault();
+			view.cubesviewer.views.cube.chart.resizeChart(view, $(this).attr('data-chart-height'));
+		});
+
+		/*
+		$(view.container).find('#seriesChart-' + view.id).resizable({
+			 maxHeight: 800,
+			 minHeight: 220,
+			 //helper: "ui-resizable-helper",
+			 resize: function(event, ui) {
+		        ui.size.width = ui.originalSize.width;
+		     },
+		     alsoResize: '#seriesChart-' + view.id + '>div>svg'
+		});
+		*/
+
+		var colNames = [];
+		var colModel = [];
+		var dataRows = [];
+		var dataTotals = [];
+
+		// Process cells
+		view.cubesviewer.views.cube.explore._sortData (view, data.cells, view.params.xaxis != null ? true : false);
+		view.cubesviewer.views.cube.series._addRows (view, dataRows, dataTotals, colNames, colModel, data);
+
+		// Join keys
+		if (view.params.drilldown.length > 0) {
+			colNames.splice (0, view.params.drilldown.length, "key");
+			$(dataRows).each(function(idx, e) {
+				var jointkey = [];
+				for (var i = 0; i < view.params.drilldown.length; i++) jointkey.push(e["key" + i]);
+				e["key"] = jointkey.join(" / ");
+			});
+		}
+
+		if ((view.params.charttype == "bars-vertical") || (view.params.charttype == "bars-vertical-stacked")) {
+			view.cubesviewer.views.cube.chart.drawChartBarsVertical(view, colNames, dataRows, dataTotals);
+		} else if (view.params.charttype == "lines") {
+			view.cubesviewer.views.cube.chart.drawChartLines(view, colNames, dataRows, dataTotals);
+		} else if (view.params.charttype == "pie") {
+			view.cubesviewer.views.cube.chart.drawChartPie(view, colNames, dataRows, dataTotals);
+		} else if (view.params.charttype == "lines-stacked") {
+			view.cubesviewer.views.cube.chart.drawChartLines(view, colNames, dataRows, dataTotals);
+		} else if (view.params.charttype == "lines-cumulative") {
+			view.cubesviewer.views.cube.chart.drawChartLinesCumulative(view, colNames, dataRows, dataTotals);
+		} else if (view.params.charttype == "radar") {
+			view.cubesviewer.views.cube.chart.drawChartRadar(view, colNames, dataRows, dataTotals);
+		}
+
+		// Generic effects
+
+	};
+
+	/**
+	 * Draws a vertical bars chart.
+	 */
+	this.drawChartBarsVertical = function (view, colNames, dataRows, dataTotals) {
+
+		var container = $('#seriesChart-' + view.id).find("svg").get(0);
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
+
+	    var d = [];
+
+	    var numRows = dataRows.length;
+	    var serieCount = 0;
+	    $(dataRows).each(function(idx, e) {
+	    	serie = [];
+	    	for (var i = 1; i < colNames.length; i++) {
+	    		var value = e[colNames[i]];
+	    		if (value != undefined) {
+	    			serie.push( { "x": colNames[i], "y":  value } );
+	    		} else {
+	    			serie.push( { "x": colNames[i], "y":  0} );
+	    		}
+	    	}
+	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
+	    	if (view.params["chart-disabledseries"]) {
+	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+	    		}
+	    	}
+	    	d.push(series);
+	    	serieCount++;
+	    });
+	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+
+	    /*
+	    xticks = [];
+	    for (var i = 1; i < colNames.length; i++) {
+    		xticks.push([ i * 10, colNames[i] ]);
+	    }
+	    */
+
+	    chartOptions = {
+	    	  //barColor: d3.scale.category20().range(),
+	    	  delay: 1200,
+	    	  groupSpacing: 0.1,
+	    	  //reduceXTicks: false,
+	    	  //staggerLabels: true
+	    };
+
+	    var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+		var colFormatter = cubesviewer.views.cube.columnFormatFunction(view, ag);
+
+	    nv.addGraph(function() {
+	        var chart;
+	        chart = nv.models.multiBarChart()
+	          //.margin({bottom: 100})
+	          .showLegend(!!view.params.chartoptions.showLegend)
+	          .margin({left: 120})
+	          ;
+
+	    	  if (	view.params["chart-barsvertical-stacked"] ) {
+	    		  chart.stacked ( view.params["chart-barsvertical-stacked"] );
+	    	  }
+
+	        chart.options(chartOptions);
+	        chart.multibar
+	          .hideable(true);
+
+	        chart.xAxis
+	            .axisLabel(xAxisLabel)
+	            .showMaxMin(true)
+	            //.tickFormat(d3.format(',0f'))
+	            ;
+
+	        //chart.yAxis.tickFormat(d3.format(',.2f'));
+	        chart.yAxis.tickFormat(function(d,i) {
+	        	return colFormatter(d);
+	        });
+
+	        d3.select(container)
+	            .datum(d)
+	            .call(chart);
+
+	        nv.utils.windowResize(chart.update);
+
+	    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-barsvertical-stacked"] = newState.stacked;
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","),
+	        			  "disabled": {}
+	        	  };
+	        	  for (var i = 0; i < newState.disabled.length; i++) {
+	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+	        	  }
+	          });
+
+	        //chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+
+	        return chart;
+	    });
+
+	}
+
+	/**
+	 */
+	this.drawChartLines = function (view, colNames, dataRows, dataTotals) {
+
+		var container = $('#seriesChart-' + view.id).find("svg").get(0);
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
+
+	    var d = [];
+
+	    // TODO: Check there's only one value column
+
+	    var numRows = dataRows.length;
+	    var serieCount = 0;
+	    $(dataRows).each(function(idx, e) {
+	    	serie = [];
+	    	for (var i = 1; i < colNames.length; i++) {
+	    		if (colNames[i] in e) {
+	    			var value = e[colNames[i]];
+	    			serie.push( { "x": i, "y": value } );
+	    		} else {
+	    			serie.push( { "x": i, "y": 0 } );
+	    		}
+	    	}
+	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
+	    	if (view.params["chart-disabledseries"]) {
+	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+	    		}
+	    	}
+	    	d.push(series);
+	    	serieCount++;
+	    });
+	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+
+	    /*
+	    xticks = [];
+	    for (var i = 1; i < colNames.length; i++) {
+    		xticks.push([ i, colNames[i] ]);
+	    }
+	    */
+
+	    var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+		var colFormatter = cubesviewer.views.cube.columnFormatFunction(view, ag);
+
+	    if (view.params.charttype != "lines-stacked") {
+
+		    nv.addGraph(function() {
+		    	var chart = nv.models.lineChart()
+		    		.useInteractiveGuideline(true)
+		    		.showLegend(!!view.params.chartoptions.showLegend)
+		    		.margin({left: 120})
+		    		;
+
+		    	chart.xAxis
+		    		.axisLabel(xAxisLabel)
+		    		.tickFormat(function(d,i) {
+				                return (colNames[d]);
+				     })	;
+
+	    		chart.yAxis.tickFormat(function(d,i) {
+		        	return colFormatter(d);
+		        });
+
+		    	d3.select(container)
+		    		.datum(d)
+		    		.call(chart);
+
+		    	nv.utils.windowResize(chart.update);
+
+		    	  // Handler for state change
+		          chart.dispatch.on('stateChange', function(newState) {
+		        	  view.params["chart-disabledseries"] = {
+		        			  "key": view.params.drilldown.join(","),
+		        			  "disabled": {}
+		        	  };
+		        	  for (var i = 0; i < newState.disabled.length; i++) {
+		        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+		        	  }
+		          });
+
+
+		    	return chart;
+		    });
+
+	    } else {
+
+		    nv.addGraph(function() {
+	    	  var chart = nv.models.stackedAreaChart()
+	    	                //.x(function(d) { return d[0] })
+	    	                //.y(function(d) { return d[1] })
+	    	  				.showLegend(!!view.params.chartoptions.showLegend)
+	    	  				.margin({left: 130})
+	    	                .clipEdge(true)
+	    	                .useInteractiveGuideline(true);
+
+	    	  if (	view.params["chart-stackedarea-style"] ) {
+	    		  chart.style ( view.params["chart-stackedarea-style"] );
+	    	  }
+
+	    	  chart.xAxis
+	    	  	  .axisLabel(xAxisLabel)
+	    	      .showMaxMin(false)
+	    	      .tickFormat(function(d,i) {
+			                return (colNames[d]);
+			       })	;
+
+	    	  chart.yAxis.tickFormat(function(d,i) {
+	    		  return colFormatter(d);
+	    	  });
+
+	    	  d3.select(container)
+	    	    .datum(d)
+	    	      .call(chart);
+
+	    	  nv.utils.windowResize(chart.update);
+
+	    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-stackedarea-style"] = newState.style;
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","),
+	        			  "disabled": {}
+	        	  };
+	        	  for (var i = 0; i < newState.disabled.length; i++) {
+	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+	        	  }
+	          });
+
+	    	  return chart;
+	    	});
+
+	    }
+
+
+
+	};
+
+	/**
+	 */
+	/*
+	this.drawChartLinesCumulative = function (view, colNames, dataRows, dataTotals) {
+
+		var container = $('#seriesChart-' + view.id).find("svg").get(0);
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.getDimensionParts(view.params.xaxis).label : "None")
+
+	    var d = [];
+
+
+	    numRows = dataRows.length;
+	    var serieCount = 1;
+	    $(dataRows).each(function(idx, e) {
+	    	serie = [];
+	    	for (var i = 1; i < colNames.length; i++) {
+	    		if ( (colNames[i] in e) && (e[colNames[i]] != null) && (e[colNames[i]]) ) {
+	    			var value = e[colNames[i]];
+	    			serie.push( { "x": i, "y": parseFloat(value) } );
+	    		} else {
+	    			serie.push( { "x": i, "y": 0 } );
+	    		}
+	    	}
+	    	d.push({ "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis });
+	    });
+	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+
+	    nv.addGraph(function() {
+	        var chart = nv.models.cumulativeLineChart()
+                          //.x(function(d) { return d.x })
+		                  //.y(function(d) { return d.y })
+		                  .showLegend(!!view.params.chartoptions.showLegend)
+		                  .color(d3.scale.category20().range())
+	                      //.color(d3.scale.category10().range())
+		                  .useInteractiveGuideline(true)
+	                      ;
+
+	         chart.xAxis
+	            .axisLabel(xAxisLabel)
+			      .tickFormat(function(d,i) {
+			                return (colNames[d]);
+			       })	;
+
+	         chart.yAxis
+	         .tickFormat(d3.format(',.2f'));
+
+	        d3.select(container)
+	            .datum(d)
+	          .transition().duration(500)
+	            .call(chart);
+
+    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-stackedarea-style"] = newState.style;
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","),
+	        			  "disabled": newState.disabled
+	        	  };
+	          });
+
+	        //TODO: Figure out a good way to do this automatically
+	        nv.utils.windowResize(chart.update);
+
+	        return chart;
+      });
+
+	};
+	*/
+
+	/**
+	 */
+	this.drawChartPie = function (view, colNames, dataRows, dataTotals) {
+
+		var container = $('#seriesChart-' + view.id).find("svg").get(0);
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
+
+	    var d = [];
+
+		// Check if we can produce a pie
+		if (colNames.length > 2) {
+			$('#' + view.id).find('.cv-view-viewdata').empty();
+			$('#' + view.id).find('.cv-view-viewdata').append('<h3>Series Chart</h3><div><i>Cannot present a Pie Chart when more than one column is present.</i></div>');
+			return;
+		}
+
+	    var numRows = dataRows.length;
+	    var serieCount = 0;
+	    $(dataRows).each(function(idx, e) {
+	    	serie = [];
+	    	var value = e[colNames[1]];
+    		if ((value != undefined) && (value > 0)) {
+
+    	    	var series = { "y": value, "key": e["key"] != "" ? e["key"] : colNames[0] };
+    	    	if (view.params["chart-disabledseries"]) {
+    	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+    	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+    	    		}
+    	    	}
+
+    	    	d.push(series);
+    			serieCount++;
+
+    		}
+
+	    });
+	    d.sort(function(a,b) { return a.y < b.y ? -1 : (a.y > b.y ? +1 : 0) });
+
+	    xticks = [];
+	    for (var i = 1; i < colNames.length; i++) {
+    		xticks.push([ i - 1, colNames[i] ]);
+	    }
+
+	    var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+		var colFormatter = cubesviewer.views.cube.columnFormatFunction(view, ag);
+
+	    nv.addGraph(function() {
+
+	        var chart = nv.models.pieChart()
+	            .x(function(d) { return d.key })
+	            .y(function(d) { return d.y })
+	            .showLegend(!!view.params.chartoptions.showLegend)
+	            //.color(d3.scale.category20().range())
+	            //.width(width)
+	            //.height(height)
+	            .labelType("percent");
+	            //.donut(true);
+
+	        /*
+		    chart.pie
+		        .startAngle(function(d) { return d.startAngle/2 -Math.PI/2 })
+		        .endAngle(function(d) { return d.endAngle/2 -Math.PI/2 });
+		        */
+
+	        chart.valueFormat(function(d,i) {
+	        	return colFormatter(d);
+	        });
+
+	          d3.select(container)
+	              .datum(d)
+	              //.attr('width', width)
+	              //.attr('height', height)
+	              .call(chart);
+
+	        nv.utils.windowResize(chart.update);
+
+	    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","),
+	        			  "disabled": {}
+	        	  };
+	        	  for (var i = 0; i < newState.disabled.length; i++) {
+	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+	        	  }
+	          });
+
+	        return chart;
+	    });
+
+	};
+
+	/**
+	 */
+	this.drawChartRadar = function (view, colNames, dataRows, dataTotals) {
+
+		var container = $('#seriesChart-' + view.id).get(0);
+
+		// Check if we can produce a pie
+		if (colNames.length < 4) {
+			$('#' + view.id).find('.cv-view-viewdata').empty();
+			$('#' + view.id).find('.cv-view-viewdata').append('<h3>Series Chart</h3><div><i>Cannot present a Radar Chart when less than 3 data columns are present.</i></div>');
+			return;
+		}
+
+	    var d = [];
+
+	    numRows = dataRows.length;
+	    $(dataRows).each(function(idx, e) {
+	    	serie = [];
+	    	for (var i = 1; i < colNames.length; i++) {
+	    		var value = e[colNames[i]];
+	    		if (value != undefined) {
+	    			serie.push( [i-1, value] );
+	    		} else {
+	    			serie.push( [i-1, 0] );
+	    		}
+	    	}
+	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : view.params.yaxis });
+	    });
+	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
+
+	    xticks = [];
+	    for (var i = 1; i < colNames.length; i++) {
+    		xticks.push([ i - 1, colNames[i] ]);
+	    }
+
+	    $(container).height(350);
+	    view.flotrDraw = Flotr.draw(container, d, {
+	    	HtmlText: ! view.doExport,
+	    	shadowSize: 2,
+	    	height: 350,
+	        radar: {
+	            show: true
+	        },
+	        mouse: {
+	            track: true,
+	            relative: true
+	        },
+	        grid: {
+	            circular: true,
+	            minorHorizontalLines: true
+	        },
+	        legend: {
+	            position: "se",
+	            backgroundColor: "#D2E8FF"
+	        },
+	        xaxis: {
+	            ticks: xticks
+	        },
+	        yaxis: {
+	        }
+	    });
+
+	};
+
+};
+
+
+/*
+ * Create object.
+ */
+cubesviewer.views.cube.chart = new cubesviewerViewCubeChart();
+
+/*
+ * Bind events.
+ */
+$(document).bind("cubesviewerViewCreate", { }, cubesviewer.views.cube.chart.onViewCreate);
+$(document).bind("cubesviewerViewDestroyed", { }, cubesviewer.views.cube.chart.onViewDestroyed);
+$(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.cube.chart.onViewDraw);
 ;/*
  * CubesViewer
  * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
@@ -3648,6 +4443,10 @@ cubesviewer.studio = {
     "            <p>by José Juan Montes and others (see AUTHORS)<br />\n" +
     "            2012 - 2016</p>\n" +
     "\n" +
+    "            <p>\n" +
+    "            <a href=\"\">LICENSE</a>\n" +
+    "            </p>\n" +
+    "\n" +
     "      </div>\n" +
     "      <div class=\"modal-footer\">\n" +
     "        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n" +
@@ -3700,7 +4499,7 @@ cubesviewer.studio = {
     "\n" +
     "          <ul class=\"dropdown-menu cv-gui-cubeslist-menu\">\n" +
     "\n" +
-    "            <li ng-repeat=\"cube in cubesService.cubesserver._cube_list\" ng-click=\"studioViewsService.addViewCube(cube.name)\"><a>{{ cube.label }}</a></li>\n" +
+    "            <li ng-repeat=\"cube in cubesService.cubesserver._cube_list | orderBy:'label'\" ng-click=\"studioViewsService.addViewCube(cube.name)\"><a>{{ cube.label }}</a></li>\n" +
     "\n" +
     "          </ul>\n" +
     "        </div>\n" +
@@ -3712,49 +4511,15 @@ cubesviewer.studio = {
     "          </button>\n" +
     "\n" +
     "          <ul class=\"dropdown-menu\">\n" +
-    "          <li class=\"dropdown-submenu\">\n" +
-    "          <a tabindex=\"0\">Action</a>\n" +
     "\n" +
-    "          <ul class=\"dropdown-menu\">\n" +
-    "            <li><a tabindex=\"0\">Sub action</a></li>\n" +
-    "            <li class=\"dropdown-submenu\">\n" +
-    "              <a tabindex=\"0\">Another sub action</a>\n" +
+    "                <li><a tabindex=\"0\"><i class=\"fa fa-fw fa-code\"></i> Add view from JSON...</a></li>\n" +
     "\n" +
-    "              <ul class=\"dropdown-menu\">\n" +
-    "                <li><a tabindex=\"0\">Sub action</a></li>\n" +
-    "                <li><a tabindex=\"0\">Another sub action</a></li>\n" +
-    "                <li><a tabindex=\"0\">Something else here</a></li>\n" +
-    "              </ul>\n" +
-    "            </li>\n" +
-    "            <li><a tabindex=\"0\">Something else here</a></li>\n" +
-    "            <li class=\"disabled\"><a tabindex=\"-1\">Disabled action</a></li>\n" +
-    "            <li class=\"dropdown-submenu\">\n" +
-    "              <a tabindex=\"0\">Another action</a>\n" +
+    "                <div class=\"divider\" ng-if=\"cvOptions.showAbout\"></div>\n" +
     "\n" +
-    "              <ul class=\"dropdown-menu\">\n" +
-    "                <li><a tabindex=\"0\">Sub action</a></li>\n" +
-    "                <li><a tabindex=\"0\">Another sub action</a></li>\n" +
-    "                <li><a tabindex=\"0\">Something else here</a></li>\n" +
-    "              </ul>\n" +
-    "            </li>\n" +
-    "          </ul>\n" +
-    "        </li>\n" +
-    "        <li class=\"dropdown-header\">Dropdown header</li>\n" +
-    "        <li class=\"dropdown-submenu\">\n" +
-    "          <a tabindex=\"0\">Another action</a>\n" +
+    "                <li class=\"\"><a><i class=\"fa fa-fw fa-question\"></i> User Guide</a></li>\n" +
+    "                <li class=\"\" ng-if=\"cvOptions.showAbout\"><a data-toggle=\"modal\" data-target=\"#cvAboutModal\"><i class=\"fa fa-fw fa-info\"></i> About CubesViewer...</a></li>\n" +
     "\n" +
-    "          <ul class=\"dropdown-menu\">\n" +
-    "            <li><a tabindex=\"0\">Sub action</a></li>\n" +
-    "            <li><a tabindex=\"0\">Another sub action</a></li>\n" +
-    "            <li><a tabindex=\"0\">Something else here</a></li>\n" +
-    "          </ul>\n" +
-    "        </li>\n" +
-    "        <li><a tabindex=\"0\">Something else here</a></li>\n" +
-    "\n" +
-    "        <div class=\"divider\" ng-if=\"cvOptions.showAbout\"></div>\n" +
-    "        <li class=\"\" ng-if=\"cvOptions.showAbout\"><a data-toggle=\"modal\" data-target=\"#cvAboutModal\">About CubesViewer</a></li>\n" +
-    "\n" +
-    "        </ul>\n" +
+    "            </ul>\n" +
     "        </div>\n" +
     "\n" +
     "        <div ng-include=\"'studio/about.html'\"></div>\n" +
@@ -3775,9 +4540,22 @@ cubesviewer.studio = {
   );
 
 
+  $templateCache.put('views/cube/chart/chart.html',
+    "<div ng-controller=\"CubesViewerViewsCubeChartController\">\n" +
+    "\n" +
+    "    <div ng-if=\"\">\n" +
+    "        <h3><i class=\"fa fa-fw fa-clock-o\"></i> Series chart</h3>\n" +
+    "    </div>\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "</div>\n"
+  );
+
+
   $templateCache.put('views/cube/cube-menu-drilldown.html',
     "  <button class=\"btn btn-primary btn-sm dropdown-toggle drilldownbutton\" ng-disabled=\"view.params.mode == 'facts'\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "    <i class=\"fa fa-fw fa-arrow-down\"></i> Drilldown <span class=\"caret\"></span>\n" +
+    "    <i class=\"fa fa-fw fa-arrow-down\"></i> <span class=\"hidden-xs\">Drilldown</span> <span class=\"caret\"></span>\n" +
     "  </button>\n" +
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu-drilldown\">\n" +
@@ -3814,7 +4592,7 @@ cubesviewer.studio = {
 
   $templateCache.put('views/cube/cube-menu-filter.html',
     "  <button class=\"btn btn-primary btn-sm dropdown-toggle cutbutton\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "    <i class=\"fa fa-fw fa-filter\"></i> Filter <span class=\"caret\"></span>\n" +
+    "    <i class=\"fa fa-fw fa-filter\"></i> <span class=\"hidden-xs\">Filter</span> <span class=\"caret\"></span>\n" +
     "  </button>\n" +
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut\">\n" +
@@ -3861,7 +4639,121 @@ cubesviewer.studio = {
     "     -->\n" +
     "\n" +
     "    <div class=\"divider\"></div>\n" +
-    "    <li><a href=\"\"><i class=\"fa fa-fw fa-close\"></i> Clear filters</a></li>\n" +
+    "    <li><a href=\"\"><i class=\"fa fa-fw fa-trash\"></i> Clear filters</a></li>\n" +
+    "\n" +
+    "  </ul>\n"
+  );
+
+
+  $templateCache.put('views/cube/cube-menu-panel.html',
+    "  <button class=\"btn btn-primary btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
+    "    <i class=\"fa fa-fw fa-file\"></i> <span class=\"hidden-xs\">Panel</span> <span class=\"caret\"></span>\n" +
+    "  </button>\n" +
+    "\n" +
+    "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
+    "\n" +
+    "    <li><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-trash-o\"></i> Delete...</a></li>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-pencil\"></i> Rename...</a></li>\n" +
+    "    <div class=\"divider\"></div>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-share\"></i> Share...</a></li>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
+    "    <div class=\"divider\"></div>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-code\"></i> Serialize...</a></li>\n" +
+    "    <div class=\"divider\"></div>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-close\"></i> Close</a></li>\n" +
+    "  </ul>\n"
+  );
+
+
+  $templateCache.put('views/cube/cube-menu-view.html',
+    "  <button class=\"btn btn-primary btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
+    "    <i class=\"fa fa-fw fa-cogs\"></i> <span class=\"hidden-xs\">View</span> <span class=\"caret\"></span>\n" +
+    "  </button>\n" +
+    "\n" +
+    "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
+    "\n" +
+    "    <li class=\"dropdown-submenu\">\n" +
+    "        <a tabindex=\"0\" ><i class=\"fa fa-fw fa-area-chart\"></i> Chart type</a>\n" +
+    "        <ul class=\"dropdown-menu\">\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-pie-chart\"></i> Pie</a></li>\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-bar-chart\"></i> Bars Vertical</a></li>\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Lines</a></li>\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-area-chart\"></i> Areas</a></li>\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-bullseye\"></i> Radar</a></li>\n" +
+    "\n" +
+    "          <div class=\"divider\"></div>\n" +
+    "\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-sun-o\"></i> Sunburst</a></li>\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-dot-circle-o\"></i> Bubbles</a></li>\n" +
+    "\n" +
+    "          <div class=\"divider\"></div>\n" +
+    "\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-globe\"></i> Map</a></li>\n" +
+    "        </ul>\n" +
+    "    </li>\n" +
+    "\n" +
+    "    <div class=\"divider\"></div>\n" +
+    "\n" +
+    "    <li class=\"dropdown-submenu\">\n" +
+    "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-long-arrow-right\"></i> Horizontal dimension</a>\n" +
+    "        <ul class=\"dropdown-menu\">\n" +
+    "\n" +
+    "          <li on-repeat-done ng-repeat-start=\"dimension in view.cube.dimensions\" ng-if=\"dimension.levels.length == 1\" ng-click=\"selectXAxis(dimension.name)\">\n" +
+    "            <a href=\"\">{{ dimension.label }}</a>\n" +
+    "          </li>\n" +
+    "          <li ng-repeat-end ng-if=\"dimension.levels.length != 1\" class=\"dropdown-submenu\">\n" +
+    "            <a tabindex=\"0\">{{ dimension.label }}</a>\n" +
+    "\n" +
+    "            <ul ng-if=\"dimension.hierarchies_count() != 1\" class=\"dropdown-menu\">\n" +
+    "                <li ng-repeat=\"(hikey,hi) in dimension.hierarchies\" class=\"dropdown-submenu\">\n" +
+    "                    <a tabindex=\"0\" href=\"\" onclick=\"return false;\">{{ hi.label }}</a>\n" +
+    "                    <ul class=\"dropdown-menu\">\n" +
+    "                        <!-- ng-click=\"selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)\"  -->\n" +
+    "                        <li ng-repeat=\"level in hi.levels\" ng-click=\"selectXAxis(dimension.name + '@' + hi.name + ':' + level.name )\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                    </ul>\n" +
+    "                </li>\n" +
+    "            </ul>\n" +
+    "\n" +
+    "            <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
+    "                <!--  selectDrill(dimension.name + ':' + level.name, true) -->\n" +
+    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectXAxis(level);\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "            </ul>\n" +
+    "\n" +
+    "          </li>\n" +
+    "\n" +
+    "          <div class=\"divider\"></div>\n" +
+    "\n" +
+    "          <li ng-click=\"selectXAxis(null);\"><a href=\"\"><i class=\"fa fa-fw fa-close\"></i> None</a></li>\n" +
+    "\n" +
+    "        </ul>\n" +
+    "    </li>\n" +
+    "\n" +
+    "    <li class=\"dropdown-submenu\">\n" +
+    "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-crosshairs\"></i> Measure</a>\n" +
+    "        <ul class=\"dropdown-menu\">\n" +
+    "\n" +
+    "          <li ng-repeat=\"measure in view.cube.measures\" ng-if=\"view.cube.measureAggregates(measure.name).length > 0\" class=\"dropdown-submenu\">\n" +
+    "            <a href=\"\">{{ measure.label }}</a>\n" +
+    "            <ul class=\"dropdown-menu\">\n" +
+    "                <li ng-repeat=\"aggregate in view.cube.measureAggregates(measure.name)\" >\n" +
+    "                    <a href=\"\" ng-click=\"selectMeasure(aggregate.ref)\">{{ aggregate.label }}</a>\n" +
+    "                </li>\n" +
+    "            </ul>\n" +
+    "          </li>\n" +
+    "\n" +
+    "          <div class=\"divider\" ng-if=\"view.cube.measureAggregates(null).length > 0\"></div>\n" +
+    "          <li ng-repeat=\"aggregate in view.cube.measureAggregates(null)\" ng-if=\"view.cube.measureAggregates(null).length > 0\" >\n" +
+    "            <a href=\"\" ng-click=\"selectMeasure(aggregate.ref)\">{{ aggregate.label }}</a>\n" +
+    "          </li>\n" +
+    "\n" +
+    "        </ul>\n" +
+    "    </li>\n" +
+    "\n" +
+    "    <div class=\"divider\"></div>\n" +
+    "\n" +
+    "    <li><a><i class=\"fa fa-fw fa-table\"></i> Export table</a></li>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-th\"></i> Export facts</a></li>\n" +
     "\n" +
     "  </ul>\n"
   );
@@ -3877,7 +4769,7 @@ cubesviewer.studio = {
     "            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n" +
     "              <button type=\"button\" ng-click=\"setViewMode('explore')\" ng-class=\"{'active': view.params.mode == 'explore'}\" class=\"btn btn-primary btn-sm explorebutton\" title=\"Explore\"><i class=\"fa fa-fw fa-arrow-circle-down\"></i></button>\n" +
     "              <button type=\"button\" ng-click=\"setViewMode('facts')\" ng-class=\"{'active': view.params.mode == 'facts'}\" class=\"btn btn-primary btn-sm \" title=\"Facts\"><i class=\"fa fa-fw fa-th\"></i></button>\n" +
-    "              <button type=\"button\" ng-click=\"setViewMode('series')\" ng-class=\"{'active': view.params.mode == 'series'}\" class=\"btn btn-primary btn-sm \" title=\"Series\"><i class=\"fa fa-fw fa-table\"></i></button>\n" +
+    "              <button type=\"button\" ng-click=\"setViewMode('series')\" ng-class=\"{'active': view.params.mode == 'series'}\" class=\"btn btn-primary btn-sm \" title=\"Series\"><i class=\"fa fa-fw fa-clock-o\"></i></button>\n" +
     "              <button type=\"button\" ng-click=\"setViewMode('chart')\" ng-class=\"{'active': view.params.mode == 'chart'}\" class=\"btn btn-primary btn-sm \" title=\"Charts\"><i class=\"fa fa-fw fa-area-chart\"></i></button>\n" +
     "            </div>\n" +
     "\n" +
@@ -3885,16 +4777,9 @@ cubesviewer.studio = {
     "\n" +
     "            <div ng-include=\"'views/cube/cube-menu-filter.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 2px;\"></div>\n" +
     "\n" +
+    "            <div ng-include=\"'views/cube/cube-menu-view.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
     "\n" +
-    "            <div class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\">\n" +
-    "              <button class=\"btn btn-primary btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "                <i class=\"fa fa-fw fa-file\"></i> View <span class=\"caret\"></span>\n" +
-    "              </button>\n" +
-    "\n" +
-    "              <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
-    "                <li><a><i class=\"fa fa-fw fa-close\"></i> Close</a></li>\n" +
-    "              </ul>\n" +
-    "            </div>\n" +
+    "            <div ng-include=\"'views/cube/cube-menu-panel.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
     "\n" +
     "        </div>\n" +
     "\n" +
@@ -3929,7 +4814,19 @@ cubesviewer.studio = {
     "                    <button type=\"button\" ng-click=\"selectCut(cut.dimension, '', cut.invert)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
     "                </div>\n" +
     "            </div>\n" +
-    "            <div class=\"cv-view-viewinfo-extra\"></div>\n" +
+    "            <div class=\"cv-view-viewinfo-extra\">\n" +
+    "\n" +
+    "                <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccccff;\">\n" +
+    "                    <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-bullseye\"></i> <b>Measure:</b> {{ (view.params.yaxis != null) ? view.params.yaxis : \"None\" }}</span>\n" +
+    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccddff;\">\n" +
+    "                    <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-long-arrow-right\"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : \"None\" }}</span>\n" +
+    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "                </div>\n" +
+    "\n" +
+    "            </div>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "    <div class=\"clearfix\"></div>\n" +
@@ -4070,7 +4967,7 @@ cubesviewer.studio = {
     "<div ng-controller=\"CubesViewerViewsCubeSeriesController\">\n" +
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
-    "    <h3><i class=\"fa fa-fw fa-table\"></i> Series table</h3>\n" +
+    "    <h3><i class=\"fa fa-fw fa-clock-o\"></i> Series table</h3>\n" +
     "\n" +
     "    <div ng-if=\"gridOptions.data.length > 0\"\n" +
     "         ui-grid=\"gridOptions\"\n" +
@@ -4080,7 +4977,13 @@ cubesviewer.studio = {
     "    </div>\n" +
     "    <div ng-if=\"gridOptions.data.length > 0\" style=\"height: 30px;\">&nbsp;</div>\n" +
     "\n" +
-    "    <div ng-if=\"gridOptions.data.length == 0\">No facts are returned by the current filtering combination.</div>\n" +
+    "    <div ng-if=\"view.params.yaxis == null\" class=\"alert alert-info\">\n" +
+    "        Cannot present series table: no <b>measure</b> has been selected.\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ng-if=\"view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\">\n" +
+    "        Cannot present series table: no rows are returned by the current filtering, horizontal dimension, and drilldown combination.\n" +
+    "    </div>\n" +
     "\n" +
     "</div>\n"
   );

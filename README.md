@@ -41,11 +41,9 @@ Online Demos
 Download
 ------------
 
-Current CubesViewer stable version is 2.0.0.
+Current CubesViewer stable version is 2.0.1.
 
-[CubesViewer version 2.0.0](https://github.com/jjmontesl/cubesviewer/archive/cubesviewer-2.0.0.zip) - Works with Cubes 1.0.x
-
-(Use older [CubesViewer version 0.9](https://github.com/jjmontesl/cubesviewer/archive/v0.9.zip) if you need to work with Cubes 0.10.x)
+[CubesViewer version 2.0.0](https://github.com/jjmontesl/cubesviewer/archive/cubesviewer-2.0.1.zip) - Works with Cubes 1.0.x
 
 Requirements
 ------------
@@ -55,7 +53,7 @@ CubesViewer consists of two parts:
 **CubesViewer Client** is a HTML5 application that runs directly in the browser.
 It can run without server side support as a standalone application, and
 views can be embedded in other websites. Simply
-download the package and open the `html/gui.html` file in your favorite browser.
+download the package and open the `html/studio.html` file in your favorite browser.
 
 CubesViewer also features an optional server side application
 which provides a full web application and supports features like sharing/saving and user notes.

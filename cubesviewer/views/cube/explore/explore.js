@@ -338,7 +338,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 	};
 
 	// Sort data according to current view
-	$scope._sortData = function(view, data, includeXAxis) {
+	$scope._sortData = function(data, includeXAxis) {
 		//data.sort(cubesviewer._drilldownSortFunction(view.id, includeXAxis));
 	};
 

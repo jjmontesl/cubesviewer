@@ -1,20 +1,24 @@
 [2.0.1]
 
+    * New icon library and revamped UI.
+    * Fixed incorrect column resize slider bug.
+    * Added automatic content-based column resize feature.
     * Added support for negated cuts (inverse filters).
-    * Added support for custom values formatting.
+    * Added support for custom column formatting functions.
     * Added cube metadata option to set view default params.
     * Option to show/hide chart labels.
-    * Sort pie charts by size of slice.
-    * Serializing now shows code in a floating dialog box easier to copy.
-    * New icons and revamped UI (FontAwesome).
+    * Pie charts are now sorted by size of slice.
+    * Serializing now shows JSON in a modal dialog and is easier to copy.
 
+    * UI is now refreshed in-place instead of blocking whole UI.
     * Using templating for HTML views (removed HTML spaguetti code).
     * Moved from jQGrid to more versatile Angular ui-grid.
     * Refactored to Angular and dropped jQueryUI.
-    * Now using embedded Bootstrap for styles, without impacting page styles
-      (no global selectors) and better avoidance of being impacted by page styles.
-    * Introduced Grunt/Bower build system.
+    * Now using embedded Bootstrap (no global CSS selectors) for styles, without
+      impacting page styles and better avoiding being impacted by page styling.
+    * Introduced Grunt/Bower build toolchain.
     * Separated cubesviewer-server from client.
+    * License changed to pure MIT (removed extra clause).
 
 [0.0.11]
 
@@ -54,7 +58,7 @@
     * Cutting over a drilled dimension no longer removes the drill.
     * Added shortcuts (select all) and drilldown from filters.
     * Menus now open on hover if already open.
-    * Charts now using nvd3.js!
+    * Charts now using nvd3.js.
 
 [0.0.7]
 

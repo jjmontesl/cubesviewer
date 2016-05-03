@@ -37,6 +37,10 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "            <p>by José Juan Montes and others (see AUTHORS)<br />\n" +
     "            2012 - 2016</p>\n" +
     "\n" +
+    "            <p>\n" +
+    "            <a href=\"\">LICENSE</a>\n" +
+    "            </p>\n" +
+    "\n" +
     "      </div>\n" +
     "      <div class=\"modal-footer\">\n" +
     "        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n" +
@@ -89,7 +93,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "          <ul class=\"dropdown-menu cv-gui-cubeslist-menu\">\n" +
     "\n" +
-    "            <li ng-repeat=\"cube in cubesService.cubesserver._cube_list\" ng-click=\"studioViewsService.addViewCube(cube.name)\"><a>{{ cube.label }}</a></li>\n" +
+    "            <li ng-repeat=\"cube in cubesService.cubesserver._cube_list | orderBy:'label'\" ng-click=\"studioViewsService.addViewCube(cube.name)\"><a>{{ cube.label }}</a></li>\n" +
     "\n" +
     "          </ul>\n" +
     "        </div>\n" +
@@ -101,49 +105,15 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "          </button>\n" +
     "\n" +
     "          <ul class=\"dropdown-menu\">\n" +
-    "          <li class=\"dropdown-submenu\">\n" +
-    "          <a tabindex=\"0\">Action</a>\n" +
     "\n" +
-    "          <ul class=\"dropdown-menu\">\n" +
-    "            <li><a tabindex=\"0\">Sub action</a></li>\n" +
-    "            <li class=\"dropdown-submenu\">\n" +
-    "              <a tabindex=\"0\">Another sub action</a>\n" +
+    "                <li><a tabindex=\"0\"><i class=\"fa fa-fw fa-code\"></i> Add view from JSON...</a></li>\n" +
     "\n" +
-    "              <ul class=\"dropdown-menu\">\n" +
-    "                <li><a tabindex=\"0\">Sub action</a></li>\n" +
-    "                <li><a tabindex=\"0\">Another sub action</a></li>\n" +
-    "                <li><a tabindex=\"0\">Something else here</a></li>\n" +
-    "              </ul>\n" +
-    "            </li>\n" +
-    "            <li><a tabindex=\"0\">Something else here</a></li>\n" +
-    "            <li class=\"disabled\"><a tabindex=\"-1\">Disabled action</a></li>\n" +
-    "            <li class=\"dropdown-submenu\">\n" +
-    "              <a tabindex=\"0\">Another action</a>\n" +
+    "                <div class=\"divider\" ng-if=\"cvOptions.showAbout\"></div>\n" +
     "\n" +
-    "              <ul class=\"dropdown-menu\">\n" +
-    "                <li><a tabindex=\"0\">Sub action</a></li>\n" +
-    "                <li><a tabindex=\"0\">Another sub action</a></li>\n" +
-    "                <li><a tabindex=\"0\">Something else here</a></li>\n" +
-    "              </ul>\n" +
-    "            </li>\n" +
-    "          </ul>\n" +
-    "        </li>\n" +
-    "        <li class=\"dropdown-header\">Dropdown header</li>\n" +
-    "        <li class=\"dropdown-submenu\">\n" +
-    "          <a tabindex=\"0\">Another action</a>\n" +
+    "                <li class=\"\"><a><i class=\"fa fa-fw fa-question\"></i> User Guide</a></li>\n" +
+    "                <li class=\"\" ng-if=\"cvOptions.showAbout\"><a data-toggle=\"modal\" data-target=\"#cvAboutModal\"><i class=\"fa fa-fw fa-info\"></i> About CubesViewer...</a></li>\n" +
     "\n" +
-    "          <ul class=\"dropdown-menu\">\n" +
-    "            <li><a tabindex=\"0\">Sub action</a></li>\n" +
-    "            <li><a tabindex=\"0\">Another sub action</a></li>\n" +
-    "            <li><a tabindex=\"0\">Something else here</a></li>\n" +
-    "          </ul>\n" +
-    "        </li>\n" +
-    "        <li><a tabindex=\"0\">Something else here</a></li>\n" +
-    "\n" +
-    "        <div class=\"divider\" ng-if=\"cvOptions.showAbout\"></div>\n" +
-    "        <li class=\"\" ng-if=\"cvOptions.showAbout\"><a data-toggle=\"modal\" data-target=\"#cvAboutModal\">About CubesViewer</a></li>\n" +
-    "\n" +
-    "        </ul>\n" +
+    "            </ul>\n" +
     "        </div>\n" +
     "\n" +
     "        <div ng-include=\"'studio/about.html'\"></div>\n" +
@@ -164,9 +134,22 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
   );
 
 
+  $templateCache.put('views/cube/chart/chart.html',
+    "<div ng-controller=\"CubesViewerViewsCubeChartController\">\n" +
+    "\n" +
+    "    <div ng-if=\"\">\n" +
+    "        <h3><i class=\"fa fa-fw fa-clock-o\"></i> Series chart</h3>\n" +
+    "    </div>\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "</div>\n"
+  );
+
+
   $templateCache.put('views/cube/cube-menu-drilldown.html',
     "  <button class=\"btn btn-primary btn-sm dropdown-toggle drilldownbutton\" ng-disabled=\"view.params.mode == 'facts'\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "    <i class=\"fa fa-fw fa-arrow-down\"></i> Drilldown <span class=\"caret\"></span>\n" +
+    "    <i class=\"fa fa-fw fa-arrow-down\"></i> <span class=\"hidden-xs\">Drilldown</span> <span class=\"caret\"></span>\n" +
     "  </button>\n" +
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu-drilldown\">\n" +
@@ -203,7 +186,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('views/cube/cube-menu-filter.html',
     "  <button class=\"btn btn-primary btn-sm dropdown-toggle cutbutton\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "    <i class=\"fa fa-fw fa-filter\"></i> Filter <span class=\"caret\"></span>\n" +
+    "    <i class=\"fa fa-fw fa-filter\"></i> <span class=\"hidden-xs\">Filter</span> <span class=\"caret\"></span>\n" +
     "  </button>\n" +
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut\">\n" +
@@ -250,7 +233,121 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "     -->\n" +
     "\n" +
     "    <div class=\"divider\"></div>\n" +
-    "    <li><a href=\"\"><i class=\"fa fa-fw fa-close\"></i> Clear filters</a></li>\n" +
+    "    <li><a href=\"\"><i class=\"fa fa-fw fa-trash\"></i> Clear filters</a></li>\n" +
+    "\n" +
+    "  </ul>\n"
+  );
+
+
+  $templateCache.put('views/cube/cube-menu-panel.html',
+    "  <button class=\"btn btn-primary btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
+    "    <i class=\"fa fa-fw fa-file\"></i> <span class=\"hidden-xs\">Panel</span> <span class=\"caret\"></span>\n" +
+    "  </button>\n" +
+    "\n" +
+    "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
+    "\n" +
+    "    <li><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-trash-o\"></i> Delete...</a></li>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-pencil\"></i> Rename...</a></li>\n" +
+    "    <div class=\"divider\"></div>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-share\"></i> Share...</a></li>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
+    "    <div class=\"divider\"></div>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-code\"></i> Serialize...</a></li>\n" +
+    "    <div class=\"divider\"></div>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-close\"></i> Close</a></li>\n" +
+    "  </ul>\n"
+  );
+
+
+  $templateCache.put('views/cube/cube-menu-view.html',
+    "  <button class=\"btn btn-primary btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
+    "    <i class=\"fa fa-fw fa-cogs\"></i> <span class=\"hidden-xs\">View</span> <span class=\"caret\"></span>\n" +
+    "  </button>\n" +
+    "\n" +
+    "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
+    "\n" +
+    "    <li class=\"dropdown-submenu\">\n" +
+    "        <a tabindex=\"0\" ><i class=\"fa fa-fw fa-area-chart\"></i> Chart type</a>\n" +
+    "        <ul class=\"dropdown-menu\">\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-pie-chart\"></i> Pie</a></li>\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-bar-chart\"></i> Bars Vertical</a></li>\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Lines</a></li>\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-area-chart\"></i> Areas</a></li>\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-bullseye\"></i> Radar</a></li>\n" +
+    "\n" +
+    "          <div class=\"divider\"></div>\n" +
+    "\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-sun-o\"></i> Sunburst</a></li>\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-dot-circle-o\"></i> Bubbles</a></li>\n" +
+    "\n" +
+    "          <div class=\"divider\"></div>\n" +
+    "\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-globe\"></i> Map</a></li>\n" +
+    "        </ul>\n" +
+    "    </li>\n" +
+    "\n" +
+    "    <div class=\"divider\"></div>\n" +
+    "\n" +
+    "    <li class=\"dropdown-submenu\">\n" +
+    "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-long-arrow-right\"></i> Horizontal dimension</a>\n" +
+    "        <ul class=\"dropdown-menu\">\n" +
+    "\n" +
+    "          <li on-repeat-done ng-repeat-start=\"dimension in view.cube.dimensions\" ng-if=\"dimension.levels.length == 1\" ng-click=\"selectXAxis(dimension.name)\">\n" +
+    "            <a href=\"\">{{ dimension.label }}</a>\n" +
+    "          </li>\n" +
+    "          <li ng-repeat-end ng-if=\"dimension.levels.length != 1\" class=\"dropdown-submenu\">\n" +
+    "            <a tabindex=\"0\">{{ dimension.label }}</a>\n" +
+    "\n" +
+    "            <ul ng-if=\"dimension.hierarchies_count() != 1\" class=\"dropdown-menu\">\n" +
+    "                <li ng-repeat=\"(hikey,hi) in dimension.hierarchies\" class=\"dropdown-submenu\">\n" +
+    "                    <a tabindex=\"0\" href=\"\" onclick=\"return false;\">{{ hi.label }}</a>\n" +
+    "                    <ul class=\"dropdown-menu\">\n" +
+    "                        <!-- ng-click=\"selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)\"  -->\n" +
+    "                        <li ng-repeat=\"level in hi.levels\" ng-click=\"selectXAxis(dimension.name + '@' + hi.name + ':' + level.name )\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                    </ul>\n" +
+    "                </li>\n" +
+    "            </ul>\n" +
+    "\n" +
+    "            <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
+    "                <!--  selectDrill(dimension.name + ':' + level.name, true) -->\n" +
+    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectXAxis(level);\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "            </ul>\n" +
+    "\n" +
+    "          </li>\n" +
+    "\n" +
+    "          <div class=\"divider\"></div>\n" +
+    "\n" +
+    "          <li ng-click=\"selectXAxis(null);\"><a href=\"\"><i class=\"fa fa-fw fa-close\"></i> None</a></li>\n" +
+    "\n" +
+    "        </ul>\n" +
+    "    </li>\n" +
+    "\n" +
+    "    <li class=\"dropdown-submenu\">\n" +
+    "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-crosshairs\"></i> Measure</a>\n" +
+    "        <ul class=\"dropdown-menu\">\n" +
+    "\n" +
+    "          <li ng-repeat=\"measure in view.cube.measures\" ng-if=\"view.cube.measureAggregates(measure.name).length > 0\" class=\"dropdown-submenu\">\n" +
+    "            <a href=\"\">{{ measure.label }}</a>\n" +
+    "            <ul class=\"dropdown-menu\">\n" +
+    "                <li ng-repeat=\"aggregate in view.cube.measureAggregates(measure.name)\" >\n" +
+    "                    <a href=\"\" ng-click=\"selectMeasure(aggregate.ref)\">{{ aggregate.label }}</a>\n" +
+    "                </li>\n" +
+    "            </ul>\n" +
+    "          </li>\n" +
+    "\n" +
+    "          <div class=\"divider\" ng-if=\"view.cube.measureAggregates(null).length > 0\"></div>\n" +
+    "          <li ng-repeat=\"aggregate in view.cube.measureAggregates(null)\" ng-if=\"view.cube.measureAggregates(null).length > 0\" >\n" +
+    "            <a href=\"\" ng-click=\"selectMeasure(aggregate.ref)\">{{ aggregate.label }}</a>\n" +
+    "          </li>\n" +
+    "\n" +
+    "        </ul>\n" +
+    "    </li>\n" +
+    "\n" +
+    "    <div class=\"divider\"></div>\n" +
+    "\n" +
+    "    <li><a><i class=\"fa fa-fw fa-table\"></i> Export table</a></li>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-th\"></i> Export facts</a></li>\n" +
     "\n" +
     "  </ul>\n"
   );
@@ -266,7 +363,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n" +
     "              <button type=\"button\" ng-click=\"setViewMode('explore')\" ng-class=\"{'active': view.params.mode == 'explore'}\" class=\"btn btn-primary btn-sm explorebutton\" title=\"Explore\"><i class=\"fa fa-fw fa-arrow-circle-down\"></i></button>\n" +
     "              <button type=\"button\" ng-click=\"setViewMode('facts')\" ng-class=\"{'active': view.params.mode == 'facts'}\" class=\"btn btn-primary btn-sm \" title=\"Facts\"><i class=\"fa fa-fw fa-th\"></i></button>\n" +
-    "              <button type=\"button\" ng-click=\"setViewMode('series')\" ng-class=\"{'active': view.params.mode == 'series'}\" class=\"btn btn-primary btn-sm \" title=\"Series\"><i class=\"fa fa-fw fa-table\"></i></button>\n" +
+    "              <button type=\"button\" ng-click=\"setViewMode('series')\" ng-class=\"{'active': view.params.mode == 'series'}\" class=\"btn btn-primary btn-sm \" title=\"Series\"><i class=\"fa fa-fw fa-clock-o\"></i></button>\n" +
     "              <button type=\"button\" ng-click=\"setViewMode('chart')\" ng-class=\"{'active': view.params.mode == 'chart'}\" class=\"btn btn-primary btn-sm \" title=\"Charts\"><i class=\"fa fa-fw fa-area-chart\"></i></button>\n" +
     "            </div>\n" +
     "\n" +
@@ -274,16 +371,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "            <div ng-include=\"'views/cube/cube-menu-filter.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 2px;\"></div>\n" +
     "\n" +
+    "            <div ng-include=\"'views/cube/cube-menu-view.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
     "\n" +
-    "            <div class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\">\n" +
-    "              <button class=\"btn btn-primary btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "                <i class=\"fa fa-fw fa-file\"></i> View <span class=\"caret\"></span>\n" +
-    "              </button>\n" +
-    "\n" +
-    "              <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
-    "                <li><a><i class=\"fa fa-fw fa-close\"></i> Close</a></li>\n" +
-    "              </ul>\n" +
-    "            </div>\n" +
+    "            <div ng-include=\"'views/cube/cube-menu-panel.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
     "\n" +
     "        </div>\n" +
     "\n" +
@@ -318,7 +408,19 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                    <button type=\"button\" ng-click=\"selectCut(cut.dimension, '', cut.invert)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
     "                </div>\n" +
     "            </div>\n" +
-    "            <div class=\"cv-view-viewinfo-extra\"></div>\n" +
+    "            <div class=\"cv-view-viewinfo-extra\">\n" +
+    "\n" +
+    "                <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccccff;\">\n" +
+    "                    <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-bullseye\"></i> <b>Measure:</b> {{ (view.params.yaxis != null) ? view.params.yaxis : \"None\" }}</span>\n" +
+    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccddff;\">\n" +
+    "                    <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-long-arrow-right\"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : \"None\" }}</span>\n" +
+    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "                </div>\n" +
+    "\n" +
+    "            </div>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "    <div class=\"clearfix\"></div>\n" +
@@ -459,7 +561,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "<div ng-controller=\"CubesViewerViewsCubeSeriesController\">\n" +
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
-    "    <h3><i class=\"fa fa-fw fa-table\"></i> Series table</h3>\n" +
+    "    <h3><i class=\"fa fa-fw fa-clock-o\"></i> Series table</h3>\n" +
     "\n" +
     "    <div ng-if=\"gridOptions.data.length > 0\"\n" +
     "         ui-grid=\"gridOptions\"\n" +
@@ -469,7 +571,13 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    </div>\n" +
     "    <div ng-if=\"gridOptions.data.length > 0\" style=\"height: 30px;\">&nbsp;</div>\n" +
     "\n" +
-    "    <div ng-if=\"gridOptions.data.length == 0\">No facts are returned by the current filtering combination.</div>\n" +
+    "    <div ng-if=\"view.params.yaxis == null\" class=\"alert alert-info\">\n" +
+    "        Cannot present series table: no <b>measure</b> has been selected.\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ng-if=\"view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\">\n" +
+    "        Cannot present series table: no rows are returned by the current filtering, horizontal dimension, and drilldown combination.\n" +
+    "    </div>\n" +
     "\n" +
     "</div>\n"
   );

@@ -95,6 +95,15 @@ cubes.Cube.prototype.cvdim_parts = function(dimensionString) {
 
 };
 
+/**
+ * Returns the aggregates for the given measure, by name.
+ * If passed null, returns aggregates with no measure.
+ */
+cubes.Cube.prototype.measureAggregates = function(measureName) {
+	var aggregates = $.grep(this.aggregates, function(ia) { return measureName ? ia.measure == measureName : !ia.measure; } );
+	return aggregates;
+};
+
 
 /*
  * Processes a cell and returns an object with consistent information:

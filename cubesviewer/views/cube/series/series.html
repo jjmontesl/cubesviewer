@@ -1,7 +1,7 @@
 <div ng-controller="CubesViewerViewsCubeSeriesController">
 
     <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->
-    <h3><i class="fa fa-fw fa-table"></i> Series table</h3>
+    <h3><i class="fa fa-fw fa-clock-o"></i> Series table</h3>
 
     <div ng-if="gridOptions.data.length > 0"
          ui-grid="gridOptions"
@@ -11,6 +11,12 @@
     </div>
     <div ng-if="gridOptions.data.length > 0" style="height: 30px;">&nbsp;</div>
 
-    <div ng-if="gridOptions.data.length == 0">No facts are returned by the current filtering combination.</div>
+    <div ng-if="view.params.yaxis == null" class="alert alert-info">
+        Cannot present series table: no <b>measure</b> has been selected.
+    </div>
+
+    <div ng-if="view.params.yaxis != null && gridOptions.data.length == 0" class="alert alert-info">
+        Cannot present series table: no rows are returned by the current filtering, horizontal dimension, and drilldown combination.
+    </div>
 
 </div>

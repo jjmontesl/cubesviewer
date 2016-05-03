@@ -167,7 +167,7 @@ var cubesviewer = {
 	VIEW_STATE_ERROR: 3,
 
 	_configure: function(options) {
-		$('#cubesviewerVersion').html(cubesviewer.version);
+		$('.cv-version').html(cubesviewer.version);
 		angular.module('cv').constant('cvOptions', options);
 	},
 

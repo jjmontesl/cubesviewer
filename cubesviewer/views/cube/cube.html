@@ -7,7 +7,7 @@
             <div class="btn-group" role="group" aria-label="...">
               <button type="button" ng-click="setViewMode('explore')" ng-class="{'active': view.params.mode == 'explore'}" class="btn btn-primary btn-sm explorebutton" title="Explore"><i class="fa fa-fw fa-arrow-circle-down"></i></button>
               <button type="button" ng-click="setViewMode('facts')" ng-class="{'active': view.params.mode == 'facts'}" class="btn btn-primary btn-sm " title="Facts"><i class="fa fa-fw fa-th"></i></button>
-              <button type="button" ng-click="setViewMode('series')" ng-class="{'active': view.params.mode == 'series'}" class="btn btn-primary btn-sm " title="Series"><i class="fa fa-fw fa-table"></i></button>
+              <button type="button" ng-click="setViewMode('series')" ng-class="{'active': view.params.mode == 'series'}" class="btn btn-primary btn-sm " title="Series"><i class="fa fa-fw fa-clock-o"></i></button>
               <button type="button" ng-click="setViewMode('chart')" ng-class="{'active': view.params.mode == 'chart'}" class="btn btn-primary btn-sm " title="Charts"><i class="fa fa-fw fa-area-chart"></i></button>
             </div>
 
@@ -15,16 +15,9 @@
 
             <div ng-include="'views/cube/cube-menu-filter.html'" class="dropdown m-b" style="display: inline-block; margin-left: 2px;"></div>
 
+            <div ng-include="'views/cube/cube-menu-view.html'" class="dropdown m-b" style="display: inline-block; margin-left: 5px;"></div>
 
-            <div class="dropdown m-b" style="display: inline-block; margin-left: 5px;">
-              <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" data-submenu>
-                <i class="fa fa-fw fa-file"></i> View <span class="caret"></span>
-              </button>
-
-              <ul class="dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view">
-                <li><a><i class="fa fa-fw fa-close"></i> Close</a></li>
-              </ul>
-            </div>
+            <div ng-include="'views/cube/cube-menu-panel.html'" class="dropdown m-b" style="display: inline-block; margin-left: 5px;"></div>
 
         </div>
 
@@ -59,7 +52,19 @@
                     <button type="button" ng-click="selectCut(cut.dimension, '', cut.invert)" class="btn btn-danger btn-xs" style="margin-left: 1px;"><i class="fa fa-fw fa-trash"></i></button>
                 </div>
             </div>
-            <div class="cv-view-viewinfo-extra"></div>
+            <div class="cv-view-viewinfo-extra">
+
+                <div ng-if="view.params.mode == 'series' || view.params.mode == 'chart'" class="label label-secondary cv-infopiece cv-view-viewinfo-extra" style="color: black; background-color: #ccccff;">
+                    <span style="max-width: 350px;"><i class="fa fa-fw fa-bullseye"></i> <b>Measure:</b> {{ (view.params.yaxis != null) ? view.params.yaxis : "None" }}</span>
+                    <button type="button" class="btn btn-info btn-xs" style="visibility: hidden;"><i class="fa fa-fw fa-info"></i></button>
+                </div>
+
+                <div ng-if="view.params.mode == 'series' || view.params.mode == 'chart'" class="label label-secondary cv-infopiece cv-view-viewinfo-extra" style="color: black; background-color: #ccddff;">
+                    <span style="max-width: 350px;"><i class="fa fa-fw fa-long-arrow-right"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None" }}</span>
+                    <button type="button" class="btn btn-info btn-xs" style="visibility: hidden;"><i class="fa fa-fw fa-info"></i></button>
+                </div>
+
+            </div>
         </div>
     </div>
     <div class="clearfix"></div>

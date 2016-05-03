@@ -49,8 +49,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 	$scope.$parent.gridApi = null;
 	$scope.$parent.gridOptions = {
 		onRegisterApi: $scope.onGridRegisterApi,
-		selectionRowHeaderWidth: 24,
-		//enableRowHeaderSelection: false,
+		enableRowSelection: false,
+		enableRowHeaderSelection: false,
 	};
 
 
@@ -110,11 +110,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
     		//enableHorizontalScrollbar: 0,
     		//enableVerticalScrollbar: 0,
     		enableRowSelection: false,
-    		//enableRowHeaderSelection: false,
+    		enableRowHeaderSelection: false,
     		//enableSelectAll: false,
     		enablePinning: false,
     		multiSelect: false,
-    		selectionRowHeaderWidth: 20,
+    		//selectionRowHeaderWidth: 20,
     		//rowHeight: 50,
     		columnDefs: []
 	    });
@@ -124,9 +124,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 			field: "id",
 			index: "id",
 			enableHiding: false,
-			align: "left",
-			width: 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "id", 65),
-			sorttype : "number"
+			width: 80, //cubesviewer.views.cube.explore.defineColumnWidth(view, "id", 65),
 		});
 
 		for (var dimensionIndex in dimensions) {
