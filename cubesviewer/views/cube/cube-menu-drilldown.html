@@ -27,7 +27,8 @@
       </li>
 
       <div class="divider"></div>
-      <li ng-click="selectDrill(null)"><a href=""><i class="fa fa-fw fa-close"></i> None</a></li>
+
+      <li ng-class="{ 'disabled': view.params.drilldown.length == 0 }" ng-click="selectDrill('')"><a href=""><i class="fa fa-fw fa-close"></i> None</a></li>
 
   </ul>
 

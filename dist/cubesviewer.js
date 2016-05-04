@@ -4379,8 +4379,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 
 		// Add handlers for clicks
 		$('.cv-gui-cubeslist-menu', $(cubesviewer.gui.options.container)).find('.cv-gui-addviewcube').click(function() {
-			var view = cubesviewer.gui.addViewCube(  $(this).attr('data-cubename') );
-			//view.cubesviewer.showAboutviews.redrawView (view);
+			var view = cubesviewer.gui.addViewCube( $(this).attr('data-cubename') );
 			return false;
 		});
 
@@ -4443,7 +4442,6 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
 	var defaultOptions = {
         container: null,
         user: null,
-        showAbout: true
     };
 	$.extend(defaultOptions, cvOptions);
 	$.extend(cvOptions, defaultOptions);;
@@ -4590,12 +4588,12 @@ cubesviewer.studio = {
     "\n" +
     "          <ul class=\"dropdown-menu\">\n" +
     "\n" +
-    "                <li><a tabindex=\"0\"><i class=\"fa fa-fw fa-code\"></i> Add view from JSON...</a></li>\n" +
+    "                <li ng-click=\"showAddSerializedView()\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-code\"></i> Add view from JSON...</a></li>\n" +
     "\n" +
-    "                <div class=\"divider\" ng-if=\"cvOptions.showAbout\"></div>\n" +
+    "                <div class=\"divider\"></div>\n" +
     "\n" +
-    "                <li class=\"\"><a><i class=\"fa fa-fw fa-question\"></i> User Guide</a></li>\n" +
-    "                <li class=\"\" ng-if=\"cvOptions.showAbout\"><a data-toggle=\"modal\" data-target=\"#cvAboutModal\"><i class=\"fa fa-fw fa-info\"></i> About CubesViewer...</a></li>\n" +
+    "                <li class=\"\"><a href=\"https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-user-main.md\" target=\"_blank\"><i class=\"fa fa-fw fa-question\"></i> User Guide</a></li>\n" +
+    "                <li class=\"\"><a data-toggle=\"modal\" data-target=\"#cvAboutModal\"><i class=\"fa fa-fw fa-info\"></i> About CubesViewer...</a></li>\n" +
     "\n" +
     "            </ul>\n" +
     "        </div>\n" +
@@ -4724,7 +4722,8 @@ cubesviewer.studio = {
     "      </li>\n" +
     "\n" +
     "      <div class=\"divider\"></div>\n" +
-    "      <li ng-click=\"selectDrill(null)\"><a href=\"\"><i class=\"fa fa-fw fa-close\"></i> None</a></li>\n" +
+    "\n" +
+    "      <li ng-class=\"{ 'disabled': view.params.drilldown.length == 0 }\" ng-click=\"selectDrill('')\"><a href=\"\"><i class=\"fa fa-fw fa-close\"></i> None</a></li>\n" +
     "\n" +
     "  </ul>\n" +
     "\n"
@@ -4780,7 +4779,7 @@ cubesviewer.studio = {
     "     -->\n" +
     "\n" +
     "    <div class=\"divider\"></div>\n" +
-    "    <li><a href=\"\"><i class=\"fa fa-fw fa-trash\"></i> Clear filters</a></li>\n" +
+    "    <li ng-class=\"{ 'disabled': view.params.cuts.length == 0 }\"><a href=\"\"><i class=\"fa fa-fw fa-trash\"></i> Clear filters</a></li>\n" +
     "\n" +
     "  </ul>\n"
   );

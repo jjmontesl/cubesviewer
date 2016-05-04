@@ -281,8 +281,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 
 		// Add handlers for clicks
 		$('.cv-gui-cubeslist-menu', $(cubesviewer.gui.options.container)).find('.cv-gui-addviewcube').click(function() {
-			var view = cubesviewer.gui.addViewCube(  $(this).attr('data-cubename') );
-			//view.cubesviewer.showAboutviews.redrawView (view);
+			var view = cubesviewer.gui.addViewCube( $(this).attr('data-cubename') );
 			return false;
 		});
 
@@ -345,7 +344,6 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
 	var defaultOptions = {
         container: null,
         user: null,
-        showAbout: true
     };
 	$.extend(defaultOptions, cvOptions);
 	$.extend(cvOptions, defaultOptions);;

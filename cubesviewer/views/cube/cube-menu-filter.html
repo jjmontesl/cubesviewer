@@ -46,6 +46,6 @@
      -->
 
     <div class="divider"></div>
-    <li><a href=""><i class="fa fa-fw fa-trash"></i> Clear filters</a></li>
+    <li ng-class="{ 'disabled': view.params.cuts.length == 0 }"><a href=""><i class="fa fa-fw fa-trash"></i> Clear filters</a></li>
 
   </ul>

@@ -31,11 +31,15 @@
     * Separate in directives appropriately, restore "puggability", move cube "globals" to directive scopes.
 
     * Add anonymous-save service to backend and client (dedup).
+    * Print feature (open tables and charts with appropriate height/width, hide most interface buttons).
 
     * X/Y/size bubble charts.
     * 3rd dimension scrollbar and play mode (for charts and series)
     * Time filter dynamic (zoomable, etc) when is horizontal dimension in appropriate chart mode (nvd3 does this ootb)
     * Make charts more interactive (allow cut from chart, etc).
+    * Migrate documentation to more-custom github.io (maintain version, etc...)
+
+    * Restore pluggability, publish API for views and GUI.
 
 [2.3]
 
@@ -83,9 +87,5 @@
     * Add loading indicators / block-ui (check angular plugins) as necessary.
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
     * Review alerts, where to show them, use alert service... (alerts out of view are not nice for an embeddable lib).
-    * Separate chart plugin in files.
     * Search and replace s/2015/2016/
-
-    * Add user help, link it to doc in github.io (if not ready, link to page requesting for collaboration).
-
 
