@@ -249,6 +249,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 	$scope.cleanupNvd3 = function() {
 
 		$($element).find("svg").empty();
+		$($element).find("svg").parent().children().not("svg").remove();
+		$("div.nvtooltip").remove();
 		$scope.chart = null;
 		console.debug("FIXME: Cleanup function: destroy nvd3 events?");
 

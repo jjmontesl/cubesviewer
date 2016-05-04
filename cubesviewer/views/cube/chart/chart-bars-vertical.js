@@ -39,6 +39,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 
 	$scope.$on('GridDataUpdated', function() {
 		console.debug("Grid data ready: draw bars vertical.");
+		$scope.cleanupNvd3();
 		$timeout(function() {
 			$scope.drawChartBarsVertical();
 		}, 0);

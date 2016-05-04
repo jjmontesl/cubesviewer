@@ -3381,6 +3381,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 	$scope.cleanupNvd3 = function() {
 
 		$($element).find("svg").empty();
+		$($element).find("svg").parent().children().not("svg").remove();
+		$("div.nvtooltip").remove();
 		$scope.chart = null;
 		console.debug("FIXME: Cleanup function: destroy nvd3 events?");
 
@@ -3453,6 +3455,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 
 	$scope.$on('GridDataUpdated', function() {
 		console.debug("Grid data ready: draw bars vertical.");
+		$scope.cleanupNvd3();
 		$timeout(function() {
 			$scope.drawChartBarsVertical();
 		}, 0);
@@ -3607,6 +3610,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	};
 
 	$scope.$on('GridDataUpdated', function() {
+		$scope.cleanupNvd3();
 		$timeout(function() {
 			$scope.drawChartLines();
 		}, 0);
@@ -3622,7 +3626,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 		var dataRows = $scope.gridData;
 		var columnDefs = $scope.gridOptions.columnDefs;
 
-		var container = $($element).find("svg").empty().get(0);
+		var container = $($element).find("svg").get(0);
 
 		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
 
@@ -3827,6 +3831,148 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	};
 	*/
 
+
+	$scope.initialize();
+
+}]);
+
+
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * If your version of the Software supports interaction with it remotely through
+ * a computer network, the above copyright notice and this permission notice
+ * shall be accessible to all users.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+/*
+ * Series chart object. Contains view functions for the 'chart' mode.
+ * This is an optional component, part of the cube view.
+ */
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieController", ['$rootScope', '$scope', '$element', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, $element, $timeout, cvOptions, cubesService, viewsService) {
+
+	$scope.chart = null;
+
+	$scope.initialize = function() {
+	};
+
+	$scope.$on('GridDataUpdated', function() {
+		$scope.cleanupNvd3();
+		$timeout(function() {
+			$scope.drawChartPie();
+		}, 0);
+	});
+
+	/**
+	 */
+	$scope.drawChartPie = function () {
+
+		var view = $scope.view;
+		var dataRows = $scope.gridData;
+		var columnDefs = $scope.gridOptions.columnDefs;
+
+		var container = $($element).find("svg").get(0);
+
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
+
+	    var d = [];
+
+	    var numRows = dataRows.length;
+	    var serieCount = 0;
+	    $(dataRows).each(function(idx, e) {
+	    	serie = [];
+	    	var value = e[columnDefs[1].field];
+    		if ((value != undefined) && (value > 0)) {
+
+    	    	var series = { "y": value, "key": e["key"] != "" ? e["key"] : columnDefs[0].name };
+    	    	if (view.params["chart-disabledseries"]) {
+    	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+    	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+    	    		}
+    	    	}
+
+    	    	d.push(series);
+    			serieCount++;
+
+    		}
+
+	    });
+	    d.sort(function(a,b) { return a.y < b.y ? -1 : (a.y > b.y ? +1 : 0) });
+
+	    xticks = [];
+	    for (var i = 1; i < columnDefs.length; i++) {
+    		xticks.push([ i - 1, columnDefs[i].name ]);
+	    }
+
+	    var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+	    var colFormatter = $scope.columnFormatFunction(ag);
+
+	    nv.addGraph(function() {
+
+	        var chart = nv.models.pieChart()
+	            .x(function(d) { return d.key })
+	            .y(function(d) { return d.y })
+	            .showLegend(!!view.params.chartoptions.showLegend)
+	            //.color(d3.scale.category20().range())
+	            //.width(width)
+	            //.height(height)
+	            .labelType("percent");
+	            //.donut(true);
+
+	        /*
+		    chart.pie
+		        .startAngle(function(d) { return d.startAngle/2 -Math.PI/2 })
+		        .endAngle(function(d) { return d.endAngle/2 -Math.PI/2 });
+		        */
+
+	        chart.valueFormat(function(d,i) {
+	        	return colFormatter(d);
+	        });
+
+	        d3.select(container)
+	              .datum(d)
+	              //.attr('width', width)
+	              //.attr('height', height)
+	              .call(chart);
+
+	        nv.utils.windowResize(chart.update);
+
+	    	// Handler for state change
+	        chart.dispatch.on('stateChange', function(newState) {
+	        	view.params["chart-disabledseries"] = {
+	        			"key": view.params.drilldown.join(","),
+	        			"disabled": {}
+	        	};
+	        	for (var i = 0; i < newState.disabled.length; i++) {
+	        		view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+	        	}
+	        });
+
+	        $scope.$parent.$parent.chart = chart;
+	        return chart;
+	    });
+
+	};
 
 	$scope.initialize();
 
@@ -4370,11 +4516,16 @@ cubesviewer.studio = {
     "</div>\n" +
     "\n" +
     "<div ng-if=\"view.params.yaxis == null\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
-    "    Cannot present series table: no <b>measure</b> has been selected.\n" +
+    "    Cannot present chart: no <b>measure</b> has been selected.\n" +
     "</div>\n" +
     "\n" +
     "<div ng-if=\"view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
-    "    Cannot present series table: no rows are returned by the current filtering, horizontal dimension, and drilldown combination.\n" +
+    "    Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.\n" +
+    "</div>\n" +
+    "\n" +
+    "<div ng-if=\"view.params.charttype == 'pie' && gridOptions.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.\n" +
+    "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\">series mode</a>.\n" +
     "</div>\n"
   );
 
@@ -4384,7 +4535,9 @@ cubesviewer.studio = {
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'pie'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-pie-chart\"></i> Chart</h3>\n" +
-    "        <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        <div ng-controller=\"CubesViewerViewsCubeChartPieController\">\n" +
+    "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        </div>\n" +
     "    </div>\n" +
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'bars-vertical'\">\n" +
@@ -4410,7 +4563,9 @@ cubesviewer.studio = {
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'radar'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-bullseye\"></i> Chart</h3>\n" +
-    "        <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        <div ng-controller=\"CubesViewerViewsCubeChartRadarController\">\n" +
+    "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        </div>\n" +
     "    </div>\n" +
     "\n" +
     "</div>\n"
@@ -4557,7 +4712,9 @@ cubesviewer.studio = {
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +
-    "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend\"><a><i class=\"fa fa-fw fa-toggle-off\"></i> Toggle legend</a></li>\n" +
+    "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend; view._cubeDataUpdated = true;\">\n" +
+    "        <a><i class=\"fa fa-fw\" ng-class=\"{'fa-toggle-on': view.params.chartoptions.showLegend, 'fa-toggle-off': ! view.params.chartoptions.showLegend }\"></i> Toggle legend</a>\n" +
+    "    </li>\n" +
     "\n" +
     "    <div ng-show=\"view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
     "\n" +
@@ -4583,7 +4740,7 @@ cubesviewer.studio = {
     "\n" +
     "            <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
     "                <!--  selectDrill(dimension.name + ':' + level.name, true) -->\n" +
-    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectXAxis(level);\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectXAxis(dimension.name + ':' + level.name);\"><a href=\"\">{{ level.label }}</a></li>\n" +
     "            </ul>\n" +
     "\n" +
     "          </li>\n" +

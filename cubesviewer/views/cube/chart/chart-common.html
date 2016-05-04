@@ -12,9 +12,14 @@
 </div>
 
 <div ng-if="view.params.yaxis == null" class="alert alert-info" style="margin-bottom: 0px;">
-    Cannot present series table: no <b>measure</b> has been selected.
+    Cannot present chart: no <b>measure</b> has been selected.
 </div>
 
 <div ng-if="view.params.yaxis != null && gridOptions.data.length == 0" class="alert alert-info" style="margin-bottom: 0px;">
-    Cannot present series table: no rows are returned by the current filtering, horizontal dimension, and drilldown combination.
+    Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.
+</div>
+
+<div ng-if="view.params.charttype == 'pie' && gridOptions.columnDefs.length > 2" class="alert alert-info" style="margin-bottom: 0px;">
+    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.
+    Tip: review chart data and columns in <a href="" ng-click="setViewMode('series')">series mode</a>.
 </div>

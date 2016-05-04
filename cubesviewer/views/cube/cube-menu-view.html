@@ -24,7 +24,9 @@
         </ul>
     </li>
 
-    <li ng-show="view.params.mode == 'chart'" ng-click="view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend"><a><i class="fa fa-fw fa-toggle-off"></i> Toggle legend</a></li>
+    <li ng-show="view.params.mode == 'chart'" ng-click="view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend; view._cubeDataUpdated = true;">
+        <a><i class="fa fa-fw" ng-class="{'fa-toggle-on': view.params.chartoptions.showLegend, 'fa-toggle-off': ! view.params.chartoptions.showLegend }"></i> Toggle legend</a>
+    </li>
 
     <div ng-show="view.params.mode == 'chart'" class="divider"></div>
 
@@ -50,7 +52,7 @@
 
             <ul ng-if="dimension.hierarchies_count() == 1" class="dropdown-menu">
                 <!--  selectDrill(dimension.name + ':' + level.name, true) -->
-                <li ng-repeat="level in dimension.default_hierarchy().levels" ng-click="selectXAxis(level);"><a href="">{{ level.label }}</a></li>
+                <li ng-repeat="level in dimension.default_hierarchy().levels" ng-click="selectXAxis(dimension.name + ':' + level.name);"><a href="">{{ level.label }}</a></li>
             </ul>
 
           </li>

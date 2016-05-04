@@ -149,11 +149,16 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "</div>\n" +
     "\n" +
     "<div ng-if=\"view.params.yaxis == null\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
-    "    Cannot present series table: no <b>measure</b> has been selected.\n" +
+    "    Cannot present chart: no <b>measure</b> has been selected.\n" +
     "</div>\n" +
     "\n" +
     "<div ng-if=\"view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
-    "    Cannot present series table: no rows are returned by the current filtering, horizontal dimension, and drilldown combination.\n" +
+    "    Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.\n" +
+    "</div>\n" +
+    "\n" +
+    "<div ng-if=\"view.params.charttype == 'pie' && gridOptions.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.\n" +
+    "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\">series mode</a>.\n" +
     "</div>\n"
   );
 
@@ -163,7 +168,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'pie'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-pie-chart\"></i> Chart</h3>\n" +
-    "        <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        <div ng-controller=\"CubesViewerViewsCubeChartPieController\">\n" +
+    "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        </div>\n" +
     "    </div>\n" +
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'bars-vertical'\">\n" +
@@ -189,7 +196,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'radar'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-bullseye\"></i> Chart</h3>\n" +
-    "        <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        <div ng-controller=\"CubesViewerViewsCubeChartRadarController\">\n" +
+    "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        </div>\n" +
     "    </div>\n" +
     "\n" +
     "</div>\n"
@@ -336,7 +345,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +
-    "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend\"><a><i class=\"fa fa-fw fa-toggle-off\"></i> Toggle legend</a></li>\n" +
+    "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend; view._cubeDataUpdated = true;\">\n" +
+    "        <a><i class=\"fa fa-fw\" ng-class=\"{'fa-toggle-on': view.params.chartoptions.showLegend, 'fa-toggle-off': ! view.params.chartoptions.showLegend }\"></i> Toggle legend</a>\n" +
+    "    </li>\n" +
     "\n" +
     "    <div ng-show=\"view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
     "\n" +
@@ -362,7 +373,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "            <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
     "                <!--  selectDrill(dimension.name + ':' + level.name, true) -->\n" +
-    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectXAxis(level);\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectXAxis(dimension.name + ':' + level.name);\"><a href=\"\">{{ level.label }}</a></li>\n" +
     "            </ul>\n" +
     "\n" +
     "          </li>\n" +

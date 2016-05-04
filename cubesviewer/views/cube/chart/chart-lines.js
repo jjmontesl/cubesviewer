@@ -38,6 +38,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	};
 
 	$scope.$on('GridDataUpdated', function() {
+		$scope.cleanupNvd3();
 		$timeout(function() {
 			$scope.drawChartLines();
 		}, 0);
@@ -53,7 +54,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 		var dataRows = $scope.gridData;
 		var columnDefs = $scope.gridOptions.columnDefs;
 
-		var container = $($element).find("svg").empty().get(0);
+		var container = $($element).find("svg").get(0);
 
 		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
 
