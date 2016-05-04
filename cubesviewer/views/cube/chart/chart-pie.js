@@ -94,6 +94,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
 	            .x(function(d) { return d.key })
 	            .y(function(d) { return d.y })
 	            .showLegend(!!view.params.chartoptions.showLegend)
+	            .margin({bottom: 20, top: 20})
 	            //.color(d3.scale.category20().range())
 	            //.width(width)
 	            //.height(height)

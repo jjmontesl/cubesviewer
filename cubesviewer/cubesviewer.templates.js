@@ -135,12 +135,12 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('views/cube/chart/chart-common.html',
-    "<div ng-if=\"gridOptions.data.length > 0\" style=\"width: 99%;\">\n" +
+    "<div ng-show=\"gridOptions.data.length > 0\" style=\"width: 99%;\">\n" +
     "    <div>\n" +
-    "        <div>\n" +
+    "        <div class=\"cv-chart-container\">\n" +
     "            <svg style=\"height: 400px;\" />\n" +
     "        </div>\n" +
-    "        <div style=\"font-size: 8px; float: right;\">\n" +
+    "        <div ng-show=\"view.params.charttype != 'radar'\" style=\"font-size: 8px; float: right;\">\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(400);\">Small</a>\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(550);\">Medium</a>\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(700);\">Tall</a>\n" +
@@ -157,8 +157,13 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "</div>\n" +
     "\n" +
     "<div ng-if=\"view.params.charttype == 'pie' && gridOptions.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
-    "    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.\n" +
-    "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\">series mode</a>.\n" +
+    "    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.<br />\n" +
+    "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>.\n" +
+    "</div>\n" +
+    "\n" +
+    "<div ng-if=\"view.params.yaxis != null && view.params.charttype == 'radar' && gridOptions.columnDefs.length < 4\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "    Cannot present a <b>radar chart</b> when <b>less than 3 columns</b> are present.<br />\n" +
+    "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>.\n" +
     "</div>\n"
   );
 

@@ -1,9 +1,9 @@
-<div ng-if="gridOptions.data.length > 0" style="width: 99%;">
+<div ng-show="gridOptions.data.length > 0" style="width: 99%;">
     <div>
-        <div>
+        <div class="cv-chart-container">
             <svg style="height: 400px;" />
         </div>
-        <div style="font-size: 8px; float: right;">
+        <div ng-show="view.params.charttype != 'radar'" style="font-size: 8px; float: right;">
             <a href="" class="cv-chart-height" ng-click="resizeChart(400);">Small</a>
             <a href="" class="cv-chart-height" ng-click="resizeChart(550);">Medium</a>
             <a href="" class="cv-chart-height" ng-click="resizeChart(700);">Tall</a>
@@ -20,6 +20,11 @@
 </div>
 
 <div ng-if="view.params.charttype == 'pie' && gridOptions.columnDefs.length > 2" class="alert alert-info" style="margin-bottom: 0px;">
-    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.
-    Tip: review chart data and columns in <a href="" ng-click="setViewMode('series')">series mode</a>.
+    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.<br />
+    Tip: review chart data and columns in <a href="" ng-click="setViewMode('series')" class="alert-link">series mode</a>.
+</div>
+
+<div ng-if="view.params.yaxis != null && view.params.charttype == 'radar' && gridOptions.columnDefs.length < 4" class="alert alert-info" style="margin-bottom: 0px;">
+    Cannot present a <b>radar chart</b> when <b>less than 3 columns</b> are present.<br />
+    Tip: review chart data and columns in <a href="" ng-click="setViewMode('series')" class="alert-link">series mode</a>.
 </div>

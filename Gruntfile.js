@@ -25,6 +25,7 @@ module.exports = function(grunt) {
               'cubesviewer/views/cube/chart/chart-bars-vertical.js',
               'cubesviewer/views/cube/chart/chart-lines.js',
               'cubesviewer/views/cube/chart/chart-pie.js',
+              'cubesviewer/views/cube/chart/chart-radar.js',
               /*
               'cubesviewer/cubesviewer.views.cube.datefilter.js',
               'cubesviewer/cubesviewer.views.cube.rangefilter.js',

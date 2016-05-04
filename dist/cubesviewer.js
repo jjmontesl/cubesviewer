@@ -3933,6 +3933,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
 	            .x(function(d) { return d.key })
 	            .y(function(d) { return d.y })
 	            .showLegend(!!view.params.chartoptions.showLegend)
+	            .margin({bottom: 20, top: 20})
 	            //.color(d3.scale.category20().range())
 	            //.width(width)
 	            //.height(height)
@@ -3971,6 +3972,122 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
 	        $scope.$parent.$parent.chart = chart;
 	        return chart;
 	    });
+
+	};
+
+	$scope.initialize();
+
+}]);
+
+
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * If your version of the Software supports interaction with it remotely through
+ * a computer network, the above copyright notice and this permission notice
+ * shall be accessible to all users.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+/*
+ * Series chart object. Contains view functions for the 'chart' mode.
+ * This is an optional component, part of the cube view.
+ */
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarController", ['$rootScope', '$scope', '$element', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, $element, $timeout, cvOptions, cubesService, viewsService) {
+
+	$scope.chart = null;
+
+	$scope.initialize = function() {
+	};
+
+	$scope.$on('GridDataUpdated', function() {
+		$timeout(function() {
+			$scope.drawChartRadar();
+		}, 2000);
+	});
+
+
+	/**
+	 */
+	$scope.drawChartRadar = function () {
+
+		var view = $scope.view;
+		var dataRows = $scope.gridData;
+		var columnDefs = $scope.gridOptions.columnDefs;
+
+		var container = $($element).find(".cv-chart-container")[0];
+		$(container).empty();
+		$(container).height(400);
+
+	    var d = [];
+
+	    numRows = dataRows.length;
+	    $(dataRows).each(function(idx, e) {
+	    	serie = [];
+	    	for (var i = 1; i < columnDefs.length; i++) {
+	    		var value = e[columnDefs[i].field];
+	    		if (value != undefined) {
+	    			serie.push( [i-1, value] );
+	    		} else {
+	    			serie.push( [i-1, 0] );
+	    		}
+	    	}
+	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : view.params.yaxis });
+	    });
+	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
+
+	    xticks = [];
+	    for (var i = 1; i < columnDefs.length; i++) {
+    		xticks.push([ i - 1, columnDefs[i].name ]);
+	    }
+
+	    var flotrOptions = {
+	    	//HtmlText: ! view.doExport,
+	    	HtmlText: false,
+	    	shadowSize: 2,
+	    	height: 350,
+	        radar: {
+	            show: true
+	        },
+	        mouse: {
+	            //track: true,
+	            //relative: true
+	        },
+	        grid: {
+	            circular: true,
+	            minorHorizontalLines: true
+	        },
+	        xaxis: {
+	            ticks: xticks
+	        },
+	        yaxis: {
+	        },
+	        legend: {
+	        	show: (!!view.params.chartoptions.showLegend),
+	            position: "se",
+	            backgroundColor: "#D2E8FF"
+	        }
+	    };
+	    $scope.flotrDraw = Flotr.draw(container, d, flotrOptions);
 
 	};
 
@@ -4502,12 +4619,12 @@ cubesviewer.studio = {
 
 
   $templateCache.put('views/cube/chart/chart-common.html',
-    "<div ng-if=\"gridOptions.data.length > 0\" style=\"width: 99%;\">\n" +
+    "<div ng-show=\"gridOptions.data.length > 0\" style=\"width: 99%;\">\n" +
     "    <div>\n" +
-    "        <div>\n" +
+    "        <div class=\"cv-chart-container\">\n" +
     "            <svg style=\"height: 400px;\" />\n" +
     "        </div>\n" +
-    "        <div style=\"font-size: 8px; float: right;\">\n" +
+    "        <div ng-show=\"view.params.charttype != 'radar'\" style=\"font-size: 8px; float: right;\">\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(400);\">Small</a>\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(550);\">Medium</a>\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(700);\">Tall</a>\n" +
@@ -4524,8 +4641,13 @@ cubesviewer.studio = {
     "</div>\n" +
     "\n" +
     "<div ng-if=\"view.params.charttype == 'pie' && gridOptions.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
-    "    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.\n" +
-    "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\">series mode</a>.\n" +
+    "    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.<br />\n" +
+    "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>.\n" +
+    "</div>\n" +
+    "\n" +
+    "<div ng-if=\"view.params.yaxis != null && view.params.charttype == 'radar' && gridOptions.columnDefs.length < 4\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "    Cannot present a <b>radar chart</b> when <b>less than 3 columns</b> are present.<br />\n" +
+    "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>.\n" +
     "</div>\n"
   );
 
