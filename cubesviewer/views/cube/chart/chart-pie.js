@@ -67,7 +67,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	    	serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		var value = e[columnDefs[i].name];
-	    		serie.push( { "x": columnDefs[i].name, "y":  (value != undefined) ? value : 0 } );
+	    		if (value != undefined) {
+	    			serie.push( { "x": columnDefs[i].name, "y":  value } );
+	    		} else {
+	    			serie.push( { "x": columnDefs[i].name, "y":  0} );
+	    		}
 	    	}
 	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
 	    	if (view.params["chart-disabledseries"]) {
@@ -111,9 +115,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 
 	        chart.options(chartOptions);
 	        chart.multibar.hideable(true);
-
-	        //chart.xAxis.axisLabel(xAxisLabel).showMaxMin(true).tickFormat(d3.format(',0f'));
-	        chart.xAxis.axisLabel(xAxisLabel);
+	        chart.xAxis.axisLabel(xAxisLabel).showMaxMin(true).tickFormat(d3.format(',0f'));
 
 	        //chart.yAxis.tickFormat(d3.format(',.2f'));
 	        chart.yAxis.tickFormat(function(d,i) {
@@ -126,27 +128,117 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 
 	        nv.utils.windowResize(chart.update);
 
-    	    // Handler for state change
-            chart.dispatch.on('stateChange', function(newState) {
-            	view.params["chart-barsvertical-stacked"] = newState.stacked;
-            	view.params["chart-disabledseries"] = {
-        			  "key": view.params.drilldown.join(","),
-        			  "disabled": {}
-            	};
-            	for (var i = 0; i < newState.disabled.length; i++) {
-            		view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
-            	}
-            });
+	    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-barsvertical-stacked"] = newState.stacked;
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","),
+	        			  "disabled": {}
+	        	  };
+	        	  for (var i = 0; i < newState.disabled.length; i++) {
+	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+	        	  }
+	          });
 
 	        //chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
 
-            $scope.$parent.$parent.chart = chart;
-
 	        return chart;
-
 	    });
 
 	}
+
+
+	/**
+	 */
+	this.drawChartPie = function (view, colNames, dataRows, dataTotals) {
+
+		var container = $('#seriesChart-' + view.id).find("svg").get(0);
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
+
+	    var d = [];
+
+		// Check if we can produce a pie
+		if (colNames.length > 2) {
+			$('#' + view.id).find('.cv-view-viewdata').empty();
+			$('#' + view.id).find('.cv-view-viewdata').append('<h3>Series Chart</h3><div><i>Cannot present a Pie Chart when more than one column is present.</i></div>');
+			return;
+		}
+
+	    var numRows = dataRows.length;
+	    var serieCount = 0;
+	    $(dataRows).each(function(idx, e) {
+	    	serie = [];
+	    	var value = e[colNames[1]];
+    		if ((value != undefined) && (value > 0)) {
+
+    	    	var series = { "y": value, "key": e["key"] != "" ? e["key"] : colNames[0] };
+    	    	if (view.params["chart-disabledseries"]) {
+    	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+    	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+    	    		}
+    	    	}
+
+    	    	d.push(series);
+    			serieCount++;
+
+    		}
+
+	    });
+	    d.sort(function(a,b) { return a.y < b.y ? -1 : (a.y > b.y ? +1 : 0) });
+
+	    xticks = [];
+	    for (var i = 1; i < colNames.length; i++) {
+    		xticks.push([ i - 1, colNames[i] ]);
+	    }
+
+	    var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+		var colFormatter = cubesviewer.views.cube.columnFormatFunction(view, ag);
+
+	    nv.addGraph(function() {
+
+	        var chart = nv.models.pieChart()
+	            .x(function(d) { return d.key })
+	            .y(function(d) { return d.y })
+	            .showLegend(!!view.params.chartoptions.showLegend)
+	            //.color(d3.scale.category20().range())
+	            //.width(width)
+	            //.height(height)
+	            .labelType("percent");
+	            //.donut(true);
+
+	        /*
+		    chart.pie
+		        .startAngle(function(d) { return d.startAngle/2 -Math.PI/2 })
+		        .endAngle(function(d) { return d.endAngle/2 -Math.PI/2 });
+		        */
+
+	        chart.valueFormat(function(d,i) {
+	        	return colFormatter(d);
+	        });
+
+	          d3.select(container)
+	              .datum(d)
+	              //.attr('width', width)
+	              //.attr('height', height)
+	              .call(chart);
+
+	        nv.utils.windowResize(chart.update);
+
+	    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","),
+	        			  "disabled": {}
+	        	  };
+	        	  for (var i = 0; i < newState.disabled.length; i++) {
+	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+	        	  }
+	          });
+
+	        return chart;
+	    });
+
+	};
 
 	$scope.initialize();
 

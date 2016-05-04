@@ -9,9 +9,9 @@
         <ul class="dropdown-menu">
           <li ng-click="selectChartType('pie')"><a href=""><i class="fa fa-fw fa-pie-chart"></i> Pie</a></li>
           <li ng-click="selectChartType('bars-vertical')"><a href=""><i class="fa fa-fw fa-bar-chart"></i> Bars Vertical</a></li>
-          <li><a href=""><i class="fa fa-fw fa-line-chart"></i> Lines</a></li>
-          <li><a href=""><i class="fa fa-fw fa-area-chart"></i> Areas</a></li>
-          <li><a href=""><i class="fa fa-fw fa-bullseye"></i> Radar</a></li>
+          <li ng-click="selectChartType('lines')"><a href=""><i class="fa fa-fw fa-line-chart"></i> Lines</a></li>
+          <li ng-click="selectChartType('lines-stacked')"><a href=""><i class="fa fa-fw fa-area-chart"></i> Areas</a></li>
+          <li ng-click="selectChartType('radar')"><a href=""><i class="fa fa-fw fa-bullseye"></i> Radar</a></li>
 
           <div class="divider"></div>
 
@@ -28,7 +28,7 @@
 
     <div ng-show="view.params.mode == 'chart'" class="divider"></div>
 
-    <li class="dropdown-submenu">
+    <li ng-show="view.params.mode == 'series' || view.params.mode == 'chart'" class="dropdown-submenu">
         <a tabindex="0"><i class="fa fa-fw fa-long-arrow-right"></i> Horizontal dimension</a>
         <ul class="dropdown-menu">
 
@@ -62,7 +62,7 @@
         </ul>
     </li>
 
-    <li class="dropdown-submenu">
+    <li ng-show="view.params.mode == 'series' || view.params.mode == 'chart'" class="dropdown-submenu">
         <a tabindex="0"><i class="fa fa-fw fa-crosshairs"></i> Measure</a>
         <ul class="dropdown-menu">
 
@@ -83,9 +83,9 @@
         </ul>
     </li>
 
-    <div class="divider"></div>
+    <div ng-show="view.params.mode == 'series' || view.params.mode == 'chart'" class="divider"></div>
 
-    <li><a><i class="fa fa-fw fa-table"></i> Export table</a></li>
+    <li ng-show="view.params.mode != 'chart'" ><a><i class="fa fa-fw fa-table"></i> Export table</a></li>
     <li><a><i class="fa fa-fw fa-th"></i> Export facts</a></li>
 
   </ul>

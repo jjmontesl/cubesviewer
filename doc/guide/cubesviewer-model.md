@@ -11,7 +11,7 @@ Labels
 ------
 
 Cubes supports the "label" attribute on every object. If available, CubesViewer will show this attribute
-when refering to Cubes, Dimensions, Hierarchies, Levels and other Cubes objects.
+when referring to Cubes, Dimensions, Hierarchies, Levels and other Cubes objects.
 
 Date Filtering
 --------------
@@ -132,25 +132,6 @@ example, hide some columns, apply a datefilter or show a chart view for a given 
 ```
 
 
-
-Ignored Dimensions
-------------------
-
-You can make CubesViewer ignore a dimension by adding a "cv-ignore" information key as shown
-in the example below. Ignored dimensions will not be shown by CubesViewer.
-
-```
-    "dimensions": [
-        {
-            "name": "company",
-            "label": "Company",
-            "info": {
-                "cv-ignore": true
-            }
-        },
-        ...
-```
-
 Meassure Formatting
 -------------------
 
@@ -173,8 +154,8 @@ The `cv-formatter` value is a Javascript expression that returns a formatted
 string.
 
 You can use the `Math.formatnumber` function, added by CubesViewer, which
-formats a number with thousands separator and the given number of decimal
-places.
+formats a number the given number of decimal places and optional thousands
+separator.
 
 Remember to restart your Cubes server when changing cube metadata in order
 for the changes to be picked up.

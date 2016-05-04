@@ -67,7 +67,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	    	serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		var value = e[columnDefs[i].name];
-	    		serie.push( { "x": columnDefs[i].name, "y":  (value != undefined) ? value : 0 } );
+	    		if (value != undefined) {
+	    			serie.push( { "x": columnDefs[i].name, "y":  value } );
+	    		} else {
+	    			serie.push( { "x": columnDefs[i].name, "y":  0} );
+	    		}
 	    	}
 	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
 	    	if (view.params["chart-disabledseries"]) {
@@ -111,9 +115,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 
 	        chart.options(chartOptions);
 	        chart.multibar.hideable(true);
-
-	        //chart.xAxis.axisLabel(xAxisLabel).showMaxMin(true).tickFormat(d3.format(',0f'));
-	        chart.xAxis.axisLabel(xAxisLabel);
+	        chart.xAxis.axisLabel(xAxisLabel).showMaxMin(true).tickFormat(d3.format(',0f'));
 
 	        //chart.yAxis.tickFormat(d3.format(',.2f'));
 	        chart.yAxis.tickFormat(function(d,i) {
@@ -126,27 +128,89 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 
 	        nv.utils.windowResize(chart.update);
 
-    	    // Handler for state change
-            chart.dispatch.on('stateChange', function(newState) {
-            	view.params["chart-barsvertical-stacked"] = newState.stacked;
-            	view.params["chart-disabledseries"] = {
-        			  "key": view.params.drilldown.join(","),
-        			  "disabled": {}
-            	};
-            	for (var i = 0; i < newState.disabled.length; i++) {
-            		view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
-            	}
-            });
+	    	  // Handler for state change
+	          chart.dispatch.on('stateChange', function(newState) {
+	        	  view.params["chart-barsvertical-stacked"] = newState.stacked;
+	        	  view.params["chart-disabledseries"] = {
+	        			  "key": view.params.drilldown.join(","),
+	        			  "disabled": {}
+	        	  };
+	        	  for (var i = 0; i < newState.disabled.length; i++) {
+	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+	        	  }
+	          });
 
 	        //chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
 
-            $scope.$parent.$parent.chart = chart;
-
 	        return chart;
-
 	    });
 
 	}
+
+
+	/**
+	 */
+	this.drawChartRadar = function (view, colNames, dataRows, dataTotals) {
+
+		var container = $('#seriesChart-' + view.id).get(0);
+
+		// Check if we can produce a pie
+		if (colNames.length < 4) {
+			$('#' + view.id).find('.cv-view-viewdata').empty();
+			$('#' + view.id).find('.cv-view-viewdata').append('<h3>Series Chart</h3><div><i>Cannot present a Radar Chart when less than 3 data columns are present.</i></div>');
+			return;
+		}
+
+	    var d = [];
+
+	    numRows = dataRows.length;
+	    $(dataRows).each(function(idx, e) {
+	    	serie = [];
+	    	for (var i = 1; i < colNames.length; i++) {
+	    		var value = e[colNames[i]];
+	    		if (value != undefined) {
+	    			serie.push( [i-1, value] );
+	    		} else {
+	    			serie.push( [i-1, 0] );
+	    		}
+	    	}
+	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : view.params.yaxis });
+	    });
+	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
+
+	    xticks = [];
+	    for (var i = 1; i < colNames.length; i++) {
+    		xticks.push([ i - 1, colNames[i] ]);
+	    }
+
+	    $(container).height(350);
+	    view.flotrDraw = Flotr.draw(container, d, {
+	    	HtmlText: ! view.doExport,
+	    	shadowSize: 2,
+	    	height: 350,
+	        radar: {
+	            show: true
+	        },
+	        mouse: {
+	            track: true,
+	            relative: true
+	        },
+	        grid: {
+	            circular: true,
+	            minorHorizontalLines: true
+	        },
+	        legend: {
+	            position: "se",
+	            backgroundColor: "#D2E8FF"
+	        },
+	        xaxis: {
+	            ticks: xticks
+	        },
+	        yaxis: {
+	        }
+	    });
+
+	};
 
 	$scope.initialize();
 

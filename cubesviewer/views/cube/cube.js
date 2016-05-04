@@ -92,8 +92,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.selectDrill = function(dimension, value) {
 
-		console.debug(dimension);
-
 		var cube = $scope.view.cube;
 
 		// view.params.drilldown = (drilldown == "" ? null : drilldown);
@@ -246,7 +244,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 * Selects horizontal axis
 	 */
 	$scope.selectXAxis = function(dimension) {
-		console.debug(dimension);
 		$scope.view.params.xaxis = (dimension == "" ? null : dimension);
 		$scope.view._cubeDataUpdated = true;
 	}
@@ -256,6 +253,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.selectChartType = function(charttype) {
 		$scope.view.params.charttype = charttype;
+		$scope.view._cubeDataUpdated = true;
 	};
 
 

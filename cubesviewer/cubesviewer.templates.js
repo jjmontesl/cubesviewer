@@ -175,15 +175,19 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'lines'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-line-chart\"></i> Chart</h3>\n" +
-    "        <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        <div ng-controller=\"CubesViewerViewsCubeChartLinesController\">\n" +
+    "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        </div>\n" +
     "    </div>\n" +
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'lines-stacked'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-area-chart\"></i> Chart</h3>\n" +
-    "        <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        <div ng-controller=\"CubesViewerViewsCubeChartLinesController\">\n" +
+    "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        </div>\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ng-if=\"view.params.charttype == 'lines-stacked'\">\n" +
+    "    <div ng-if=\"view.params.charttype == 'radar'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-bullseye\"></i> Chart</h3>\n" +
     "        <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "    </div>\n" +
@@ -317,9 +321,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        <ul class=\"dropdown-menu\">\n" +
     "          <li ng-click=\"selectChartType('pie')\"><a href=\"\"><i class=\"fa fa-fw fa-pie-chart\"></i> Pie</a></li>\n" +
     "          <li ng-click=\"selectChartType('bars-vertical')\"><a href=\"\"><i class=\"fa fa-fw fa-bar-chart\"></i> Bars Vertical</a></li>\n" +
-    "          <li><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Lines</a></li>\n" +
-    "          <li><a href=\"\"><i class=\"fa fa-fw fa-area-chart\"></i> Areas</a></li>\n" +
-    "          <li><a href=\"\"><i class=\"fa fa-fw fa-bullseye\"></i> Radar</a></li>\n" +
+    "          <li ng-click=\"selectChartType('lines')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Lines</a></li>\n" +
+    "          <li ng-click=\"selectChartType('lines-stacked')\"><a href=\"\"><i class=\"fa fa-fw fa-area-chart\"></i> Areas</a></li>\n" +
+    "          <li ng-click=\"selectChartType('radar')\"><a href=\"\"><i class=\"fa fa-fw fa-bullseye\"></i> Radar</a></li>\n" +
     "\n" +
     "          <div class=\"divider\"></div>\n" +
     "\n" +
@@ -336,7 +340,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div ng-show=\"view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
     "\n" +
-    "    <li class=\"dropdown-submenu\">\n" +
+    "    <li ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"dropdown-submenu\">\n" +
     "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-long-arrow-right\"></i> Horizontal dimension</a>\n" +
     "        <ul class=\"dropdown-menu\">\n" +
     "\n" +
@@ -370,7 +374,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +
-    "    <li class=\"dropdown-submenu\">\n" +
+    "    <li ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"dropdown-submenu\">\n" +
     "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-crosshairs\"></i> Measure</a>\n" +
     "        <ul class=\"dropdown-menu\">\n" +
     "\n" +
@@ -391,9 +395,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +
-    "    <div class=\"divider\"></div>\n" +
+    "    <div ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
     "\n" +
-    "    <li><a><i class=\"fa fa-fw fa-table\"></i> Export table</a></li>\n" +
+    "    <li ng-show=\"view.params.mode != 'chart'\" ><a><i class=\"fa fa-fw fa-table\"></i> Export table</a></li>\n" +
     "    <li><a><i class=\"fa fa-fw fa-th\"></i> Export facts</a></li>\n" +
     "\n" +
     "  </ul>\n"

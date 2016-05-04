@@ -23,7 +23,6 @@
     * Fix too many series in legend issue (limit? alternate legend?).
     * Avoid leaving the page inadvertedely (also make back/forward/url_links work?)
     * Jump to added view when creating a view (also make back/forward/url_links work?)
-    * Make it clear when the results limit has been hit (for dimension values and aggregations).
     * Short list cubes.js status for the list (fixes I had to do, not easy to add caching or get jQuery promise,
       not easy to get the path to be reused, missing facts I had to add, support for export/format,
       support for several servers desirable, inconsistent use of Cell/Browser interface or missing
@@ -71,6 +70,9 @@
     * Create site, update readme, and site screenshots.
     * Server side.
     * Support negated cuts (add quick "invert" button in the cut-box?).
+
+    * Make it clear when the results limit has been hit (for dimension values and aggregations).
+      Also impacts charts (missing items). Do not draw tables or charts in this case.
 
     * Fix analytics plugin to ignore first N seconds of events as for bounce rate calculation.
     * Cleanup code, review headers (2016). Fix license in all file headers (MIT pure).
