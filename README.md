@@ -14,13 +14,12 @@ and as a (simple) company-wide analytics application.
 
 CubesViewer is a visual interface for the
 open source [Cubes server](http://databrewery.org/cubes.html) (an OLAP server in Python).
-Purpose is to keep it simple and modular, leveraging the web services
-provided by Cubes.
+Purpose is to keep it simple while leveraging the web services provided by Cubes.
 
 
 Features:
 
-* Cube explorer providing drilldown and cut operations.
+* Cube explorer providing drilldown and filter operations.
 * Supports dimension hierarchies and date filtering.
 * Several charts and diagrams can be created.
 * View management, cloning, saving and sharing.
@@ -28,9 +27,8 @@ Features:
 * Multiple modes: explore, data series, chart, facts.
 * Export data.
 * Undo / Redo.
-* Multi-user.
+* Multiuser.
 * Views can be embedded in other web sites.
-* Modular and extensible.
 
 Online Demos
 ------------
@@ -43,7 +41,7 @@ Download
 
 Current CubesViewer stable version is 2.0.1.
 
-[CubesViewer version 2.0.0](https://github.com/jjmontesl/cubesviewer/archive/cubesviewer-2.0.1.zip) - Works with Cubes 1.0.x
+[CubesViewer version 2.0.1](https://github.com/jjmontesl/cubesviewer/archive/cubesviewer-2.0.1.zip) - Works with Cubes 1.0.x
 
 Requirements
 ------------
@@ -100,7 +98,7 @@ the Cubes project mailing list:
 * User group: http://groups.google.com/group/cubes-discuss
 * Report bugs: https://github.com/jjmontesl/cubesviewer/issues
 
-If you are using or trying CubesViewer, we'd love to hear from you (tweet #cubesviewer).
+If you are using or trying CubesViewer, we'd love to hear from you (please tweet #cubesviewer !).
 
 Source
 ======

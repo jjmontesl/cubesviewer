@@ -841,7 +841,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
 }).call(this);
 ;/*
  * CubesViewer
- * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -987,7 +987,7 @@ cubes.Hierarchy.prototype.readCell = function(cell, level_limit) {
 
 ;/*
  * CubesViewer
- * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -1151,7 +1151,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 
 ;/*
  * CubesViewer
- * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -1336,7 +1336,7 @@ var cubesviewer = {
 
 ;/*
  * CubesViewer
- * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -1503,7 +1503,7 @@ function cubesviewerViews () {
 
 ;/*
  * CubesViewer
- * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -1803,7 +1803,7 @@ Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSe
 
 ;/*
  * CubesViewer
- * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -2249,7 +2249,7 @@ function cubesviewerViewCubeExplore() {
 
 ;/*
  * CubesViewer
- * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -2834,7 +2834,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 ;/*
  * CubesViewer
- * Copyright (c) 2012-2015 Jose Juan Montes, see AUTHORS for more details
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

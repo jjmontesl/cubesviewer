@@ -87,5 +87,4 @@
     * Add loading indicators / block-ui (check angular plugins) as necessary.
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
     * Review alerts, where to show them, use alert service... (alerts out of view are not nice for an embeddable lib).
-    * Search and replace s/2015/2016/
 

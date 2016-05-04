@@ -18,7 +18,7 @@ the project by writing it. Get in touch with jjmontes@gmail.com if you wish to u
 * Explore view
 ** Drilldown
 ** Filtering
-* Series view
+* Series
 * Charts
 * Facts view
 * Exporting data
