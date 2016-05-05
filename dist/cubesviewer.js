@@ -4191,6 +4191,8 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 		}
 	};
 
+
+
 	/**
 	 * Collapses the panel of the given view.
 	 */
@@ -4222,8 +4224,8 @@ angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$roo
 
 
 
-angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', '$uibModal', '$element', 'cvOptions', 'cubesService', 'studioViewsService',
-                                                                       function ($rootScope, $scope, $uibModal, $element, cvOptions, cubesService, studioViewsService) {
+angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', '$uibModal', '$element', 'cvOptions', 'cubesService', 'studioViewsService', 'viewsService',
+                                                                       function ($rootScope, $scope, $uibModal, $element, cvOptions, cubesService, studioViewsService, viewsService) {
 
 	$scope.cvVersion = cubesviewer.version;
 	$scope.cvOptions = cvOptions;
@@ -4248,7 +4250,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 	    modalInstance.result.then(function (selectedItem) {
 	    	//$scope.selected = selectedItem;
 	    }, function () {
-	        console.debug('Modal dismissed at: ' + new Date());
+	        //console.debug('Modal dismissed at: ' + new Date());
 	    });
 	};
 
@@ -4270,48 +4272,14 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 	    modalInstance.result.then(function (selectedItem) {
 	    	//$scope.selected = selectedItem;
 	    }, function () {
-	        console.debug('Modal dismissed at: ' + new Date());
+	        //console.debug('Modal dismissed at: ' + new Date());
 	    });
 	};
-
-
-	/*
-	 * Draw cube view menu
-	 */
-	this.drawMenu = function(view) {
-
-		var menu = $(".cv-view-menu-panel", $(view.container));
-		menu.append(
-			'<li><a class="cv-gui-cloneview" href="#"><span class="ui-icon ui-icon-copy"></span>Clone</a></li>' +
-			'<li><a class="cv-gui-renameview" href="#"><span class="ui-icon ui-icon-pencil"></span>Rename...</a></li>' +
-			'<div></div>' +
-			'<li><a class="cv-gui-closeview" href="#"><span class="ui-icon ui-icon-close"></span>Close</a></li>'
-		);
-
-		$(view.container).find('.cv-gui-closeview').unbind("click").click(function() {
-			cubesviewer.gui.closeView(view);
-			return false;
-		});
-		$(view.container).find('.cv-gui-renameview').unbind("click").click(function() {
-			cubesviewer.gui.renameView(view);
-			return false;
-		});
-		$('#' + view.id).find('.cv-gui-container-name').unbind("dblclick").dblclick(function() {
-			cubesviewer.gui.renameView(view);
-			return false;
-		});
-		$(view.container).find('.cv-gui-cloneview').unbind("click").click(function() {
-			cubesviewer.gui.cloneView(view);
-			return false;
-		});
-
-
-	}
 
 	/*
 	 * Renames a view (this is the user-defined label that is shown in the GUI header).
 	 */
-	this.renameView = function(view) {
+	$scope.renameView = function(view) {
 
 		var newname = prompt("Enter new view name:", view.params.name);
 
@@ -4328,19 +4296,17 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 	 * Clones a view.
 	 * This uses the serialization facility.
 	 */
-	this.cloneView = function(view) {
+	$scope.cloneView = function(view) {
 
-		viewobject = $.parseJSON(view.cubesviewer.views.serialize(view));
-		viewobject.name = "Clone of " + viewobject.name;
+		var viewObject = $.parseJSON(viewsService.serializeView(view));
+		viewObject.name = "Clone of " + viewObject.name;
 
-		var view = this.addViewObject(viewobject);
+		var view = studioViewsService.addViewObject(viewObject);
 
 		// TODO: These belong to plugins
 		view.savedId = 0;
-		view.owner = this.options.user;
+		view.owner = cvOptions.user;
 		view.shared = false;
-
-		this.cubesviewer.views.redrawView (view);
 	};
 
 
@@ -4857,7 +4823,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
     "\n" +
     "    <li><a><i class=\"fa fa-fw fa-pencil\"></i> Rename...</a></li>\n" +
-    "    <li ng-click=\"studioViewsService.cloneView(view)\"><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
+    "    <li ng-click=\"studioViewsService.studioScope.cloneView(view)\"><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
     "    <li><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +
     "    <li><a><i class=\"fa fa-fw fa-share\"></i> Share...</a></li>\n" +

@@ -353,7 +353,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
     "\n" +
     "    <li><a><i class=\"fa fa-fw fa-pencil\"></i> Rename...</a></li>\n" +
-    "    <li ng-click=\"studioViewsService.cloneView(view)\"><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
+    "    <li ng-click=\"studioViewsService.studioScope.cloneView(view)\"><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
     "    <li><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +
     "    <li><a><i class=\"fa fa-fw fa-share\"></i> Share...</a></li>\n" +
