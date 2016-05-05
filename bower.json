@@ -25,10 +25,7 @@
   "dependencies": {
     "jquery": "2.2.3",
     "nvd3": "1.8.2",
-    "blockUI": "*",
     "bootstrap": "3.3.6",
-    "jquery-ui": "1.11.4",
-    "free-jqgrid": "4.13.2",
     "flotr2": "*",
     "font-awesome": "Font-Awesome#4.6.1",
     "bootstrap-submenu": "^2.0.4",
@@ -39,10 +36,6 @@
   "exportsOverride": {
     "jquery": {
       "/": "dist/**/*.*"
-    },
-    "jquery-ui": {
-      "/themes": "themes",
-      "/": "*.js"
     },
     "bootstrap": {
       "/": "dist/**/*.*"

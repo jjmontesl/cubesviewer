@@ -41,10 +41,11 @@ Download
 
 Latest CubesViewer release is 2.0:
 
-* CubesViewer 2.0.1 for Cubes 1.0.x
-  * [cubesviewer-2.0.1.zip]((https://github.com/jjmontesl/cubesviewer/archive/cubesviewer-2.0.1.zip)
-  * [cubesviewer-server-2.0.1.zip]((https://github.com/jjmontesl/cubesviewer-server/archive/cubesviewer-server-2.0.1.zip)
+* CubesViewer 2.0.1
+  * [cubesviewer-2.0.1.zip](https://github.com/jjmontesl/cubesviewer/archive/cubesviewer-2.0.1.zip)
+  * [cubesviewer-server-2.0.1.zip](https://github.com/jjmontesl/cubesviewer-server/archive/cubesviewer-server-2.0.1.zip)
   * [Changelog](https://github.com/jjmontesl/cubesviewer/blob/2.0.1/CHANGES.txt)
+  * Works with *Cubes 1.0.x*
 
 
 Requirements
@@ -64,12 +65,12 @@ This project lives on a separate repository:
 (not to be confused with Cubes Server itself).
 
 In all cases you need a configured and running [Cubes Server](http://databrewery.org/cubes.html) version 1.0.x or later.
-your Cubes model may need some extra configuration if you wish to use features like date
+Your Cubes model may need some extra configuration if you wish to use features like date
 filters and range filters (see Documentation below).
 
 To be able for CubesViewer to connect to the slicer server, your `slicer.ini` should allow cross origin resource
 sharing. To enable this option, add `allow_cors_origin: http://localhost:8000` (or the URL from wich your app will work,
-or an asterisk *) under the `[server]` section.
+or an asterisk `*`) under the `[server]` section.
 
 For further information, see the Documentation section below.
 
