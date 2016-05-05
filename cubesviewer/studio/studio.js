@@ -149,8 +149,6 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 
 	$scope.showSerializeView = function(view) {
 
-		console.debug("Show serialize view");
-
 	    var modalInstance = $uibModal.open({
 	    	animation: true,
 	    	templateUrl: 'studio/serialize-view.html',
@@ -172,16 +170,24 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 	/*
 	 * Renames a view (this is the user-defined label that is shown in the GUI header).
 	 */
-	$scope.renameView = function(view) {
+	$scope.showRenameView = function(view) {
 
-		var newname = prompt("Enter new view name:", view.params.name);
+		var modalInstance = $uibModal.open({
+	    	animation: true,
+	    	templateUrl: 'studio/rename.html',
+	    	controller: 'CubesViewerRenameController',
+	    	appendTo: angular.element($($element).find('.cv-gui-modals')[0]),
+		    resolve: {
+		        view: function () { return view; },
+	    		element: function() { return $($element).find('.cv-gui-modals')[0] },
+		    }
+	    });
 
-		// TODO: Validate name
-
-		if ((newname != null) && (newname != "")) {
-			view.params.name = newname;
-			cubesviewer.views.redrawView(view);
-		}
+	    modalInstance.result.then(function (selectedItem) {
+	    	//$scope.selected = selectedItem;
+	    }, function () {
+	        //console.debug('Modal dismissed at: ' + new Date());
+	    });
 
 	};
 
@@ -204,6 +210,39 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 
 
 }]);
+
+
+
+
+angular.module('cv.studio').controller("CubesViewerRenameController", ['$rootScope', '$scope', '$uibModalInstance', 'cvOptions', 'cubesService', 'studioViewsService', 'view',
+                                                                       function ($rootScope, $scope, $uibModalInstance, cvOptions, cubesService, studioViewsService, view) {
+
+	$scope.cvVersion = cubesviewer.version;
+	$scope.cvOptions = cvOptions;
+	$scope.cubesService = cubesService;
+	$scope.studioViewsService = studioViewsService;
+
+	$scope.viewName = view.params.name;
+
+	/*
+	 * Add a serialized view.
+	 */
+	$scope.renameView = function(viewName) {
+
+		// TODO: Validate name
+		if ((viewName != null) && (viewName != "")) {
+			view.params.name = viewName;
+		}
+
+		$uibModalInstance.close(view);
+	};
+
+	$scope.close = function() {
+		$uibModalInstance.dismiss('cancel');
+	};
+
+}]);
+
 
 
 // Disable Debug Info (for production)

@@ -78,10 +78,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
 	$scope.serializedView = null;
 
 	/*
-	 * Shows the dialog to add a serialized view.
-	 * This is equivalent to other view adding methods in the cubesviewer.gui namespace,
-	 * like "addViewObject", but this loads the view definition from
-	 * the storage backend.
+	 * Add a serialized view.
 	 */
 	$scope.addSerializedView = function (serialized) {
 		console.debug("Add: " + serialized);

@@ -4256,8 +4256,6 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 
 	$scope.showSerializeView = function(view) {
 
-		console.debug("Show serialize view");
-
 	    var modalInstance = $uibModal.open({
 	    	animation: true,
 	    	templateUrl: 'studio/serialize-view.html',
@@ -4279,16 +4277,24 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 	/*
 	 * Renames a view (this is the user-defined label that is shown in the GUI header).
 	 */
-	$scope.renameView = function(view) {
+	$scope.showRenameView = function(view) {
 
-		var newname = prompt("Enter new view name:", view.params.name);
+		var modalInstance = $uibModal.open({
+	    	animation: true,
+	    	templateUrl: 'studio/rename.html',
+	    	controller: 'CubesViewerRenameController',
+	    	appendTo: angular.element($($element).find('.cv-gui-modals')[0]),
+		    resolve: {
+		        view: function () { return view; },
+	    		element: function() { return $($element).find('.cv-gui-modals')[0] },
+		    }
+	    });
 
-		// TODO: Validate name
-
-		if ((newname != null) && (newname != "")) {
-			view.params.name = newname;
-			cubesviewer.views.redrawView(view);
-		}
+	    modalInstance.result.then(function (selectedItem) {
+	    	//$scope.selected = selectedItem;
+	    }, function () {
+	        //console.debug('Modal dismissed at: ' + new Date());
+	    });
 
 	};
 
@@ -4311,6 +4317,39 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 
 
 }]);
+
+
+
+
+angular.module('cv.studio').controller("CubesViewerRenameController", ['$rootScope', '$scope', '$uibModalInstance', 'cvOptions', 'cubesService', 'studioViewsService', 'view',
+                                                                       function ($rootScope, $scope, $uibModalInstance, cvOptions, cubesService, studioViewsService, view) {
+
+	$scope.cvVersion = cubesviewer.version;
+	$scope.cvOptions = cvOptions;
+	$scope.cubesService = cubesService;
+	$scope.studioViewsService = studioViewsService;
+
+	$scope.viewName = view.params.name;
+
+	/*
+	 * Add a serialized view.
+	 */
+	$scope.renameView = function(viewName) {
+
+		// TODO: Validate name
+		if ((viewName != null) && (viewName != "")) {
+			view.params.name = viewName;
+		}
+
+		$uibModalInstance.close(view);
+	};
+
+	$scope.close = function() {
+		$uibModalInstance.dismiss('cancel');
+	};
+
+}]);
+
 
 
 // Disable Debug Info (for production)
@@ -4447,10 +4486,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
 	$scope.serializedView = null;
 
 	/*
-	 * Shows the dialog to add a serialized view.
-	 * This is equivalent to other view adding methods in the cubesviewer.gui namespace,
-	 * like "addViewObject", but this loads the view definition from
-	 * the storage backend.
+	 * Add a serialized view.
 	 */
 	$scope.addSerializedView = function (serialized) {
 		console.debug("Add: " + serialized);
@@ -4547,6 +4583,29 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "    </div>\n" +
     "\n" +
     "</div>\n"
+  );
+
+
+  $templateCache.put('studio/rename.html',
+    "  <div class=\"modal-header\">\n" +
+    "    <button type=\"button\" ng-click=\"close();\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\"><i class=\"fa fa-fw fa-close\"></i></span></button>\n" +
+    "    <h4 class=\"modal-title\" id=\"myModalLabel\"><i class=\"fa fa-pencil\"></i> Rename view</h4>\n" +
+    "  </div>\n" +
+    "  <div class=\"modal-body\">\n" +
+    "\n" +
+    "        <form class=\"form\" ng-submit=\"renameView(viewName);\">\n" +
+    "            <div class=\"form-group\">\n" +
+    "                <label for=\"serializedView\">Name:</label>\n" +
+    "                <input class=\"form-control\" ng-model=\"viewName\" />\n" +
+    "            </div>\n" +
+    "        </form>\n" +
+    "\n" +
+    "  </div>\n" +
+    "  <div class=\"modal-footer\">\n" +
+    "    <button type=\"button\" ng-click=\"close();\" class=\"btn btn-danger\" data-dismiss=\"modal\">Cancel</button>\n" +
+    "    <button type=\"button\" ng-click=\"renameView(viewName);\" class=\"btn btn-success\" data-dismiss=\"modal\">Rename</button>\n" +
+    "  </div>\n" +
+    "\n"
   );
 
 
@@ -4822,7 +4881,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
     "\n" +
-    "    <li><a><i class=\"fa fa-fw fa-pencil\"></i> Rename...</a></li>\n" +
+    "    <li ng-click=\"studioViewsService.studioScope.showRenameView(view)\"><a><i class=\"fa fa-fw fa-pencil\"></i> Rename...</a></li>\n" +
     "    <li ng-click=\"studioViewsService.studioScope.cloneView(view)\"><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
     "    <li><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +

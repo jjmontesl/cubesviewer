@@ -22,26 +22,30 @@ Features:
 * Cube explorer providing drilldown and filter operations.
 * Supports dimension hierarchies and date filtering.
 * Several charts and diagrams can be created.
-* View management, cloning, saving and sharing.
 * User Interface allows for multiple views on-screen.
 * Multiple modes: explore, data series, chart, facts.
 * Export data.
 * Undo / Redo.
-* Multiuser.
 * Views can be embedded in other web sites.
+* Optional server-side backend for saving/sharing views.
+* Multiuser.
 
 Online Demos
 ------------
 
-* [CubesViewer Explorer](http://jjmontesl.github.io/cubesviewer/cv.html) with the full application
-* [CubesViewer Demo page](http://jjmontesl.github.io/cubesviewer/index.html) with one embedded view
+* [CubesViewer Studio](http://jjmontesl.github.io/cubesviewer/studio.html) with the full application
+* [CubesViewer Demo page](http://jjmontesl.github.io/cubesviewer/index.html) showing one embedded view
 
 Download
-------------
+--------
 
-Current CubesViewer stable version is 2.0.1.
+Latest CubesViewer release is 2.0:
 
-[CubesViewer version 2.0.1](https://github.com/jjmontesl/cubesviewer/archive/cubesviewer-2.0.1.zip) - Works with Cubes 1.0.x
+* CubesViewer 2.0.1 for Cubes 1.0.x
+  * [cubesviewer-2.0.1.zip]((https://github.com/jjmontesl/cubesviewer/archive/cubesviewer-2.0.1.zip)
+  * [cubesviewer-server-2.0.1.zip]((https://github.com/jjmontesl/cubesviewer-server/archive/cubesviewer-server-2.0.1.zip)
+  * [Changelog](https://github.com/jjmontesl/cubesviewer/blob/2.0.1/CHANGES.txt)
+
 
 Requirements
 ------------
@@ -53,13 +57,13 @@ It can run without server side support as a standalone application, and
 views can be embedded in other websites. Simply
 download the package and open the `html/studio.html` file in your favorite browser.
 
-CubesViewer also features an optional server side application
+CubesViewer also features an optional **server side application**
 which provides a full web application and supports features like sharing/saving and user notes.
 This project lives on a separate repository:
 [CubesViewer Server](https://github.com/jjmontesl/cubesviewer-server)
 (not to be confused with Cubes Server itself).
 
-You need a configured and running [Cubes Server](http://databrewery.org/cubes.html) version 1.0.x or later.
+In all cases you need a configured and running [Cubes Server](http://databrewery.org/cubes.html) version 1.0.x or later.
 your Cubes model may need some extra configuration if you wish to use features like date
 filters and range filters (see Documentation below).
 
