@@ -84,4 +84,11 @@
         </div>
     </div>
 
+    <div ng-if="view.params.charttype == 'map'">
+        <h3><i class="fa fa-fw fa-globe"></i> Map chart</h3>
+        <div ng-controller="CubesViewerViewsCubeChartMapController">
+            <div ng-include="'views/cube/chart/map/chart-map.html'"></div>
+        </div>
+    </div>
+
 </div>

@@ -1,0 +1,21 @@
+<div ng-show="gridOptions.data.length > 0" style="width: 99%;">
+    <div>
+        <div class="cv-chart-container">
+            <div class="cv-map-container" style="height: 400px;" ></div>
+        </div>
+        <div style="font-size: 8px; float: right;">
+            <a href="" class="cv-chart-height" ng-click="resizeChart(400);">Small</a>
+            <a href="" class="cv-chart-height" ng-click="resizeChart(550);">Medium</a>
+            <a href="" class="cv-chart-height" ng-click="resizeChart(700);">Tall</a>
+        </div>
+    </div>
+</div>
+
+<div ng-if="view.params.yaxis == null" class="alert alert-info" style="margin-bottom: 0px;">
+    Cannot present chart: no <b>measure</b> has been selected.
+</div>
+
+<div ng-if="view.params.yaxis != null && gridOptions.data.length == 0" class="alert alert-info" style="margin-bottom: 0px;">
+    Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.
+</div>
+

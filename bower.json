@@ -33,7 +33,8 @@
     "angular-bootstrap": "1.3.2",
     "angular-ui-grid": "^3.1.1",
     "angular-bootstrap-slider": "^0.1.27",
-    "angular-cookies": "^1.5.5"
+    "angular-cookies": "^1.5.5",
+    "openlayers": "https://github.com/openlayers/ol3/releases/download/v3.15.1/v3.15.1-dist.zip"
   },
   "exportsOverride": {
     "jquery": {
