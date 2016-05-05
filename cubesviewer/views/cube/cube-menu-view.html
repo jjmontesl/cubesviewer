@@ -87,7 +87,21 @@
 
     <div ng-show="view.params.mode == 'series' || view.params.mode == 'chart'" class="divider"></div>
 
+    <li ng-show="view.params.mode == 'series' || view.params.mode == 'chart'" class="dropdown-submenu">
+        <a tabindex="0" ><i class="fa fa-fw fa-calculator"></i> Series calculations</a>
+        <ul class="dropdown-menu">
+          <li ng-click="selectCalculation('difference')"><a href=""><i class="fa fa-fw">&sum;</i> Difference</a></li>
+          <li ng-click="selectCalculation('percentage')"><a href=""><i class="fa fa-fw fa-percent"></i> Percentage</a></li>
+          <li ng-click="selectCalculation('accum')"><a href=""><i class="fa fa-fw fa-line-chart"></i> Accumulated</a></li>
+          <div class="divider"></div>
+          <li ng-click="selectCalculation(null)"><a href=""><i class="fa fa-fw fa-times"></i> None</a></li>
+        </ul>
+    </li>
+
+    <div ng-show="view.params.mode == 'series' || view.params.mode == 'chart'" class="divider"></div>
+
     <li ng-show="view.params.mode != 'chart'" ><a><i class="fa fa-fw fa-table"></i> Export table</a></li>
     <li><a><i class="fa fa-fw fa-th"></i> Export facts</a></li>
 
   </ul>
+

@@ -138,7 +138,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 
 	$scope.showSerializeView = function(view) {
 
-	    var modalInstance = $uithis.studioViewsService = null;bModal.open({
+	    var modalInstance = $uibModal.open({
 	    	animation: true,
 	    	templateUrl: 'studio/serialize-view.html',
 	    	controller: 'CubesViewerSerializeViewController',

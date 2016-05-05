@@ -68,6 +68,7 @@
     * Test CORS issue from server (localhost:8000 -> localhost:5000), test JSONP.
     * Uncomment studio.html code that asks for the server url to connect to.
     * Keep existing screenshots (or names) as they are referenced from 3rd party sites.
+    * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
 
     * Issue #39, "strings with hyphen cause dimension filter to work inexpectedly".
 
@@ -87,7 +88,7 @@
     * Use strict. Check /* 'use strict'; */ in angular-bootstrap-submenu, which loads early.
     * Review if cube or menu loading is happening before initialization if views are created eagerly (views.html).
     * Review readonly menus and pills, and invalid combinations and info messages.
+
     * Add loading indicators / block-ui (check angular plugins) as necessary.
-    * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
     * Review alerts, where to show them, use alert service... (alerts out of view are not nice for an embeddable lib).
 

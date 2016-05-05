@@ -1769,10 +1769,18 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	};
 
 	/*
+	 * Selects chart type
+	 */
+	$scope.selectCalculation = function(calculation) {
+		$scope.view.params.calculation = calculation;
+		$scope.view._cubeDataUpdated = true;
+	};
+
+
+	/*
 	 * Serialize view dialog
 	 */
 	$scope.showSerializeView = function(view) {
-		console.debug("Show serialize view");
 		studioViewsService.studioScope.showSerializeView(view);
 	};
 
@@ -2861,13 +2869,52 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
  */
 
 
+
+/**
+ * Manipulates series.
+ */
+angular.module('cv.views').service("seriesService", ['$rootScope', 'cvOptions', 'cubesService',
+                                                    function ($rootScope, cvOptions, cubesService) {
+
+	this.calculateDifferentials = function(view, rows, columnDefs) {
+
+		$(rows).each(function(idx, e) {
+			var lastValue = null;
+			for (var i = view.params.drilldown.length; i < columnDefs.length; i++) {
+	    		var value = e[columnDefs[i].field];
+	    		var diff = null;
+	    		if (lastValue != null) {
+	    			var diff = value - lastValue;
+	    		}
+	    		e[columnDefs[i].field] = diff;
+	    		lastValue = value;
+	    	}
+		});
+
+	};
+
+	this.calculateAccum = function(view, rows, columnDefs) {
+
+	};
+
+	this.applyCalculations = function(view, rows, columnDefs) {
+		if (view.params.calculation == "difference") {
+			this.calculateDifferentials(view, rows, columnDefs);
+		}
+	};
+
+
+}]);
+
+
+
 /**
  * SeriesTable object. This is part of the "cube" view. Allows the user to select
  * a dimension to use as horizontal axis of a table. This is later used to generate
  * charts.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
-                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesService',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, seriesService) {
 
 	$scope.$parent.gridData = [];
 
@@ -2879,7 +2926,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
           console.debug(row.entity);
         });
         gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-          console.debug(rows);
+          console.debug(rows);Accumulated
         });
 
     };
@@ -2965,6 +3012,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 		// Process data
 		//$scope._sortData (data.cells, view.params.xaxis != null ? true : false);
 	    $scope._addRows(data);
+	    seriesService.applyCalculations($scope.view, $scope.gridData, $scope.gridOptions.columnDefs);
 
 	    /*
 	    // TODO: Is this needed?
@@ -3161,8 +3209,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
  * This is an optional component, part of the cube view.
  */
 
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController", ['$rootScope', '$scope', '$timeout', '$element', 'cvOptions', 'cubesService', 'viewsService',
-                                                     function ($rootScope, $scope, $timeout, $element, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController", ['$rootScope', '$scope', '$timeout', '$element', 'cvOptions', 'cubesService', 'viewsService', 'seriesService',
+                                                     function ($rootScope, $scope, $timeout, $element, cvOptions, cubesService, viewsService, seriesService) {
 
 	$scope.$parent.gridData = [];
 	$scope.$parent.gridApi = null;
@@ -3221,6 +3269,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 		// Process data
 		//$scope._sortData (data.cells, view.params.xaxis != null ? true : false);
 	    $scope._addRows(data);
+	    seriesService.applyCalculations($scope.view, $scope.gridData, $scope.gridOptions.columnDefs);
 
 		// Join keys
 		if (view.params.drilldown.length > 0) {
@@ -4217,7 +4266,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 
 	$scope.showSerializeView = function(view) {
 
-	    var modalInstance = $uithis.studioViewsService = null;bModal.open({
+	    var modalInstance = $uibModal.open({
 	    	animation: true,
 	    	templateUrl: 'studio/serialize-view.html',
 	    	controller: 'CubesViewerSerializeViewController',
@@ -4817,6 +4866,66 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +
+    "    <li class=\"dropdown-submenu\">\n" +
+    "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-clock-o\"></i> Date filter</a>\n" +
+    "        <ul class=\"dropdown-menu\">\n" +
+    "\n" +
+    "          <li on-repeat-done ng-repeat-start=\"dimension in view.cube.dimensions\" ng-if=\"dimension.levels.length == 1\" ng-click=\"showDimensionFilter(dimension.name);\">\n" +
+    "            <a href=\"\">{{ dimension.label }}</a>\n" +
+    "          </li>\n" +
+    "          <li ng-repeat-end ng-if=\"dimension.levels.length != 1\" class=\"dropdown-submenu\">\n" +
+    "            <a tabindex=\"0\">{{ dimension.label }}</a>\n" +
+    "\n" +
+    "            <ul ng-if=\"dimension.hierarchies_count() != 1\" class=\"dropdown-menu\">\n" +
+    "                <li ng-repeat=\"(hikey,hi) in dimension.hierarchies\" class=\"dropdown-submenu\">\n" +
+    "                    <a tabindex=\"0\" href=\"\" onclick=\"return false;\">{{ hi.label }}</a>\n" +
+    "                    <ul class=\"dropdown-menu\">\n" +
+    "                        <!-- ng-click=\"selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)\"  -->\n" +
+    "                        <li ng-repeat=\"level in hi.levels\" ng-click=\"showDimensionFilter(dimension.name + '@' + hi.name + ':' + level.name )\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                    </ul>\n" +
+    "                </li>\n" +
+    "            </ul>\n" +
+    "\n" +
+    "            <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
+    "                <!--  selectDrill(dimension.name + ':' + level.name, true) -->\n" +
+    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"showDimensionFilter(level);\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "            </ul>\n" +
+    "\n" +
+    "          </li>\n" +
+    "\n" +
+    "        </ul>\n" +
+    "    </li>\n" +
+    "\n" +
+    "    <li class=\"dropdown-submenu\">\n" +
+    "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-arrows-h\"></i> Range filter</a>\n" +
+    "        <ul class=\"dropdown-menu\">\n" +
+    "\n" +
+    "          <li on-repeat-done ng-repeat-start=\"dimension in view.cube.dimensions\" ng-if=\"dimension.levels.length == 1\" ng-click=\"showDimensionFilter(dimension.name);\">\n" +
+    "            <a href=\"\">{{ dimension.label }}</a>\n" +
+    "          </li>\n" +
+    "          <li ng-repeat-end ng-if=\"dimension.levels.length != 1\" class=\"dropdown-submenu\">\n" +
+    "            <a tabindex=\"0\">{{ dimension.label }}</a>\n" +
+    "\n" +
+    "            <ul ng-if=\"dimension.hierarchies_count() != 1\" class=\"dropdown-menu\">\n" +
+    "                <li ng-repeat=\"(hikey,hi) in dimension.hierarchies\" class=\"dropdown-submenu\">\n" +
+    "                    <a tabindex=\"0\" href=\"\" onclick=\"return false;\">{{ hi.label }}</a>\n" +
+    "                    <ul class=\"dropdown-menu\">\n" +
+    "                        <!-- ng-click=\"selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)\"  -->\n" +
+    "                        <li ng-repeat=\"level in hi.levels\" ng-click=\"showDimensionFilter(dimension.name + '@' + hi.name + ':' + level.name )\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                    </ul>\n" +
+    "                </li>\n" +
+    "            </ul>\n" +
+    "\n" +
+    "            <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
+    "                <!--  selectDrill(dimension.name + ':' + level.name, true) -->\n" +
+    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"showDimensionFilter(level);\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "            </ul>\n" +
+    "\n" +
+    "          </li>\n" +
+    "\n" +
+    "        </ul>\n" +
+    "    </li>\n" +
+    "\n" +
     "    <!--\n" +
     "    // Events\n" +
     "    $(view.container).find('.cv-view-show-dimensionfilter').click( function() {\n" +
@@ -4943,10 +5052,24 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "    <div ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
     "\n" +
+    "    <li ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"dropdown-submenu\">\n" +
+    "        <a tabindex=\"0\" ><i class=\"fa fa-fw fa-calculator\"></i> Series calculations</a>\n" +
+    "        <ul class=\"dropdown-menu\">\n" +
+    "          <li ng-click=\"selectCalculation('difference')\"><a href=\"\"><i class=\"fa fa-fw\">&sum;</i> Difference</a></li>\n" +
+    "          <li ng-click=\"selectCalculation('percentage')\"><a href=\"\"><i class=\"fa fa-fw fa-percent\"></i> Percentage</a></li>\n" +
+    "          <li ng-click=\"selectCalculation('accum')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Accumulated</a></li>\n" +
+    "          <div class=\"divider\"></div>\n" +
+    "          <li ng-click=\"selectCalculation(null)\"><a href=\"\"><i class=\"fa fa-fw fa-times\"></i> None</a></li>\n" +
+    "        </ul>\n" +
+    "    </li>\n" +
+    "\n" +
+    "    <div ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
+    "\n" +
     "    <li ng-show=\"view.params.mode != 'chart'\" ><a><i class=\"fa fa-fw fa-table\"></i> Export table</a></li>\n" +
     "    <li><a><i class=\"fa fa-fw fa-th\"></i> Export facts</a></li>\n" +
     "\n" +
-    "  </ul>\n"
+    "  </ul>\n" +
+    "\n"
   );
 
 
@@ -4955,7 +5078,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "    <div class=\"cv-view-viewmenu\">\n" +
     "\n" +
-    "        <div class=\"panel panel-primary pull-right\" style=\"padding: 3px;\">\n" +
+    "        <div class=\"panel panel-primary pull-right\" style=\"padding: 3px; white-space: nowrap;\">\n" +
     "\n" +
     "            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n" +
     "              <button type=\"button\" ng-click=\"setViewMode('explore')\" ng-class=\"{'active': view.params.mode == 'explore'}\" class=\"btn btn-primary btn-sm explorebutton\" title=\"Explore\"><i class=\"fa fa-fw fa-arrow-circle-down\"></i></button>\n" +

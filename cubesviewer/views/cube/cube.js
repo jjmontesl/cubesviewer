@@ -259,10 +259,18 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	};
 
 	/*
+	 * Selects chart type
+	 */
+	$scope.selectCalculation = function(calculation) {
+		$scope.view.params.calculation = calculation;
+		$scope.view._cubeDataUpdated = true;
+	};
+
+
+	/*
 	 * Serialize view dialog
 	 */
 	$scope.showSerializeView = function(view) {
-		console.debug("Show serialize view");
 		studioViewsService.studioScope.showSerializeView(view);
 	};
 

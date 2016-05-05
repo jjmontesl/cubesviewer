@@ -22,13 +22,52 @@
  */
 
 
+
+/**
+ * Manipulates series.
+ */
+angular.module('cv.views').service("seriesService", ['$rootScope', 'cvOptions', 'cubesService',
+                                                    function ($rootScope, cvOptions, cubesService) {
+
+	this.calculateDifferentials = function(view, rows, columnDefs) {
+
+		$(rows).each(function(idx, e) {
+			var lastValue = null;
+			for (var i = view.params.drilldown.length; i < columnDefs.length; i++) {
+	    		var value = e[columnDefs[i].field];
+	    		var diff = null;
+	    		if (lastValue != null) {
+	    			var diff = value - lastValue;
+	    		}
+	    		e[columnDefs[i].field] = diff;
+	    		lastValue = value;
+	    	}
+		});
+
+	};
+
+	this.calculateAccum = function(view, rows, columnDefs) {
+
+	};
+
+	this.applyCalculations = function(view, rows, columnDefs) {
+		if (view.params.calculation == "difference") {
+			this.calculateDifferentials(view, rows, columnDefs);
+		}
+	};
+
+
+}]);
+
+
+
 /**
  * SeriesTable object. This is part of the "cube" view. Allows the user to select
  * a dimension to use as horizontal axis of a table. This is later used to generate
  * charts.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
-                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesService',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, seriesService) {
 
 	$scope.$parent.gridData = [];
 
@@ -40,7 +79,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
           console.debug(row.entity);
         });
         gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-          console.debug(rows);
+          console.debug(rows);Accumulated
         });
 
     };
@@ -126,6 +165,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 		// Process data
 		//$scope._sortData (data.cells, view.params.xaxis != null ? true : false);
 	    $scope._addRows(data);
+	    seriesService.applyCalculations($scope.view, $scope.gridData, $scope.gridOptions.columnDefs);
 
 	    /*
 	    // TODO: Is this needed?

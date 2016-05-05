@@ -28,8 +28,8 @@
  * This is an optional component, part of the cube view.
  */
 
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController", ['$rootScope', '$scope', '$timeout', '$element', 'cvOptions', 'cubesService', 'viewsService',
-                                                     function ($rootScope, $scope, $timeout, $element, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController", ['$rootScope', '$scope', '$timeout', '$element', 'cvOptions', 'cubesService', 'viewsService', 'seriesService',
+                                                     function ($rootScope, $scope, $timeout, $element, cvOptions, cubesService, viewsService, seriesService) {
 
 	$scope.$parent.gridData = [];
 	$scope.$parent.gridApi = null;
@@ -88,6 +88,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 		// Process data
 		//$scope._sortData (data.cells, view.params.xaxis != null ? true : false);
 	    $scope._addRows(data);
+	    seriesService.applyCalculations($scope.view, $scope.gridData, $scope.gridOptions.columnDefs);
 
 		// Join keys
 		if (view.params.drilldown.length > 0) {

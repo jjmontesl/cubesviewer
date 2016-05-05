@@ -1,5 +1,7 @@
 [2.0.1]
 
+    * Added "accumulated", "difference" and other calculations
+      to series and charts.
     * New icon library and revamped UI.
     * Fixed incorrect column resize slider bug.
     * Added automatic content-based column resize feature.
