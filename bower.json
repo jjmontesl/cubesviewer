@@ -31,7 +31,8 @@
     "bootstrap-submenu": "^2.0.4",
     "angular": "^1.5.5",
     "angular-bootstrap": "1.3.2",
-    "angular-ui-grid": "^3.1.1"
+    "angular-ui-grid": "^3.1.1",
+    "angular-bootstrap-slider": "^0.1.27"
   },
   "exportsOverride": {
     "jquery": {

@@ -62,7 +62,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "            <button type=\"button\" ng-click=\"studioViewsService.closeView(view)\" class=\"btn btn-danger btn-xs pull-right\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "            <button type=\"button\" ng-click=\"studioViewsService.toggleCollapseView(view)\" class=\"btn btn-primary btn-xs pull-right\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw\" ng-class=\"{'fa-caret-up': !view.collapsed, 'fa-caret-down': view.collapsed }\"></i></button>\n" +
     "\n" +
-    "            <i class=\"fa fa-fw fa-file\"></i> <span class=\"cv-gui-title\">{{ view.params.name }}</span>\n" +
+    "            <i class=\"fa fa-fw fa-file\"></i> <span class=\"cv-gui-title\" ng-dblclick=\"studioViewsService.studioScope.showRenameView(view)\">{{ view.params.name }}</span>\n" +
     "            <span class=\"badge badge-primary cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Test</span>\n" +
     "            <button type=\"button\" class=\"btn btn-danger btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "\n" +
@@ -96,8 +96,8 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "  </div>\n" +
     "  <div class=\"modal-footer\">\n" +
-    "    <button type=\"button\" ng-click=\"close();\" class=\"btn btn-danger\" data-dismiss=\"modal\">Cancel</button>\n" +
-    "    <button type=\"button\" ng-click=\"renameView(viewName);\" class=\"btn btn-success\" data-dismiss=\"modal\">Rename</button>\n" +
+    "    <button type=\"button\" ng-click=\"close();\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Cancel</button>\n" +
+    "    <button type=\"button\" ng-click=\"renameView(viewName);\" class=\"btn btn-primary\" data-dismiss=\"modal\">Rename</button>\n" +
     "  </div>\n" +
     "\n"
   );
@@ -117,8 +117,8 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "  </div>\n" +
     "  <div class=\"modal-footer\">\n" +
-    "    <button type=\"button\" ng-click=\"close()\" class=\"btn btn-danger\" data-dismiss=\"modal\">Cancel</button>\n" +
-    "    <button type=\"button\" ng-click=\"addSerializedView(serializedView)\" class=\"btn btn-success\" data-dismiss=\"modal\">Add View</button>\n" +
+    "    <button type=\"button\" ng-click=\"close()\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Cancel</button>\n" +
+    "    <button type=\"button\" ng-click=\"addSerializedView(serializedView)\" class=\"btn btn-primary\" data-dismiss=\"modal\">Add View</button>\n" +
     "  </div>\n" +
     "\n"
   );
@@ -354,30 +354,15 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    </li>\n" +
     "\n" +
     "    <li class=\"dropdown-submenu\">\n" +
-    "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-clock-o\"></i> Date filter</a>\n" +
+    "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-calendar\"></i> Date filter</a>\n" +
     "        <ul class=\"dropdown-menu\">\n" +
-    "\n" +
-    "          <li on-repeat-done ng-repeat-start=\"dimension in view.cube.dimensions\" ng-if=\"dimension.levels.length == 1\" ng-click=\"showDimensionFilter(dimension.name);\">\n" +
-    "            <a href=\"\">{{ dimension.label }}</a>\n" +
+    "          <li ng-repeat=\"dimension in view.cube.dimensions\" ng-if=\"dimension.isDateDimension()\">\n" +
+    "            <a href=\"\" ng-click=\"selectDateFilter(dimension.name + ((dimension.info['cv-datefilter-hierarchy']) ? '@' + dimension.info['cv-datefilter-hierarchy'] : ''), true)\">\n" +
+    "                {{ dimension.label + ((dimension.hierarchy(dimension.info[\"cv-datefilter-hierarchy\"])) ? \" / \" + dimension.hierarchy(dimension.info[\"cv-datefilter-hierarchy\"]).label : \"\") }}\n" +
+    "            </a>\n" +
     "          </li>\n" +
-    "          <li ng-repeat-end ng-if=\"dimension.levels.length != 1\" class=\"dropdown-submenu\">\n" +
-    "            <a tabindex=\"0\">{{ dimension.label }}</a>\n" +
-    "\n" +
-    "            <ul ng-if=\"dimension.hierarchies_count() != 1\" class=\"dropdown-menu\">\n" +
-    "                <li ng-repeat=\"(hikey,hi) in dimension.hierarchies\" class=\"dropdown-submenu\">\n" +
-    "                    <a tabindex=\"0\" href=\"\" onclick=\"return false;\">{{ hi.label }}</a>\n" +
-    "                    <ul class=\"dropdown-menu\">\n" +
-    "                        <!-- ng-click=\"selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)\"  -->\n" +
-    "                        <li ng-repeat=\"level in hi.levels\" ng-click=\"showDimensionFilter(dimension.name + '@' + hi.name + ':' + level.name )\"><a href=\"\">{{ level.label }}</a></li>\n" +
-    "                    </ul>\n" +
-    "                </li>\n" +
-    "            </ul>\n" +
-    "\n" +
-    "            <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
-    "                <!--  selectDrill(dimension.name + ':' + level.name, true) -->\n" +
-    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"showDimensionFilter(level);\"><a href=\"\">{{ level.label }}</a></li>\n" +
-    "            </ul>\n" +
-    "\n" +
+    "          <li ng-if=\"view.cube.dateDimensions().length == 0\" class=\"disabled\">\n" +
+    "            <a href=\"\" ng-click=\"\"><i>No date filters defined for this cube.</i></a>\n" +
     "          </li>\n" +
     "\n" +
     "        </ul>\n" +
@@ -542,9 +527,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    <li ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"dropdown-submenu\">\n" +
     "        <a tabindex=\"0\" ><i class=\"fa fa-fw fa-calculator\"></i> Series calculations</a>\n" +
     "        <ul class=\"dropdown-menu\">\n" +
-    "          <li ng-click=\"selectCalculation('difference')\"><a href=\"\"><i class=\"fa fa-fw\">&sum;</i> Difference</a></li>\n" +
+    "          <li ng-click=\"selectCalculation('difference')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Difference</a></li>\n" +
     "          <li ng-click=\"selectCalculation('percentage')\"><a href=\"\"><i class=\"fa fa-fw fa-percent\"></i> Percentage</a></li>\n" +
-    "          <li ng-click=\"selectCalculation('accum')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Accumulated</a></li>\n" +
+    "          <li ng-click=\"selectCalculation('accum')\"><a href=\"\"><i class=\"fa fa-fw\">&sum;</i> Accumulated</a></li>\n" +
     "          <div class=\"divider\"></div>\n" +
     "          <li ng-click=\"selectCalculation(null)\"><a href=\"\"><i class=\"fa fa-fw fa-times\"></i> None</a></li>\n" +
     "        </ul>\n" +
@@ -615,6 +600,61 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                    <button type=\"button\" ng-click=\"selectCut(cut.dimension, '', cut.invert)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
     "                </div>\n" +
     "            </div>\n" +
+    "\n" +
+    "            <div class=\"cv-view-viewinfo-date\">\n" +
+    "                <div ng-repeat=\"cut in view.params.datefilters\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension);\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffdddd;\">\n" +
+    "                    <span style=\"max-width: 280px; white-space: nowrap;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.labelNoLevel }}:</span>\n" +
+    "                    <span class=\"cv-datefilter\" style=\"overflow: visible;\">\n" +
+    "                        <form class=\"form-inline\" style=\"display: inline-block;\">\n" +
+    "\n" +
+    "                             <div class=\"form-group\">\n" +
+    "                                <div class=\"dropdown\">\n" +
+    "                                  <button style=\"height: 20px;\" class=\"btn btn-default btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
+    "                                    <i class=\"fa fa-fw fa-calendar\"></i> <span class=\"hidden-xs\">Custom XXX</span> <span class=\"caret\"></span>\n" +
+    "                                  </button>\n" +
+    "\n" +
+    "                                  <ul class=\"dropdown-menu cv-view-menu cv-view-menu-view\">\n" +
+    "                                    <li class=\"dropdown-header\">Manual</li>\n" +
+    "                                    <li ng-click=\"custom\"><a><i class=\"fa fa-fw\"></i> Custom</a></li>\n" +
+    "                                    <li class=\"dropdown-header\">Auto</li>\n" +
+    "                                    <li ng-click=\"auto-last1m\"><a><i class=\"fa fa-fw\"></i> Last month</a></li>\n" +
+    "                                    <li ng-click=\"auto-last3m\"><a><i class=\"fa fa-fw\"></i> Last 3 months</a></li>\n" +
+    "                                    <li ng-click=\"auto-last6m\"><a><i class=\"fa fa-fw\"></i> Last 6 months</a></li>\n" +
+    "                                    <li ng-click=\"auto-last12m\"><a><i class=\"fa fa-fw\"></i> Last year</a></li>\n" +
+    "                                    <li ng-click=\"auto-last24m\"><a><i class=\"fa fa-fw\"></i> Last 2 years</a></li>\n" +
+    "                                    <li ng-click=\"auto-january1st\"><a><i class=\"fa fa-fw\"></i> From January 1st</a></li>\n" +
+    "                                    <li ng-click=\"auto-yesterday\"><a><i class=\"fa fa-fw\"></i> Yesterday</a></li>\n" +
+    "                                  </ul>\n" +
+    "                              </div>\n" +
+    "                             </div>\n" +
+    "\n" +
+    "                         &rArr;\n" +
+    "\n" +
+    "                         <div class=\"form-group\">\n" +
+    "                            <p class=\"input-group\" style=\"margin: 0px;\">\n" +
+    "                              <input type=\"text\" style=\"height: 20px; width: 80px;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateStart\" is-open=\"dateStartPopup.opened\" datepicker-options=\"dateOptions\" ng-required=\"true\" close-text=\"Close\" alt-input-formats=\"altInputFormats\" />\n" +
+    "                              <span class=\"input-group-btn\">\n" +
+    "                                <button type=\"button\" style=\"height: 20px;\" class=\"btn btn-default\" ng-click=\"open1()\"><i class=\"fa fa-fw fa-calendar\"></i></button>\n" +
+    "                              </span>\n" +
+    "                            </p>\n" +
+    "                        </div> -\n" +
+    "\n" +
+    "                         <div class=\"form-group\">\n" +
+    "                            <p class=\"input-group\" style=\"margin: 0px;\">\n" +
+    "                              <input type=\"text\" style=\"height: 20px; width: 80px;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateEnd\" is-open=\"dateEndPopup.opened\" datepicker-options=\"dateOptions\" ng-required=\"true\" close-text=\"Close\" alt-input-formats=\"altInputFormats\" />\n" +
+    "                              <span class=\"input-group-btn\">\n" +
+    "                                <button type=\"button\" style=\"height: 20px;\" class=\"btn btn-default\" ng-click=\"open1()\"><i class=\"fa fa-fw fa-calendar\"></i></button>\n" +
+    "                              </span>\n" +
+    "                            </p>\n" +
+    "                        </div>\n" +
+    "\n" +
+    "                        </form>\n" +
+    "\n" +
+    "                    </span>\n" +
+    "                    <button type=\"button\" ng-click=\"selectDateFilter(cut.dimension, false)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
     "            <div class=\"cv-view-viewinfo-extra\">\n" +
     "\n" +
     "                <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccccff;\">\n" +
@@ -658,7 +698,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "<div ng-controller=\"CubesViewerViewsCubeExploreController\">\n" +
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
-    "    <h3><i class=\"fa fa-fw fa-arrow-circle-down\"></i> Aggregated data</h3>\n" +
+    "    <h3><i class=\"fa fa-fw fa-arrow-circle-down\"></i> Aggregated data\n" +
+    "        <i class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info\"></i>\n" +
+    "    </h3>\n" +
     "\n" +
     "    <div ui-grid=\"gridOptions\"\n" +
     "         ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize\n" +
@@ -701,9 +743,8 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </div>\n" +
     "        <div class=\"panel-body\">\n" +
     "\n" +
-    "          <div class=\"row\">\n" +
-    "            <div class=\"col-xs-12\">\n" +
-    "            <form class=\"form-inline\" >\n" +
+    "            <div >\n" +
+    "            <form class=\"form-inline\">\n" +
     "\n" +
     "              <div class=\"form-group has-feedback\">\n" +
     "                <!-- <label for=\"search\">Search:</label>  -->\n" +
@@ -742,25 +783,30 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "              <button class=\"btn btn-success\" type=\"button\"><i class=\"fa fa-fw fa-filter\"></i> Apply</button>\n" +
     "            </form>\n" +
     "            </div>\n" +
-    "        </div>\n" +
     "\n" +
-    "            <div class=\"row\" style=\"margin-top: 5px;\">\n" +
+    "            <div class=\"clearfix\"></div>\n" +
     "\n" +
+    "            <div class=\"row\">\n" +
     "                <div class=\"col-xs-6\">\n" +
+    "                <div style=\"margin-top: 5px;\">\n" +
     "                    <span ng-show=\"loadingDimensionValues\" ><i class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom\"></i> Loading...</span>\n" +
     "                    <div class=\"panel panel-default panel-outline\" style=\"margin-bottom: 0px;\"><div class=\"panel-body\" style=\"max-height: 180px; overflow-y: auto; overflow-x: hidden;\">\n" +
     "                        <div ng-repeat=\"val in dimensionValues\" style=\"overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\">\n" +
-    "                            <input type=\"checkbox\" value=\"{{ val.value }}\" style=\"vertical-align: bottom;\" />\n" +
-    "                            <span>{{ val.label }}</span>\n" +
+    "                            <label style=\"font-weight: normal; margin-bottom: 2px;\">\n" +
+    "                                <input type=\"checkbox\" value=\"{{ val.value }}\" style=\"vertical-align: bottom;\" />\n" +
+    "                                {{ val.label }}\n" +
+    "                            </label>\n" +
     "                        </div>\n" +
     "                    </div></div>\n" +
-    "\n" +
     "                </div>\n" +
-    "\n" +
+    "                </div>\n" +
     "            </div>\n" +
     "\n" +
+    "            <div class=\"clearfix\"></div>\n" +
+    "\n" +
     "        </div>\n" +
-    "    </div>\n" +
+    "      </div>\n" +
+    "\n" +
     "\n" +
     "</div>\n"
   );

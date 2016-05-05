@@ -123,7 +123,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 
 
-/**5
+/**
  * Adds support for filter dialogs for dimensions. Note that
  * filtering support is available from other plugins. Default filtering
  * features are included in the normal explore view (user

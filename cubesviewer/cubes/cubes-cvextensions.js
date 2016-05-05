@@ -40,6 +40,31 @@ cubes.Dimension.prototype.default_hierarchy = function()  {
 	return this.hierarchies[this.default_hierarchy_name];
 };
 
+/*
+ * Extend model prototype to support datefilter dimensions.
+ */
+cubes.Dimension.prototype.isDateDimension = function()  {
+
+	// Inform if a dimension is a date dimension and can be used as a date
+	// filter (i.e. with range selection tool).
+	return ((this.role == "time") &&
+			((! ("cv-datefilter" in this.info)) || (this.info["cv-datefilter"] == true)) );
+
+};
+
+/**
+ * List date dimensions.
+ */
+cubes.Cube.prototype.dateDimensions = function() {
+	var result = [];
+	for (var index in this.dimensions) {
+		var dimension = this.dimensions[index];
+		if (dimension.isDateDimension()) result.push(dimension);
+	}
+	return result;
+};
+
+
 cubes.Cube.prototype.cvdim_dim = function(dimensionString) {
 	// Get a dimension by name. Accepts dimension hierarchy and level in the input string.
 	var dimname = dimensionString;
@@ -138,5 +163,4 @@ cubes.Hierarchy.prototype.readCell = function(cell, level_limit) {
 	}
 	return result;
 };
-
 

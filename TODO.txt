@@ -60,6 +60,7 @@
     * Map charts.
     * Issue #55 (chart shows measure name, not measure label).
     * Fix submenu timer hack: is causing issues already. Watch contents and perhaps debounce menu activation?
+    * Add "accumulated", "difference" and other calculations to series and charts.
 
 [2.0]
 

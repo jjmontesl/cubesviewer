@@ -40,6 +40,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	$scope.dimensionFilter = null;
 
 
+
 	$scope.$watch ("view", function(view) {
 		if (view) {
 			view._cubeDataUpdated = false;
@@ -63,13 +64,16 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		var cubeViewDefaultParams = {
 			"mode" : "explore",
 			"drilldown" : [],
-			"cuts" : []
+			"cuts" : [],
+
+			"datefilters": []
 		};
 		$scope.view.params = $.extend(true, {}, cubeViewDefaultParams, $scope.view.params);
 
 		var jqxhr = cubesService.cubesserver.get_cube($scope.view.params.cubename, function(cube) {
 
 			$scope.view.cube = cube;
+			console.debug($scope.view.cube);
 
 			// Apply parameters if cube metadata contains specific cv-view-params
 			// TODO: Don't do this if this was a saved or pre-initialized view, only for new views
@@ -272,6 +276,40 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.showSerializeView = function(view) {
 		studioViewsService.studioScope.showSerializeView(view);
+	};
+
+	/**
+	 * Adds a date filter.
+	 */
+	$scope.selectDateFilter = function(dimension, enabled) {
+
+		var view = $scope.view;
+		var cube = view.cube;
+
+		// TODO: Show a notice if the dimension already has a date filter (? and cut filter)
+
+		if (dimension != "") {
+			if (enabled == "1") {
+				view.params.datefilters.push({
+					"dimension" : dimension,
+					"mode" : "auto-last3m",
+					"date_from" : null,
+					"date_to" : null
+				});
+			} else {
+				for ( var i = 0; i < view.params.datefilters.length; i++) {
+					if (view.params.datefilters[i].dimension.split(':')[0] == dimension) {
+						view.params.datefilters.splice(i, 1);
+						break;
+					}
+				}
+			}
+		} else {
+			view.params.datefilters = [];
+		}
+
+		$scope.view._cubeDataUpdated = true;
+
 	};
 
 

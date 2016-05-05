@@ -46,7 +46,8 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 		//var container = this.createContainer(viewId);
 		//$('.cv-gui-viewcontent', container),
 
-		var view = viewsService.createView("cube", { "cubename": cubename, "name": cubeinfo.label + " (" + this.lastViewId + ")"});
+		var name = cubeinfo.label + " (" + (viewsService.lastViewId + 1) + ")";
+		var view = viewsService.createView("cube", { "cubename": cubename, "name": name });
 		this.views.push(view);
 
 		return view;

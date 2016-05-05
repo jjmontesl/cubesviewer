@@ -78,7 +78,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
 	    		}
 	    	}
-	    	console.debug(series);
 	    	d.push(series);
 	    	serieCount++;
 	    });

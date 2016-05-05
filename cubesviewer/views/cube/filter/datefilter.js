@@ -24,142 +24,42 @@
 /**
  * Adds support for datefilters.
  *
- * This plugin requires that the model is configured
+ * This module requires that the model is configured
  * to declare which dimensions may use a datefilter,
  * and which fields of the dimension correspond to
  * calendar fields (year, quarter, month, day, week...).
  * (see integrator documentation for more information).
  *
- * This is an optional plugin.
- * Depends on the cube.explore plugin.
  */
-function cubesviewerViewCubeDateFilter () {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDateController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
+                                                                                        function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
 
-	this.cubesviewer = cubesviewer;
+	$scope.initialize = function() {
+
+	};
+
+
+	$scope.initialize();
+
+}]);
+
+
+
+function cubesviewerViewCubeDateFilter () {
 
 	this._overridedbuildQueryCuts = null;
 
-	this.onViewCreate = function(event, view) {
-
-		$.extend(view.params, {
-
-			"datefilters" : [],
-
-		});
-
-	}
-
 
 	/*
-	 * Draw cube view structure.
+	 * Override original Cut generation function to add support for datefilters
 	 */
-	this.onViewDraw = function(event, view) {
-
-		if (view.cube == null) return;
-		var cube = view.cube;
-
-		// Draw menu options (depending on mode)
-		view.cubesviewer.views.cube.datefilter.drawFilterMenu(view);
-
-		// Update info boxes to include edition
-		view.cubesviewer.views.cube.datefilter.drawInfo(view);
-
-	};
+	cubesviewer.views.cube.datefilter._overridedbuildQueryCuts = cubesviewer.views.cube.buildQueryCuts;
+	cubesviewer.views.cube.buildQueryCuts = cubesviewer.views.cube.datefilter.buildQueryCuts;
 
 
-
-	/*
-	 * Draw datefilter options in the cut menu.
-	 */
-	this.drawFilterMenu = function(view) {
-
-		var cube = view.cube;
-		var menu = $(".cv-view-menu-cut", $(view.container));
-
-		var dateFilterElements = "";
-		$(cube.dimensions).each( function(idx, dimension) {
-
-			if (dimension.isDateDimension()) {
-
-				var disabled = "";
-				dateFilterElements = dateFilterElements + '<li><a href="#" class="selectDateFilter '  + disabled +
-					'" data-dimension="' + dimension.name + ((dimension.info["cv-datefilter-hierarchy"]) ? "@" + dimension.info["cv-datefilter-hierarchy"] : "") +
-				'" data-value="1">' + dimension.label + ((dimension.hierarchy(dimension.info["cv-datefilter-hierarchy"])) ? " / " + dimension.hierarchy(dimension.info["cv-datefilter-hierarchy"]).label : "") +
-					'</a></li>';
-			}
-
-		});
-
-		if (dateFilterElements == "") {
-			dateFilterElements = dateFilterElements + '<li><a href="#" onclick="return false;"><i>No date filters defined</i></a></li>';
-		}
-
-		$(".ui-explore-cut-clearsep", menu).before(
-				'<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-zoomin"></span>Date filter</a><ul class="dateFilterList" style="width: 180px;">' +
-				dateFilterElements +
-				'</ul></li>'
-		);
-
-		$(menu).menu("refresh");
-		$(menu).addClass("ui-menu-icons");
-
-		$(view.container).find('.selectDateFilter').click( function() {
-			cubesviewer.views.cube.datefilter.selectDateFilter(view, $(this).attr('data-dimension'), $(this).attr('data-value'));
-			return false;
-		});
-
-	};
-
-
-	// Draw information bubbles
-	this.drawInfo = function(view, readonly) {
-
-		$(view.container).find('.cv-view-viewinfo-cut').after(
-				'<div class="cv-view-viewinfo-date"></div>'
-		);
-
-		$(view.params.datefilters).each( function(idx, e) {
-			var dimparts = view.cube.cvdim_parts(e.dimension);
-			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
-					$(view.container).find('.cv-view-viewinfo-date'), "#ffdddd", null, readonly,
-					'<span class="ui-icon ui-icon-zoomin"></span> <b>Filter: </b> ' +
-					dimparts.labelNoLevel +
-					': <span class="datefilter"></span>')
-			var container = $('.datefilter', piece);
-			view.cubesviewer.views.cube.datefilter.drawDateFilter(view, e, container);
-
-			piece.find('.cv-view-infopiece-close').click(function() {
-				view.cubesviewer.views.cube.datefilter.selectDateFilter(view, e.dimension, "0");
-			});
-		});
-
-		if (readonly) {
-			$(view.container).find('.infopiece').find('.ui-icon-close')
-					.parent().remove();
-		}
-
-	};
 
 
 	this.drawDateFilter = function(view, datefilter, container) {
-
-		$(container)
-				.append(
-						' '
-						+ '<select name="date_mode" >'
-						+ '<option value="custom">Custom</option>'
-						//+ '<option value="linked" disabled="true">Linked to main</option>'
-						+ '<optgroup label="Auto">'
-						+ '<option value="auto-last1m">Last month</option>'
-						+ '<option value="auto-last3m">Last 3 months</option>'
-						+ '<option value="auto-last6m">Last 6 months</option>'
-						+ '<option value="auto-last12m">Last year</option>'
-						+ '<option value="auto-last24m">Last 2 years</option>'
-						+ '<option value="auto-january1st">From January 1st</option>'
-						+ '<option value="auto-yesterday">Yesterday</option>'
-						+ '</optgroup>' + '</select> ' + 'Range: '
-						+ '<input name="date_start" /> - '
-						+ '<input name="date_end" /> ');
 
 		$("[name='date_start']", container).datepicker({
 			changeMonth : true,
@@ -195,37 +95,6 @@ function cubesviewerViewCubeDateFilter () {
 			$("[name='date_start']", container).attr("disabled", "disabled");
 			$("[name='date_end']", container).attr("disabled", "disabled");
 		}
-
-	};
-
-	// Adds a date filter
-	this.selectDateFilter = function(view, dimension, enabled) {
-
-		var cube = view.cube;
-
-		// TODO: Show a notice if the dimension already has a date filter (? and cut filter)
-
-		if (dimension != "") {
-			if (enabled == "1") {
-				view.params.datefilters.push({
-					"dimension" : dimension,
-					"mode" : "auto-last3m",
-					"date_from" : null,
-					"date_to" : null
-				});
-			} else {
-				for ( var i = 0; i < view.params.datefilters.length; i++) {
-					if (view.params.datefilters[i].dimension.split(':')[0] == dimension) {
-						view.params.datefilters.splice(i, 1);
-						break;
-					}
-				}
-			}
-		} else {
-			view.params.datefilters = [];
-		}
-
-		view.cubesviewer.views.redrawView(view);
 
 	};
 
@@ -353,33 +222,4 @@ function cubesviewerViewCubeDateFilter () {
 	};
 
 }
-
-/*
- * Extend model prototype to support datefilter dimensions.
- */
-cubes.Dimension.prototype.isDateDimension = function()  {
-
-	// Inform if a dimension is a date dimension and can be used as a date
-	// filter (i.e. with range selection tool).
-	return ((this.role == "time") &&
-			((! ("cv-datefilter" in this.info)) || (this.info["cv-datefilter"] == true)) );
-
-};
-
-/*
- * Create object.
- */
-cubesviewer.views.cube.datefilter = new cubesviewerViewCubeDateFilter();
-
-/*
- * Override original Cut generation function to add support for datefilters
- */
-cubesviewer.views.cube.datefilter._overridedbuildQueryCuts = cubesviewer.views.cube.buildQueryCuts;
-cubesviewer.views.cube.buildQueryCuts = cubesviewer.views.cube.datefilter.buildQueryCuts;
-
-/*
- * Bind events.
- */
-$(document).bind("cubesviewerViewCreate", { }, cubesviewer.views.cube.datefilter.onViewCreate);
-$(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.cube.datefilter.onViewDraw);
 

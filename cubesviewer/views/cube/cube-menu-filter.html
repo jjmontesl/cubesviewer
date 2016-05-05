@@ -38,30 +38,15 @@
     </li>
 
     <li class="dropdown-submenu">
-        <a tabindex="0"><i class="fa fa-fw fa-clock-o"></i> Date filter</a>
+        <a tabindex="0"><i class="fa fa-fw fa-calendar"></i> Date filter</a>
         <ul class="dropdown-menu">
-
-          <li on-repeat-done ng-repeat-start="dimension in view.cube.dimensions" ng-if="dimension.levels.length == 1" ng-click="showDimensionFilter(dimension.name);">
-            <a href="">{{ dimension.label }}</a>
+          <li ng-repeat="dimension in view.cube.dimensions" ng-if="dimension.isDateDimension()">
+            <a href="" ng-click="selectDateFilter(dimension.name + ((dimension.info['cv-datefilter-hierarchy']) ? '@' + dimension.info['cv-datefilter-hierarchy'] : ''), true)">
+                {{ dimension.label + ((dimension.hierarchy(dimension.info["cv-datefilter-hierarchy"])) ? " / " + dimension.hierarchy(dimension.info["cv-datefilter-hierarchy"]).label : "") }}
+            </a>
           </li>
-          <li ng-repeat-end ng-if="dimension.levels.length != 1" class="dropdown-submenu">
-            <a tabindex="0">{{ dimension.label }}</a>
-
-            <ul ng-if="dimension.hierarchies_count() != 1" class="dropdown-menu">
-                <li ng-repeat="(hikey,hi) in dimension.hierarchies" class="dropdown-submenu">
-                    <a tabindex="0" href="" onclick="return false;">{{ hi.label }}</a>
-                    <ul class="dropdown-menu">
-                        <!-- ng-click="selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)"  -->
-                        <li ng-repeat="level in hi.levels" ng-click="showDimensionFilter(dimension.name + '@' + hi.name + ':' + level.name )"><a href="">{{ level.label }}</a></li>
-                    </ul>
-                </li>
-            </ul>
-
-            <ul ng-if="dimension.hierarchies_count() == 1" class="dropdown-menu">
-                <!--  selectDrill(dimension.name + ':' + level.name, true) -->
-                <li ng-repeat="level in dimension.default_hierarchy().levels" ng-click="showDimensionFilter(level);"><a href="">{{ level.label }}</a></li>
-            </ul>
-
+          <li ng-if="view.cube.dateDimensions().length == 0" class="disabled">
+            <a href="" ng-click=""><i>No date filters defined for this cube.</i></a>
           </li>
 
         </ul>

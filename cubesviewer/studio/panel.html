@@ -6,7 +6,7 @@
             <button type="button" ng-click="studioViewsService.closeView(view)" class="btn btn-danger btn-xs pull-right" style="margin-left: 10px;"><i class="fa fa-fw fa-close"></i></button>
             <button type="button" ng-click="studioViewsService.toggleCollapseView(view)" class="btn btn-primary btn-xs pull-right" style="margin-left: 5px;"><i class="fa fa-fw" ng-class="{'fa-caret-up': !view.collapsed, 'fa-caret-down': view.collapsed }"></i></button>
 
-            <i class="fa fa-fw fa-file"></i> <span class="cv-gui-title">{{ view.params.name }}</span>
+            <i class="fa fa-fw fa-file"></i> <span class="cv-gui-title" ng-dblclick="studioViewsService.studioScope.showRenameView(view)">{{ view.params.name }}</span>
             <span class="badge badge-primary cv-gui-container-state" style="margin-left: 15px; font-size: 80%;">Test</span>
             <button type="button" class="btn btn-danger btn-xs" style="visibility: hidden;"><i class="fa fa-fw fa-info"></i></button>
 

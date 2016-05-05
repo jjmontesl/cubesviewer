@@ -7,9 +7,8 @@
         </div>
         <div class="panel-body">
 
-          <div class="row">
-            <div class="col-xs-12">
-            <form class="form-inline" >
+            <div >
+            <form class="form-inline">
 
               <div class="form-group has-feedback">
                 <!-- <label for="search">Search:</label>  -->
@@ -48,24 +47,29 @@
               <button class="btn btn-success" type="button"><i class="fa fa-fw fa-filter"></i> Apply</button>
             </form>
             </div>
-        </div>
 
-            <div class="row" style="margin-top: 5px;">
+            <div class="clearfix"></div>
 
+            <div class="row">
                 <div class="col-xs-6">
+                <div style="margin-top: 5px;">
                     <span ng-show="loadingDimensionValues" ><i class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom"></i> Loading...</span>
                     <div class="panel panel-default panel-outline" style="margin-bottom: 0px;"><div class="panel-body" style="max-height: 180px; overflow-y: auto; overflow-x: hidden;">
                         <div ng-repeat="val in dimensionValues" style="overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                            <input type="checkbox" value="{{ val.value }}" style="vertical-align: bottom;" />
-                            <span>{{ val.label }}</span>
+                            <label style="font-weight: normal; margin-bottom: 2px;">
+                                <input type="checkbox" value="{{ val.value }}" style="vertical-align: bottom;" />
+                                {{ val.label }}
+                            </label>
                         </div>
                     </div></div>
-
                 </div>
-
+                </div>
             </div>
 
+            <div class="clearfix"></div>
+
         </div>
-    </div>
+      </div>
+
 
 </div>

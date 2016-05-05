@@ -31,15 +31,20 @@ angular.module('cv.views').service("seriesService", ['$rootScope', 'cvOptions', 
 
 	this.calculateDifferentials = function(view, rows, columnDefs) {
 
+		console.debug("FIXME: Differentials are ignoring drilldown.length columns, but fails in some cases.");
+
 		$(rows).each(function(idx, e) {
 			var lastValue = null;
 			for (var i = view.params.drilldown.length; i < columnDefs.length; i++) {
 	    		var value = e[columnDefs[i].field];
 	    		var diff = null;
-	    		if (lastValue != null) {
+	    		if ((lastValue != null) && (value != null)) {
 	    			var diff = value - lastValue;
+	    			e[columnDefs[i].field] = diff;
+	    		} else {
+	    			delete e[columnDefs[i].field];
+	    			//e[columnDefs[i].field] = null;
 	    		}
-	    		e[columnDefs[i].field] = diff;
 	    		lastValue = value;
 	    	}
 		});

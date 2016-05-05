@@ -876,6 +876,31 @@ cubes.Dimension.prototype.default_hierarchy = function()  {
 	return this.hierarchies[this.default_hierarchy_name];
 };
 
+/*
+ * Extend model prototype to support datefilter dimensions.
+ */
+cubes.Dimension.prototype.isDateDimension = function()  {
+
+	// Inform if a dimension is a date dimension and can be used as a date
+	// filter (i.e. with range selection tool).
+	return ((this.role == "time") &&
+			((! ("cv-datefilter" in this.info)) || (this.info["cv-datefilter"] == true)) );
+
+};
+
+/**
+ * List date dimensions.
+ */
+cubes.Cube.prototype.dateDimensions = function() {
+	var result = [];
+	for (var index in this.dimensions) {
+		var dimension = this.dimensions[index];
+		if (dimension.isDateDimension()) result.push(dimension);
+	}
+	return result;
+};
+
+
 cubes.Cube.prototype.cvdim_dim = function(dimensionString) {
 	// Get a dimension by name. Accepts dimension hierarchy and level in the input string.
 	var dimname = dimensionString;
@@ -974,7 +999,6 @@ cubes.Hierarchy.prototype.readCell = function(cell, level_limit) {
 	}
 	return result;
 };
-
 
 ;/*
  * CubesViewer
@@ -1550,6 +1574,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	$scope.dimensionFilter = null;
 
 
+
 	$scope.$watch ("view", function(view) {
 		if (view) {
 			view._cubeDataUpdated = false;
@@ -1573,13 +1598,16 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		var cubeViewDefaultParams = {
 			"mode" : "explore",
 			"drilldown" : [],
-			"cuts" : []
+			"cuts" : [],
+
+			"datefilters": []
 		};
 		$scope.view.params = $.extend(true, {}, cubeViewDefaultParams, $scope.view.params);
 
 		var jqxhr = cubesService.cubesserver.get_cube($scope.view.params.cubename, function(cube) {
 
 			$scope.view.cube = cube;
+			console.debug($scope.view.cube);
 
 			// Apply parameters if cube metadata contains specific cv-view-params
 			// TODO: Don't do this if this was a saved or pre-initialized view, only for new views
@@ -1782,6 +1810,40 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.showSerializeView = function(view) {
 		studioViewsService.studioScope.showSerializeView(view);
+	};
+
+	/**
+	 * Adds a date filter.
+	 */
+	$scope.selectDateFilter = function(dimension, enabled) {
+
+		var view = $scope.view;
+		var cube = view.cube;
+
+		// TODO: Show a notice if the dimension already has a date filter (? and cut filter)
+
+		if (dimension != "") {
+			if (enabled == "1") {
+				view.params.datefilters.push({
+					"dimension" : dimension,
+					"mode" : "auto-last3m",
+					"date_from" : null,
+					"date_to" : null
+				});
+			} else {
+				for ( var i = 0; i < view.params.datefilters.length; i++) {
+					if (view.params.datefilters[i].dimension.split(':')[0] == dimension) {
+						view.params.datefilters.splice(i, 1);
+						break;
+					}
+				}
+			}
+		} else {
+			view.params.datefilters = [];
+		}
+
+		$scope.view._cubeDataUpdated = true;
+
 	};
 
 
@@ -2393,7 +2455,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 
 
-/**5
+/**
  * Adds support for filter dialogs for dimensions. Note that
  * filtering support is available from other plugins. Default filtering
  * features are included in the normal explore view (user
@@ -2540,6 +2602,231 @@ function cubesviewerViewCubeDimensionFilter () {
 
 		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
 		cubesviewer.views.cube.explore.selectCut(view, cutDimension, filterValues.join(";"), invert);
+
+	};
+
+}
+
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+/**
+ * Adds support for datefilters.
+ *
+ * This module requires that the model is configured
+ * to declare which dimensions may use a datefilter,
+ * and which fields of the dimension correspond to
+ * calendar fields (year, quarter, month, day, week...).
+ * (see integrator documentation for more information).
+ *
+ */
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDateController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
+                                                                                        function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
+
+	$scope.initialize = function() {
+
+	};
+
+
+	$scope.initialize();
+
+}]);
+
+
+
+function cubesviewerViewCubeDateFilter () {
+
+	this._overridedbuildQueryCuts = null;
+
+
+	/*
+	 * Override original Cut generation function to add support for datefilters
+	 */
+	cubesviewer.views.cube.datefilter._overridedbuildQueryCuts = cubesviewer.views.cube.buildQueryCuts;
+	cubesviewer.views.cube.buildQueryCuts = cubesviewer.views.cube.datefilter.buildQueryCuts;
+
+
+
+
+	this.drawDateFilter = function(view, datefilter, container) {
+
+		$("[name='date_start']", container).datepicker({
+			changeMonth : true,
+			changeYear : true,
+			dateFormat : "yy-mm-dd",
+			showWeek: cubesviewer.options.datepickerShowWeek,
+		    firstDay: cubesviewer.options.datepickerFirstDay
+		});
+		$("[name='date_end']", container).datepicker({
+			changeMonth : true,
+			changeYear : true,
+			dateFormat : "yy-mm-dd",
+			showWeek: cubesviewer.options.datepickerShowWeek,
+		    firstDay: cubesviewer.options.datepickerFirstDay
+		});
+
+		$("[name='date_start']", container).attr('autocomplete', 'off');
+		$("[name='date_end']", container).attr('autocomplete', 'off');
+
+		// Functionality
+		$("input,select", container).change(function() {
+			datefilter.mode = $("[name='date_mode']", container).val();
+			datefilter.date_from = $("[name='date_start']", container).val();
+			datefilter.date_to = $("[name='date_end']", container).val();
+			view.cubesviewer.views.redrawView (view);
+		});
+
+		// Set initial values
+		$("[name='date_mode']", container).val(datefilter.mode);
+		$("[name='date_start']", container).val(datefilter.date_from);
+		$("[name='date_end']", container).val(datefilter.date_to);
+		if ($("[name='date_mode']", container).val() != "custom") {
+			$("[name='date_start']", container).attr("disabled", "disabled");
+			$("[name='date_end']", container).attr("disabled", "disabled");
+		}
+
+	};
+
+	/*
+	 * Composes a filter with appropriate syntax and time grain from a
+	 * datefilter
+	 */
+	this.datefilterValue = function(view, datefilter) {
+
+		var date_from = null;
+		var date_to = null;
+
+		if (datefilter.mode.indexOf("auto-") == 0) {
+			if (datefilter.mode == "auto-last1m") {
+				date_from = new Date();
+				date_from.setMonth(date_from.getMonth() - 1);
+			} else if (datefilter.mode == "auto-last3m") {
+				date_from = new Date();
+				date_from.setMonth(date_from.getMonth() - 3);
+			} else if (datefilter.mode == "auto-last6m") {
+				date_from = new Date();
+				date_from.setMonth(date_from.getMonth() - 6);
+			} else if (datefilter.mode == "auto-last12m") {
+				date_from = new Date();
+				date_from.setMonth(date_from.getMonth() - 12);
+			} else if (datefilter.mode == "auto-last24m") {
+				date_from = new Date();
+				date_from.setMonth(date_from.getMonth() - 24);
+			} else if (datefilter.mode == "auto-january1st") {
+				date_from = new Date();
+				date_from.setMonth(0);
+				date_from.setDate(1);
+			} else if (datefilter.mode == "auto-yesterday") {
+				date_from = new Date();
+				date_from.setDate(date_from.getDate() - 1);
+				date_to = new Date();
+                date_to.setDate(date_from.getDate() - 1);
+			}
+
+		} else if (datefilter.mode == "custom") {
+			if ((datefilter.date_from != null) && (datefilter.date_from != "")) {
+				date_from = new Date(datefilter.date_from);
+			}
+			if ((datefilter.date_to != null) && (datefilter.date_to != "")) {
+				date_to = new Date(datefilter.date_to);
+			}
+		}
+
+		if ((date_from != null) || (date_to != null)) {
+			var datefiltervalue = "";
+			if (date_from != null)
+				datefiltervalue = datefiltervalue
+						+ this._datefiltercell(view, datefilter, date_from);
+			datefiltervalue = datefiltervalue + "-";
+			if (date_to != null)
+				datefiltervalue = datefiltervalue
+						+ this._datefiltercell(view, datefilter, date_to);
+			return datefiltervalue;
+		} else {
+			return null;
+		}
+
+	};
+
+	this._datefiltercell = function(view, datefilter, tdate) {
+
+		var values = [];
+
+		var dimensionparts = view.cube.cvdim_parts(datefilter.dimension);
+		for (var i = 0; i < dimensionparts.hierarchy.levels.length; i++) {
+			var level = dimensionparts.hierarchy.levels[i];
+
+			var field = level.role;
+			if (field == "year") {
+				values.push(tdate.getFullYear());
+			} else if (field == "month") {
+				values.push(tdate.getMonth() + 1);
+			} else if (field == "quarter") {
+				values.push((Math.floor(tdate.getMonth() / 3) + 1));
+			} else if (field == "week") {
+				values.push(this._weekNumber(tdate));
+			} else if (field == "day") {
+				values.push(tdate.getDate());
+			} else {
+				cubesviewer.alert ("Wrong configuration of model: time role of level '" + level.name + "' is invalid.");
+			}
+		}
+
+		return values.join(',');
+
+		/*return tdate.getFullYear() + ","
+				+ (Math.floor(tdate.getMonth() / 3) + 1) + ","
+				+ (tdate.getMonth() + 1); */
+	};
+
+	this._weekNumber = function(d) {
+	    // Copy date so don't modify original
+	    d = new Date(d);
+	    d.setHours(0,0,0);
+	    // Get first day of year
+	    var yearStart = new Date(d.getFullYear(),0,1);
+	    // Calculate full weeks to nearest Thursday
+	    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7)
+	    // Return array of year and week number
+	    return weekNo;
+	};
+
+	/*
+	 * Builds Query Cuts (overrides default cube cut build function).
+	 */
+	this.buildQueryCuts = function(view) {
+
+		// Include cuts and datefilters
+		var cuts = cubesviewer.views.cube.datefilter._overridedbuildQueryCuts(view);
+
+		$(view.params.datefilters).each(function(idx, e) {
+			var datefiltervalue = view.cubesviewer.views.cube.datefilter.datefilterValue(view, e);
+			if (datefiltervalue != null) {
+				cuts.push(cubes.cut_from_string (view.cube, e.dimension + ":" + datefiltervalue));
+			}
+		});
+
+		return cuts;
 
 	};
 
@@ -2878,15 +3165,20 @@ angular.module('cv.views').service("seriesService", ['$rootScope', 'cvOptions', 
 
 	this.calculateDifferentials = function(view, rows, columnDefs) {
 
+		console.debug("FIXME: Differentials are ignoring drilldown.length columns, but fails in some cases.");
+
 		$(rows).each(function(idx, e) {
 			var lastValue = null;
 			for (var i = view.params.drilldown.length; i < columnDefs.length; i++) {
 	    		var value = e[columnDefs[i].field];
 	    		var diff = null;
-	    		if (lastValue != null) {
+	    		if ((lastValue != null) && (value != null)) {
 	    			var diff = value - lastValue;
+	    			e[columnDefs[i].field] = diff;
+	    		} else {
+	    			delete e[columnDefs[i].field];
+	    			//e[columnDefs[i].field] = null;
 	    		}
-	    		e[columnDefs[i].field] = diff;
 	    		lastValue = value;
 	    	}
 		});
@@ -3692,7 +3984,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
 	    		}
 	    	}
-	    	console.debug(series);
 	    	d.push(series);
 	    	serieCount++;
 	    });
@@ -4174,7 +4465,8 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 		//var container = this.createContainer(viewId);
 		//$('.cv-gui-viewcontent', container),
 
-		var view = viewsService.createView("cube", { "cubename": cubename, "name": cubeinfo.label + " (" + this.lastViewId + ")"});
+		var name = cubeinfo.label + " (" + (viewsService.lastViewId + 1) + ")";
+		var view = viewsService.createView("cube", { "cubename": cubename, "name": name });
 		this.views.push(view);
 
 		return view;
@@ -4575,7 +4867,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "            <button type=\"button\" ng-click=\"studioViewsService.closeView(view)\" class=\"btn btn-danger btn-xs pull-right\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "            <button type=\"button\" ng-click=\"studioViewsService.toggleCollapseView(view)\" class=\"btn btn-primary btn-xs pull-right\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw\" ng-class=\"{'fa-caret-up': !view.collapsed, 'fa-caret-down': view.collapsed }\"></i></button>\n" +
     "\n" +
-    "            <i class=\"fa fa-fw fa-file\"></i> <span class=\"cv-gui-title\">{{ view.params.name }}</span>\n" +
+    "            <i class=\"fa fa-fw fa-file\"></i> <span class=\"cv-gui-title\" ng-dblclick=\"studioViewsService.studioScope.showRenameView(view)\">{{ view.params.name }}</span>\n" +
     "            <span class=\"badge badge-primary cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Test</span>\n" +
     "            <button type=\"button\" class=\"btn btn-danger btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "\n" +
@@ -4609,8 +4901,8 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "  </div>\n" +
     "  <div class=\"modal-footer\">\n" +
-    "    <button type=\"button\" ng-click=\"close();\" class=\"btn btn-danger\" data-dismiss=\"modal\">Cancel</button>\n" +
-    "    <button type=\"button\" ng-click=\"renameView(viewName);\" class=\"btn btn-success\" data-dismiss=\"modal\">Rename</button>\n" +
+    "    <button type=\"button\" ng-click=\"close();\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Cancel</button>\n" +
+    "    <button type=\"button\" ng-click=\"renameView(viewName);\" class=\"btn btn-primary\" data-dismiss=\"modal\">Rename</button>\n" +
     "  </div>\n" +
     "\n"
   );
@@ -4630,8 +4922,8 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "  </div>\n" +
     "  <div class=\"modal-footer\">\n" +
-    "    <button type=\"button\" ng-click=\"close()\" class=\"btn btn-danger\" data-dismiss=\"modal\">Cancel</button>\n" +
-    "    <button type=\"button\" ng-click=\"addSerializedView(serializedView)\" class=\"btn btn-success\" data-dismiss=\"modal\">Add View</button>\n" +
+    "    <button type=\"button\" ng-click=\"close()\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Cancel</button>\n" +
+    "    <button type=\"button\" ng-click=\"addSerializedView(serializedView)\" class=\"btn btn-primary\" data-dismiss=\"modal\">Add View</button>\n" +
     "  </div>\n" +
     "\n"
   );
@@ -4867,30 +5159,15 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "    </li>\n" +
     "\n" +
     "    <li class=\"dropdown-submenu\">\n" +
-    "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-clock-o\"></i> Date filter</a>\n" +
+    "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-calendar\"></i> Date filter</a>\n" +
     "        <ul class=\"dropdown-menu\">\n" +
-    "\n" +
-    "          <li on-repeat-done ng-repeat-start=\"dimension in view.cube.dimensions\" ng-if=\"dimension.levels.length == 1\" ng-click=\"showDimensionFilter(dimension.name);\">\n" +
-    "            <a href=\"\">{{ dimension.label }}</a>\n" +
+    "          <li ng-repeat=\"dimension in view.cube.dimensions\" ng-if=\"dimension.isDateDimension()\">\n" +
+    "            <a href=\"\" ng-click=\"selectDateFilter(dimension.name + ((dimension.info['cv-datefilter-hierarchy']) ? '@' + dimension.info['cv-datefilter-hierarchy'] : ''), true)\">\n" +
+    "                {{ dimension.label + ((dimension.hierarchy(dimension.info[\"cv-datefilter-hierarchy\"])) ? \" / \" + dimension.hierarchy(dimension.info[\"cv-datefilter-hierarchy\"]).label : \"\") }}\n" +
+    "            </a>\n" +
     "          </li>\n" +
-    "          <li ng-repeat-end ng-if=\"dimension.levels.length != 1\" class=\"dropdown-submenu\">\n" +
-    "            <a tabindex=\"0\">{{ dimension.label }}</a>\n" +
-    "\n" +
-    "            <ul ng-if=\"dimension.hierarchies_count() != 1\" class=\"dropdown-menu\">\n" +
-    "                <li ng-repeat=\"(hikey,hi) in dimension.hierarchies\" class=\"dropdown-submenu\">\n" +
-    "                    <a tabindex=\"0\" href=\"\" onclick=\"return false;\">{{ hi.label }}</a>\n" +
-    "                    <ul class=\"dropdown-menu\">\n" +
-    "                        <!-- ng-click=\"selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)\"  -->\n" +
-    "                        <li ng-repeat=\"level in hi.levels\" ng-click=\"showDimensionFilter(dimension.name + '@' + hi.name + ':' + level.name )\"><a href=\"\">{{ level.label }}</a></li>\n" +
-    "                    </ul>\n" +
-    "                </li>\n" +
-    "            </ul>\n" +
-    "\n" +
-    "            <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
-    "                <!--  selectDrill(dimension.name + ':' + level.name, true) -->\n" +
-    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"showDimensionFilter(level);\"><a href=\"\">{{ level.label }}</a></li>\n" +
-    "            </ul>\n" +
-    "\n" +
+    "          <li ng-if=\"view.cube.dateDimensions().length == 0\" class=\"disabled\">\n" +
+    "            <a href=\"\" ng-click=\"\"><i>No date filters defined for this cube.</i></a>\n" +
     "          </li>\n" +
     "\n" +
     "        </ul>\n" +
@@ -5055,9 +5332,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "    <li ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"dropdown-submenu\">\n" +
     "        <a tabindex=\"0\" ><i class=\"fa fa-fw fa-calculator\"></i> Series calculations</a>\n" +
     "        <ul class=\"dropdown-menu\">\n" +
-    "          <li ng-click=\"selectCalculation('difference')\"><a href=\"\"><i class=\"fa fa-fw\">&sum;</i> Difference</a></li>\n" +
+    "          <li ng-click=\"selectCalculation('difference')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Difference</a></li>\n" +
     "          <li ng-click=\"selectCalculation('percentage')\"><a href=\"\"><i class=\"fa fa-fw fa-percent\"></i> Percentage</a></li>\n" +
-    "          <li ng-click=\"selectCalculation('accum')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Accumulated</a></li>\n" +
+    "          <li ng-click=\"selectCalculation('accum')\"><a href=\"\"><i class=\"fa fa-fw\">&sum;</i> Accumulated</a></li>\n" +
     "          <div class=\"divider\"></div>\n" +
     "          <li ng-click=\"selectCalculation(null)\"><a href=\"\"><i class=\"fa fa-fw fa-times\"></i> None</a></li>\n" +
     "        </ul>\n" +
@@ -5128,6 +5405,61 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "                    <button type=\"button\" ng-click=\"selectCut(cut.dimension, '', cut.invert)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
     "                </div>\n" +
     "            </div>\n" +
+    "\n" +
+    "            <div class=\"cv-view-viewinfo-date\">\n" +
+    "                <div ng-repeat=\"cut in view.params.datefilters\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension);\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffdddd;\">\n" +
+    "                    <span style=\"max-width: 280px; white-space: nowrap;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.labelNoLevel }}:</span>\n" +
+    "                    <span class=\"cv-datefilter\" style=\"overflow: visible;\">\n" +
+    "                        <form class=\"form-inline\" style=\"display: inline-block;\">\n" +
+    "\n" +
+    "                             <div class=\"form-group\">\n" +
+    "                                <div class=\"dropdown\">\n" +
+    "                                  <button style=\"height: 20px;\" class=\"btn btn-default btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
+    "                                    <i class=\"fa fa-fw fa-calendar\"></i> <span class=\"hidden-xs\">Custom XXX</span> <span class=\"caret\"></span>\n" +
+    "                                  </button>\n" +
+    "\n" +
+    "                                  <ul class=\"dropdown-menu cv-view-menu cv-view-menu-view\">\n" +
+    "                                    <li class=\"dropdown-header\">Manual</li>\n" +
+    "                                    <li ng-click=\"custom\"><a><i class=\"fa fa-fw\"></i> Custom</a></li>\n" +
+    "                                    <li class=\"dropdown-header\">Auto</li>\n" +
+    "                                    <li ng-click=\"auto-last1m\"><a><i class=\"fa fa-fw\"></i> Last month</a></li>\n" +
+    "                                    <li ng-click=\"auto-last3m\"><a><i class=\"fa fa-fw\"></i> Last 3 months</a></li>\n" +
+    "                                    <li ng-click=\"auto-last6m\"><a><i class=\"fa fa-fw\"></i> Last 6 months</a></li>\n" +
+    "                                    <li ng-click=\"auto-last12m\"><a><i class=\"fa fa-fw\"></i> Last year</a></li>\n" +
+    "                                    <li ng-click=\"auto-last24m\"><a><i class=\"fa fa-fw\"></i> Last 2 years</a></li>\n" +
+    "                                    <li ng-click=\"auto-january1st\"><a><i class=\"fa fa-fw\"></i> From January 1st</a></li>\n" +
+    "                                    <li ng-click=\"auto-yesterday\"><a><i class=\"fa fa-fw\"></i> Yesterday</a></li>\n" +
+    "                                  </ul>\n" +
+    "                              </div>\n" +
+    "                             </div>\n" +
+    "\n" +
+    "                         &rArr;\n" +
+    "\n" +
+    "                         <div class=\"form-group\">\n" +
+    "                            <p class=\"input-group\" style=\"margin: 0px;\">\n" +
+    "                              <input type=\"text\" style=\"height: 20px; width: 80px;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateStart\" is-open=\"dateStartPopup.opened\" datepicker-options=\"dateOptions\" ng-required=\"true\" close-text=\"Close\" alt-input-formats=\"altInputFormats\" />\n" +
+    "                              <span class=\"input-group-btn\">\n" +
+    "                                <button type=\"button\" style=\"height: 20px;\" class=\"btn btn-default\" ng-click=\"open1()\"><i class=\"fa fa-fw fa-calendar\"></i></button>\n" +
+    "                              </span>\n" +
+    "                            </p>\n" +
+    "                        </div> -\n" +
+    "\n" +
+    "                         <div class=\"form-group\">\n" +
+    "                            <p class=\"input-group\" style=\"margin: 0px;\">\n" +
+    "                              <input type=\"text\" style=\"height: 20px; width: 80px;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateEnd\" is-open=\"dateEndPopup.opened\" datepicker-options=\"dateOptions\" ng-required=\"true\" close-text=\"Close\" alt-input-formats=\"altInputFormats\" />\n" +
+    "                              <span class=\"input-group-btn\">\n" +
+    "                                <button type=\"button\" style=\"height: 20px;\" class=\"btn btn-default\" ng-click=\"open1()\"><i class=\"fa fa-fw fa-calendar\"></i></button>\n" +
+    "                              </span>\n" +
+    "                            </p>\n" +
+    "                        </div>\n" +
+    "\n" +
+    "                        </form>\n" +
+    "\n" +
+    "                    </span>\n" +
+    "                    <button type=\"button\" ng-click=\"selectDateFilter(cut.dimension, false)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
     "            <div class=\"cv-view-viewinfo-extra\">\n" +
     "\n" +
     "                <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccccff;\">\n" +
@@ -5171,7 +5503,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "<div ng-controller=\"CubesViewerViewsCubeExploreController\">\n" +
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
-    "    <h3><i class=\"fa fa-fw fa-arrow-circle-down\"></i> Aggregated data</h3>\n" +
+    "    <h3><i class=\"fa fa-fw fa-arrow-circle-down\"></i> Aggregated data\n" +
+    "        <i class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info\"></i>\n" +
+    "    </h3>\n" +
     "\n" +
     "    <div ui-grid=\"gridOptions\"\n" +
     "         ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize\n" +
@@ -5214,9 +5548,8 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "        </div>\n" +
     "        <div class=\"panel-body\">\n" +
     "\n" +
-    "          <div class=\"row\">\n" +
-    "            <div class=\"col-xs-12\">\n" +
-    "            <form class=\"form-inline\" >\n" +
+    "            <div >\n" +
+    "            <form class=\"form-inline\">\n" +
     "\n" +
     "              <div class=\"form-group has-feedback\">\n" +
     "                <!-- <label for=\"search\">Search:</label>  -->\n" +
@@ -5255,25 +5588,30 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "              <button class=\"btn btn-success\" type=\"button\"><i class=\"fa fa-fw fa-filter\"></i> Apply</button>\n" +
     "            </form>\n" +
     "            </div>\n" +
-    "        </div>\n" +
     "\n" +
-    "            <div class=\"row\" style=\"margin-top: 5px;\">\n" +
+    "            <div class=\"clearfix\"></div>\n" +
     "\n" +
+    "            <div class=\"row\">\n" +
     "                <div class=\"col-xs-6\">\n" +
+    "                <div style=\"margin-top: 5px;\">\n" +
     "                    <span ng-show=\"loadingDimensionValues\" ><i class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom\"></i> Loading...</span>\n" +
     "                    <div class=\"panel panel-default panel-outline\" style=\"margin-bottom: 0px;\"><div class=\"panel-body\" style=\"max-height: 180px; overflow-y: auto; overflow-x: hidden;\">\n" +
     "                        <div ng-repeat=\"val in dimensionValues\" style=\"overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\">\n" +
-    "                            <input type=\"checkbox\" value=\"{{ val.value }}\" style=\"vertical-align: bottom;\" />\n" +
-    "                            <span>{{ val.label }}</span>\n" +
+    "                            <label style=\"font-weight: normal; margin-bottom: 2px;\">\n" +
+    "                                <input type=\"checkbox\" value=\"{{ val.value }}\" style=\"vertical-align: bottom;\" />\n" +
+    "                                {{ val.label }}\n" +
+    "                            </label>\n" +
     "                        </div>\n" +
     "                    </div></div>\n" +
-    "\n" +
     "                </div>\n" +
-    "\n" +
+    "                </div>\n" +
     "            </div>\n" +
     "\n" +
+    "            <div class=\"clearfix\"></div>\n" +
+    "\n" +
     "        </div>\n" +
-    "    </div>\n" +
+    "      </div>\n" +
+    "\n" +
     "\n" +
     "</div>\n"
   );
