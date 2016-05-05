@@ -59,6 +59,7 @@
 
     * Map charts.
     * Issue #55 (chart shows measure name, not measure label).
+    * Fix submenu timer hack: is causing issues already. Watch contents and perhaps debounce menu activation?
 
 [2.0]
 
@@ -82,9 +83,8 @@
       Also impacts charts (missing items). Do not draw tables or charts in this case.
 
     * Fix analytics plugin to ignore first N seconds of events as for bounce rate calculation.
-    * Cleanup code, review headers (2016). Fix license in all file headers (MIT pure).
-    * Fix submenu timer hack: is causing issues already. Watch contents and perhaps debounce menu activation?
-    * Use strict.
+    * Cleanup code.
+    * Use strict. Check /* 'use strict'; */ in angular-bootstrap-submenu, which loads early.
     * Review if cube or menu loading is happening before initialization if views are created eagerly (views.html).
     * Review readonly menus and pills, and invalid combinations and info messages.
     * Add loading indicators / block-ui (check angular plugins) as necessary.

@@ -12,10 +12,6 @@
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,7 +20,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 
 /* 'use strict'; */
 
@@ -853,10 +848,6 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -998,10 +989,6 @@ cubes.Hierarchy.prototype.readCell = function(cell, level_limit) {
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -1162,10 +1149,6 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -1348,10 +1331,6 @@ var cubesviewer = {
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -1514,10 +1493,6 @@ function cubesviewerViews () {
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -1823,10 +1798,6 @@ Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSe
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -2270,10 +2241,6 @@ function cubesviewerViewCubeExplore() {
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -2550,10 +2517,6 @@ function cubesviewerViewCubeDimensionFilter () {
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -2855,10 +2818,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -3153,10 +3112,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -3437,10 +3392,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -3592,10 +3543,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -3860,10 +3807,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -4003,10 +3946,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
- *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -4118,10 +4057,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -4284,6 +4219,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 	    	templateUrl: 'studio/rename.html',
 	    	controller: 'CubesViewerRenameController',
 	    	appendTo: angular.element($($element).find('.cv-gui-modals')[0]),
+	    	size: "sm",
 		    resolve: {
 		        view: function () { return view; },
 	    		element: function() { return $($element).find('.cv-gui-modals')[0] },
@@ -4419,10 +4355,6 @@ cubesviewer.studio = {
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
- * If your version of the Software supports interaction with it remotely through
- * a computer network, the above copyright notice and this permission notice
- * shall be accessible to all users.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
