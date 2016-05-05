@@ -1,0 +1,19 @@
+  <div class="modal-header">
+    <button type="button" ng-click="close();" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-fw fa-close"></i></span></button>
+    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-pencil"></i> Rename view</h4>
+  </div>
+  <div class="modal-body">
+
+        <form class="form" ng-submit="renameView(viewName);">
+            <div class="form-group">
+                <label for="serializedView">Name:</label>
+                <input class="form-control" ng-model="viewName" />
+            </div>
+        </form>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" ng-click="close();" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+    <button type="button" ng-click="renameView(viewName);" class="btn btn-success" data-dismiss="modal">Rename</button>
+  </div>
+
