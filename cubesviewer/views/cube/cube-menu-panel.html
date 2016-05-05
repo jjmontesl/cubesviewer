@@ -4,14 +4,14 @@
 
   <ul class="dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view">
 
-    <li ng-click="studioViewsService.studioScope.showRenameView(view)"><a><i class="fa fa-fw fa-pencil"></i> Rename...</a></li>
-    <li ng-click="studioViewsService.studioScope.cloneView(view)"><a><i class="fa fa-fw fa-clone"></i> Clone</a></li>
+    <li ng-click="viewsService.studioViewsService.studioScope.showRenameView(view)"><a><i class="fa fa-fw fa-pencil"></i> Rename...</a></li>
+    <li ng-click="viewsService.studioViewsService.studioScope.cloneView(view)"><a><i class="fa fa-fw fa-clone"></i> Clone</a></li>
     <div class="divider"></div>
     <li><a><i class="fa fa-fw fa-save"></i> Save</a></li>
     <li><a><i class="fa fa-fw fa-share"></i> Share...</a></li>
     <li><a><i class="fa fa-fw fa-trash-o"></i> Delete...</a></li>
     <div class="divider"></div>
-    <li ng-click="studioViewsService.studioScope.showSerializeView(view)"><a><i class="fa fa-fw fa-code"></i> Serialize...</a></li>
+    <li ng-click="viewsService.studioViewsService.studioScope.showSerializeView(view)"><a><i class="fa fa-fw fa-code"></i> Serialize...</a></li>
     <div class="divider"></div>
-    <li ng-click="studioViewsService.closeView(view)"><a><i class="fa fa-fw fa-close"></i> Close</a></li>
+    <li ng-click="viewsService.studioViewsService.closeView(view)"><a><i class="fa fa-fw fa-close"></i> Close</a></li>
   </ul>

@@ -1259,11 +1259,11 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', /* 'editable
 
     var defaultOptions = {
             cubesUrl : null,
-            cubesLang : null,
+            //cubesLang : null,
             pagingOptions: [15, 30, 100, 250],
-            datepickerShowWeek: true,
-            datepickerFirstDay: 1,
-            tableResizeHackMinWidth: 350 ,
+            //datepickerShowWeek: true,
+            //datepickerFirstDay: 1,
+            //tableResizeHackMinWidth: 350 ,
             jsonRequestType: "json" // "json | jsonp"
     };
 	$.extend(defaultOptions, cvOptions);
@@ -1311,6 +1311,29 @@ var cubesviewer = {
 		angular.element(document).ready(function() {
 			angular.bootstrap(document, ['cv']);
 		});
+	},
+
+	createView: function(container, type, viewData) {
+
+		console.debug("Creating view: " + viewData);
+
+		var $compile = angular.element(document).injector().get('$compile');
+		var viewsService = angular.element(document).injector().get('viewsService');
+
+		var view = viewsService.createView("cube", viewData);
+
+		var viewDirective = '<div class="cv-bootstrap"><div cv-view-cube view="view"></div></div>';
+		$(container).html(viewDirective);
+
+		var scope = angular.element(document).scope();
+		var templateScope = scope.$new();
+		templateScope.view = view;
+
+		//templateCtrl = $controller("CubesViewerStudioController", { $scope: templateScope } );
+		//$(cvOptions.container).children().data('$ngControllerController', templateCtrl);
+
+		$compile($(container).contents())(templateScope);
+
 	}
 
 };
@@ -1351,13 +1374,19 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 
 	this.views = [];
 
+	this.lastViewId = 0;
+
+	this.studioViewsService = null;
+
 	/**
 	 * Adds a new clean view for a cube.
 	 * This accepts parameters as an object or as a serialized string.
 	 */
-	this.createView = function(id, type, data) {
+	this.createView = function(type, data) {
 
 		// Create view
+
+		this.lastViewId++;
 
 		var params = {};
 
@@ -1365,7 +1394,9 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 			try {
 				params = $.parseJSON(data);
 			} catch (err) {
-				alert ('Error: could not process serialized data (JSON parse error).');
+				console.debug('Error: could not process serialized data (JSON parse error)');
+				console.debug(data);
+				alert ('Error: could not process serialized data (JSON parse error)');
 				params["name"] = "Undefined view";
 			}
 		} else {
@@ -1373,16 +1404,13 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 		}
 
 		var view = {
-			"id": id,
+			"id": "view-" + this.lastViewId,
 			"type": type,
 			"state": cubesviewer.STATE_INITIALIZING,
 			"params": {}
 		};
 
 		$.extend(view.params, params);
-		$(document).trigger("cubesviewerViewCreate", [ view ] );
-		$.extend(view.params, params);
-
 
 		if (view.state == cubesviewer.STATE_INITIALIZING) view.state = cubesviewer.STATE_INITIALIZED;
 
@@ -1514,14 +1542,19 @@ angular.module('cv.views.cube', []);
 /**
  * cvViewCube directive and controller.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService', 'studioViewsService',
-                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService, studioViewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
 
-	$scope.studioViewsService = studioViewsService;
+	$scope.viewsService = viewsService;
 
-	$scope.view._cubeDataUpdated = false;
 	$scope.dimensionFilter = null;
 
+
+	$scope.$watch ("view", function(view) {
+		if (view) {
+			view._cubeDataUpdated = false;
+		}
+	});
 
 	/**
 	 * Define view mode ('explore', 'series', 'facts', 'chart').
@@ -4077,18 +4110,14 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 
 	this.views = [];
 
-	this.lastViewId = 0;
-
 	this.studioScope = null;
+
+	viewsService.studioViewsService = this;
 
 	/**
 	 * Adds a new clean view for a cube
 	 */
 	this.addViewCube = function(cubename) {
-
-		this.lastViewId++;
-		var viewId = "view" + this.lastViewId;
-
 
 		// Find cube name
 		var cubeinfo = cubesService.cubesserver.cubeinfo(cubename);
@@ -4096,7 +4125,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 		//var container = this.createContainer(viewId);
 		//$('.cv-gui-viewcontent', container),
 
-		var view = viewsService.createView(viewId, "cube", { "cubename": cubename, "name": cubeinfo.label + " (" + this.lastViewId + ")"});
+		var view = viewsService.createView("cube", { "cubename": cubename, "name": cubeinfo.label + " (" + this.lastViewId + ")"});
 		this.views.push(view);
 
 		return view;
@@ -4107,10 +4136,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 	 */
 	this.addViewObject = function(data) {
 
-		this.lastViewId++;
-		var viewId = "view" + this.lastViewId;
-
-		var view = viewsService.createView(viewId, "cube", data);
+		var view = viewsService.createView("cube", data);
 		this.views.push(view);
 
 		return view;
@@ -4191,7 +4217,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 
 	$scope.showSerializeView = function(view) {
 
-	    var modalInstance = $uibModal.open({
+	    var modalInstance = $uithis.studioViewsService = null;bModal.open({
 	    	animation: true,
 	    	templateUrl: 'studio/serialize-view.html',
 	    	controller: 'CubesViewerSerializeViewController',
@@ -4813,16 +4839,16 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
     "\n" +
-    "    <li ng-click=\"studioViewsService.studioScope.showRenameView(view)\"><a><i class=\"fa fa-fw fa-pencil\"></i> Rename...</a></li>\n" +
-    "    <li ng-click=\"studioViewsService.studioScope.cloneView(view)\"><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
+    "    <li ng-click=\"viewsService.studioViewsService.studioScope.showRenameView(view)\"><a><i class=\"fa fa-fw fa-pencil\"></i> Rename...</a></li>\n" +
+    "    <li ng-click=\"viewsService.studioViewsService.studioScope.cloneView(view)\"><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
     "    <li><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +
     "    <li><a><i class=\"fa fa-fw fa-share\"></i> Share...</a></li>\n" +
     "    <li><a><i class=\"fa fa-fw fa-trash-o\"></i> Delete...</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
-    "    <li ng-click=\"studioViewsService.studioScope.showSerializeView(view)\"><a><i class=\"fa fa-fw fa-code\"></i> Serialize...</a></li>\n" +
+    "    <li ng-click=\"viewsService.studioViewsService.studioScope.showSerializeView(view)\"><a><i class=\"fa fa-fw fa-code\"></i> Serialize...</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
-    "    <li ng-click=\"studioViewsService.closeView(view)\"><a><i class=\"fa fa-fw fa-close\"></i> Close</a></li>\n" +
+    "    <li ng-click=\"viewsService.studioViewsService.closeView(view)\"><a><i class=\"fa fa-fw fa-close\"></i> Close</a></li>\n" +
     "  </ul>\n"
   );
 

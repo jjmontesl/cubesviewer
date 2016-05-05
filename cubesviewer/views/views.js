@@ -32,13 +32,19 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 
 	this.views = [];
 
+	this.lastViewId = 0;
+
+	this.studioViewsService = null;
+
 	/**
 	 * Adds a new clean view for a cube.
 	 * This accepts parameters as an object or as a serialized string.
 	 */
-	this.createView = function(id, type, data) {
+	this.createView = function(type, data) {
 
 		// Create view
+
+		this.lastViewId++;
 
 		var params = {};
 
@@ -46,7 +52,9 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 			try {
 				params = $.parseJSON(data);
 			} catch (err) {
-				alert ('Error: could not process serialized data (JSON parse error).');
+				console.debug('Error: could not process serialized data (JSON parse error)');
+				console.debug(data);
+				alert ('Error: could not process serialized data (JSON parse error)');
 				params["name"] = "Undefined view";
 			}
 		} else {
@@ -54,16 +62,13 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 		}
 
 		var view = {
-			"id": id,
+			"id": "view-" + this.lastViewId,
 			"type": type,
 			"state": cubesviewer.STATE_INITIALIZING,
 			"params": {}
 		};
 
 		$.extend(view.params, params);
-		$(document).trigger("cubesviewerViewCreate", [ view ] );
-		$.extend(view.params, params);
-
 
 		if (view.state == cubesviewer.STATE_INITIALIZING) view.state = cubesviewer.STATE_INITIALIZED;
 

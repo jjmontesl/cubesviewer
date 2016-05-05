@@ -121,11 +121,11 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', /* 'editable
 
     var defaultOptions = {
             cubesUrl : null,
-            cubesLang : null,
+            //cubesLang : null,
             pagingOptions: [15, 30, 100, 250],
-            datepickerShowWeek: true,
-            datepickerFirstDay: 1,
-            tableResizeHackMinWidth: 350 ,
+            //datepickerShowWeek: true,
+            //datepickerFirstDay: 1,
+            //tableResizeHackMinWidth: 350 ,
             jsonRequestType: "json" // "json | jsonp"
     };
 	$.extend(defaultOptions, cvOptions);
@@ -173,6 +173,29 @@ var cubesviewer = {
 		angular.element(document).ready(function() {
 			angular.bootstrap(document, ['cv']);
 		});
+	},
+
+	createView: function(container, type, viewData) {
+
+		console.debug("Creating view: " + viewData);
+
+		var $compile = angular.element(document).injector().get('$compile');
+		var viewsService = angular.element(document).injector().get('viewsService');
+
+		var view = viewsService.createView("cube", viewData);
+
+		var viewDirective = '<div class="cv-bootstrap"><div cv-view-cube view="view"></div></div>';
+		$(container).html(viewDirective);
+
+		var scope = angular.element(document).scope();
+		var templateScope = scope.$new();
+		templateScope.view = view;
+
+		//templateCtrl = $controller("CubesViewerStudioController", { $scope: templateScope } );
+		//$(cvOptions.container).children().data('$ngControllerController', templateCtrl);
+
+		$compile($(container).contents())(templateScope);
+
 	}
 
 };

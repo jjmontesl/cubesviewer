@@ -32,14 +32,19 @@ angular.module('cv.views.cube', []);
 /**
  * cvViewCube directive and controller.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService', 'studioViewsService',
-                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService, studioViewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
 
-	$scope.studioViewsService = studioViewsService;
+	$scope.viewsService = viewsService;
 
-	$scope.view._cubeDataUpdated = false;
 	$scope.dimensionFilter = null;
 
+
+	$scope.$watch ("view", function(view) {
+		if (view) {
+			view._cubeDataUpdated = false;
+		}
+	});
 
 	/**
 	 * Define view mode ('explore', 'series', 'facts', 'chart').

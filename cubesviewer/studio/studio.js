@@ -31,18 +31,14 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 
 	this.views = [];
 
-	this.lastViewId = 0;
-
 	this.studioScope = null;
+
+	viewsService.studioViewsService = this;
 
 	/**
 	 * Adds a new clean view for a cube
 	 */
 	this.addViewCube = function(cubename) {
-
-		this.lastViewId++;
-		var viewId = "view" + this.lastViewId;
-
 
 		// Find cube name
 		var cubeinfo = cubesService.cubesserver.cubeinfo(cubename);
@@ -50,7 +46,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 		//var container = this.createContainer(viewId);
 		//$('.cv-gui-viewcontent', container),
 
-		var view = viewsService.createView(viewId, "cube", { "cubename": cubename, "name": cubeinfo.label + " (" + this.lastViewId + ")"});
+		var view = viewsService.createView("cube", { "cubename": cubename, "name": cubeinfo.label + " (" + this.lastViewId + ")"});
 		this.views.push(view);
 
 		return view;
@@ -61,10 +57,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 	 */
 	this.addViewObject = function(data) {
 
-		this.lastViewId++;
-		var viewId = "view" + this.lastViewId;
-
-		var view = viewsService.createView(viewId, "cube", data);
+		var view = viewsService.createView("cube", data);
 		this.views.push(view);
 
 		return view;
@@ -145,7 +138,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 
 	$scope.showSerializeView = function(view) {
 
-	    var modalInstance = $uibModal.open({
+	    var modalInstance = $uithis.studioViewsService = null;bModal.open({
 	    	animation: true,
 	    	templateUrl: 'studio/serialize-view.html',
 	    	controller: 'CubesViewerSerializeViewController',

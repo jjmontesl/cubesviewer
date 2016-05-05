@@ -4,190 +4,135 @@
 
     <title>CubesViewer Embedded View Example</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="robots" content="NONE,NOARCHIVE" />
 
-	<link rel="stylesheet" href="../web/static/css/blueprint/screen.css" type="text/css" media="screen, projection">
-	<link rel="stylesheet" href="../web/static/css/blueprint/print.css" type="text/css" media="print">
-	<!--[if lt IE 8]> <link rel="stylesheet" href="../web/static/css/blueprint/ie.css" type="text/css" media="screen, projection"> <!¡[endif]-->
+    <!-- <link rel="stylesheet" href="../lib/bootstrap/bootstrap.css" /> -->
+    <link rel="stylesheet" href="lib/angular-ui-grid/ui-grid.css" />
+    <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="lib/nvd3/nv.d3.css" />
+    <link rel="stylesheet" href="../dist/cubesviewer.css" />
+    <link rel="stylesheet" href="lib/bootstrap-submenu/css/bootstrap-submenu.css" />
 
-    <link rel="stylesheet" type="text/css" href="../web/static/css/cvapp.css" />
+    <link rel="stylesheet" href="cvapp.css" />
 
+    <script src="lib/jquery/jquery.js"></script>
+    <script src="lib/bootstrap/bootstrap.js"></script>
+    <script src="lib/bootstrap-submenu/js/bootstrap-submenu.js"></script>
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="lib/angular-ui-grid/ui-grid.js"></script>
+    <script src="lib/d3/d3.js"></script>
+    <script src="lib/nvd3/nv.d3.js"></script>
+    <script src="lib/flotr2/flotr2.min.js"></script>
+    <script src="../dist/cubesviewer.js"></script>
 
-    <!-- CubesViewer CSS resources -->
-    <link type="text/css" rel="stylesheet" href="../web/static/js/jqueryui/jquery-ui.min.css" />
-    <link type="text/css" rel="stylesheet" href="../web/static/css/jqgrid/ui.jqgrid.css" media="screen" />
-    <link type="text/css" rel="stylesheet" href="../web/static/js/qtip/jquery.qtip.css"  />
-    <link type="text/css" rel="stylesheet" href="../web/static/js/wiky/wiky.math.css" />
-    <link type="text/css" rel="stylesheet" href="../web/static/js/nvd3/nv.d3.min.css" />
+</head>
 
-    <link type="text/css" rel="stylesheet" href="../web/static/css/cubesviewer/cubesviewer.css" />
-
-    <!-- CubesViewer JS dependencies -->
-
-    <script type="text/javascript" src="../web/static/js/jquery/jquery.js"></script>
-    <script type="text/javascript" src="../web/static/js/jquery/jquery.cookie.js"></script>
-    <script type="text/javascript" src="../web/static/js/jqueryui/jquery-ui.min.js"></script>
-
-    <script type="text/javascript" src="../web/static/js/dateformat/dateformat.js"></script>
-
-    <script type="text/javascript" src="../web/static/js/jquery/jquery.blockUI.js"></script>
-
-    <script type="text/javascript" src="../web/static/js/wiky/wiky.js"></script>
-    <script type="text/javascript" src="../web/static/js/wiky/wiky.math.js"></script>
-    <script type="text/javascript" src="../web/static/js/flotr2/flotr2.min.js"></script>
-
-    <script type="text/javascript" src="../web/static/js/d3js/d3.v3.js"></script>
-    <script type="text/javascript" src="../web/static/js/nvd3/nv.d3.js"></script>
-	<script type="text/javascript" src="../web/static/js/qtip/jquery.qtip.js"></script>
-
-	<script type="text/javascript" src="../web/static/js/jqgrid/i18n/grid.locale-en.js" ></script>
-    <script type="text/javascript" src="../web/static/js/jqgrid/migrate-jquery-browser.js" ></script>
-	<script type="text/javascript" src="../web/static/js/jqgrid/jquery.jqGrid.min.js" ></script>
-
-    <script type="text/javascript" src="../web/static/js/cubes/cubes.js"></script>
-
-    <!-- Cubesviewer modules -->
-
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.cache.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.explore.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.datefilter.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.rangefilter.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.series.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.chart.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.facts.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.dimensionfilter.js"></script>
-    <script type="text/javascript" src="../web/static/js/cubesviewer/cubesviewer.views.cube.columns.js"></script>
-
+<body>
 
 <script type="text/javascript">
 
-	// Reference to the created view
-	var view1 = null;
+    // Reference to the created view
+    var view1 = null;
 
-	// Initialize CubesViewer when document is ready
-	$(document).ready(function() {
+    // Initialize CubesViewer when document is ready
+    $(document).ready(function() {
 
-	    // Get user Cubes information for the example
-	    var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
+        // Get user Cubes information for the example
+        var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
 
-	    // Initialize CubesViewer system
+        // Initialize CubesViewer system
         cubesviewer.init({
             cubesUrl: cubesUrl
         });
 
         // Sample serialized view (Based on cubes-examples project data)
         var serializedView =
-        	'{"cubename":"webshop_sales","name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+            '{"cubename":"webshop_sales","name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+
+        serializedView = {"charttype":"bars-vertical","chartoptions":{"showLegend":true},"mode":"chart","drilldown":[],"cuts":[],"cubename":"boe_article","name":"BOE / Artículos (undefined)","xaxis":"date_published@daily:quarter","yaxis":"page_count_sum"};
 
         // Add views
 
         // You can use a Javascript object with view arguments (ie. "cubename")
-        //view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", { "cubename": "contracts" });
+        //view1 = cubesviewer.views.createView($('#cv-view1'), "cube", { "cubename": "webshop_visits" });
 
         // You can use a serialized JSON string of the object with view arguments
-        view1 = cubesviewer.views.createView("cvview1", $('#cv-view1'), "cube", serializedView);
+        setTimeout(function() {
+        	console.debug("Initializing");
+            view1 = cubesviewer.createView($('#cv-view1').get(0), "cube", serializedView);
+        }, 2000);
 
 
-	    // Scripting example for the "switch mode" link
-	    $('#switchToSeriesTable').click(function() {
-	        cubesviewer.views.cube.series.modeSeries(view1);
-	        return false;
-	    });
+        // Scripting example for the "switch mode" link
+        $('#switchToSeriesTable').click(function() {
+            view1.setMode('series');
+            return false;
+        });
 
-	    // Start Cubesviewer system
-	    cubesviewer.refresh();
-
-	});
+    });
 
 </script>
 
 
-<style type="text/css">
-.olapview {
-    min-width: 400px;
-}
-</style>
+<div>
+
+    <div class="header">
+        <div style="float: left;">
+            <img class="cv-logo" title="CubesViewer" src="img/cubesviewer-logo.png" />
+        </div>
+
+        <h1>CubesViewer Static Views example</h1>
+        <small>Shows how CubesViewer views can be embedded in other web pages.</small>
+
+    </div>
+
+    <div style="clear: both;"></div>
+
+    <div>
+        <h2>Example Embedded View</h2>
+
+        <p>
+        This is an example CubesView inserted in this page. It loads a serialized view which uses the
+        Cubes <a href="https://github.com/jjmontesl/cubes-examples">example webshop</a> project.
+        </p>
+
+        <div style="border: none; margin-top: 22px; margin-bottom: 22px;">
+            <div id="cv-view1" style="width: 100%; min-height: 120px;">The view should appear here...</div>
+        </div>
+
+        <h2>Scripting</h2>
+
+        <p>
+        The view above can be scripted using CubesViewer View API.
+        </p>
+        <p>
+        For example, <a id="switchToSeriesTable" href="">click here</a> to switch to Series Table mode.
+        </p>
+
+        <h2>Code</h2>
+
+        <p>Check the <a href="">source code of this page</a> to see how this CubesViewer view is initialized.</p>
+
+        <p>More information can be found in the documentation page
+        <a href="https://github.com/jjmontesl/cubesviewer/blob/master/src/htmlviews/views.html">Embedding CubesViewer static views</a>.
+        </p>
+    </div>
 
 
-</head>
-
-<body id="">
-	<div id="body">
-
-        <table>
-            <tr>
-                <td>
-                    <div>
-
-						<div id="header"  class="ui-widget ui-widget-content ui-corner-all">
-						    <div style="float: left;">
-						        <img id="cv-logo" title="CubesViewer" src="../web/static/img/cubesviewer-logo.png" />
-						    </div>
-
-						    <h1 id="site-name">CubesViewer Static View Sample</h1>
-
-						    <div style="clear: both;"></div>
-						</div>
-
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td style="width: 100%; vertical-align: top;">
-
-<h2>Example Embedded View</h2>
-
-<p>
-This is an example CubesView inserted in this page. It loads a serialized view which uses the
-Cubes <a href="https://github.com/jjmontesl/cubes-examples">example webshop</a> project.
-</p>
-
-<div style="border: none; margin-top: 22px; margin-bottom: 22px;">
-    <div id="cv-view1" class="olapview">The view should appear here...</div>
-</div>
-
-<h2>Scripting</h2>
-
-<p>
-The view above can be scripted using CubesViewer View API.
-</p>
-<p>
-For example, <a id="switchToSeriesTable" href="">click here</a> to switch to Series Table mode.
-</p>
-
-<h2>Code</h2>
-
-<p>Check the <a href="">source code of this page</a> to see how this CubesViewer view is initialized.</p>
-
-<p>More information can be found in the documentation page
-<a href="https://github.com/jjmontesl/cubesviewer/blob/master/src/htmlviews/views.html">Embedding CubesViewer static views</a>.
-</p>
-
-
-                </td>
-            </tr>
-        </table>
+    <div class="footer" style="clear: both; padding-top: 20px;">
+        <div style="height: 1px; border-top: 1px solid #DDDDDD; padding-top: 4px;"></div>
+        <div style="float: right; white-space: nowrap;">
+            <p style="vertical-align: middle; margin: 2px;">
+            <a href="http://databrewery.org/" target="_blank"><img title="Powered by Databrewery Cubes" style="width: 70px; height: 30px;" src="img/cubes-logo.png" /></a>
+            <a href="https://github.com/jjmontesl/cubesviewer" target="_blank"><img title="Powered by CubesViewer" style="width: 55px; height: 30px;" src="img/cubesviewer-logo.png" /></a>
+            </p>
+        </div>
         <div>
+            <p><a href="https://github.com/jjmontesl/cubesviewer" target="_blank">CubesViewer</a> <span class="cv-version"></span> - Cubes OLAP explorer</p>
+        </div>
+    </div>
 
-
-<div id="footer" style="clear: both; padding-top: 20px;">
-	<div style="height: 1px; border-top: 1px solid #DDDDDD; padding-top: 4px;"></div>
-	<div style="float: right; white-space: nowrap;">
-		<p style="vertical-align: middle;">
-        <a href="http://databrewery.org/" target="_blank"><img title="Powered by Databrewery Cubes" style="width: 60px; height: 30px;" src="../web/static/img/cubes-logo.png" /></a>
-        <a href="https://github.com/jjmontesl/cubesviewer" target="_blank"><img title="Powered by CubesViewer" style="width: 55px; height: 30px;" src="../web/static/img/cubesviewer-logo.png" /></a>
-		</p>
-	</div>
-	<div>
-		<p>CubesViewer</p>
-	</div>
-</div>
 </div>
 
-	</div>
 </body>
-
 </html>
