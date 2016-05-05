@@ -30,13 +30,14 @@ angular.module('cv.studio', ['ui.bootstrap', 'cv' /*'ui.bootstrap-slider', 'ui.v
                              /*'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',
                              'nvd3' */ ]);
 
-
 angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOptions', 'cubesService', 'viewsService',
                                                             function ($rootScope, cvOptions, cubesService, viewsService) {
 
 	this.views = [];
 
 	this.lastViewId = 0;
+
+	this.studioScope = null;
 
 	/**
 	 * Adds a new clean view for a cube
@@ -54,6 +55,20 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 		//$('.cv-gui-viewcontent', container),
 
 		var view = viewsService.createView(viewId, "cube", { "cubename": cubename, "name": cubeinfo.label + " (" + this.lastViewId + ")"});
+		this.views.push(view);
+
+		return view;
+	};
+
+	/*
+	 * Adds a view given its params descriptor.
+	 */
+	this.addViewObject = function(data) {
+
+		this.lastViewId++;
+		var viewId = "view" + this.lastViewId;
+
+		var view = viewsService.createView(viewId, "cube", data);
 		this.views.push(view);
 
 		return view;
@@ -100,110 +115,63 @@ angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$roo
 
 
 
-angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'studioViewsService',
-                                                                       function ($rootScope, $scope, cvOptions, cubesService, studioViewsService) {
+angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', '$uibModal', '$element', 'cvOptions', 'cubesService', 'studioViewsService',
+                                                                       function ($rootScope, $scope, $uibModal, $element, cvOptions, cubesService, studioViewsService) {
 
 	$scope.cvVersion = cubesviewer.version;
 	$scope.cvOptions = cvOptions;
 	$scope.cubesService = cubesService;
 	$scope.studioViewsService = studioViewsService;
 
-	// Current views array
-	this.views = [];
-
-	// View counter (used to assign different ids to each spawned view)
-	this.lastViewId = 0;
+	$scope.studioViewsService.studioScope = $scope;
 
 
-	/**
-	 * Closes a view.
-	 */
-	$scope.closeView = function(view) {
-		for ( var i = 0; (i < this.views.length) && (this.views[i].id != view.id); i++) ;
+	$scope.showSerializeAdd = function() {
 
-		$('#' + view.id).remove();
-		this.views.splice(i, 1);
+	    var modalInstance = $uibModal.open({
+	    	animation: true,
+	    	templateUrl: 'studio/serialize-add.html',
+	    	controller: 'CubesViewerSerializeAddController',
+	    	appendTo: angular.element($($element).find('.cv-gui-modals')[0]),
+	    	/*
+		    size: size,
+	    	 */
+	    });
 
-		cubesviewer.views.destroyView (view);
+	    modalInstance.result.then(function (selectedItem) {
+	    	//$scope.selected = selectedItem;
+	    }, function () {
+	        console.debug('Modal dismissed at: ' + new Date());
+	    });
 	};
 
+	$scope.showSerializeView = function(view) {
 
+		console.debug("Show serialize view");
 
-	/*
-	 * Adds a view given its params descriptor.
-	 */
-	$scope.addViewObject = function(data) {
+	    var modalInstance = $uibModal.open({
+	    	animation: true,
+	    	templateUrl: 'studio/serialize-view.html',
+	    	controller: 'CubesViewerSerializeViewController',
+	    	appendTo: angular.element($($element).find('.cv-gui-modals')[0]),
+		    resolve: {
+		        view: function () { return view; },
+	    		element: function() { return $($element).find('.cv-gui-modals')[0] },
+		    }
+	    });
 
-		this.lastViewId++;
-		var viewId = "view" + this.lastViewId;
-
-		var container = this.createContainer(viewId);
-		var view = this.cubesviewer.views.createView(viewId, $('.cv-gui-viewcontent', container), "cube", data);
-		this.views.push (view);
-
-		// Bind close button
-		$(container).find('.cv-gui-closeview').click(function() {
-			cubesviewer.gui.closeView(view);
-			return false;
-		});
-
-		return view;
-
+	    modalInstance.result.then(function (selectedItem) {
+	    	//$scope.selected = selectedItem;
+	    }, function () {
+	        console.debug('Modal dismissed at: ' + new Date());
+	    });
 	};
 
-	/*
-	 * Creates a container for a view.
-	 */
-	this.createContainer = function(viewId) {
-
-		// Configure collapsible
-		/*
-		$('#' + viewId + " .cv-gui-cubesview").accordion({
-			collapsible : true,
-			autoHeight : false
-		});
-		$('#' + viewId + " .cv-gui-viewcontent").css({
-			"height": ""
-		});
-		$('#' + viewId + " .cv-gui-cubesview").on("accordionbeforeactivate", function (evt, ui) {
-			if (cubesviewer.gui._sorting == true) {
-				evt.preventDefault();
-				evt.stopImmediatePropagation();
-			}
-		});
-		*/
-
-		return $('#' + viewId);
-	};
-
-	/*
-	 * Updates view information in the container when a view is refreshed
-	 */
-	this.onViewDraw = function (event, view) {
-
-		var container = $(view.container).parents('.cv-gui-cubesview');
-		$('.cv-gui-container-name', container).empty().text(view.params.name);
-
-		view.cubesviewer.gui.drawMenu(view);
-	}
 
 	/*
 	 * Draw cube view menu
 	 */
 	this.drawMenu = function(view) {
-
-		// Add panel menu options button
-		$(view.container).find('.cv-view-toolbar').append(
-			'<button class="panelbutton" title="Panel">Panel</button>'
-		);
-
-		$(view.container).find('.cv-view-viewmenu').append(
-			'<ul class="cv-view-menu cv-view-menu-panel" style="float: right; width: 180px;"></ul>'
-		);
-
-		// Buttonize
-		$(view.container).find('.panelbutton').button();
-
 
 		var menu = $(".cv-view-menu-panel", $(view.container));
 		menu.append(
@@ -212,9 +180,6 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 			'<div></div>' +
 			'<li><a class="cv-gui-closeview" href="#"><span class="ui-icon ui-icon-close"></span>Close</a></li>'
 		);
-
-		// Menu functionality
-		view.cubesviewer.views.cube._initMenu(view, '.panelbutton', '.cv-view-menu-panel');
 
 		$(view.container).find('.cv-gui-closeview').unbind("click").click(function() {
 			cubesviewer.gui.closeView(view);
@@ -271,59 +236,6 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 		this.cubesviewer.views.redrawView (view);
 	};
 
-	// Model Loaded Event (redraws cubes list)
-	this.onCubesViewerInitialized = function() {
-		cubesviewer.gui.drawCubesList();
-	};
-
-
-	this.drawCubesList = function() {
-
-		// Add handlers for clicks
-		$('.cv-gui-cubeslist-menu', $(cubesviewer.gui.options.container)).find('.cv-gui-addviewcube').click(function() {
-			var view = cubesviewer.gui.addViewCube( $(this).attr('data-cubename') );
-			return false;
-		});
-
-		// Redraw views
-		$(cubesviewer.gui.views).each(function(idx, view) {
-			view.cubesviewer.views.redrawView(view);
-		});
-
-	};
-
-	/*
-	 * Render initial (constant) elements for the GUI
-	 */
-	this.onGuiDraw = function(event, gui) {
-
-		$('[data-submenu]', gui.options.container).submenupicker();
-
-
-		// Configure sortable panel
-		/*
-		$(gui.options.container).children('.cv-gui-workspace').sortable({
-			placeholder : "ui-state-highlight",
-			// containment: "parent",
-			distance : 15,
-			delay : 300,
-			handle : ".sorthandle",
-
-			start : function(evt, ui) {
-				cubesviewer.gui._sorting = true;
-			},
-			stop : function(evt, ui) {
-				setTimeout(function() {
-					cubesviewer.gui._sorting = false;
-				}, 200);
-
-			}
-		// forcePlaceholderSize: true,
-		// forceHlperSize: true,
-		});
-		*/
-
-	}
 
 }]);
 

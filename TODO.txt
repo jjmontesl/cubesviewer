@@ -58,6 +58,7 @@
 [2.1]
 
     * Map charts.
+    * Issue #55 (chart shows measure name, not measure label).
 
 [2.0]
 
@@ -66,6 +67,8 @@
     * Test CORS issue from server (localhost:8000 -> localhost:5000), test JSONP.
     * Uncomment studio.html code that asks for the server url to connect to.
     * Keep existing screenshots (or names) as they are referenced from 3rd party sites.
+
+    * Issue #39, "strings with hyphen cause dimension filter to work inexpectedly".
 
     * Reviewed and improved doc
     * Move doc to site (but import from repository markdown, to keep

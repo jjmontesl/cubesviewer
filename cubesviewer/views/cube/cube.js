@@ -36,11 +36,12 @@ angular.module('cv.views.cube', []);
 /**
  * cvViewCube directive and controller.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
-                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService', 'studioViewsService',
+                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService, studioViewsService) {
+
+	$scope.studioViewsService = studioViewsService;
 
 	$scope.view._cubeDataUpdated = false;
-
 	$scope.dimensionFilter = null;
 
 
@@ -254,6 +255,14 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	$scope.selectChartType = function(charttype) {
 		$scope.view.params.charttype = charttype;
 		$scope.view._cubeDataUpdated = true;
+	};
+
+	/*
+	 * Serialize view dialog
+	 */
+	$scope.showSerializeView = function(view) {
+		console.debug("Show serialize view");
+		studioViewsService.studioScope.showSerializeView(view);
 	};
 
 

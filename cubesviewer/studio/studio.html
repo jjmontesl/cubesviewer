@@ -22,17 +22,19 @@
 
           <ul class="dropdown-menu">
 
-                <li ng-click="showAddSerializedView()"><a tabindex="0"><i class="fa fa-fw fa-code"></i> Add view from JSON...</a></li>
+                <li ng-click="showSerializeAdd()"><a tabindex="0"><i class="fa fa-fw fa-code"></i> Add view from JSON...</a></li>
 
                 <div class="divider"></div>
 
-                <li class=""><a href="https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-user-main.md" target="_blank"><i class="fa fa-fw fa-question"></i> User Guide</a></li>
+                <li class=""><a href="http://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-user-main.md" target="_blank"><i class="fa fa-fw fa-question"></i> User Guide</a></li>
                 <li class=""><a data-toggle="modal" data-target="#cvAboutModal"><i class="fa fa-fw fa-info"></i> About CubesViewer...</a></li>
 
             </ul>
         </div>
 
-        <div ng-include="'studio/about.html'"></div>
+        <div class="cv-gui-modals">
+            <div ng-include="'studio/about.html'"></div>
+        </div>
 
     </div>
 

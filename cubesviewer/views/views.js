@@ -74,6 +74,13 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 		return view;
 	};
 
+	/*
+	 * Serialize view data.
+	 */
+	this.serializeView = function(view) {
+		return JSON.stringify(view.params);
+	};
+
 
 }]);
 
@@ -155,13 +162,6 @@ function cubesviewerViews () {
 		}
 
 	}
-
-	/*
-	 * Serialize view data.
-	 */
-	this.serialize = function (view) {
-		return JSON.stringify(view.params);
-	};
 
 };
 

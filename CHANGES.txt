@@ -13,7 +13,7 @@
     * UI is now refreshed in-place instead of blocking whole UI.
     * Using templating for HTML views (removed HTML spaguetti code).
     * Moved from jQGrid to more versatile Angular ui-grid.
-    * Refactored to Angular and dropped jQueryUI.
+    * Refactored to Angular. Dropped jQueryUI.
     * Now using embedded Bootstrap (no global CSS selectors) for styles, without
       impacting page styles and better avoiding being impacted by page styling.
     * Introduced Grunt/Bower build toolchain.

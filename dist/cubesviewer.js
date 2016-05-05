@@ -1410,6 +1410,13 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 		return view;
 	};
 
+	/*
+	 * Serialize view data.
+	 */
+	this.serializeView = function(view) {
+		return JSON.stringify(view.params);
+	};
+
 
 }]);
 
@@ -1492,13 +1499,6 @@ function cubesviewerViews () {
 
 	}
 
-	/*
-	 * Serialize view data.
-	 */
-	this.serialize = function (view) {
-		return JSON.stringify(view.params);
-	};
-
 };
 
 ;/*
@@ -1539,11 +1539,12 @@ angular.module('cv.views.cube', []);
 /**
  * cvViewCube directive and controller.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
-                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService', 'studioViewsService',
+                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService, studioViewsService) {
+
+	$scope.studioViewsService = studioViewsService;
 
 	$scope.view._cubeDataUpdated = false;
-
 	$scope.dimensionFilter = null;
 
 
@@ -1757,6 +1758,14 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	$scope.selectChartType = function(charttype) {
 		$scope.view.params.charttype = charttype;
 		$scope.view._cubeDataUpdated = true;
+	};
+
+	/*
+	 * Serialize view dialog
+	 */
+	$scope.showSerializeView = function(view) {
+		console.debug("Show serialize view");
+		studioViewsService.studioScope.showSerializeView(view);
 	};
 
 
@@ -4128,13 +4137,14 @@ angular.module('cv.studio', ['ui.bootstrap', 'cv' /*'ui.bootstrap-slider', 'ui.v
                              /*'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',
                              'nvd3' */ ]);
 
-
 angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOptions', 'cubesService', 'viewsService',
                                                             function ($rootScope, cvOptions, cubesService, viewsService) {
 
 	this.views = [];
 
 	this.lastViewId = 0;
+
+	this.studioScope = null;
 
 	/**
 	 * Adds a new clean view for a cube
@@ -4152,6 +4162,20 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 		//$('.cv-gui-viewcontent', container),
 
 		var view = viewsService.createView(viewId, "cube", { "cubename": cubename, "name": cubeinfo.label + " (" + this.lastViewId + ")"});
+		this.views.push(view);
+
+		return view;
+	};
+
+	/*
+	 * Adds a view given its params descriptor.
+	 */
+	this.addViewObject = function(data) {
+
+		this.lastViewId++;
+		var viewId = "view" + this.lastViewId;
+
+		var view = viewsService.createView(viewId, "cube", data);
 		this.views.push(view);
 
 		return view;
@@ -4198,110 +4222,63 @@ angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$roo
 
 
 
-angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'studioViewsService',
-                                                                       function ($rootScope, $scope, cvOptions, cubesService, studioViewsService) {
+angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', '$uibModal', '$element', 'cvOptions', 'cubesService', 'studioViewsService',
+                                                                       function ($rootScope, $scope, $uibModal, $element, cvOptions, cubesService, studioViewsService) {
 
 	$scope.cvVersion = cubesviewer.version;
 	$scope.cvOptions = cvOptions;
 	$scope.cubesService = cubesService;
 	$scope.studioViewsService = studioViewsService;
 
-	// Current views array
-	this.views = [];
-
-	// View counter (used to assign different ids to each spawned view)
-	this.lastViewId = 0;
+	$scope.studioViewsService.studioScope = $scope;
 
 
-	/**
-	 * Closes a view.
-	 */
-	$scope.closeView = function(view) {
-		for ( var i = 0; (i < this.views.length) && (this.views[i].id != view.id); i++) ;
+	$scope.showSerializeAdd = function() {
 
-		$('#' + view.id).remove();
-		this.views.splice(i, 1);
+	    var modalInstance = $uibModal.open({
+	    	animation: true,
+	    	templateUrl: 'studio/serialize-add.html',
+	    	controller: 'CubesViewerSerializeAddController',
+	    	appendTo: angular.element($($element).find('.cv-gui-modals')[0]),
+	    	/*
+		    size: size,
+	    	 */
+	    });
 
-		cubesviewer.views.destroyView (view);
+	    modalInstance.result.then(function (selectedItem) {
+	    	//$scope.selected = selectedItem;
+	    }, function () {
+	        console.debug('Modal dismissed at: ' + new Date());
+	    });
 	};
 
+	$scope.showSerializeView = function(view) {
 
+		console.debug("Show serialize view");
 
-	/*
-	 * Adds a view given its params descriptor.
-	 */
-	$scope.addViewObject = function(data) {
+	    var modalInstance = $uibModal.open({
+	    	animation: true,
+	    	templateUrl: 'studio/serialize-view.html',
+	    	controller: 'CubesViewerSerializeViewController',
+	    	appendTo: angular.element($($element).find('.cv-gui-modals')[0]),
+		    resolve: {
+		        view: function () { return view; },
+	    		element: function() { return $($element).find('.cv-gui-modals')[0] },
+		    }
+	    });
 
-		this.lastViewId++;
-		var viewId = "view" + this.lastViewId;
-
-		var container = this.createContainer(viewId);
-		var view = this.cubesviewer.views.createView(viewId, $('.cv-gui-viewcontent', container), "cube", data);
-		this.views.push (view);
-
-		// Bind close button
-		$(container).find('.cv-gui-closeview').click(function() {
-			cubesviewer.gui.closeView(view);
-			return false;
-		});
-
-		return view;
-
+	    modalInstance.result.then(function (selectedItem) {
+	    	//$scope.selected = selectedItem;
+	    }, function () {
+	        console.debug('Modal dismissed at: ' + new Date());
+	    });
 	};
 
-	/*
-	 * Creates a container for a view.
-	 */
-	this.createContainer = function(viewId) {
-
-		// Configure collapsible
-		/*
-		$('#' + viewId + " .cv-gui-cubesview").accordion({
-			collapsible : true,
-			autoHeight : false
-		});
-		$('#' + viewId + " .cv-gui-viewcontent").css({
-			"height": ""
-		});
-		$('#' + viewId + " .cv-gui-cubesview").on("accordionbeforeactivate", function (evt, ui) {
-			if (cubesviewer.gui._sorting == true) {
-				evt.preventDefault();
-				evt.stopImmediatePropagation();
-			}
-		});
-		*/
-
-		return $('#' + viewId);
-	};
-
-	/*
-	 * Updates view information in the container when a view is refreshed
-	 */
-	this.onViewDraw = function (event, view) {
-
-		var container = $(view.container).parents('.cv-gui-cubesview');
-		$('.cv-gui-container-name', container).empty().text(view.params.name);
-
-		view.cubesviewer.gui.drawMenu(view);
-	}
 
 	/*
 	 * Draw cube view menu
 	 */
 	this.drawMenu = function(view) {
-
-		// Add panel menu options button
-		$(view.container).find('.cv-view-toolbar').append(
-			'<button class="panelbutton" title="Panel">Panel</button>'
-		);
-
-		$(view.container).find('.cv-view-viewmenu').append(
-			'<ul class="cv-view-menu cv-view-menu-panel" style="float: right; width: 180px;"></ul>'
-		);
-
-		// Buttonize
-		$(view.container).find('.panelbutton').button();
-
 
 		var menu = $(".cv-view-menu-panel", $(view.container));
 		menu.append(
@@ -4310,9 +4287,6 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 			'<div></div>' +
 			'<li><a class="cv-gui-closeview" href="#"><span class="ui-icon ui-icon-close"></span>Close</a></li>'
 		);
-
-		// Menu functionality
-		view.cubesviewer.views.cube._initMenu(view, '.panelbutton', '.cv-view-menu-panel');
 
 		$(view.container).find('.cv-gui-closeview').unbind("click").click(function() {
 			cubesviewer.gui.closeView(view);
@@ -4369,59 +4343,6 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 		this.cubesviewer.views.redrawView (view);
 	};
 
-	// Model Loaded Event (redraws cubes list)
-	this.onCubesViewerInitialized = function() {
-		cubesviewer.gui.drawCubesList();
-	};
-
-
-	this.drawCubesList = function() {
-
-		// Add handlers for clicks
-		$('.cv-gui-cubeslist-menu', $(cubesviewer.gui.options.container)).find('.cv-gui-addviewcube').click(function() {
-			var view = cubesviewer.gui.addViewCube( $(this).attr('data-cubename') );
-			return false;
-		});
-
-		// Redraw views
-		$(cubesviewer.gui.views).each(function(idx, view) {
-			view.cubesviewer.views.redrawView(view);
-		});
-
-	};
-
-	/*
-	 * Render initial (constant) elements for the GUI
-	 */
-	this.onGuiDraw = function(event, gui) {
-
-		$('[data-submenu]', gui.options.container).submenupicker();
-
-
-		// Configure sortable panel
-		/*
-		$(gui.options.container).children('.cv-gui-workspace').sortable({
-			placeholder : "ui-state-highlight",
-			// containment: "parent",
-			distance : 15,
-			delay : 300,
-			handle : ".sorthandle",
-
-			start : function(evt, ui) {
-				cubesviewer.gui._sorting = true;
-			},
-			stop : function(evt, ui) {
-				setTimeout(function() {
-					cubesviewer.gui._sorting = false;
-				}, 200);
-
-			}
-		// forcePlaceholderSize: true,
-		// forceHlperSize: true,
-		});
-		*/
-
-	}
 
 }]);
 
@@ -4480,6 +4401,107 @@ cubesviewer.studio = {
 	}
 
 };
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * If your version of the Software supports interaction with it remotely through
+ * a computer network, the above copyright notice and this permission notice
+ * shall be accessible to all users.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+/**
+ * View serialization inteface. This is an optional component.
+ * Provides visual assistance for serializing views and instancing of views from
+ * serialized data. Note that only the view parameters are serialized,
+ * but not data. The Cubes Server still needs to be available to serve data.
+ * This serialized strings can also be used to initialize different views from code,
+ * which is handy when these are going to be instantiated from code later on
+ * (ie. when embedding views on a web site).
+ */
+angular.module('cv.studio').controller("CubesViewerSerializeViewController", ['$rootScope', '$scope', '$timeout', '$uibModalInstance', 'element', 'cvOptions', 'cubesService', 'studioViewsService', 'viewsService', 'view',
+                                                                             function ($rootScope, $scope, $timeout, $uibModalInstance, element, cvOptions, cubesService, studioViewsService, viewsService, view) {
+
+	$scope.cvVersion = cubesviewer.version;
+	$scope.cvOptions = cvOptions;
+	$scope.cubesService = cubesService;
+	$scope.studioViewsService = studioViewsService;
+
+	$scope.serializedView = "";
+
+	$scope.initialize = function() {
+
+		$scope.serializedView  = viewsService.serializeView(view);
+		console.log("Serialized view: " + $scope.serializedView);
+
+		$timeout(function() {
+			window.getSelection().removeAllRanges();
+			var range = document.createRange();
+			range.selectNodeContents($(element).find(".cv-serialized-view")[0]);
+			window.getSelection().addRange(range);
+		} , 0);
+
+	};
+
+	$scope.close = function() {
+		$uibModalInstance.dismiss('cancel');
+	};
+
+	$scope.initialize();
+
+}]);
+
+
+angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$rootScope', '$scope', '$uibModalInstance', 'cvOptions', 'cubesService', 'studioViewsService',
+                                                                             function ($rootScope, $scope, $uibModalInstance, cvOptions, cubesService, studioViewsService) {
+
+	$scope.cvVersion = cubesviewer.version;
+	$scope.cvOptions = cvOptions;
+	$scope.cubesService = cubesService;
+	$scope.studioViewsService = studioViewsService;
+
+	$scope.serializedView = null;
+
+	/*
+	 * Shows the dialog to add a serialized view.
+	 * This is equivalent to other view adding methods in the cubesviewer.gui namespace,
+	 * like "addViewObject", but this loads the view definition from
+	 * the storage backend.
+	 */
+	$scope.addSerializedView = function (serialized) {
+		console.debug("Add: " + serialized);
+		if (serialized != null) {
+			var view = studioViewsService.addViewObject(serialized);
+		}
+		$uibModalInstance.close(serialized);
+	};
+
+	$scope.close = function() {
+		$uibModalInstance.dismiss('cancel');
+	};
+
+}]);
+
+
+
 ;angular.module('cv').run(['$templateCache', function($templateCache) {
   'use strict';
 
@@ -4500,7 +4522,7 @@ cubesviewer.studio = {
 
 
   $templateCache.put('studio/about.html',
-    "<div class=\"modal fade\" id=\"cvAboutModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\">\n" +
+    "<div class=\"modal fade\" id=\"cvAboutModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"\">\n" +
     "  <div class=\"modal-dialog\" role=\"document\">\n" +
     "    <div class=\"modal-content\">\n" +
     "      <div class=\"modal-header\">\n" +
@@ -4520,7 +4542,7 @@ cubesviewer.studio = {
     "            2012 - 2016</p>\n" +
     "\n" +
     "            <p>\n" +
-    "            <a href=\"\">LICENSE</a>\n" +
+    "            <a href=\"http://github.com/jjmontesl/cubesviewer/blob/master/LICENSE.txt\">LICENSE</a>\n" +
     "            </p>\n" +
     "\n" +
     "      </div>\n" +
@@ -4539,15 +4561,14 @@ cubesviewer.studio = {
     "<div class=\"cv-bootstrap cv-gui-viewcontainer\" ng-controller=\"CubesViewerStudioViewController\">\n" +
     "\n" +
     "    <div class=\"panel panel-primary\">\n" +
-    "        <div class=\"panel-heading\" style=\"ver\">\n" +
+    "        <div class=\"panel-heading\">\n" +
     "\n" +
-    "            <button type=\"button\" ng-click=\"studioViewsService.closeView(view)\" class=\"btn btn-danger btn-xs\" style=\"margin-right: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
+    "            <button type=\"button\" ng-click=\"studioViewsService.closeView(view)\" class=\"btn btn-danger btn-xs pull-right\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
+    "            <button type=\"button\" ng-click=\"studioViewsService.toggleCollapseView(view)\" class=\"btn btn-primary btn-xs pull-right\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw\" ng-class=\"{'fa-caret-up': !view.collapsed, 'fa-caret-down': view.collapsed }\"></i></button>\n" +
     "\n" +
-    "            <button type=\"button\" ng-click=\"studioViewsService.toggleCollapseView(view)\" class=\"btn btn-primary btn-xs\" style=\"margin-right: 10px;\"><i class=\"fa fa-fw\" ng-class=\"{'fa-caret-up': !view.collapsed, 'fa-caret-down': view.collapsed }\"></i></button>\n" +
-    "\n" +
-    "            <span class=\"cv-gui-title\">{{ view.params.name }}</span>\n" +
-    "\n" +
-    "            <span class=\"badge badge-primary pull-right cv-gui-container-state\" style=\"margin-right: 10px;\">Test</span>\n" +
+    "            <i class=\"fa fa-fw fa-file\"></i> <span class=\"cv-gui-title\">{{ view.params.name }}</span>\n" +
+    "            <span class=\"badge badge-primary cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Test</span>\n" +
+    "            <button type=\"button\" class=\"btn btn-danger btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "\n" +
     "        </div>\n" +
     "        <div class=\"panel-body\" ng-hide=\"view.collapsed\">\n" +
@@ -4560,6 +4581,47 @@ cubesviewer.studio = {
     "    </div>\n" +
     "\n" +
     "</div>\n"
+  );
+
+
+  $templateCache.put('studio/serialize-add.html',
+    "  <div class=\"modal-header\">\n" +
+    "    <button type=\"button\" ng-click=\"close()\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\"><i class=\"fa fa-fw fa-close\"></i></span></button>\n" +
+    "    <h4 class=\"modal-title\" id=\"myModalLabel\"><i class=\"fa fa-code\"></i> Add view from serialized JSON</h4>\n" +
+    "  </div>\n" +
+    "  <div class=\"modal-body\">\n" +
+    "\n" +
+    "        <div class=\"form-inline\">\n" +
+    "            <label for=\"serializedView\">Code:</label>\n" +
+    "            <textarea class=\"form-control\" ng-model=\"serializedView\" style=\"width: 100%; height: 12em;\" />\n" +
+    "        </div>\n" +
+    "\n" +
+    "  </div>\n" +
+    "  <div class=\"modal-footer\">\n" +
+    "    <button type=\"button\" ng-click=\"close()\" class=\"btn btn-danger\" data-dismiss=\"modal\">Cancel</button>\n" +
+    "    <button type=\"button\" ng-click=\"addSerializedView(serializedView)\" class=\"btn btn-success\" data-dismiss=\"modal\">Add View</button>\n" +
+    "  </div>\n" +
+    "\n"
+  );
+
+
+  $templateCache.put('studio/serialize-view.html',
+    "  <div class=\"modal-header\">\n" +
+    "    <button type=\"button\" ng-click=\"close()\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\"><i class=\"fa fa-fw fa-close\"></i></span></button>\n" +
+    "    <h4 class=\"modal-title\" id=\"myModalLabel\"><i class=\"fa fa-code\"></i> Serialized View</h4>\n" +
+    "  </div>\n" +
+    "  <div class=\"modal-body\">\n" +
+    "\n" +
+    "        <div class=\"form-inline\">\n" +
+    "            <label for=\"serializedView\">View definition JSON:</label>\n" +
+    "            <textarea class=\"form-control cv-serialized-view\" ng-bind=\"serializedView\" style=\"width: 100%; height: 12em;\" readonly></textarea>\n" +
+    "        </div>\n" +
+    "\n" +
+    "  </div>\n" +
+    "  <div class=\"modal-footer\">\n" +
+    "    <button type=\"button\" ng-click=\"close()\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n" +
+    "  </div>\n" +
+    "\n"
   );
 
 
@@ -4588,17 +4650,19 @@ cubesviewer.studio = {
     "\n" +
     "          <ul class=\"dropdown-menu\">\n" +
     "\n" +
-    "                <li ng-click=\"showAddSerializedView()\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-code\"></i> Add view from JSON...</a></li>\n" +
+    "                <li ng-click=\"showSerializeAdd()\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-code\"></i> Add view from JSON...</a></li>\n" +
     "\n" +
     "                <div class=\"divider\"></div>\n" +
     "\n" +
-    "                <li class=\"\"><a href=\"https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-user-main.md\" target=\"_blank\"><i class=\"fa fa-fw fa-question\"></i> User Guide</a></li>\n" +
+    "                <li class=\"\"><a href=\"http://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-user-main.md\" target=\"_blank\"><i class=\"fa fa-fw fa-question\"></i> User Guide</a></li>\n" +
     "                <li class=\"\"><a data-toggle=\"modal\" data-target=\"#cvAboutModal\"><i class=\"fa fa-fw fa-info\"></i> About CubesViewer...</a></li>\n" +
     "\n" +
     "            </ul>\n" +
     "        </div>\n" +
     "\n" +
-    "        <div ng-include=\"'studio/about.html'\"></div>\n" +
+    "        <div class=\"cv-gui-modals\">\n" +
+    "            <div ng-include=\"'studio/about.html'\"></div>\n" +
+    "        </div>\n" +
     "\n" +
     "    </div>\n" +
     "\n" +
@@ -4792,16 +4856,16 @@ cubesviewer.studio = {
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
     "\n" +
-    "    <li><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +
-    "    <li><a><i class=\"fa fa-fw fa-trash-o\"></i> Delete...</a></li>\n" +
     "    <li><a><i class=\"fa fa-fw fa-pencil\"></i> Rename...</a></li>\n" +
+    "    <li ng-click=\"studioViewsService.cloneView(view)\"><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +
     "    <li><a><i class=\"fa fa-fw fa-share\"></i> Share...</a></li>\n" +
-    "    <li><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-trash-o\"></i> Delete...</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
-    "    <li><a><i class=\"fa fa-fw fa-code\"></i> Serialize...</a></li>\n" +
+    "    <li ng-click=\"studioViewsService.studioScope.showSerializeView(view)\"><a><i class=\"fa fa-fw fa-code\"></i> Serialize...</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
-    "    <li><a><i class=\"fa fa-fw fa-close\"></i> Close</a></li>\n" +
+    "    <li ng-click=\"studioViewsService.closeView(view)\"><a><i class=\"fa fa-fw fa-close\"></i> Close</a></li>\n" +
     "  </ul>\n"
   );
 
@@ -4961,7 +5025,7 @@ cubesviewer.studio = {
     "            <div class=\"cv-view-viewinfo-extra\">\n" +
     "\n" +
     "                <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccccff;\">\n" +
-    "                    <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-bullseye\"></i> <b>Measure:</b> {{ (view.params.yaxis != null) ? view.params.yaxis : \"None\" }}</span>\n" +
+    "                    <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-crosshairs\"></i> <b>Measure:</b> {{ (view.params.yaxis != null) ? view.params.yaxis : \"None\" }}</span>\n" +
     "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                </div>\n" +
     "\n" +
@@ -5001,7 +5065,7 @@ cubesviewer.studio = {
     "<div ng-controller=\"CubesViewerViewsCubeExploreController\">\n" +
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
-    "    <h3><i class=\"fa fa-fw fa-arrow-circle-down\"></i> Aggregated Data</h3>\n" +
+    "    <h3><i class=\"fa fa-fw fa-arrow-circle-down\"></i> Aggregated data</h3>\n" +
     "\n" +
     "    <div ui-grid=\"gridOptions\"\n" +
     "         ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize\n" +

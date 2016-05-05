@@ -25,7 +25,7 @@
  * SOFTWARE.
  */
 
-/*
+/**
  * View serialization inteface. This is an optional component.
  * Provides visual assistance for serializing views and instancing of views from
  * serialized data. Note that only the view parameters are serialized,
@@ -34,99 +34,48 @@
  * which is handy when these are going to be instantiated from code later on
  * (ie. when embedding views on a web site).
  */
-function cubesviewerGuiSerializing() {
+angular.module('cv.studio').controller("CubesViewerSerializeViewController", ['$rootScope', '$scope', '$timeout', '$uibModalInstance', 'element', 'cvOptions', 'cubesService', 'studioViewsService', 'viewsService', 'view',
+                                                                             function ($rootScope, $scope, $timeout, $uibModalInstance, element, cvOptions, cubesService, studioViewsService, viewsService, view) {
 
-	this.cubesviewer = cubesviewer;
+	$scope.cvVersion = cubesviewer.version;
+	$scope.cvOptions = cvOptions;
+	$scope.cubesService = cubesService;
+	$scope.studioViewsService = studioViewsService;
 
-	//this.urlLoaded = false;
+	$scope.serializedView = "";
 
-	/*
-	 * Draw GUI options
-	 */
-	this.onGuiDraw = function(event, gui) {
+	$scope.initialize = function() {
 
-		$(gui.options.container).find('.cv-gui-tools-menu').prepend(
-			'<li><a href="#" class="cv-gui-addserialized">Add view from JSON</a></li>'
-		);
-		$(gui.options.container).find('.cv-gui-tools-menu').menu('refresh');
-		//$('.cv-gui-addserialized', gui.options.container).button();
-		$('.cv-gui-addserialized', gui.options.container).click(function() {
-			cubesviewer.gui.serializing.addSerializedView(gui);
-			return false;
-		});
+		$scope.serializedView  = viewsService.serializeView(view);
+		console.log("Serialized view: " + $scope.serializedView);
 
-	}
-
-	/*
-	 * Draw export options.
-	 */
-	this.onViewDraw = function(event, view) {
-
-		view.cubesviewer.gui.serializing.drawMenu(view);
+		$timeout(function() {
+			window.getSelection().removeAllRanges();
+			var range = document.createRange();
+			range.selectNodeContents($(element).find(".cv-serialized-view")[0]);
+			window.getSelection().addRange(range);
+		} , 0);
 
 	};
 
-	/*
-	 * Draw export menu options.
-	 */
-	this.drawMenu = function(view) {
-
-		var menu = $(".cv-view-menu-panel", $(view.container));
-		var cube = view.cube;
-
-		// Draw menu options (depending on mode)
-		menu.find (".cv-gui-renameview").parent().after(
-			'<li><a class="cv-gui-serializeview" href="#"><span class="ui-icon ui-icon-rss"></span> Serialize</a></li>'
-		);
-
-		$(menu).menu( "refresh" );
-		$(menu).addClass("ui-menu-icons");
-
-		// Events
-		$(view.container).find('.cv-gui-serializeview').click(function() {
-			view.cubesviewer.gui.serializing.serializeView(view);
-			return false;
-		});
-
+	$scope.close = function() {
+		$uibModalInstance.dismiss('cancel');
 	};
 
-	/*
-	 * Save a view.
-	 */
-	this.serializeView = function (view) {
-		var serialized = view.cubesviewer.views.serialize(view);
-		console.log(serialized);
-		this.jqueryUiPopup(serialized);
-	};
+	$scope.initialize();
 
-	this.jqueryUiPopup = function (text) {
-		$('<p/>', {
-			text: text
-		}).dialog({
-			buttons: [{
-					text: "Close",
-					click: function() {
-						$(this).dialog("close");
-					},
-			}],
-			open: function() {
-				//autoselect text for copying
-				window.getSelection().removeAllRanges();
-				var range = document.createRange();
-				range.selectNode($(this)[0]);
-				window.getSelection().addRange(range);
-			},
-			create: function() {
-				var dialog = $(this);
-				var click_id = 'click.' + $(dialog).attr('id');
+}]);
 
-				$('div#body').bind(click_id, function() {
-					$(dialog).dialog('close');
-					$(this).unbind(click_id);
-				});
-			},
-		});
-	};
+
+angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$rootScope', '$scope', '$uibModalInstance', 'cvOptions', 'cubesService', 'studioViewsService',
+                                                                             function ($rootScope, $scope, $uibModalInstance, cvOptions, cubesService, studioViewsService) {
+
+	$scope.cvVersion = cubesviewer.version;
+	$scope.cvOptions = cvOptions;
+	$scope.cubesService = cubesService;
+	$scope.studioViewsService = studioViewsService;
+
+	$scope.serializedView = null;
 
 	/*
 	 * Shows the dialog to add a serialized view.
@@ -134,26 +83,19 @@ function cubesviewerGuiSerializing() {
 	 * like "addViewObject", but this loads the view definition from
 	 * the storage backend.
 	 */
-	this.addSerializedView = function (gui) {
-
-		var serialized = prompt ("Enter serialized view data: ");
-
+	$scope.addSerializedView = function (serialized) {
+		console.debug("Add: " + serialized);
 		if (serialized != null) {
-			var view = cubesviewer.gui.addViewObject(serialized);
-			this.cubesviewer.views.redrawView (view);
+			var view = studioViewsService.addViewObject(serialized);
 		}
+		$uibModalInstance.close(serialized);
 	};
 
-};
+	$scope.close = function() {
+		$uibModalInstance.dismiss('cancel');
+	};
 
-/*
- * Create object.
- */
-cubesviewer.gui.serializing = new cubesviewerGuiSerializing();
+}]);
 
-/*
- * Bind events.
- */
-$(document).bind("cubesviewerViewDraw", { }, cubesviewer.gui.serializing.onViewDraw);
-$(document).bind("cubesviewerGuiDraw", { }, cubesviewer.gui.serializing.onGuiDraw);
+
 
