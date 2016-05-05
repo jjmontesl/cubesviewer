@@ -187,8 +187,14 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div class=\"cv-gui-workspace\">\n" +
     "\n" +
+    "        <div class=\"row\">\n" +
+    "\n" +
     "        <div ng-repeat=\"studioView in studioViewsService.views\">\n" +
-    "            <div cv-studio-view view=\"studioView\"></div>\n" +
+    "            <div class=\"col-xs-12\">\n" +
+    "                <div cv-studio-view view=\"studioView\"></div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
     "        </div>\n" +
     "\n" +
     "    </div>\n" +
@@ -699,7 +705,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
     "    <h3><i class=\"fa fa-fw fa-arrow-circle-down\"></i> Aggregated data\n" +
-    "        <i class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info\"></i>\n" +
+    "        <i class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "    </h3>\n" +
     "\n" +
     "    <div ui-grid=\"gridOptions\"\n" +

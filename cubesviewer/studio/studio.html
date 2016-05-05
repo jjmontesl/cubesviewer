@@ -40,8 +40,14 @@
 
     <div class="cv-gui-workspace">
 
+        <div class="row">
+
         <div ng-repeat="studioView in studioViewsService.views">
-            <div cv-studio-view view="studioView"></div>
+            <div class="col-xs-12">
+                <div cv-studio-view view="studioView"></div>
+            </div>
+        </div>
+
         </div>
 
     </div>
