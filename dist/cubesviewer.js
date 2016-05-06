@@ -1864,7 +1864,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSeparator) {
 
-
 	if (value === undefined) return "";
 
 	if (decimalPlaces === undefined) decimalPlaces = 2;
@@ -1874,15 +1873,19 @@ Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSe
 	var result = "";
 
 
-	var intString = Math.floor(value).toString();
+	var avalue = Math.abs(value);
+
+	var intString = Math.floor(avalue).toString();
 	for (var i = 0; i < intString.length; i++) {
 		result = result + intString[i];
 		var invPos = (intString.length - i - 1);
 		if (invPos > 0 && invPos % 3 == 0) result = result + thousandsSeparator;
 	}
 	if (decimalPlaces > 0) {
-		result = result + parseFloat(value - Math.floor(value)).toFixed(decimalPlaces).toString().replace(".", decimalSeparator).substring(1);
+		result = result + parseFloat(avalue - Math.floor(avalue)).toFixed(decimalPlaces).toString().replace(".", decimalSeparator).substring(1);
 	}
+
+	if (value < 0) result = "-" + result;
 
 	return result;
 };
@@ -1917,6 +1920,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
                                                      function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
 
 	$scope.$parent.gridData = [];
+
+	$scope.pendingRequests = 0;
 
 
 	// TODO: Move to explore view or grid component as cube view shall be split into directives
@@ -1957,8 +1962,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		var browser_args = cubesService.buildBrowserArgs($scope.view, false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
 		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
+
+		$scope.pendingRequests++;
 		jqxhr.always(function() {
-			//view.cubesviewer.views.unblockView(view);
+			$scope.pendingRequests--;
 		});
 
 	};
@@ -2890,6 +2897,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 	$scope.$parent.gridData = [];
 
+	$scope.pendingRequests = 0;
+
 	// TODO: Move to explore view or grid component as cube view shall be split into directives
     $scope.$parent.onGridRegisterApi = function(gridApi) {
     	//console.debug("Grid Register Api: Facts");
@@ -2927,8 +2936,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 		var browser_args = cubesService.buildBrowserArgs($scope.view, false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
 		var jqxhr = browser.facts(browser_args, $scope._loadDataCallback);
+
+		$scope.pendingRequests++;
 		jqxhr.always(function() {
-			//view.cubesviewer.views.unblockView(view);
+			$scope.pendingRequests--;
 		});
 
 	};
@@ -3211,6 +3222,28 @@ angular.module('cv.views').service("seriesService", ['$rootScope', 'cvOptions', 
 
 	};
 
+	this.calculateDifferentialsPercent = function(view, rows, columnDefs) {
+
+		console.debug("FIXME: Differentials are ignoring drilldown.length columns, but fails in some cases.");
+
+		$(rows).each(function(idx, e) {
+			var lastValue = null;
+			for (var i = view.params.drilldown.length; i < columnDefs.length; i++) {
+	    		var value = e[columnDefs[i].field];
+	    		var diff = null;
+	    		if ((lastValue != null) && (value != null)) {
+	    			var diff = (value - lastValue) / lastValue;
+	    			e[columnDefs[i].field] = diff;
+	    		} else {
+	    			delete e[columnDefs[i].field];
+	    			//e[columnDefs[i].field] = null;
+	    		}
+	    		lastValue = value;
+	    	}
+		});
+
+	};
+
 	this.calculateAccum = function(view, rows, columnDefs) {
 
 	};
@@ -3218,6 +3251,9 @@ angular.module('cv.views').service("seriesService", ['$rootScope', 'cvOptions', 
 	this.applyCalculations = function(view, rows, columnDefs) {
 		if (view.params.calculation == "difference") {
 			this.calculateDifferentials(view, rows, columnDefs);
+		}
+		if (view.params.calculation == "percentage") {
+			this.calculateDifferentialsPercent(view, rows, columnDefs);
 		}
 	};
 
@@ -3235,6 +3271,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
                                                      function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, seriesService) {
 
 	$scope.$parent.gridData = [];
+
+	$scope.pendingRequests = 0;
 
 	// TODO: Move to explore view or grid component as cube view shall be split into directives
     $scope.$parent.onGridRegisterApi = function(gridApi) {
@@ -3281,8 +3319,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 		var browser_args = cubesService.buildBrowserArgs($scope.view, $scope.view.params.xaxis != null ? true : false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
 		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
+		$scope.pendingRequests++;
 		jqxhr.always(function() {
-			//view.cubesviewer.views.unblockView(view);
+			$scope.pendingRequests--;
 		});
 
 	};
@@ -3534,6 +3573,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 	$scope.$parent.gridApi = null;
 	$scope.$parent.gridOptions = { data: $scope.$parent.gridData, columnDefs: [] };
 
+	$scope.pendingRequests = 0;
+
 	$scope.chart = null;
 
 
@@ -3563,8 +3604,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 		var browser_args = cubesService.buildBrowserArgs($scope.view, $scope.view.params.xaxis != null ? true : false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
 		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
+
+		$scope.pendingRequests++;
 		jqxhr.always(function() {
-			//view.cubesviewer.views.unblockView(view);
+			$scope.pendingRequests--;
 		});
 
 	};
@@ -5000,6 +5043,11 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "          <ul class=\"dropdown-menu\">\n" +
     "\n" +
+    "                <li ng-click=\"\" ng-class=\"{ 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-columns\"></i> 2 columns</a></li>\n" +
+    "                <li ng-click=\"\" ng-class=\"{ 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-arrows-alt\"></i> Hide controls</a></li>\n" +
+    "\n" +
+    "                <div class=\"divider\"></div>\n" +
+    "\n" +
     "                <li ng-click=\"showSerializeAdd()\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-code\"></i> Add view from JSON...</a></li>\n" +
     "\n" +
     "                <div class=\"divider\"></div>\n" +
@@ -5054,7 +5102,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "    Cannot present chart: no <b>measure</b> has been selected.\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-if=\"view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "<div ng-if=\"pendingRequests == 0 &&  view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "    Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.\n" +
     "</div>\n" +
     "\n" +
@@ -5074,35 +5122,45 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "<div ng-controller=\"CubesViewerViewsCubeChartController\">\n" +
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'pie'\">\n" +
-    "        <h3><i class=\"fa fa-fw fa-pie-chart\"></i> Chart</h3>\n" +
+    "        <h3><i class=\"fa fa-fw fa-pie-chart\"></i> Chart\n" +
+    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        </h3>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartPieController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'bars-vertical'\">\n" +
-    "        <h3><i class=\"fa fa-fw fa-bar-chart\"></i> Chart</h3>\n" +
+    "        <h3><i class=\"fa fa-fw fa-bar-chart\"></i> Chart\n" +
+    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        </h3>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartBarsVerticalController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'lines'\">\n" +
-    "        <h3><i class=\"fa fa-fw fa-line-chart\"></i> Chart</h3>\n" +
+    "        <h3><i class=\"fa fa-fw fa-line-chart\"></i> Chart\n" +
+    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        </h3>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartLinesController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'lines-stacked'\">\n" +
-    "        <h3><i class=\"fa fa-fw fa-area-chart\"></i> Chart</h3>\n" +
+    "        <h3><i class=\"fa fa-fw fa-area-chart\"></i> Chart\n" +
+    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        </h3>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartLinesController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'radar'\">\n" +
-    "        <h3><i class=\"fa fa-fw fa-bullseye\"></i> Chart</h3>\n" +
+    "        <h3><i class=\"fa fa-fw fa-bullseye\"></i> Chart\n" +
+    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        </h3>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartRadarController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
@@ -5484,7 +5542,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
     "    <h3><i class=\"fa fa-fw fa-arrow-circle-down\"></i> Aggregated data\n" +
-    "        <i class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "    </h3>\n" +
     "\n" +
     "    <div ui-grid=\"gridOptions\"\n" +
@@ -5502,7 +5560,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "<div ng-controller=\"CubesViewerViewsCubeFactsController\">\n" +
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
-    "    <h3><i class=\"fa fa-fw fa-th\"></i> Facts data</h3>\n" +
+    "    <h3><i class=\"fa fa-fw fa-th\"></i> Facts data\n" +
+    "        <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "    </h3>\n" +
     "\n" +
     "    <div ng-if=\"gridOptions.data.length > 0\"\n" +
     "         ui-grid=\"gridOptions\"\n" +
@@ -5641,10 +5701,11 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "            <div class=\"clearfix\"></div>\n" +
     "\n" +
-    "            <div class=\"row\">\n" +
+    "            <div ng-show=\"loadingDimensionValues\" ><i class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom\" style=\"margin-top: 10px;\"></i> Loading...</div>\n" +
+    "\n" +
+    "            <div ng-if=\"!loadingDimensionValues\" class=\"row\">\n" +
     "                <div class=\"col-xs-6\">\n" +
     "                <div style=\"margin-top: 5px;\">\n" +
-    "                    <span ng-show=\"loadingDimensionValues\" ><i class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom\"></i> Loading...</span>\n" +
     "                    <div class=\"panel panel-default panel-outline\" style=\"margin-bottom: 0px;\"><div class=\"panel-body\" style=\"max-height: 180px; overflow-y: auto; overflow-x: hidden;\">\n" +
     "                        <div ng-repeat=\"val in dimensionValues\" style=\"overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\">\n" +
     "                            <label style=\"font-weight: normal; margin-bottom: 2px;\">\n" +
@@ -5671,7 +5732,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "<div ng-controller=\"CubesViewerViewsCubeSeriesController\">\n" +
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
-    "    <h3><i class=\"fa fa-fw fa-clock-o\"></i> Series table</h3>\n" +
+    "    <h3><i class=\"fa fa-fw fa-clock-o\"></i> Series table\n" +
+    "        <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "    </h3>\n" +
     "\n" +
     "    <div ng-if=\"gridOptions.data.length > 0\"\n" +
     "         ui-grid=\"gridOptions\"\n" +

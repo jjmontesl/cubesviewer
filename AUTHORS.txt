@@ -15,5 +15,6 @@ Other contributors:
 
 * Enrique Hernández
 * Alexander Bessonov
+* Nuno Khan
 * Devin Howard
 

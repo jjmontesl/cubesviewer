@@ -15,7 +15,7 @@
     Cannot present chart: no <b>measure</b> has been selected.
 </div>
 
-<div ng-if="view.params.yaxis != null && gridOptions.data.length == 0" class="alert alert-info" style="margin-bottom: 0px;">
+<div ng-if="pendingRequests == 0 &&  view.params.yaxis != null && gridOptions.data.length == 0" class="alert alert-info" style="margin-bottom: 0px;">
     Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.
 </div>
 

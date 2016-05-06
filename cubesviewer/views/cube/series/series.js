@@ -51,6 +51,28 @@ angular.module('cv.views').service("seriesService", ['$rootScope', 'cvOptions', 
 
 	};
 
+	this.calculateDifferentialsPercent = function(view, rows, columnDefs) {
+
+		console.debug("FIXME: Differentials are ignoring drilldown.length columns, but fails in some cases.");
+
+		$(rows).each(function(idx, e) {
+			var lastValue = null;
+			for (var i = view.params.drilldown.length; i < columnDefs.length; i++) {
+	    		var value = e[columnDefs[i].field];
+	    		var diff = null;
+	    		if ((lastValue != null) && (value != null)) {
+	    			var diff = (value - lastValue) / lastValue;
+	    			e[columnDefs[i].field] = diff;
+	    		} else {
+	    			delete e[columnDefs[i].field];
+	    			//e[columnDefs[i].field] = null;
+	    		}
+	    		lastValue = value;
+	    	}
+		});
+
+	};
+
 	this.calculateAccum = function(view, rows, columnDefs) {
 
 	};
@@ -58,6 +80,9 @@ angular.module('cv.views').service("seriesService", ['$rootScope', 'cvOptions', 
 	this.applyCalculations = function(view, rows, columnDefs) {
 		if (view.params.calculation == "difference") {
 			this.calculateDifferentials(view, rows, columnDefs);
+		}
+		if (view.params.calculation == "percentage") {
+			this.calculateDifferentialsPercent(view, rows, columnDefs);
 		}
 	};
 
@@ -75,6 +100,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
                                                      function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, seriesService) {
 
 	$scope.$parent.gridData = [];
+
+	$scope.pendingRequests = 0;
 
 	// TODO: Move to explore view or grid component as cube view shall be split into directives
     $scope.$parent.onGridRegisterApi = function(gridApi) {
@@ -121,8 +148,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 		var browser_args = cubesService.buildBrowserArgs($scope.view, $scope.view.params.xaxis != null ? true : false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
 		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
+		$scope.pendingRequests++;
 		jqxhr.always(function() {
-			//view.cubesviewer.views.unblockView(view);
+			$scope.pendingRequests--;
 		});
 
 	};

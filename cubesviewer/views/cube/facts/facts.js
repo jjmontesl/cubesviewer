@@ -30,6 +30,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 	$scope.$parent.gridData = [];
 
+	$scope.pendingRequests = 0;
+
 	// TODO: Move to explore view or grid component as cube view shall be split into directives
     $scope.$parent.onGridRegisterApi = function(gridApi) {
     	//console.debug("Grid Register Api: Facts");
@@ -67,8 +69,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 		var browser_args = cubesService.buildBrowserArgs($scope.view, false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
 		var jqxhr = browser.facts(browser_args, $scope._loadDataCallback);
+
+		$scope.pendingRequests++;
 		jqxhr.always(function() {
-			//view.cubesviewer.views.unblockView(view);
+			$scope.pendingRequests--;
 		});
 
 	};

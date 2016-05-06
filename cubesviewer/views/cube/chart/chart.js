@@ -35,6 +35,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 	$scope.$parent.gridApi = null;
 	$scope.$parent.gridOptions = { data: $scope.$parent.gridData, columnDefs: [] };
 
+	$scope.pendingRequests = 0;
+
 	$scope.chart = null;
 
 
@@ -64,8 +66,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 		var browser_args = cubesService.buildBrowserArgs($scope.view, $scope.view.params.xaxis != null ? true : false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
 		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
+
+		$scope.pendingRequests++;
 		jqxhr.always(function() {
-			//view.cubesviewer.views.unblockView(view);
+			$scope.pendingRequests--;
 		});
 
 	};

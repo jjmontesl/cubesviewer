@@ -330,7 +330,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSeparator) {
 
-
 	if (value === undefined) return "";
 
 	if (decimalPlaces === undefined) decimalPlaces = 2;
@@ -340,15 +339,19 @@ Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSe
 	var result = "";
 
 
-	var intString = Math.floor(value).toString();
+	var avalue = Math.abs(value);
+
+	var intString = Math.floor(avalue).toString();
 	for (var i = 0; i < intString.length; i++) {
 		result = result + intString[i];
 		var invPos = (intString.length - i - 1);
 		if (invPos > 0 && invPos % 3 == 0) result = result + thousandsSeparator;
 	}
 	if (decimalPlaces > 0) {
-		result = result + parseFloat(value - Math.floor(value)).toFixed(decimalPlaces).toString().replace(".", decimalSeparator).substring(1);
+		result = result + parseFloat(avalue - Math.floor(avalue)).toFixed(decimalPlaces).toString().replace(".", decimalSeparator).substring(1);
 	}
+
+	if (value < 0) result = "-" + result;
 
 	return result;
 };

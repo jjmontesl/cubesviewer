@@ -50,10 +50,11 @@
 
             <div class="clearfix"></div>
 
-            <div class="row">
+            <div ng-show="loadingDimensionValues" ><i class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom" style="margin-top: 10px;"></i> Loading...</div>
+
+            <div ng-if="!loadingDimensionValues" class="row">
                 <div class="col-xs-6">
                 <div style="margin-top: 5px;">
-                    <span ng-show="loadingDimensionValues" ><i class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom"></i> Loading...</span>
                     <div class="panel panel-default panel-outline" style="margin-bottom: 0px;"><div class="panel-body" style="max-height: 180px; overflow-y: auto; overflow-x: hidden;">
                         <div ng-repeat="val in dimensionValues" style="overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;">
                             <label style="font-weight: normal; margin-bottom: 2px;">

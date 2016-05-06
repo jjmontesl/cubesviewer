@@ -22,6 +22,11 @@
 
           <ul class="dropdown-menu">
 
+                <li ng-click="" ng-class="{ 'disabled': studioViewsService.views.length == 0 }"><a tabindex="0"><i class="fa fa-fw fa-columns"></i> 2 columns</a></li>
+                <li ng-click="" ng-class="{ 'disabled': studioViewsService.views.length == 0 }"><a tabindex="0"><i class="fa fa-fw fa-arrows-alt"></i> Hide controls</a></li>
+
+                <div class="divider"></div>
+
                 <li ng-click="showSerializeAdd()"><a tabindex="0"><i class="fa fa-fw fa-code"></i> Add view from JSON...</a></li>
 
                 <div class="divider"></div>
