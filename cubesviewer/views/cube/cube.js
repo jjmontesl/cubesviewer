@@ -40,7 +40,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	$scope.dimensionFilter = null;
 
 
-
 	$scope.$watch ("view", function(view) {
 		if (view) {
 			view._cubeDataUpdated = false;

@@ -22,7 +22,7 @@
  */
 
 
-angular.module('cv.studio', ['ui.bootstrap', 'cv' /*'ui.bootstrap-slider', 'ui.validate', 'ngAnimate', */
+angular.module('cv.studio', ['cv' /*'ui.bootstrap-slider', 'ui.validate', 'ngAnimate', */
                              /*'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',
                              'nvd3' */ ]);
 

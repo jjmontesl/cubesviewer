@@ -607,59 +607,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                </div>\n" +
     "            </div>\n" +
     "\n" +
-    "            <div class=\"cv-view-viewinfo-date\">\n" +
-    "                <div ng-repeat=\"cut in view.params.datefilters\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension);\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffdddd;\">\n" +
-    "                    <span style=\"max-width: 280px; white-space: nowrap;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.labelNoLevel }}:</span>\n" +
-    "                    <span class=\"cv-datefilter\" style=\"overflow: visible;\">\n" +
-    "                        <form class=\"form-inline\" style=\"display: inline-block;\">\n" +
-    "\n" +
-    "                             <div class=\"form-group\">\n" +
-    "                                <div class=\"dropdown\">\n" +
-    "                                  <button style=\"height: 20px;\" class=\"btn btn-default btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "                                    <i class=\"fa fa-fw fa-calendar\"></i> <span class=\"hidden-xs\">Custom XXX</span> <span class=\"caret\"></span>\n" +
-    "                                  </button>\n" +
-    "\n" +
-    "                                  <ul class=\"dropdown-menu cv-view-menu cv-view-menu-view\">\n" +
-    "                                    <li class=\"dropdown-header\">Manual</li>\n" +
-    "                                    <li ng-click=\"custom\"><a><i class=\"fa fa-fw\"></i> Custom</a></li>\n" +
-    "                                    <li class=\"dropdown-header\">Auto</li>\n" +
-    "                                    <li ng-click=\"auto-last1m\"><a><i class=\"fa fa-fw\"></i> Last month</a></li>\n" +
-    "                                    <li ng-click=\"auto-last3m\"><a><i class=\"fa fa-fw\"></i> Last 3 months</a></li>\n" +
-    "                                    <li ng-click=\"auto-last6m\"><a><i class=\"fa fa-fw\"></i> Last 6 months</a></li>\n" +
-    "                                    <li ng-click=\"auto-last12m\"><a><i class=\"fa fa-fw\"></i> Last year</a></li>\n" +
-    "                                    <li ng-click=\"auto-last24m\"><a><i class=\"fa fa-fw\"></i> Last 2 years</a></li>\n" +
-    "                                    <li ng-click=\"auto-january1st\"><a><i class=\"fa fa-fw\"></i> From January 1st</a></li>\n" +
-    "                                    <li ng-click=\"auto-yesterday\"><a><i class=\"fa fa-fw\"></i> Yesterday</a></li>\n" +
-    "                                  </ul>\n" +
-    "                              </div>\n" +
-    "                             </div>\n" +
-    "\n" +
-    "                         &rArr;\n" +
-    "\n" +
-    "                         <div class=\"form-group\">\n" +
-    "                            <p class=\"input-group\" style=\"margin: 0px;\">\n" +
-    "                              <input type=\"text\" style=\"height: 20px; width: 80px;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateStart\" is-open=\"dateStartPopup.opened\" datepicker-options=\"dateOptions\" ng-required=\"true\" close-text=\"Close\" alt-input-formats=\"altInputFormats\" />\n" +
-    "                              <span class=\"input-group-btn\">\n" +
-    "                                <button type=\"button\" style=\"height: 20px;\" class=\"btn btn-default\" ng-click=\"open1()\"><i class=\"fa fa-fw fa-calendar\"></i></button>\n" +
-    "                              </span>\n" +
-    "                            </p>\n" +
-    "                        </div> -\n" +
-    "\n" +
-    "                         <div class=\"form-group\">\n" +
-    "                            <p class=\"input-group\" style=\"margin: 0px;\">\n" +
-    "                              <input type=\"text\" style=\"height: 20px; width: 80px;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateEnd\" is-open=\"dateEndPopup.opened\" datepicker-options=\"dateOptions\" ng-required=\"true\" close-text=\"Close\" alt-input-formats=\"altInputFormats\" />\n" +
-    "                              <span class=\"input-group-btn\">\n" +
-    "                                <button type=\"button\" style=\"height: 20px;\" class=\"btn btn-default\" ng-click=\"open1()\"><i class=\"fa fa-fw fa-calendar\"></i></button>\n" +
-    "                              </span>\n" +
-    "                            </p>\n" +
-    "                        </div>\n" +
-    "\n" +
-    "                        </form>\n" +
-    "\n" +
-    "                    </span>\n" +
-    "                    <button type=\"button\" ng-click=\"selectDateFilter(cut.dimension, false)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
-    "                </div>\n" +
-    "            </div>\n" +
+    "            <div ng-include=\"'views/cube/filter/datefilter.html'\"></div>\n" +
     "\n" +
     "            <div class=\"cv-view-viewinfo-extra\">\n" +
     "\n" +
@@ -736,6 +684,76 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    <div ng-if=\"gridOptions.data.length == 0\">No facts are returned by the current filtering combination.</div>\n" +
     "\n" +
     "</div>\n"
+  );
+
+
+  $templateCache.put('views/cube/filter/datefilter.html',
+    "<div class=\"cv-view-viewinfo-date\">\n" +
+    "    <div ng-repeat=\"cut in view.params.datefilters\" ng-controller=\"CubesViewerViewsCubeFilterDateController\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension);\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut text-left\" style=\"color: black; background-color: #ffdddd; text-align: left;\">\n" +
+    "        <span style=\"max-width: 280px; white-space: nowrap;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.labelNoLevel }}:</span>\n" +
+    "\n" +
+    "        <!--\n" +
+    "        <br class=\"hidden-sm hidden-md hidden-lg\" />\n" +
+    "        <i class=\"fa fa-fw hidden-sm hidden-md hidden-lg\" />\n" +
+    "         -->\n" +
+    "\n" +
+    "        <div class=\"cv-datefilter\" style=\"overflow: visible; display: inline-block;\">\n" +
+    "\n" +
+    "            <form class=\"form-inline\">\n" +
+    "\n" +
+    "                 <div class=\"form-group\" style=\"display: inline-block; margin: 0px;\">\n" +
+    "                    <div class=\"dropdown\" style=\"display: inline-block;\">\n" +
+    "                      <button style=\"height: 20px;\" class=\"btn btn-default btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
+    "                        <i class=\"fa fa-fw fa-calendar\"></i> Select <span class=\"caret\"></span>\n" +
+    "                      </button>\n" +
+    "\n" +
+    "                      <ul class=\"dropdown-menu cv-view-menu cv-view-menu-view\">\n" +
+    "                        <li class=\"dropdown-header\">Manual</li>\n" +
+    "                        <li ng-click=\"custom\"><a><i class=\"fa fa-fw\"></i> Custom</a></li>\n" +
+    "                        <li class=\"dropdown-header\">Auto</li>\n" +
+    "                        <li ng-click=\"auto-last1m\"><a><i class=\"fa fa-fw\"></i> Last month</a></li>\n" +
+    "                        <li ng-click=\"auto-last3m\"><a><i class=\"fa fa-fw\"></i> Last 3 months</a></li>\n" +
+    "                        <li ng-click=\"auto-last6m\"><a><i class=\"fa fa-fw\"></i> Last 6 months</a></li>\n" +
+    "                        <li ng-click=\"auto-last12m\"><a><i class=\"fa fa-fw\"></i> Last year</a></li>\n" +
+    "                        <li ng-click=\"auto-last24m\"><a><i class=\"fa fa-fw\"></i> Last 2 years</a></li>\n" +
+    "                        <li ng-click=\"auto-january1st\"><a><i class=\"fa fa-fw\"></i> From January 1st</a></li>\n" +
+    "                        <li ng-click=\"auto-yesterday\"><a><i class=\"fa fa-fw\"></i> Yesterday</a></li>\n" +
+    "                      </ul>\n" +
+    "                  </div>\n" +
+    "                 </div>\n" +
+    "\n" +
+    "             &rArr;\n" +
+    "\n" +
+    "             <div class=\"form-group\" style=\"display: inline-block; margin: 0px;\">\n" +
+    "                <p class=\"input-group\" style=\"margin: 0px; display: inline-block;\">\n" +
+    "                  <input type=\"text\" style=\"height: 20px; width: 80px; display: inline-block;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateStart.value\" is-open=\"dateStart.opened\" datepicker-options=\"dateOptionsStart\" ng-required=\"true\" close-text=\"Close\" />\n" +
+    "                  <span class=\"input-group-btn\" style=\"display: inline-block;\">\n" +
+    "                    <button type=\"button\" style=\"height: 20px;\" class=\"btn btn-default\" ng-click=\"dateStartOpen()\"><i class=\"fa fa-fw fa-calendar\"></i></button>\n" +
+    "                  </span>\n" +
+    "                </p>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <span style=\"margin-left: 17px; margin-right: 0px;\">-</span>\n" +
+    "\n" +
+    "             <div class=\"form-group\" style=\"display: inline-block; margin: 0px;\">\n" +
+    "                <p class=\"input-group\" style=\"margin: 0px; display: inline-block;\">\n" +
+    "                  <input type=\"text\" style=\"height: 20px; width: 80px; display: inline-block;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateEnd.value\" is-open=\"dateEnd.opened\" datepicker-options=\"dateOptionsEnd\" ng-required=\"true\" close-text=\"Close\" />\n" +
+    "                  <span class=\"input-group-btn\" style=\"display: inline-block;\">\n" +
+    "                    <button type=\"button\" style=\"height: 20px;\" class=\"btn btn-default\" ng-click=\"dateEndOpen()\"><i class=\"fa fa-fw fa-calendar\"></i></button>\n" +
+    "                  </span>\n" +
+    "                </p>\n" +
+    "            </div>\n" +
+    "\n" +
+    "        </form>\n" +
+    "\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <button type=\"button\" ng-click=\"selectDateFilter(cut.dimension, false)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 20px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "\n" +
+    "\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "\n"
   );
 
 

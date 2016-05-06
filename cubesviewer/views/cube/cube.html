@@ -53,59 +53,7 @@
                 </div>
             </div>
 
-            <div class="cv-view-viewinfo-date">
-                <div ng-repeat="cut in view.params.datefilters" ng-init="dimparts = view.cube.cvdim_parts(cut.dimension);" class="label label-secondary cv-infopiece cv-view-viewinfo-cut" style="color: black; background-color: #ffdddd;">
-                    <span style="max-width: 280px; white-space: nowrap;"><i class="fa fa-fw fa-filter"></i> <b>Filter:</b> {{ dimparts.labelNoLevel }}:</span>
-                    <span class="cv-datefilter" style="overflow: visible;">
-                        <form class="form-inline" style="display: inline-block;">
-
-                             <div class="form-group">
-                                <div class="dropdown">
-                                  <button style="height: 20px;" class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" data-submenu>
-                                    <i class="fa fa-fw fa-calendar"></i> <span class="hidden-xs">Custom XXX</span> <span class="caret"></span>
-                                  </button>
-
-                                  <ul class="dropdown-menu cv-view-menu cv-view-menu-view">
-                                    <li class="dropdown-header">Manual</li>
-                                    <li ng-click="custom"><a><i class="fa fa-fw"></i> Custom</a></li>
-                                    <li class="dropdown-header">Auto</li>
-                                    <li ng-click="auto-last1m"><a><i class="fa fa-fw"></i> Last month</a></li>
-                                    <li ng-click="auto-last3m"><a><i class="fa fa-fw"></i> Last 3 months</a></li>
-                                    <li ng-click="auto-last6m"><a><i class="fa fa-fw"></i> Last 6 months</a></li>
-                                    <li ng-click="auto-last12m"><a><i class="fa fa-fw"></i> Last year</a></li>
-                                    <li ng-click="auto-last24m"><a><i class="fa fa-fw"></i> Last 2 years</a></li>
-                                    <li ng-click="auto-january1st"><a><i class="fa fa-fw"></i> From January 1st</a></li>
-                                    <li ng-click="auto-yesterday"><a><i class="fa fa-fw"></i> Yesterday</a></li>
-                                  </ul>
-                              </div>
-                             </div>
-
-                         &rArr;
-
-                         <div class="form-group">
-                            <p class="input-group" style="margin: 0px;">
-                              <input type="text" style="height: 20px; width: 80px;" class="form-control input-sm" uib-datepicker-popup="yyyy-MM-dd" ng-model="dateStart" is-open="dateStartPopup.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
-                              <span class="input-group-btn">
-                                <button type="button" style="height: 20px;" class="btn btn-default" ng-click="open1()"><i class="fa fa-fw fa-calendar"></i></button>
-                              </span>
-                            </p>
-                        </div> -
-
-                         <div class="form-group">
-                            <p class="input-group" style="margin: 0px;">
-                              <input type="text" style="height: 20px; width: 80px;" class="form-control input-sm" uib-datepicker-popup="yyyy-MM-dd" ng-model="dateEnd" is-open="dateEndPopup.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
-                              <span class="input-group-btn">
-                                <button type="button" style="height: 20px;" class="btn btn-default" ng-click="open1()"><i class="fa fa-fw fa-calendar"></i></button>
-                              </span>
-                            </p>
-                        </div>
-
-                        </form>
-
-                    </span>
-                    <button type="button" ng-click="selectDateFilter(cut.dimension, false)" class="btn btn-danger btn-xs" style="margin-left: 1px;"><i class="fa fa-fw fa-trash"></i></button>
-                </div>
-            </div>
+            <div ng-include="'views/cube/filter/datefilter.html'"></div>
 
             <div class="cv-view-viewinfo-extra">
 

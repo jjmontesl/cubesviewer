@@ -103,7 +103,7 @@ function cubesviewerOLD() {
 };
 
 // Main CubesViewer angular module
-angular.module('cv', ['bootstrapSubmenu',
+angular.module('cv', ['ui.bootstrap', 'bootstrapSubmenu',
                       'ui.grid', 'ui.grid.resizeColumns', 'ui.grid.selection', 'ui.grid.autoResize',
                       'ui.grid.pagination', 'ui.grid.pinning',
                       'cv.cubes', 'cv.views']);

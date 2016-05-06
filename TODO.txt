@@ -39,7 +39,13 @@
     * Make charts more interactive (allow cut from chart, etc).
     * Migrate documentation to more-custom github.io (maintain version, etc...)
 
-    * Restore pluggability, publish API for views and GUI.
+    * Restore pluggability, publish API for views and GUI. Needed before adding stuff that
+      needs to be optional in viewer, like loading bars to Studio, and to restore optional
+      components (server-side stuff, etc).
+
+[2.4]
+
+    * Alerts (server-backed, depending on criteria, with triggers (use cubetl)).
 
 [2.3]
 
@@ -81,15 +87,14 @@
     * Server side.
     * Support negated cuts (add quick "invert" button in the cut-box?).
 
-    * Make it clear when the results limit has been hit (for dimension values and aggregations).
-      Also impacts charts (missing items). Do not draw tables or charts in this case.
-
     * Fix analytics plugin to ignore first N seconds of events as for bounce rate calculation.
     * Cleanup code.
     * Use strict. Check /* 'use strict'; */ in angular-bootstrap-submenu, which loads early.
-    * Review if cube or menu loading is happening before initialization if views are created eagerly (views.html).
+    * Review flow: if cube or menu loading is happening before initialization if views are created eagerly (views.html), etc.
     * Review readonly menus and pills, and invalid combinations and info messages.
 
-    * Add loading indicators / block-ui (check angular plugins) as necessary.
+    * Make it clear when the results limit has been hit (for dimension values and aggregations).
+      Also impacts charts (missing items). Do not draw tables or charts in this case.
     * Review alerts, where to show them, use alert service... (alerts out of view are not nice for an embeddable lib).
+    * Add loading indicators as necessary.
 

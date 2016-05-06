@@ -34,6 +34,32 @@
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDateController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
                                                                                         function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
 
+	$scope.dateStart = { "opened": false, "value": null };
+	$scope.dateEnd = { "opened": false, "value": null };
+
+	$scope.dateOptionsStart = {
+		//dateDisabled: disabled,
+    	formatYear: 'yyyy',
+    	maxDate: new Date(2020, 12, 31),
+    	minDate: new Date(1970, 1, 1),
+    	startingDay: 1,
+    };
+
+	$scope.dateOptionsEnd = {
+		//dateDisabled: disabled,
+    	formatYear: 'yyyy',
+    	maxDate: new Date(2020, 12, 31),
+    	minDate: new Date(1970, 1, 1),
+    	startingDay: 1,
+    };
+
+	 $scope.dateStartOpen = function() {
+		 $scope.dateStart.opened = true;
+	 }
+	 $scope.dateEndOpen = function() {
+		 $scope.dateEnd.opened = true;
+	 }
+
 	$scope.initialize = function() {
 
 	};
