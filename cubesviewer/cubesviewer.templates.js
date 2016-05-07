@@ -796,7 +796,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "              <div class=\"form-group has-feedback\">\n" +
     "                <!-- <label for=\"search\">Search:</label>  -->\n" +
     "                <input type=\"text\" class=\"form-control\" placeholder=\"Search...\" style=\"width: 16em;\">\n" +
-    "                <i class=\"fa fa-fw fa-times-circle form-control-feedback\"></i>\n" +
+    "                <i class=\"fa fa-fw fa-times-circle form-control-feedback\" style=\"cursor: pointer; pointer-events: inherit;\"></i>\n" +
     "              </div>\n" +
     "\n" +
     "              <div class=\"form-group\">\n" +

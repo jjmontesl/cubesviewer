@@ -82,8 +82,23 @@
         padding: 4px 8px;
     }
 
+    /* Override glyphicon and use fontawesome */
+    .cv-view-panel .glyphicon {
+        display: inline-block;
+        font: normal normal normal 14px/1 FontAwesome;
+        font-size: inherit;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+    }
+    .glyphicon.glyphicon-chevron-left:before {
+        content: "\f053";
+    }
+    .glyphicon.glyphicon-chevron-right:before {
+        content: "\f054";
+    }
 
 }
+
 
 
 /*

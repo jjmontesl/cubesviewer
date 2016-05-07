@@ -14,6 +14,7 @@
   font-family: Arial, Helvetica, sans-serif;
   /* UI grid hacks */
   /* Datepicker popup hack */
+  /* Override glyphicon and use fontawesome */
 }
 .cv-bootstrap html {
   font-family: sans-serif;
@@ -6780,6 +6781,19 @@ button.cv-bootstrap .close {
 .cv-bootstrap .cv-infopiece .uib-datepicker-popup.dropdown-menu button {
   line-height: 1.5;
   padding: 4px 8px;
+}
+.cv-bootstrap .cv-view-panel .glyphicon {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+}
+.cv-bootstrap .glyphicon.glyphicon-chevron-left:before {
+  content: "\f053";
+}
+.cv-bootstrap .glyphicon.glyphicon-chevron-right:before {
+  content: "\f054";
 }
 /*
 */
