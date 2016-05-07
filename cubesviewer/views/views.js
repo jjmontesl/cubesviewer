@@ -61,11 +61,17 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 			params = data;
 		}
 
+		// TODO: Define a view object
 		var view = {
 			"id": "view-" + this.lastViewId,
 			"type": type,
 			"state": cubesviewer.STATE_INITIALIZING,
-			"params": {}
+			"params": {},
+
+			controlsHidden: function() {
+				return !!this.params.controlsHidden || !!cvOptions.studioHideControls;
+			}
+
 		};
 
 		$.extend(view.params, params);

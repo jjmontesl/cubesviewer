@@ -6767,9 +6767,19 @@ button.cv-bootstrap .close {
 .cv-bootstrap .ui-grid-menu .ui-grid-menu-inner ul li button {
   padding: 6px;
 }
+.cv-bootstrap div.ui-grid-pager-panel {
+  height: 32px;
+  white-space: nowrap;
+  overflow: hidden;
+}
 .cv-bootstrap div ul.uib-datepicker-popup.dropdown-menu {
   display: block;
   font-size: 12px;
+  padding: 0px 0px 10px 0px;
+}
+.cv-bootstrap .cv-infopiece .uib-datepicker-popup.dropdown-menu button {
+  line-height: 1.5;
+  padding: 4px 8px;
 }
 /*
 */

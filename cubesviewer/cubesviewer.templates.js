@@ -147,7 +147,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
   $templateCache.put('studio/studio.html',
     "<div class=\"cv-bootstrap\" ng-controller=\"CubesViewerStudioController\">\n" +
     "\n" +
-    "    <div class=\"cv-gui-panel\" >\n" +
+    "    <div class=\"cv-gui-panel hidden-print\">\n" +
     "\n" +
     "        <div class=\"dropdown m-b\" style=\"display: inline-block;\">\n" +
     "          <button class=\"btn btn-primary dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
@@ -169,8 +169,12 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "          <ul class=\"dropdown-menu\">\n" +
     "\n" +
-    "                <li ng-click=\"\" ng-class=\"{ 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-columns\"></i> 2 columns</a></li>\n" +
-    "                <li ng-click=\"\" ng-class=\"{ 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-arrows-alt\"></i> Hide controls</a></li>\n" +
+    "                <li ng-click=\"toggleTwoColumn()\" ng-class=\"{ 'hidden-xs': ! cvOptions.studioTwoColumn }\" ng-class=\"{ 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-columns\"></i> 2 column\n" +
+    "                    <span class=\"label label-default pull-right\" ng-class=\"{ 'label-success': cvOptions.studioTwoColumn }\">{{ cvOptions.studioTwoColumn ? \"ON\" : \"OFF\" }}</span></a>\n" +
+    "                </li>\n" +
+    "                <li ng-click=\"toggleHideControls()\" ng-class=\"{ 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-arrows-alt\"></i> Hide controls\n" +
+    "                    <span class=\"label label-default pull-right\" ng-class=\"{ 'label-success': cvOptions.studioHideControls }\">{{ cvOptions.studioHideControls ? \"ON\" : \"OFF\" }}</span></a>\n" +
+    "                </li>\n" +
     "\n" +
     "                <div class=\"divider\"></div>\n" +
     "\n" +
@@ -194,11 +198,11 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "        <div class=\"row\">\n" +
     "\n" +
-    "        <div ng-repeat=\"studioView in studioViewsService.views\">\n" +
-    "            <div class=\"col-xs-12\">\n" +
-    "                <div cv-studio-view view=\"studioView\"></div>\n" +
+    "            <div ng-repeat=\"studioView in studioViewsService.views\" class=\"col-xs-12\" ng-class=\"(cvOptions.studioTwoColumn ? 'col-sm-6' : 'col-sm-12')\">\n" +
+    "                <div >\n" +
+    "                    <div cv-studio-view view=\"studioView\"></div>\n" +
+    "                </div>\n" +
     "            </div>\n" +
-    "        </div>\n" +
     "\n" +
     "        </div>\n" +
     "\n" +
@@ -298,7 +302,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('views/cube/cube-menu-drilldown.html',
     "  <button class=\"btn btn-primary btn-sm dropdown-toggle drilldownbutton\" ng-disabled=\"view.params.mode == 'facts'\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "    <i class=\"fa fa-fw fa-arrow-down\"></i> <span class=\"hidden-xs\">Drilldown</span> <span class=\"caret\"></span>\n" +
+    "    <i class=\"fa fa-fw fa-arrow-down\"></i> <span class=\"hidden-xs\" ng-class=\"{ 'hidden-sm': cvOptions.studioTwoColumn }\">Drilldown</span> <span class=\"caret\"></span>\n" +
     "  </button>\n" +
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu-drilldown\">\n" +
@@ -336,7 +340,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('views/cube/cube-menu-filter.html',
     "  <button class=\"btn btn-primary btn-sm dropdown-toggle cutbutton\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "    <i class=\"fa fa-fw fa-filter\"></i> <span class=\"hidden-xs\">Filter</span> <span class=\"caret\"></span>\n" +
+    "    <i class=\"fa fa-fw fa-filter\"></i> <span class=\"hidden-xs\" ng-class=\"{ 'hidden-sm': cvOptions.studioTwoColumn }\">Filter</span> <span class=\"caret\"></span>\n" +
     "  </button>\n" +
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut\">\n" +
@@ -436,7 +440,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('views/cube/cube-menu-panel.html',
     "  <button class=\"btn btn-primary btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "    <i class=\"fa fa-fw fa-file\"></i> <span class=\"hidden-xs\">Panel</span> <span class=\"caret\"></span>\n" +
+    "    <i class=\"fa fa-fw fa-file\"></i> <span class=\"hidden-xs\" ng-class=\"{ 'hidden-sm': cvOptions.studioTwoColumn }\">Panel</span> <span class=\"caret\"></span>\n" +
     "  </button>\n" +
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
@@ -457,7 +461,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('views/cube/cube-menu-view.html',
     "  <button class=\"btn btn-primary btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "    <i class=\"fa fa-fw fa-cogs\"></i> <span class=\"hidden-xs\">View</span> <span class=\"caret\"></span>\n" +
+    "    <i class=\"fa fa-fw fa-cogs\"></i> <span class=\"hidden-xs\" ng-class=\"{ 'hidden-sm': cvOptions.studioTwoColumn }\">View</span> <span class=\"caret\"></span>\n" +
     "  </button>\n" +
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
@@ -483,7 +487,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    </li>\n" +
     "\n" +
     "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend; view._cubeDataUpdated = true;\">\n" +
-    "        <a><i class=\"fa fa-fw\" ng-class=\"{'fa-toggle-on': view.params.chartoptions.showLegend, 'fa-toggle-off': ! view.params.chartoptions.showLegend }\"></i> Toggle legend</a>\n" +
+    "        <a><i class=\"fa fa-fw\" ng-class=\"{'fa-toggle-on': view.params.chartoptions.showLegend, 'fa-toggle-off': ! view.params.chartoptions.showLegend }\"></i> Toggle legend\n" +
+    "            <span class=\"label label-default pull-right\" ng-class=\"{ 'label-success': view.params.chartoptions.showLegend }\">{{ view.params.chartoptions.showLegend ? \"ON\" : \"OFF\" }}</span>\n" +
+    "        </a>\n" +
     "    </li>\n" +
     "\n" +
     "    <div ng-show=\"view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
@@ -569,7 +575,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
   $templateCache.put('views/cube/cube.html',
     "<div class=\"cv-view-panel\" ng-controller=\"CubesViewerViewsCubeController\">\n" +
     "\n" +
-    "    <div class=\"cv-view-viewmenu\">\n" +
+    "    <div class=\"cv-view-viewmenu hidden-print\" ng-hide=\"view.controlsHidden()\">\n" +
     "\n" +
     "        <div class=\"panel panel-primary pull-right\" style=\"padding: 3px; white-space: nowrap;\">\n" +
     "\n" +
@@ -777,7 +783,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
   $templateCache.put('views/cube/filter/dimension.html',
     "<div ng-controller=\"CubesViewerViewsCubeFilterDimensionController\">\n" +
     "\n" +
-    "    <div class=\"panel panel-default panel-outline\" style=\"border-color: #ffcccc;\">\n" +
+    "    <div class=\"panel panel-default panel-outline hidden-print\" style=\"border-color: #ffcccc;\">\n" +
     "        <div class=\"panel-heading clearfix\" style=\"border-color: #ffcccc;\">\n" +
     "            <button class=\"btn btn-xs btn-danger pull-right\" ng-click=\"closeDimensionFilter()\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "            <h4 style=\"margin: 2px 0px 0px 0px;\"><i class=\"fa fa-fw fa-filter\"></i> Dimension filter: <b>{{ parts.label }}</b></h4>\n" +

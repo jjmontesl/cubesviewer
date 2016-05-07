@@ -83,6 +83,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 		view.collapsed = !view.collapsed;
 	};
 
+
 }]);
 
 
@@ -199,6 +200,19 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 		view.shared = false;
 	};
 
+	/**
+	 * Toggles two column mode.
+	 */
+	$scope.toggleTwoColumn = function() {
+		cvOptions.studioTwoColumn = ! cvOptions.studioTwoColumn;
+	};
+
+	/**
+	 * Toggles two column mode.
+	 */
+	$scope.toggleHideControls = function() {
+		cvOptions.studioHideControls = ! cvOptions.studioHideControls;
+	};
 
 }]);
 
@@ -252,6 +266,8 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
 	var defaultOptions = {
         container: null,
         user: null,
+        studioTwoColumn: false,
+        studioHideControls: false
     };
 	$.extend(defaultOptions, cvOptions);
 	$.extend(cvOptions, defaultOptions);;

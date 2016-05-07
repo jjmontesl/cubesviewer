@@ -1,5 +1,5 @@
   <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" data-submenu>
-    <i class="fa fa-fw fa-cogs"></i> <span class="hidden-xs">View</span> <span class="caret"></span>
+    <i class="fa fa-fw fa-cogs"></i> <span class="hidden-xs" ng-class="{ 'hidden-sm': cvOptions.studioTwoColumn }">View</span> <span class="caret"></span>
   </button>
 
   <ul class="dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view">
@@ -25,7 +25,9 @@
     </li>
 
     <li ng-show="view.params.mode == 'chart'" ng-click="view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend; view._cubeDataUpdated = true;">
-        <a><i class="fa fa-fw" ng-class="{'fa-toggle-on': view.params.chartoptions.showLegend, 'fa-toggle-off': ! view.params.chartoptions.showLegend }"></i> Toggle legend</a>
+        <a><i class="fa fa-fw" ng-class="{'fa-toggle-on': view.params.chartoptions.showLegend, 'fa-toggle-off': ! view.params.chartoptions.showLegend }"></i> Toggle legend
+            <span class="label label-default pull-right" ng-class="{ 'label-success': view.params.chartoptions.showLegend }">{{ view.params.chartoptions.showLegend ? "ON" : "OFF" }}</span>
+        </a>
     </li>
 
     <div ng-show="view.params.mode == 'chart'" class="divider"></div>

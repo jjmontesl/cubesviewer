@@ -1,6 +1,6 @@
 <div class="cv-bootstrap" ng-controller="CubesViewerStudioController">
 
-    <div class="cv-gui-panel" >
+    <div class="cv-gui-panel hidden-print">
 
         <div class="dropdown m-b" style="display: inline-block;">
           <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" data-submenu>
@@ -22,8 +22,12 @@
 
           <ul class="dropdown-menu">
 
-                <li ng-click="" ng-class="{ 'disabled': studioViewsService.views.length == 0 }"><a tabindex="0"><i class="fa fa-fw fa-columns"></i> 2 columns</a></li>
-                <li ng-click="" ng-class="{ 'disabled': studioViewsService.views.length == 0 }"><a tabindex="0"><i class="fa fa-fw fa-arrows-alt"></i> Hide controls</a></li>
+                <li ng-click="toggleTwoColumn()" ng-class="{ 'hidden-xs': ! cvOptions.studioTwoColumn }" ng-class="{ 'disabled': studioViewsService.views.length == 0 }"><a tabindex="0"><i class="fa fa-fw fa-columns"></i> 2 column
+                    <span class="label label-default pull-right" ng-class="{ 'label-success': cvOptions.studioTwoColumn }">{{ cvOptions.studioTwoColumn ? "ON" : "OFF" }}</span></a>
+                </li>
+                <li ng-click="toggleHideControls()" ng-class="{ 'disabled': studioViewsService.views.length == 0 }"><a tabindex="0"><i class="fa fa-fw fa-arrows-alt"></i> Hide controls
+                    <span class="label label-default pull-right" ng-class="{ 'label-success': cvOptions.studioHideControls }">{{ cvOptions.studioHideControls ? "ON" : "OFF" }}</span></a>
+                </li>
 
                 <div class="divider"></div>
 
@@ -47,11 +51,11 @@
 
         <div class="row">
 
-        <div ng-repeat="studioView in studioViewsService.views">
-            <div class="col-xs-12">
-                <div cv-studio-view view="studioView"></div>
+            <div ng-repeat="studioView in studioViewsService.views" class="col-xs-12" ng-class="(cvOptions.studioTwoColumn ? 'col-sm-6' : 'col-sm-12')">
+                <div >
+                    <div cv-studio-view view="studioView"></div>
+                </div>
             </div>
-        </div>
 
         </div>
 

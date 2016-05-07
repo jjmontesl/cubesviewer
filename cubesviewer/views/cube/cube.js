@@ -36,6 +36,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
                                                      function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
 
 	$scope.viewsService = viewsService;
+	$scope.cvOptions = cvOptions;
 
 	$scope.dimensionFilter = null;
 
