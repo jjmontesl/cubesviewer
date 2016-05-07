@@ -3870,7 +3870,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	};
 
 	$scope.$on('GridDataUpdated', function() {
-		console.debug("Grid data ready: draw bars vertical.");
 		$scope.cleanupNvd3();
 		$timeout(function() {
 			$scope.drawChartBarsVertical();
@@ -3950,6 +3949,173 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 
 	        //chart.yAxis.tickFormat(d3.format(',.2f'));
 	        chart.yAxis.tickFormat(function(d,i) {
+	        	return colFormatter(d);
+	        });
+
+	        d3.select(container)
+	            .datum(d)
+	            .call(chart);
+
+	        nv.utils.windowResize(chart.update);
+
+    	    // Handler for state change
+            chart.dispatch.on('stateChange', function(newState) {
+            	view.params["chart-barsvertical-stacked"] = newState.stacked;
+            	view.params["chart-disabledseries"] = {
+        			  "key": view.params.drilldown.join(","),
+        			  "disabled": {}
+            	};
+            	for (var i = 0; i < newState.disabled.length; i++) {
+            		view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+            	}
+            });
+
+	        //chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+
+            $scope.$parent.$parent.chart = chart;
+
+	        return chart;
+
+	    });
+
+	}
+
+	$scope.initialize();
+
+}]);
+
+
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+/*
+ * Series chart object. Contains view functions for the 'chart' mode.
+ * This is an optional component, part of the cube view.
+ */
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizontalController", ['$rootScope', '$scope', '$element', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, $element, $timeout, cvOptions, cubesService, viewsService) {
+
+	$scope.chart = null;
+
+	$scope.initialize = function() {
+	};
+
+	$scope.$on('GridDataUpdated', function() {
+		$scope.cleanupNvd3();
+		$timeout(function() {
+			$scope.drawChartBarsVertical();
+		}, 0);
+	});
+
+	/**
+	 * Draws a vertical bars chart.
+	 */
+	$scope.drawChartBarsVertical = function () {
+
+		var view = $scope.view;
+		var dataRows = $scope.gridData;
+		var columnDefs = $scope.gridOptions.columnDefs;
+
+		console.debug(dataRows);
+		console.debug(columnDefs);
+
+		var container = $($element).find("svg").get(0);
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
+
+	    var d = [];
+
+	    var numRows = dataRows.length;
+	    var serieCount = 0;
+	    $(dataRows).each(function(idx, e) {
+	    	serie = [];
+	    	for (var i = 1; i < columnDefs.length; i++) {
+	    		var value = e[columnDefs[i].name];
+
+	    		// If second serie is reversed
+	    		if (dataRows.length == 2 && serieCount == 1 && view.params.chartoptions.mirrorSerie2) value = (value != undefined) ? -value : 0;
+
+	    		serie.push( { "x": columnDefs[i].name, "y":  (value != undefined) ? value : 0 } );
+	    	}
+
+	    	// Reverse horizontal dimension to make series start from the base
+	    	serie.reverse();
+
+	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
+	    	if (view.params["chart-disabledseries"]) {
+	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+	    		}
+	    	}
+	    	d.push(series);
+	    	serieCount++;
+	    });
+	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+
+	    /*
+	    xticks = [];
+	    for (var i = 1; i < colNames.length; i++) {
+    		xticks.push([ i * 10, colNames[i] ]);
+	    }
+	    */
+
+	    chartOptions = {
+	    	  //barColor: d3.scale.category20().range(),
+	    	  delay: 1200,
+	    	  groupSpacing: 0.1,
+	    	  //reduceXTicks: false,
+	    	  //staggerLabels: true
+	    };
+
+	    var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+		var colFormatter = $scope.columnFormatFunction(ag);
+
+		nv.addGraph(function() {
+	        var chart;
+	        chart = nv.models.multiBarHorizontalChart()
+			      //.x(function(d) { return d.label })
+			      //.y(function(d) { return d.value })
+		          .showLegend(!!view.params.chartoptions.showLegend)
+		          .margin({left: 120})
+			      //.showValues(true)           //Show bar value next to each bar.
+		          //.tooltips(true)             //Show tooltips on hover.
+		          //.transitionDuration(350)
+		          .showControls(true);        //Allow user to switch between "Grouped" and "Stacked" mode.
+
+	    	if (view.params["chart-barsvertical-stacked"]) {
+	    		chart.stacked ( view.params["chart-barsvertical-stacked"] );
+	    	}
+
+	        chart.options(chartOptions);
+
+	        //chart.xAxis.axisLabel(xAxisLabel).showMaxMin(true).tickFormat(d3.format(',0f'));
+	        //chart.xAxis.axisLabel(xAxisLabel);
+
+	        //chart.yAxis.tickFormat(d3.format(',.2f'));
+
+	        chart.yAxis.tickFormat(function(d, i) {
+	        	console.debug(d);
+	        	console.debug(i);
+	        	if (dataRows.length == 2 && view.params.chartoptions.mirrorSerie2 && d < 0) d = -d;
 	        	return colFormatter(d);
 	        });
 
@@ -4595,6 +4761,7 @@ angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$roo
                                                      function ($rootScope, $scope, cvOptions, cubesService, studioViewsService) {
 
 	$scope.studioViewsService = studioViewsService;
+	$scope.cvOptions = cvOptions;
 
 }]).directive("cvStudioView", function() {
 	return {
@@ -4960,7 +5127,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "<div class=\"cv-bootstrap cv-gui-viewcontainer\" ng-controller=\"CubesViewerStudioViewController\">\n" +
     "\n" +
     "    <div class=\"panel panel-primary\">\n" +
-    "        <div class=\"panel-heading\">\n" +
+    "        <div ng-if=\"! cvOptions.studioHideControls\" class=\"panel-heading\">\n" +
     "\n" +
     "            <button type=\"button\" ng-click=\"studioViewsService.closeView(view)\" class=\"btn btn-danger btn-xs pull-right\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "            <button type=\"button\" ng-click=\"studioViewsService.toggleCollapseView(view)\" class=\"btn btn-primary btn-xs pull-right\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw\" ng-class=\"{'fa-caret-up': !view.collapsed, 'fa-caret-down': view.collapsed }\"></i></button>\n" +
@@ -5072,7 +5239,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "          <ul class=\"dropdown-menu\">\n" +
     "\n" +
-    "                <li ng-click=\"toggleTwoColumn()\" ng-class=\"{ 'hidden-xs': ! cvOptions.studioTwoColumn }\" ng-class=\"{ 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-columns\"></i> 2 column\n" +
+    "                <li ng-click=\"toggleTwoColumn()\" ng-class=\"{ 'hidden-xs': ! cvOptions.studioTwoColumn, 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-columns\"></i> 2 column\n" +
     "                    <span class=\"label label-default pull-right\" ng-class=\"{ 'label-success': cvOptions.studioTwoColumn }\">{{ cvOptions.studioTwoColumn ? \"ON\" : \"OFF\" }}</span></a>\n" +
     "                </li>\n" +
     "                <li ng-click=\"toggleHideControls()\" ng-class=\"{ 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-arrows-alt\"></i> Hide controls\n" +
@@ -5174,6 +5341,18 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartBarsVerticalController\">\n" +
+    "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ng-if=\"view.params.charttype == 'bars-horizontal'\">\n" +
+    "        <h3><i class=\"fa fa-fw fa-bar-chart fa-rotate-270\"></i> Chart\n" +
+    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        </h3>\n" +
+    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "            <span class=\"loadingbar-expand\"></span>\n" +
+    "        </div>\n" +
+    "        <div ng-controller=\"CubesViewerViewsCubeChartBarsHorizontalController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
     "    </div>\n" +
@@ -5389,6 +5568,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "        <ul class=\"dropdown-menu\">\n" +
     "          <li ng-click=\"selectChartType('pie')\"><a href=\"\"><i class=\"fa fa-fw fa-pie-chart\"></i> Pie</a></li>\n" +
     "          <li ng-click=\"selectChartType('bars-vertical')\"><a href=\"\"><i class=\"fa fa-fw fa-bar-chart\"></i> Bars Vertical</a></li>\n" +
+    "          <li ng-click=\"selectChartType('bars-horizontal')\"><a href=\"\"><i class=\"fa fa-fw fa-rotate-270 fa-bar-chart\"></i> Bars Horizontal</a></li>\n" +
     "          <li ng-click=\"selectChartType('lines')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Lines</a></li>\n" +
     "          <li ng-click=\"selectChartType('lines-stacked')\"><a href=\"\"><i class=\"fa fa-fw fa-area-chart\"></i> Areas</a></li>\n" +
     "          <li ng-click=\"selectChartType('radar')\"><a href=\"\"><i class=\"fa fa-fw fa-bullseye\"></i> Radar</a></li>\n" +
@@ -5406,7 +5586,13 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend; view._cubeDataUpdated = true;\">\n" +
     "        <a><i class=\"fa fa-fw\" ng-class=\"{'fa-toggle-on': view.params.chartoptions.showLegend, 'fa-toggle-off': ! view.params.chartoptions.showLegend }\"></i> Toggle legend\n" +
-    "            <span class=\"label label-default pull-right\" ng-class=\"{ 'label-success': view.params.chartoptions.showLegend }\">{{ view.params.chartoptions.showLegend ? \"ON\" : \"OFF\" }}</span>\n" +
+    "            <span style=\"margin-left: 5px;\" class=\"label label-default\" ng-class=\"{ 'label-success': view.params.chartoptions.showLegend }\">{{ view.params.chartoptions.showLegend ? \"ON\" : \"OFF\" }}</span>\n" +
+    "        </a>\n" +
+    "    </li>\n" +
+    "\n" +
+    "    <li ng-show=\"view.params.mode == 'chart' && view.params.charttype == 'bars-horizontal'\" ng-click=\"view.params.chartoptions.mirrorSerie2 = !view.params.chartoptions.mirrorSerie2; view._cubeDataUpdated = true;\">\n" +
+    "        <a><i class=\"fa fa-fw fa-arrows-h\"></i> Invert 2nd serie\n" +
+    "            <span style=\"margin-left: 5px;\" class=\"label label-default\" ng-class=\"{ 'label-success': view.params.chartoptions.mirrorSerie2 }\">{{ view.params.chartoptions.mirrorSerie2 ? \"ON\" : \"OFF\" }}</span>\n" +
     "        </a>\n" +
     "    </li>\n" +
     "\n" +
@@ -5473,7 +5659,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "        <a tabindex=\"0\" ><i class=\"fa fa-fw fa-calculator\"></i> Series calculations</a>\n" +
     "        <ul class=\"dropdown-menu\">\n" +
     "          <li ng-click=\"selectCalculation('difference')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Difference</a></li>\n" +
-    "          <li ng-click=\"selectCalculation('percentage')\"><a href=\"\"><i class=\"fa fa-fw fa-percent\"></i> Percentage</a></li>\n" +
+    "          <li ng-click=\"selectCalculation('percentage')\"><a href=\"\"><i class=\"fa fa-fw fa-percent\"></i> Change rate</a></li>\n" +
     "          <li ng-click=\"selectCalculation('accum')\"><a href=\"\"><i class=\"fa fa-fw\">&sum;</i> Accumulated</a></li>\n" +
     "          <div class=\"divider\"></div>\n" +
     "          <li ng-click=\"selectCalculation(null)\"><a href=\"\"><i class=\"fa fa-fw fa-times\"></i> None</a></li>\n" +
@@ -5492,6 +5678,10 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
 
   $templateCache.put('views/cube/cube.html',
     "<div class=\"cv-view-panel\" ng-controller=\"CubesViewerViewsCubeController\">\n" +
+    "\n" +
+    "    <h2 ng-show=\"view.controlsHidden()\" style=\"margin-top: 5px;\">\n" +
+    "        <i class=\"fa fa-fw fa-file-o\"></i> {{ view.params.name }}\n" +
+    "    </h2>\n" +
     "\n" +
     "    <div class=\"cv-view-viewmenu hidden-print\" ng-hide=\"view.controlsHidden()\">\n" +
     "\n" +
@@ -5527,8 +5717,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "                <div ng-repeat=\"drilldown in view.params.drilldown\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-drill\" style=\"color: black; background-color: #ccffcc;\">\n" +
     "                    <span><i class=\"fa fa-fw fa-arrow-down\"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>\n" +
-    "                    <button type=\"button\" ng-click=\"showDimensionFilter(drilldown)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
-    "                    <button type=\"button\" ng-click=\"selectDrill(drilldown, '')\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "                    <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(drilldown)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
+    "                    <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectDrill(drilldown, '')\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
     "                </div>\n" +
     "\n" +
     "            </div>\n" +
@@ -5541,8 +5732,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "                 -->\n" +
     "                <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
     "                    <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.label }} {{ equality }} <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
-    "                    <button type=\"button\" ng-click=\"showDimensionFilter(cut.dimension)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
-    "                    <button type=\"button\" ng-click=\"selectCut(cut.dimension, '', cut.invert)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "                    <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(cut.dimension)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
+    "                    <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectCut(cut.dimension, '', cut.invert)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "\n" +
@@ -5552,14 +5744,14 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "                <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccccff;\">\n" +
     "                    <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-crosshairs\"></i> <b>Measure:</b> {{ (view.params.yaxis != null) ? view.params.yaxis : \"None\" }}</span>\n" +
-    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                </div>\n" +
     "\n" +
     "                <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccddff;\">\n" +
     "                    <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-long-arrow-right\"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : \"None\" }}</span>\n" +
+    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                    <!-- <button type=\"button\" ng-click=\"showDimensionFilter(view.params.xaxis)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>  -->\n" +
     "                    <!-- <button type=\"button\" ng-click=\"selectXAxis(null)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>  -->\n" +
-    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                </div>\n" +
     "\n" +
     "            </div>\n" +
@@ -5617,6 +5809,10 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "    <h3><i class=\"fa fa-fw fa-th\"></i> Facts data\n" +
     "        <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "    </h3>\n" +
+    "\n" +
+    "    <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <span class=\"loadingbar-expand\"></span>\n" +
+    "    </div>\n" +
     "\n" +
     "    <div ng-if=\"gridOptions.data.length > 0\"\n" +
     "         ui-grid=\"gridOptions\"\n" +
@@ -5705,7 +5901,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
   $templateCache.put('views/cube/filter/dimension.html',
     "<div ng-controller=\"CubesViewerViewsCubeFilterDimensionController\">\n" +
     "\n" +
-    "    <div class=\"panel panel-default panel-outline hidden-print\" style=\"border-color: #ffcccc;\">\n" +
+    "    <div class=\"panel panel-default panel-outline hidden-print\" ng-hide=\"view.controlsHidden()\" style=\"border-color: #ffcccc;\">\n" +
     "        <div class=\"panel-heading clearfix\" style=\"border-color: #ffcccc;\">\n" +
     "            <button class=\"btn btn-xs btn-danger pull-right\" ng-click=\"closeDimensionFilter()\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "            <h4 style=\"margin: 2px 0px 0px 0px;\"><i class=\"fa fa-fw fa-filter\"></i> Dimension filter: <b>{{ parts.label }}</b></h4>\n" +
@@ -5755,17 +5951,18 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "            <div class=\"clearfix\"></div>\n" +
     "\n" +
-    "            <div ng-show=\"loadingDimensionValues\" ><i class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom\" style=\"margin-top: 10px;\"></i> Loading...</div>\n" +
-    "\n" +
-    "            <div ng-if=\"!loadingDimensionValues\" class=\"row\">\n" +
+    "            <div class=\"row\">\n" +
     "                <div class=\"col-xs-6\">\n" +
     "                <div style=\"margin-top: 5px;\">\n" +
     "                    <div class=\"panel panel-default panel-outline\" style=\"margin-bottom: 0px;\"><div class=\"panel-body\" style=\"max-height: 180px; overflow-y: auto; overflow-x: hidden;\">\n" +
-    "                        <div ng-repeat=\"val in dimensionValues\" style=\"overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\">\n" +
-    "                            <label style=\"font-weight: normal; margin-bottom: 2px;\">\n" +
-    "                                <input type=\"checkbox\" value=\"{{ val.value }}\" style=\"vertical-align: bottom;\" />\n" +
-    "                                {{ val.label }}\n" +
-    "                            </label>\n" +
+    "                        <div ng-show=\"loadingDimensionValues\" ><i class=\"fa fa-circle-o-notch fa-spin fa-fw\"></i> Loading...</div>\n" +
+    "                        <div ng-if=\"!loadingDimensionValues\">\n" +
+    "                            <div ng-repeat=\"val in dimensionValues\" style=\"overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\">\n" +
+    "                                <label style=\"font-weight: normal; margin-bottom: 2px;\">\n" +
+    "                                    <input type=\"checkbox\" value=\"{{ val.value }}\" style=\"vertical-align: bottom;\" />\n" +
+    "                                    {{ val.label }}\n" +
+    "                                </label>\n" +
+    "                            </div>\n" +
     "                        </div>\n" +
     "                    </div></div>\n" +
     "                </div>\n" +
@@ -5789,6 +5986,10 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "    <h3><i class=\"fa fa-fw fa-clock-o\"></i> Series table\n" +
     "        <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "    </h3>\n" +
+    "\n" +
+    "    <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <span class=\"loadingbar-expand\"></span>\n" +
+    "    </div>\n" +
     "\n" +
     "    <div ng-if=\"gridOptions.data.length > 0\"\n" +
     "         ui-grid=\"gridOptions\"\n" +

@@ -9,6 +9,7 @@
         <ul class="dropdown-menu">
           <li ng-click="selectChartType('pie')"><a href=""><i class="fa fa-fw fa-pie-chart"></i> Pie</a></li>
           <li ng-click="selectChartType('bars-vertical')"><a href=""><i class="fa fa-fw fa-bar-chart"></i> Bars Vertical</a></li>
+          <li ng-click="selectChartType('bars-horizontal')"><a href=""><i class="fa fa-fw fa-rotate-270 fa-bar-chart"></i> Bars Horizontal</a></li>
           <li ng-click="selectChartType('lines')"><a href=""><i class="fa fa-fw fa-line-chart"></i> Lines</a></li>
           <li ng-click="selectChartType('lines-stacked')"><a href=""><i class="fa fa-fw fa-area-chart"></i> Areas</a></li>
           <li ng-click="selectChartType('radar')"><a href=""><i class="fa fa-fw fa-bullseye"></i> Radar</a></li>
@@ -26,7 +27,13 @@
 
     <li ng-show="view.params.mode == 'chart'" ng-click="view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend; view._cubeDataUpdated = true;">
         <a><i class="fa fa-fw" ng-class="{'fa-toggle-on': view.params.chartoptions.showLegend, 'fa-toggle-off': ! view.params.chartoptions.showLegend }"></i> Toggle legend
-            <span class="label label-default pull-right" ng-class="{ 'label-success': view.params.chartoptions.showLegend }">{{ view.params.chartoptions.showLegend ? "ON" : "OFF" }}</span>
+            <span style="margin-left: 5px;" class="label label-default" ng-class="{ 'label-success': view.params.chartoptions.showLegend }">{{ view.params.chartoptions.showLegend ? "ON" : "OFF" }}</span>
+        </a>
+    </li>
+
+    <li ng-show="view.params.mode == 'chart' && view.params.charttype == 'bars-horizontal'" ng-click="view.params.chartoptions.mirrorSerie2 = !view.params.chartoptions.mirrorSerie2; view._cubeDataUpdated = true;">
+        <a><i class="fa fa-fw fa-arrows-h"></i> Invert 2nd serie
+            <span style="margin-left: 5px;" class="label label-default" ng-class="{ 'label-success': view.params.chartoptions.mirrorSerie2 }">{{ view.params.chartoptions.mirrorSerie2 ? "ON" : "OFF" }}</span>
         </a>
     </li>
 
@@ -93,7 +100,7 @@
         <a tabindex="0" ><i class="fa fa-fw fa-calculator"></i> Series calculations</a>
         <ul class="dropdown-menu">
           <li ng-click="selectCalculation('difference')"><a href=""><i class="fa fa-fw fa-line-chart"></i> Difference</a></li>
-          <li ng-click="selectCalculation('percentage')"><a href=""><i class="fa fa-fw fa-percent"></i> Percentage</a></li>
+          <li ng-click="selectCalculation('percentage')"><a href=""><i class="fa fa-fw fa-percent"></i> Change rate</a></li>
           <li ng-click="selectCalculation('accum')"><a href=""><i class="fa fa-fw">&sum;</i> Accumulated</a></li>
           <div class="divider"></div>
           <li ng-click="selectCalculation(null)"><a href=""><i class="fa fa-fw fa-times"></i> None</a></li>

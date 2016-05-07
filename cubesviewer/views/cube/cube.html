@@ -1,5 +1,9 @@
 <div class="cv-view-panel" ng-controller="CubesViewerViewsCubeController">
 
+    <h2 ng-show="view.controlsHidden()" style="margin-top: 5px;">
+        <i class="fa fa-fw fa-file-o"></i> {{ view.params.name }}
+    </h2>
+
     <div class="cv-view-viewmenu hidden-print" ng-hide="view.controlsHidden()">
 
         <div class="panel panel-primary pull-right" style="padding: 3px; white-space: nowrap;">
@@ -34,8 +38,9 @@
 
                 <div ng-repeat="drilldown in view.params.drilldown" class="label label-secondary cv-infopiece cv-view-viewinfo-drill" style="color: black; background-color: #ccffcc;">
                     <span><i class="fa fa-fw fa-arrow-down"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>
-                    <button type="button" ng-click="showDimensionFilter(drilldown)" class="btn btn-secondary btn-xs" style="margin-left: 3px;"><i class="fa fa-fw fa-search"></i></button>
-                    <button type="button" ng-click="selectDrill(drilldown, '')" class="btn btn-danger btn-xs" style="margin-left: 1px;"><i class="fa fa-fw fa-trash"></i></button>
+                    <button type="button" class="btn btn-info btn-xs" style="visibility: hidden; margin-left: -20px;"><i class="fa fa-fw fa-info"></i></button>
+                    <button ng-hide="view.controlsHidden()" type="button" ng-click="showDimensionFilter(drilldown)" class="btn btn-secondary btn-xs" style="margin-left: 3px;"><i class="fa fa-fw fa-search"></i></button>
+                    <button ng-hide="view.controlsHidden()" type="button" ng-click="selectDrill(drilldown, '')" class="btn btn-danger btn-xs" style="margin-left: 1px;"><i class="fa fa-fw fa-trash"></i></button>
                 </div>
 
             </div>
@@ -48,8 +53,9 @@
                  -->
                 <div ng-repeat="cut in view.params.cuts" ng-init="dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';" class="label label-secondary cv-infopiece cv-view-viewinfo-cut" style="color: black; background-color: #ffcccc;">
                     <span style="max-width: 480px;"><i class="fa fa-fw fa-filter"></i> <b>Filter:</b> {{ dimparts.label }} {{ equality }} <span title="{{ cut.value }}">{{ cut.value }}</span></span>
-                    <button type="button" ng-click="showDimensionFilter(cut.dimension)" class="btn btn-secondary btn-xs" style="margin-left: 3px;"><i class="fa fa-fw fa-search"></i></button>
-                    <button type="button" ng-click="selectCut(cut.dimension, '', cut.invert)" class="btn btn-danger btn-xs" style="margin-left: 1px;"><i class="fa fa-fw fa-trash"></i></button>
+                    <button type="button" class="btn btn-info btn-xs" style="visibility: hidden; margin-left: -20px;"><i class="fa fa-fw fa-info"></i></button>
+                    <button ng-hide="view.controlsHidden()" type="button" ng-click="showDimensionFilter(cut.dimension)" class="btn btn-secondary btn-xs" style="margin-left: 3px;"><i class="fa fa-fw fa-search"></i></button>
+                    <button ng-hide="view.controlsHidden()" type="button" ng-click="selectCut(cut.dimension, '', cut.invert)" class="btn btn-danger btn-xs" style="margin-left: 1px;"><i class="fa fa-fw fa-trash"></i></button>
                 </div>
             </div>
 
@@ -59,14 +65,14 @@
 
                 <div ng-if="view.params.mode == 'series' || view.params.mode == 'chart'" class="label label-secondary cv-infopiece cv-view-viewinfo-extra" style="color: black; background-color: #ccccff;">
                     <span style="max-width: 350px;"><i class="fa fa-fw fa-crosshairs"></i> <b>Measure:</b> {{ (view.params.yaxis != null) ? view.params.yaxis : "None" }}</span>
-                    <button type="button" class="btn btn-info btn-xs" style="visibility: hidden;"><i class="fa fa-fw fa-info"></i></button>
+                    <button type="button" class="btn btn-info btn-xs" style="visibility: hidden; margin-left: -20px;"><i class="fa fa-fw fa-info"></i></button>
                 </div>
 
                 <div ng-if="view.params.mode == 'series' || view.params.mode == 'chart'" class="label label-secondary cv-infopiece cv-view-viewinfo-extra" style="color: black; background-color: #ccddff;">
                     <span style="max-width: 350px;"><i class="fa fa-fw fa-long-arrow-right"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None" }}</span>
+                    <button type="button" class="btn btn-info btn-xs" style="visibility: hidden; margin-left: -20px;"><i class="fa fa-fw fa-info"></i></button>
                     <!-- <button type="button" ng-click="showDimensionFilter(view.params.xaxis)" class="btn btn-secondary btn-xs" style="margin-left: 3px;"><i class="fa fa-fw fa-search"></i></button>  -->
                     <!-- <button type="button" ng-click="selectXAxis(null)" class="btn btn-danger btn-xs" style="margin-left: 1px;"><i class="fa fa-fw fa-trash"></i></button>  -->
-                    <button type="button" class="btn btn-info btn-xs" style="visibility: hidden;"><i class="fa fa-fw fa-info"></i></button>
                 </div>
 
             </div>

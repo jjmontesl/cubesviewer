@@ -5,6 +5,10 @@
         <i ng-show="pendingRequests > 0" class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right"></i>
     </h3>
 
+    <div ng-if="pendingRequests > 0" class="loadingbar-content">
+        <span class="loadingbar-expand"></span>
+    </div>
+
     <div ng-if="gridOptions.data.length > 0"
          ui-grid="gridOptions"
          ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize

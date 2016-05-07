@@ -6980,27 +6980,39 @@ div.nvtooltip {
 .loadingbar-content {
   width: 100%;
   /* Full Width */
-  height: 4px;
-  margin: 0px auto 4px auto;
+  height: 3px;
+  margin: 0px auto 3px auto;
   /*position: fixed;*/
   overflow-x: hidden;
 }
 .loadingbar-expand {
   width: 100%;
   max-width: 100%;
-  height: 2px;
-  margin: 2px 0;
+  height: 1px;
+  margin: 1px 0;
   background: #2187e7;
   position: absolute;
   box-shadow: 0px 0px 6px 1px rgba(0, 198, 255, 0.8);
-  -moz-animation: fullexpand 10s ease-out;
-  -webkit-animation: fullexpand 10s ease-out;
+  -moz-animation: fullexpand 60s ease-out;
+  -webkit-animation: fullexpand 60s ease-out;
 }
 @-moz-keyframes fullexpand {
   0% {
     width: 0px;
   }
-  100% {
+  20% {
+    width: 50%;
+  }
+  40% {
+    width: 75%;
+  }
+  60% {
+    width: 85%;
+  }
+  80% {
+    width: 95%;
+  }
+  1000% {
     width: 100%;
   }
 }
@@ -7008,7 +7020,19 @@ div.nvtooltip {
   0% {
     width: 0px;
   }
-  100% {
+  20% {
+    width: 50%;
+  }
+  40% {
+    width: 75%;
+  }
+  60% {
+    width: 85%;
+  }
+  80% {
+    width: 95%;
+  }
+  1000% {
     width: 100%;
   }
 }

@@ -46,6 +46,9 @@
 [2.4]
 
     * Alerts (server-backed, depending on criteria, with triggers (use cubetl)).
+    * http://nvd3.org/examples/multiBarHorizontal.html
+    * http://bl.ocks.org/mbostock/4063269 (Bubble chart: categories/sizes)
+    * https://mbostock.github.io/d3/talk/20111018/treemap.html (zoomable treemap)
 
 [2.3]
 
@@ -87,6 +90,7 @@
     * Create site, update readme, and site screenshots.
     * Server side.
     * Support negated cuts (add quick "invert" button in the cut-box?).
+    * Columns config "hooks" (hide / size)
 
     * Fix analytics plugin to ignore first N seconds of events as for bounce rate calculation.
     * Cleanup code.
@@ -97,5 +101,4 @@
     * Make it clear when the results limit has been hit (for dimension values and aggregations).
       Also impacts charts (missing items). Do not draw tables or charts in this case.
     * Review alerts, where to show them, use alert service... (alerts out of view are not nice for an embeddable lib).
-    * Add loading indicators as necessary.
 

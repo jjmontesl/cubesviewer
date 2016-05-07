@@ -25,7 +25,7 @@
  * Series chart object. Contains view functions for the 'chart' mode.
  * This is an optional component, part of the cube view.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVerticalController", ['$rootScope', '$scope', '$element', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizontalController", ['$rootScope', '$scope', '$element', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $element, $timeout, cvOptions, cubesService, viewsService) {
 
 	$scope.chart = null;
@@ -63,8 +63,16 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	    	serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		var value = e[columnDefs[i].name];
+
+	    		// If second serie is reversed
+	    		if (dataRows.length == 2 && serieCount == 1 && view.params.chartoptions.mirrorSerie2) value = (value != undefined) ? -value : 0;
+
 	    		serie.push( { "x": columnDefs[i].name, "y":  (value != undefined) ? value : 0 } );
 	    	}
+
+	    	// Reverse horizontal dimension to make series start from the base
+	    	serie.reverse();
+
 	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
 	    	if (view.params["chart-disabledseries"]) {
 	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
@@ -94,25 +102,33 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	    var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
 		var colFormatter = $scope.columnFormatFunction(ag);
 
-	    nv.addGraph(function() {
+		nv.addGraph(function() {
 	        var chart;
-	        chart = nv.models.multiBarChart()
-		          //.margin({bottom: 100})
+	        chart = nv.models.multiBarHorizontalChart()
+			      //.x(function(d) { return d.label })
+			      //.y(function(d) { return d.value })
 		          .showLegend(!!view.params.chartoptions.showLegend)
-		          .margin({left: 120});
+		          .margin({left: 120})
+			      //.showValues(true)           //Show bar value next to each bar.
+		          //.tooltips(true)             //Show tooltips on hover.
+		          //.transitionDuration(350)
+		          .showControls(true);        //Allow user to switch between "Grouped" and "Stacked" mode.
 
 	    	if (view.params["chart-barsvertical-stacked"]) {
 	    		chart.stacked ( view.params["chart-barsvertical-stacked"] );
 	    	}
 
 	        chart.options(chartOptions);
-	        chart.multibar.hideable(true);
 
 	        //chart.xAxis.axisLabel(xAxisLabel).showMaxMin(true).tickFormat(d3.format(',0f'));
-	        chart.xAxis.axisLabel(xAxisLabel);
+	        //chart.xAxis.axisLabel(xAxisLabel);
 
 	        //chart.yAxis.tickFormat(d3.format(',.2f'));
-	        chart.yAxis.tickFormat(function(d,i) {
+
+	        chart.yAxis.tickFormat(function(d, i) {
+	        	console.debug(d);
+	        	console.debug(i);
+	        	if (dataRows.length == 2 && view.params.chartoptions.mirrorSerie2 && d < 0) d = -d;
 	        	return colFormatter(d);
 	        });
 

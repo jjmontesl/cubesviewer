@@ -22,7 +22,7 @@
 
           <ul class="dropdown-menu">
 
-                <li ng-click="toggleTwoColumn()" ng-class="{ 'hidden-xs': ! cvOptions.studioTwoColumn }" ng-class="{ 'disabled': studioViewsService.views.length == 0 }"><a tabindex="0"><i class="fa fa-fw fa-columns"></i> 2 column
+                <li ng-click="toggleTwoColumn()" ng-class="{ 'hidden-xs': ! cvOptions.studioTwoColumn, 'disabled': studioViewsService.views.length == 0 }"><a tabindex="0"><i class="fa fa-fw fa-columns"></i> 2 column
                     <span class="label label-default pull-right" ng-class="{ 'label-success': cvOptions.studioTwoColumn }">{{ cvOptions.studioTwoColumn ? "ON" : "OFF" }}</span></a>
                 </li>
                 <li ng-click="toggleHideControls()" ng-class="{ 'disabled': studioViewsService.views.length == 0 }"><a tabindex="0"><i class="fa fa-fw fa-arrows-alt"></i> Hide controls

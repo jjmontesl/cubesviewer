@@ -94,6 +94,7 @@ angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$roo
                                                      function ($rootScope, $scope, cvOptions, cubesService, studioViewsService) {
 
 	$scope.studioViewsService = studioViewsService;
+	$scope.cvOptions = cvOptions;
 
 }]).directive("cvStudioView", function() {
 	return {

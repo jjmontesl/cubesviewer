@@ -1,7 +1,7 @@
 <div class="cv-bootstrap cv-gui-viewcontainer" ng-controller="CubesViewerStudioViewController">
 
     <div class="panel panel-primary">
-        <div class="panel-heading">
+        <div ng-if="! cvOptions.studioHideControls" class="panel-heading">
 
             <button type="button" ng-click="studioViewsService.closeView(view)" class="btn btn-danger btn-xs pull-right" style="margin-left: 10px;"><i class="fa fa-fw fa-close"></i></button>
             <button type="button" ng-click="studioViewsService.toggleCollapseView(view)" class="btn btn-primary btn-xs pull-right" style="margin-left: 5px;"><i class="fa fa-fw" ng-class="{'fa-caret-up': !view.collapsed, 'fa-caret-down': view.collapsed }"></i></button>

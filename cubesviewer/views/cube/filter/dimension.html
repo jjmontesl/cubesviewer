@@ -1,6 +1,6 @@
 <div ng-controller="CubesViewerViewsCubeFilterDimensionController">
 
-    <div class="panel panel-default panel-outline hidden-print" style="border-color: #ffcccc;">
+    <div class="panel panel-default panel-outline hidden-print" ng-hide="view.controlsHidden()" style="border-color: #ffcccc;">
         <div class="panel-heading clearfix" style="border-color: #ffcccc;">
             <button class="btn btn-xs btn-danger pull-right" ng-click="closeDimensionFilter()"><i class="fa fa-fw fa-close"></i></button>
             <h4 style="margin: 2px 0px 0px 0px;"><i class="fa fa-fw fa-filter"></i> Dimension filter: <b>{{ parts.label }}</b></h4>
@@ -50,17 +50,18 @@
 
             <div class="clearfix"></div>
 
-            <div ng-show="loadingDimensionValues" ><i class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom" style="margin-top: 10px;"></i> Loading...</div>
-
-            <div ng-if="!loadingDimensionValues" class="row">
+            <div class="row">
                 <div class="col-xs-6">
                 <div style="margin-top: 5px;">
                     <div class="panel panel-default panel-outline" style="margin-bottom: 0px;"><div class="panel-body" style="max-height: 180px; overflow-y: auto; overflow-x: hidden;">
-                        <div ng-repeat="val in dimensionValues" style="overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                            <label style="font-weight: normal; margin-bottom: 2px;">
-                                <input type="checkbox" value="{{ val.value }}" style="vertical-align: bottom;" />
-                                {{ val.label }}
-                            </label>
+                        <div ng-show="loadingDimensionValues" ><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Loading...</div>
+                        <div ng-if="!loadingDimensionValues">
+                            <div ng-repeat="val in dimensionValues" style="overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                <label style="font-weight: normal; margin-bottom: 2px;">
+                                    <input type="checkbox" value="{{ val.value }}" style="vertical-align: bottom;" />
+                                    {{ val.label }}
+                                </label>
+                            </div>
                         </div>
                     </div></div>
                 </div>
