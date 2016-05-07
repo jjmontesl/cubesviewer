@@ -372,7 +372,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut\">\n" +
     "\n" +
-    "    <li ng-click=\"filterSelected()\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected rows</a></li>\n" +
+    "    <li ng-click=\"$rootScope.$broadcast('filterSelected')\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected rows</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
     "\n" +
     "    <li class=\"dropdown-submenu\">\n" +
@@ -397,7 +397,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "            <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
     "                <!--  selectDrill(dimension.name + ':' + level.name, true) -->\n" +
-    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"showDimensionFilter(level);\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"showDimensionFilter(dimension.name + ':' + level.name);\"><a href=\"\">{{ level.label }}</a></li>\n" +
     "            </ul>\n" +
     "\n" +
     "          </li>\n" +
@@ -661,7 +661,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                    cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, dimensionString + \":\" + parts.hierarchy.levels[depth - 1] );\n" +
     "                 -->\n" +
     "                <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
-    "                    <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.label }} {{ equality }} <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
+    "                    <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.label }} <span ng-class=\"{ 'text-danger': cut.invert }\">{{ equality }}</span> <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
     "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                    <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(cut.dimension)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
     "                    <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectCut(cut.dimension, '', cut.invert)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
@@ -843,39 +843,35 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "              <div class=\"form-group has-feedback\">\n" +
     "                <!-- <label for=\"search\">Search:</label>  -->\n" +
-    "                <input type=\"text\" class=\"form-control\" placeholder=\"Search...\" style=\"width: 16em;\">\n" +
-    "                <i class=\"fa fa-fw fa-times-circle form-control-feedback\" style=\"cursor: pointer; pointer-events: inherit;\"></i>\n" +
+    "                <input type=\"text\" class=\"form-control\" ng-model=\"searchString\" placeholder=\"Search...\" style=\"width: 16em;\">\n" +
+    "                <i class=\"fa fa-fw fa-times-circle form-control-feedback\" ng-click=\"searchString = ''\" style=\"cursor: pointer; pointer-events: inherit;\"></i>\n" +
     "              </div>\n" +
     "\n" +
     "              <div class=\"form-group\">\n" +
     "\n" +
     "                <div class=\"input-group\" style=\"margin-left: 10px;\">\n" +
     "                  <span class=\"input-group-btn\">\n" +
-    "                    <button class=\"btn btn-default\" type=\"button\" title=\"Select all\"><i class=\"fa fa-fw fa-check-square-o\"></i></button>\n" +
+    "                    <button class=\"btn btn-default\" ng-click=\"selectAll();\" type=\"button\" title=\"Select all\"><i class=\"fa fa-fw fa-check-square-o\"></i></button>\n" +
     "                  </span>\n" +
     "                  <span class=\"input-group-btn\">\n" +
-    "                    <button class=\"btn btn-default\" type=\"button\" title=\"Select none\"><i class=\"fa fa-fw fa-square-o\"></i></button>\n" +
+    "                    <button class=\"btn btn-default\" ng-click=\"selectNone();\" type=\"button\" title=\"Select none\"><i class=\"fa fa-fw fa-square-o\"></i></button>\n" +
     "                  </span>\n" +
     "                </div>\n" +
     "                <!-- <label for=\"search\">Search:</label>  -->\n" +
     "              </div>\n" +
     "\n" +
-    "              <button class=\"btn btn-default\" type=\"button\" title=\"Drilldown this\" ng-click=\"selectDrill(view.dimensionFilter, true)\"><i class=\"fa fa-fw fa-arrow-down\"></i></button>\n" +
+    "              <button class=\"btn btn-default\" type=\"button\" title=\"Drilldown this\" ng-click=\"selectDrill(parts.fullDrilldownValue, true)\"><i class=\"fa fa-fw fa-arrow-down\"></i></button>\n" +
     "\n" +
     "              <div class=\"form-group\">\n" +
     "\n" +
-    "                <div class=\"input-group\" style=\"margin-left: 10px;\">\n" +
-    "                  <span class=\"input-group-btn\">\n" +
-    "                    <button class=\"btn btn-default active\" type=\"button\"><b>=</b> Select</button>\n" +
-    "                  </span>\n" +
-    "                  <span class=\"input-group-btn\">\n" +
-    "                    <button class=\"btn btn-default\" type=\"button\"><b>&ne;</b> Invert</button>\n" +
-    "                  </span>\n" +
-    "                </div>\n" +
-    "                <!-- <label for=\"search\">Search:</label>  -->\n" +
+    "                  <div class=\"btn btn-default\" ng-click=\"filterInverted = !filterInverted\" ng-class=\"{ 'active': filterInverted, 'btn-danger': filterInverted }\">\n" +
+    "                    <input type=\"checkbox\" ng-model=\"filterInverted\" style=\"pointer-events: none; margin: 0px; vertical-align: middle;\" ></input>\n" +
+    "                    <b>&ne;</b> Invert\n" +
+    "                  </div>\n" +
+    "\n" +
     "              </div>\n" +
     "\n" +
-    "              <button class=\"btn btn-success\" type=\"button\"><i class=\"fa fa-fw fa-filter\"></i> Apply</button>\n" +
+    "              <button ng-click=\"applyFilter()\" class=\"btn btn-success\" type=\"button\"><i class=\"fa fa-fw fa-filter\"></i> Apply</button>\n" +
     "            </form>\n" +
     "            </div>\n" +
     "\n" +
@@ -887,9 +883,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                    <div class=\"panel panel-default panel-outline\" style=\"margin-bottom: 0px;\"><div class=\"panel-body\" style=\"max-height: 180px; overflow-y: auto; overflow-x: hidden;\">\n" +
     "                        <div ng-show=\"loadingDimensionValues\" ><i class=\"fa fa-circle-o-notch fa-spin fa-fw\"></i> Loading...</div>\n" +
     "                        <div ng-if=\"!loadingDimensionValues\">\n" +
-    "                            <div ng-repeat=\"val in dimensionValues\" style=\"overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\">\n" +
+    "                            <div ng-repeat=\"val in dimensionValues | filter:filterDimensionValue(searchString) track by val.value\" style=\"overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\">\n" +
     "                                <label style=\"font-weight: normal; margin-bottom: 2px;\">\n" +
-    "                                    <input type=\"checkbox\" value=\"{{ val.value }}\" style=\"vertical-align: bottom;\" />\n" +
+    "                                    <input type=\"checkbox\" name=\"selectedValues[]\" ng-model=\"val.selected\" value=\"{{ val.value }}\" style=\"vertical-align: bottom;\" />\n" +
     "                                    {{ val.label }}\n" +
     "                                </label>\n" +
     "                            </div>\n" +

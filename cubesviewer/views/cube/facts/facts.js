@@ -34,15 +34,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 	// TODO: Move to explore view or grid component as cube view shall be split into directives
     $scope.$parent.onGridRegisterApi = function(gridApi) {
-    	//console.debug("Grid Register Api: Facts");
         $scope.gridApi = gridApi;
         gridApi.selection.on.rowSelectionChanged($scope,function(row){
-          console.debug(row.entity);
         });
         gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-          console.debug(rows);
         });
-
     };
 	$scope.$parent.gridApi = null;
 	$scope.$parent.gridOptions = {

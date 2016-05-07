@@ -108,10 +108,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
     	//console.debug("Grid Register Api: Series");
         $scope.gridApi = gridApi;
         gridApi.selection.on.rowSelectionChanged($scope,function(row){
-          console.debug(row.entity);
         });
         gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-          console.debug(rows);Accumulated
         });
 
     };

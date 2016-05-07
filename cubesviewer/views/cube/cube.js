@@ -35,6 +35,7 @@ angular.module('cv.views.cube', []);
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
 
+	$scope.$rootScope = $rootScope;
 	$scope.viewsService = viewsService;
 	$scope.cvOptions = cvOptions;
 
@@ -163,42 +164,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		return formatterFunction;
 	};
 
-	/*
-	 * Filters current selection
-	 */
-	$scope.filterSelected = function() {
-
-		console.debug("Filtering");
-
-		var view = $scope.view;
-
-		if (view.params.drilldown.length != 1) {
-			alert('Can only filter multiple values in a view with one level of drilldown.');
-			return;
-		}
-
-		console.debug($scope.gridApi);
-
-		if ($scope.gridApi.selection.getSelectedCount() <= 0) {
-			alert('Cannot filter. No rows are selected.');
-			return;
-		}
-
-		var filterValues = [];
-		var selectedRows = $scope.gridApi.selection.getSelectedRows();
-		$(selectedRows).each( function(idx, gd) {
-			filterValues.push(gd["key0"].cutValue);
-		});
-
-		var invert = false;
-		$scope.selectCut($scope.gridOptions.columnDefs[0].cutDimension, filterValues.join(";"), invert);
-
-	};
-
 	// Select a cut
 	$scope.selectCut = function(dimension, value, invert) {
-
-		console.debug("Filtering");
 
 		var view = $scope.view;
 

@@ -107,7 +107,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 			});
 		}
 
-		$scope.$broadcast("GridDataUpdated");
+		$scope.$broadcast("gridDataUpdated");
 
 	};
 

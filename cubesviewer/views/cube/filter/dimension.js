@@ -25,12 +25,16 @@
 
 /**
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
-                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionController", ['$rootScope', '$scope', '$filter', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, $filter, cvOptions, cubesService, viewsService) {
 
 	$scope.parts = null;
 	$scope.dimensionValues = null;
 	$scope.loadingDimensionValues = false;
+
+	$scope.searchString = "";
+	$scope.selectedValues = null;
+	$scope.filterInverted = null;
 
 	$scope.initialize = function() {
 
@@ -66,7 +70,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 				$scope._loadDimensionValuesCallback(tdimension));
 		jqxhr.always(function() {
 			//unblockView
-			console.debug("Function");
 			$scope.loadingDimensionValues = false;
 			$scope.$apply();
 		});
@@ -83,9 +86,28 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		};
 	};
 
-	$scope._processData = function(data) {
+	$scope.filterDimensionValue = function(searchString) {
+		return function(item) {
+			var lowerCaseSearch = searchString.toLowerCase();
+			return ((searchString == "") || (item.label.toLowerCase().indexOf(lowerCaseSearch) >= 0));
+		};
+	};
 
-		console.debug(data);
+	$scope.selectAll = function() {
+		var filter = $scope.filterDimensionValue($scope.searchString);
+		$($scope.dimensionValues).each(function(idx, val) {
+			if (filter(val)) val.selected = true;
+		});
+	};
+
+	$scope.selectNone = function() {
+		var filter = $scope.filterDimensionValue($scope.searchString);
+		$($scope.dimensionValues).each(function(idx, val) {
+			if (filter(val)) val.selected = false;
+		});
+	};
+
+	$scope._processData = function(data) {
 
 		// Get dimension
 		var dimension = $scope.view.cube.cvdim_dim($scope.view.dimensionFilter);
@@ -108,14 +130,39 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 			dimensionValues.push({
 				'label': drilldown_level_labels.join(' / '),
-				'value': drilldown_level_values.join (',')
+				'value': drilldown_level_values.join (','),
+				'selected': false
 			});
 
 		});
 
 		$scope.dimensionValues = dimensionValues;
-		console.debug($scope.dimensionValues);
 	};
+
+	/*
+	 * Updates info after loading data.
+	 */
+	$scope.applyFilter = function(view, dimensionString) {
+
+		var view = $scope.view;
+		var dimensionString = $scope.view.dimensionFilter;
+
+		var filterValues = [];
+		$($scope.dimensionValues).each(function(idx, val) {
+			if (val.selected) filterValues.push(val.value);
+		});
+
+		// If all values are selected, the filter is empty and therefore removed by selectCut
+		if (filterValues.length >= $scope.dimensionValues.length) filterValues = [];
+
+		// Cut dimension
+		var cutDimension = $scope.parts.dimension.name + ( $scope.parts.hierarchy.name != "default" ? "@" + $scope.parts.hierarchy.name : "" );
+		console.debug(cutDimension);
+		console.debug(filterValues);
+		$scope.selectCut(cutDimension, filterValues.join(";"), $scope.filterInverted);
+
+	};
+
 
 	$scope.initialize();
 
@@ -142,9 +189,6 @@ function cubesviewerViewCubeDimensionFilter () {
 
 		// Draw value container
 
-		$(view.container).find(".cv-views-dimensionfilter-apply").button().click(function() {
-			view.cubesviewer.views.cube.dimensionfilter.applyFilter( view, dimension );
-		});
 		$(view.container).find(".cv-views-dimensionfilter-cancel").button().click(function() {
 			view.dimensionFilter = null;
 			$(view.container).find('.cv-view-dimensionfilter').remove();
@@ -167,13 +211,19 @@ function cubesviewerViewCubeDimensionFilter () {
 			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox").filter(":checked").trigger('click');
 		});
 
-		$(view.container).find(".cv-views-dimensionfilter-drill").button().click(function() {
-			cubesviewer.views.cube.explore.selectDrill(view, parts.fullDrilldownValue, "1");
-			return false;
-		});
 
-		// Obtain data
+	};	/*
+	 * Searches labels by string and filters from view.
+	 */
+	this.searchDimensionValues = function(view, search) {
 
+		$(view.container).find(".cv-view-dimensionfilter-list").find("input").each (function (idx, e) {
+			if ((search == "") || ($(e).parent().text().toLowerCase().indexOf(search.toLowerCase()) >= 0)) {
+				$(e).parents('.cv-view-dimensionfilter-item').first().show();
+			} else {
+				$(e).parents('.cv-view-dimensionfilter-item').first().hide();
+			}
+		} );
 
 	};
 
@@ -189,21 +239,6 @@ function cubesviewerViewCubeDimensionFilter () {
 
 		// Update selected
 		view.cubesviewer.views.cube.dimensionfilter.updateFromCut(view, tdimension);
-
-	};
-
-	/*
-	 * Searches labels by string and filters from view.
-	 */
-	this.searchDimensionValues = function(view, search) {
-
-		$(view.container).find(".cv-view-dimensionfilter-list").find("input").each (function (idx, e) {
-			if ((search == "") || ($(e).parent().text().toLowerCase().indexOf(search.toLowerCase()) >= 0)) {
-				$(e).parents('.cv-view-dimensionfilter-item').first().show();
-			} else {
-				$(e).parents('.cv-view-dimensionfilter-item').first().hide();
-			}
-		} );
 
 	};
 
@@ -241,37 +276,6 @@ function cubesviewerViewCubeDimensionFilter () {
 
 	};
 
-	/*
-	 * Updates info after loading data.
-	 */
-	this.applyFilter = function(view, dimensionString) {
-
-		var parts = view.cube.cvdim_parts(dimensionString);
-
-		var checked = $(view.container).find(".cv-view-dimensionfilter-list").find("input:checked");
-
-		// Empty selection would yield no result
-		/*
-		if (checked.size() == 0) {
-			view.cubesviewer.alert('Cannot filter. No values are selected.');
-			return;
-		}
-		*/
-
-		var filterValues = [];
-		// If all values are selected, the filter is empty and therefore removed by selectCut
-		if (checked.size() < $(view.container).find(".cv-view-dimensionfilter-list").find("input").size()) {
-			$(view.container).find(".cv-view-dimensionfilter-list").find("input:checked").each(function (idx, e) {
-				filterValues.push( $(e).attr("value") );
-			});
-		}
-
-		var invert = $(view.container).find(".cv-view-dimensionfilter .invert-cut").is(":checked");
-
-		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
-		cubesviewer.views.cube.explore.selectCut(view, cutDimension, filterValues.join(";"), invert);
-
-	};
 
 }
 

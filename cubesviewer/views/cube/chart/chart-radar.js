@@ -33,7 +33,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
 	$scope.initialize = function() {
 	};
 
-	$scope.$on('GridDataUpdated', function() {
+	$scope.$on('gridDataUpdated', function() {
 		$timeout(function() {
 			$scope.drawChartRadar();
 		}, 2000);

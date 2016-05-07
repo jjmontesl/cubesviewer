@@ -37,10 +37,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
     	//console.debug("Grid Register Api: Explore");
         $scope.gridApi = gridApi;
         gridApi.selection.on.rowSelectionChanged($scope,function(row){
-          console.debug(row.entity);
+          //console.debug(row.entity);
         });
         gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-          console.debug(rows);
+          //console.debug(rows);
         });
 
     };
@@ -344,6 +344,40 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 	$scope._sortData = function(data, includeXAxis) {
 		//data.sort(cubesviewer._drilldownSortFunction(view.id, includeXAxis));
 	};
+
+	/*
+	 * Filters current selection
+	 */
+	$scope.filterSelected = function() {
+
+		var view = $scope.view;
+
+		if (view.params.drilldown.length != 1) {
+			alert('Can only filter multiple values in a view with one level of drilldown.');
+			return;
+		}
+
+		console.debug($scope);
+
+		if ($scope.gridApi.selection.getSelectedCount() <= 0) {
+			alert('Cannot filter. No rows are selected.');
+			return;
+		}
+
+		var filterValues = [];
+		var selectedRows = $scope.gridApi.selection.getSelectedRows();
+		$(selectedRows).each( function(idx, gd) {
+			filterValues.push(gd["key0"].cutValue);
+		});
+
+		var invert = false;
+		$scope.selectCut($scope.gridOptions.columnDefs[0].cutDimension, filterValues.join(";"), invert);
+
+	};
+
+	$scope.$on('filterSelected', function () {
+		$scope.filterSelected();
+	});
 
 	$scope.initialize();
 

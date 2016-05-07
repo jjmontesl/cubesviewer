@@ -53,7 +53,6 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 				params = $.parseJSON(data);
 			} catch (err) {
 				console.debug('Error: could not process serialized data (JSON parse error)');
-				console.debug(data);
 				alert ('Error: could not process serialized data (JSON parse error)');
 				params["name"] = "Undefined view";
 			}

@@ -1419,7 +1419,6 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 				params = $.parseJSON(data);
 			} catch (err) {
 				console.debug('Error: could not process serialized data (JSON parse error)');
-				console.debug(data);
 				alert ('Error: could not process serialized data (JSON parse error)');
 				params["name"] = "Undefined view";
 			}
@@ -1575,6 +1574,7 @@ angular.module('cv.views.cube', []);
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
 
+	$scope.$rootScope = $rootScope;
 	$scope.viewsService = viewsService;
 	$scope.cvOptions = cvOptions;
 
@@ -1703,42 +1703,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		return formatterFunction;
 	};
 
-	/*
-	 * Filters current selection
-	 */
-	$scope.filterSelected = function() {
-
-		console.debug("Filtering");
-
-		var view = $scope.view;
-
-		if (view.params.drilldown.length != 1) {
-			alert('Can only filter multiple values in a view with one level of drilldown.');
-			return;
-		}
-
-		console.debug($scope.gridApi);
-
-		if ($scope.gridApi.selection.getSelectedCount() <= 0) {
-			alert('Cannot filter. No rows are selected.');
-			return;
-		}
-
-		var filterValues = [];
-		var selectedRows = $scope.gridApi.selection.getSelectedRows();
-		$(selectedRows).each( function(idx, gd) {
-			filterValues.push(gd["key0"].cutValue);
-		});
-
-		var invert = false;
-		$scope.selectCut($scope.gridOptions.columnDefs[0].cutDimension, filterValues.join(";"), invert);
-
-	};
-
 	// Select a cut
 	$scope.selectCut = function(dimension, value, invert) {
-
-		console.debug("Filtering");
 
 		var view = $scope.view;
 
@@ -1936,10 +1902,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
     	//console.debug("Grid Register Api: Explore");
         $scope.gridApi = gridApi;
         gridApi.selection.on.rowSelectionChanged($scope,function(row){
-          console.debug(row.entity);
+          //console.debug(row.entity);
         });
         gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-          console.debug(rows);
+          //console.debug(rows);
         });
 
     };
@@ -2244,6 +2210,40 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		//data.sort(cubesviewer._drilldownSortFunction(view.id, includeXAxis));
 	};
 
+	/*
+	 * Filters current selection
+	 */
+	$scope.filterSelected = function() {
+
+		var view = $scope.view;
+
+		if (view.params.drilldown.length != 1) {
+			alert('Can only filter multiple values in a view with one level of drilldown.');
+			return;
+		}
+
+		console.debug($scope);
+
+		if ($scope.gridApi.selection.getSelectedCount() <= 0) {
+			alert('Cannot filter. No rows are selected.');
+			return;
+		}
+
+		var filterValues = [];
+		var selectedRows = $scope.gridApi.selection.getSelectedRows();
+		$(selectedRows).each( function(idx, gd) {
+			filterValues.push(gd["key0"].cutValue);
+		});
+
+		var invert = false;
+		$scope.selectCut($scope.gridOptions.columnDefs[0].cutDimension, filterValues.join(";"), invert);
+
+	};
+
+	$scope.$on('filterSelected', function () {
+		$scope.filterSelected();
+	});
+
 	$scope.initialize();
 
 }]);
@@ -2373,12 +2373,16 @@ function cubesviewerViewCubeExplore() {
 
 /**
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
-                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionController", ['$rootScope', '$scope', '$filter', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, $filter, cvOptions, cubesService, viewsService) {
 
 	$scope.parts = null;
 	$scope.dimensionValues = null;
 	$scope.loadingDimensionValues = false;
+
+	$scope.searchString = "";
+	$scope.selectedValues = null;
+	$scope.filterInverted = null;
 
 	$scope.initialize = function() {
 
@@ -2414,7 +2418,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 				$scope._loadDimensionValuesCallback(tdimension));
 		jqxhr.always(function() {
 			//unblockView
-			console.debug("Function");
 			$scope.loadingDimensionValues = false;
 			$scope.$apply();
 		});
@@ -2431,9 +2434,28 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		};
 	};
 
-	$scope._processData = function(data) {
+	$scope.filterDimensionValue = function(searchString) {
+		return function(item) {
+			var lowerCaseSearch = searchString.toLowerCase();
+			return ((searchString == "") || (item.label.toLowerCase().indexOf(lowerCaseSearch) >= 0));
+		};
+	};
 
-		console.debug(data);
+	$scope.selectAll = function() {
+		var filter = $scope.filterDimensionValue($scope.searchString);
+		$($scope.dimensionValues).each(function(idx, val) {
+			if (filter(val)) val.selected = true;
+		});
+	};
+
+	$scope.selectNone = function() {
+		var filter = $scope.filterDimensionValue($scope.searchString);
+		$($scope.dimensionValues).each(function(idx, val) {
+			if (filter(val)) val.selected = false;
+		});
+	};
+
+	$scope._processData = function(data) {
 
 		// Get dimension
 		var dimension = $scope.view.cube.cvdim_dim($scope.view.dimensionFilter);
@@ -2456,14 +2478,39 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 			dimensionValues.push({
 				'label': drilldown_level_labels.join(' / '),
-				'value': drilldown_level_values.join (',')
+				'value': drilldown_level_values.join (','),
+				'selected': false
 			});
 
 		});
 
 		$scope.dimensionValues = dimensionValues;
-		console.debug($scope.dimensionValues);
 	};
+
+	/*
+	 * Updates info after loading data.
+	 */
+	$scope.applyFilter = function(view, dimensionString) {
+
+		var view = $scope.view;
+		var dimensionString = $scope.view.dimensionFilter;
+
+		var filterValues = [];
+		$($scope.dimensionValues).each(function(idx, val) {
+			if (val.selected) filterValues.push(val.value);
+		});
+
+		// If all values are selected, the filter is empty and therefore removed by selectCut
+		if (filterValues.length >= $scope.dimensionValues.length) filterValues = [];
+
+		// Cut dimension
+		var cutDimension = $scope.parts.dimension.name + ( $scope.parts.hierarchy.name != "default" ? "@" + $scope.parts.hierarchy.name : "" );
+		console.debug(cutDimension);
+		console.debug(filterValues);
+		$scope.selectCut(cutDimension, filterValues.join(";"), $scope.filterInverted);
+
+	};
+
 
 	$scope.initialize();
 
@@ -2490,9 +2537,6 @@ function cubesviewerViewCubeDimensionFilter () {
 
 		// Draw value container
 
-		$(view.container).find(".cv-views-dimensionfilter-apply").button().click(function() {
-			view.cubesviewer.views.cube.dimensionfilter.applyFilter( view, dimension );
-		});
 		$(view.container).find(".cv-views-dimensionfilter-cancel").button().click(function() {
 			view.dimensionFilter = null;
 			$(view.container).find('.cv-view-dimensionfilter').remove();
@@ -2515,13 +2559,19 @@ function cubesviewerViewCubeDimensionFilter () {
 			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox").filter(":checked").trigger('click');
 		});
 
-		$(view.container).find(".cv-views-dimensionfilter-drill").button().click(function() {
-			cubesviewer.views.cube.explore.selectDrill(view, parts.fullDrilldownValue, "1");
-			return false;
-		});
 
-		// Obtain data
+	};	/*
+	 * Searches labels by string and filters from view.
+	 */
+	this.searchDimensionValues = function(view, search) {
 
+		$(view.container).find(".cv-view-dimensionfilter-list").find("input").each (function (idx, e) {
+			if ((search == "") || ($(e).parent().text().toLowerCase().indexOf(search.toLowerCase()) >= 0)) {
+				$(e).parents('.cv-view-dimensionfilter-item').first().show();
+			} else {
+				$(e).parents('.cv-view-dimensionfilter-item').first().hide();
+			}
+		} );
 
 	};
 
@@ -2537,21 +2587,6 @@ function cubesviewerViewCubeDimensionFilter () {
 
 		// Update selected
 		view.cubesviewer.views.cube.dimensionfilter.updateFromCut(view, tdimension);
-
-	};
-
-	/*
-	 * Searches labels by string and filters from view.
-	 */
-	this.searchDimensionValues = function(view, search) {
-
-		$(view.container).find(".cv-view-dimensionfilter-list").find("input").each (function (idx, e) {
-			if ((search == "") || ($(e).parent().text().toLowerCase().indexOf(search.toLowerCase()) >= 0)) {
-				$(e).parents('.cv-view-dimensionfilter-item').first().show();
-			} else {
-				$(e).parents('.cv-view-dimensionfilter-item').first().hide();
-			}
-		} );
 
 	};
 
@@ -2589,37 +2624,6 @@ function cubesviewerViewCubeDimensionFilter () {
 
 	};
 
-	/*
-	 * Updates info after loading data.
-	 */
-	this.applyFilter = function(view, dimensionString) {
-
-		var parts = view.cube.cvdim_parts(dimensionString);
-
-		var checked = $(view.container).find(".cv-view-dimensionfilter-list").find("input:checked");
-
-		// Empty selection would yield no result
-		/*
-		if (checked.size() == 0) {
-			view.cubesviewer.alert('Cannot filter. No values are selected.');
-			return;
-		}
-		*/
-
-		var filterValues = [];
-		// If all values are selected, the filter is empty and therefore removed by selectCut
-		if (checked.size() < $(view.container).find(".cv-view-dimensionfilter-list").find("input").size()) {
-			$(view.container).find(".cv-view-dimensionfilter-list").find("input:checked").each(function (idx, e) {
-				filterValues.push( $(e).attr("value") );
-			});
-		}
-
-		var invert = $(view.container).find(".cv-view-dimensionfilter .invert-cut").is(":checked");
-
-		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
-		cubesviewer.views.cube.explore.selectCut(view, cutDimension, filterValues.join(";"), invert);
-
-	};
 
 }
 
@@ -2910,15 +2914,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 	// TODO: Move to explore view or grid component as cube view shall be split into directives
     $scope.$parent.onGridRegisterApi = function(gridApi) {
-    	//console.debug("Grid Register Api: Facts");
         $scope.gridApi = gridApi;
         gridApi.selection.on.rowSelectionChanged($scope,function(row){
-          console.debug(row.entity);
         });
         gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-          console.debug(rows);
         });
-
     };
 	$scope.$parent.gridApi = null;
 	$scope.$parent.gridOptions = {
@@ -3290,10 +3290,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
     	//console.debug("Grid Register Api: Series");
         $scope.gridApi = gridApi;
         gridApi.selection.on.rowSelectionChanged($scope,function(row){
-          console.debug(row.entity);
         });
         gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-          console.debug(rows);Accumulated
         });
 
     };
@@ -3658,7 +3656,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 			});
 		}
 
-		$scope.$broadcast("GridDataUpdated");
+		$scope.$broadcast("gridDataUpdated");
 
 	};
 
@@ -3869,7 +3867,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	$scope.initialize = function() {
 	};
 
-	$scope.$on('GridDataUpdated', function() {
+	$scope.$on('gridDataUpdated', function() {
 		$scope.cleanupNvd3();
 		$timeout(function() {
 			$scope.drawChartBarsVertical();
@@ -3884,9 +3882,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 		var view = $scope.view;
 		var dataRows = $scope.gridData;
 		var columnDefs = $scope.gridOptions.columnDefs;
-
-		console.debug(dataRows);
-		console.debug(columnDefs);
 
 		var container = $($element).find("svg").get(0);
 		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
@@ -4020,7 +4015,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	$scope.initialize = function() {
 	};
 
-	$scope.$on('GridDataUpdated', function() {
+	$scope.$on('gridDataUpdated', function() {
 		$scope.cleanupNvd3();
 		$timeout(function() {
 			$scope.drawChartBarsVertical();
@@ -4035,9 +4030,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 		var view = $scope.view;
 		var dataRows = $scope.gridData;
 		var columnDefs = $scope.gridOptions.columnDefs;
-
-		console.debug(dataRows);
-		console.debug(columnDefs);
 
 		var container = $($element).find("svg").get(0);
 		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
@@ -4187,7 +4179,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	$scope.initialize = function() {
 	};
 
-	$scope.$on('GridDataUpdated', function() {
+	$scope.$on('gridDataUpdated', function() {
 		$scope.cleanupNvd3();
 		$timeout(function() {
 			$scope.drawChartLines();
@@ -4449,7 +4441,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
 	$scope.initialize = function() {
 	};
 
-	$scope.$on('GridDataUpdated', function() {
+	$scope.$on('gridDataUpdated', function() {
 		$scope.cleanupNvd3();
 		$timeout(function() {
 			$scope.drawChartPie();
@@ -4588,7 +4580,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
 	$scope.initialize = function() {
 	};
 
-	$scope.$on('GridDataUpdated', function() {
+	$scope.$on('gridDataUpdated', function() {
 		$timeout(function() {
 			$scope.drawChartRadar();
 		}, 2000);
@@ -5442,7 +5434,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut\">\n" +
     "\n" +
-    "    <li ng-click=\"filterSelected()\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected rows</a></li>\n" +
+    "    <li ng-click=\"$rootScope.$broadcast('filterSelected')\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected rows</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
     "\n" +
     "    <li class=\"dropdown-submenu\">\n" +
@@ -5467,7 +5459,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "            <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
     "                <!--  selectDrill(dimension.name + ':' + level.name, true) -->\n" +
-    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"showDimensionFilter(level);\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"showDimensionFilter(dimension.name + ':' + level.name);\"><a href=\"\">{{ level.label }}</a></li>\n" +
     "            </ul>\n" +
     "\n" +
     "          </li>\n" +
@@ -5731,7 +5723,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "                    cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, dimensionString + \":\" + parts.hierarchy.levels[depth - 1] );\n" +
     "                 -->\n" +
     "                <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
-    "                    <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.label }} {{ equality }} <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
+    "                    <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.label }} <span ng-class=\"{ 'text-danger': cut.invert }\">{{ equality }}</span> <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
     "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                    <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(cut.dimension)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
     "                    <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectCut(cut.dimension, '', cut.invert)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
@@ -5913,39 +5905,35 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "              <div class=\"form-group has-feedback\">\n" +
     "                <!-- <label for=\"search\">Search:</label>  -->\n" +
-    "                <input type=\"text\" class=\"form-control\" placeholder=\"Search...\" style=\"width: 16em;\">\n" +
-    "                <i class=\"fa fa-fw fa-times-circle form-control-feedback\" style=\"cursor: pointer; pointer-events: inherit;\"></i>\n" +
+    "                <input type=\"text\" class=\"form-control\" ng-model=\"searchString\" placeholder=\"Search...\" style=\"width: 16em;\">\n" +
+    "                <i class=\"fa fa-fw fa-times-circle form-control-feedback\" ng-click=\"searchString = ''\" style=\"cursor: pointer; pointer-events: inherit;\"></i>\n" +
     "              </div>\n" +
     "\n" +
     "              <div class=\"form-group\">\n" +
     "\n" +
     "                <div class=\"input-group\" style=\"margin-left: 10px;\">\n" +
     "                  <span class=\"input-group-btn\">\n" +
-    "                    <button class=\"btn btn-default\" type=\"button\" title=\"Select all\"><i class=\"fa fa-fw fa-check-square-o\"></i></button>\n" +
+    "                    <button class=\"btn btn-default\" ng-click=\"selectAll();\" type=\"button\" title=\"Select all\"><i class=\"fa fa-fw fa-check-square-o\"></i></button>\n" +
     "                  </span>\n" +
     "                  <span class=\"input-group-btn\">\n" +
-    "                    <button class=\"btn btn-default\" type=\"button\" title=\"Select none\"><i class=\"fa fa-fw fa-square-o\"></i></button>\n" +
+    "                    <button class=\"btn btn-default\" ng-click=\"selectNone();\" type=\"button\" title=\"Select none\"><i class=\"fa fa-fw fa-square-o\"></i></button>\n" +
     "                  </span>\n" +
     "                </div>\n" +
     "                <!-- <label for=\"search\">Search:</label>  -->\n" +
     "              </div>\n" +
     "\n" +
-    "              <button class=\"btn btn-default\" type=\"button\" title=\"Drilldown this\" ng-click=\"selectDrill(view.dimensionFilter, true)\"><i class=\"fa fa-fw fa-arrow-down\"></i></button>\n" +
+    "              <button class=\"btn btn-default\" type=\"button\" title=\"Drilldown this\" ng-click=\"selectDrill(parts.fullDrilldownValue, true)\"><i class=\"fa fa-fw fa-arrow-down\"></i></button>\n" +
     "\n" +
     "              <div class=\"form-group\">\n" +
     "\n" +
-    "                <div class=\"input-group\" style=\"margin-left: 10px;\">\n" +
-    "                  <span class=\"input-group-btn\">\n" +
-    "                    <button class=\"btn btn-default active\" type=\"button\"><b>=</b> Select</button>\n" +
-    "                  </span>\n" +
-    "                  <span class=\"input-group-btn\">\n" +
-    "                    <button class=\"btn btn-default\" type=\"button\"><b>&ne;</b> Invert</button>\n" +
-    "                  </span>\n" +
-    "                </div>\n" +
-    "                <!-- <label for=\"search\">Search:</label>  -->\n" +
+    "                  <div class=\"btn btn-default\" ng-click=\"filterInverted = !filterInverted\" ng-class=\"{ 'active': filterInverted, 'btn-danger': filterInverted }\">\n" +
+    "                    <input type=\"checkbox\" ng-model=\"filterInverted\" style=\"pointer-events: none; margin: 0px; vertical-align: middle;\" ></input>\n" +
+    "                    <b>&ne;</b> Invert\n" +
+    "                  </div>\n" +
+    "\n" +
     "              </div>\n" +
     "\n" +
-    "              <button class=\"btn btn-success\" type=\"button\"><i class=\"fa fa-fw fa-filter\"></i> Apply</button>\n" +
+    "              <button ng-click=\"applyFilter()\" class=\"btn btn-success\" type=\"button\"><i class=\"fa fa-fw fa-filter\"></i> Apply</button>\n" +
     "            </form>\n" +
     "            </div>\n" +
     "\n" +
@@ -5957,9 +5945,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "                    <div class=\"panel panel-default panel-outline\" style=\"margin-bottom: 0px;\"><div class=\"panel-body\" style=\"max-height: 180px; overflow-y: auto; overflow-x: hidden;\">\n" +
     "                        <div ng-show=\"loadingDimensionValues\" ><i class=\"fa fa-circle-o-notch fa-spin fa-fw\"></i> Loading...</div>\n" +
     "                        <div ng-if=\"!loadingDimensionValues\">\n" +
-    "                            <div ng-repeat=\"val in dimensionValues\" style=\"overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\">\n" +
+    "                            <div ng-repeat=\"val in dimensionValues | filter:filterDimensionValue(searchString) track by val.value\" style=\"overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\">\n" +
     "                                <label style=\"font-weight: normal; margin-bottom: 2px;\">\n" +
-    "                                    <input type=\"checkbox\" value=\"{{ val.value }}\" style=\"vertical-align: bottom;\" />\n" +
+    "                                    <input type=\"checkbox\" name=\"selectedValues[]\" ng-model=\"val.selected\" value=\"{{ val.value }}\" style=\"vertical-align: bottom;\" />\n" +
     "                                    {{ val.label }}\n" +
     "                                </label>\n" +
     "                            </div>\n" +
