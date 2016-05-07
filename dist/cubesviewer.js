@@ -2023,6 +2023,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				index : ag.ref,
 				cellClass : "text-right",
 				//sorttype : "number",
+				headerCellClass: "cv-grid-header-measure",
 				width : 115, //view.cube.explore.defineColumnWidth(view, ag.ref, 95),
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				formatter: $scope.columnFormatFunction(ag),
@@ -2067,6 +2068,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				name: label[i],
 				field: "key" + i,
 				index: "key" + i,
+				headerCellClass: "cv-grid-header-dimension",
 				enableHiding: false,
 				cutDimension: cutDimension,
 				width: 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + i, 130)
@@ -3011,6 +3013,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 					name: level.label,
 					field: level.key().ref,
 					index : level.key().ref,
+					headerCellClass: "cv-grid-header-dimension",
 					//cellClass : "text-right",
 					//sorttype : "number",
 					width : 95, //cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
@@ -3033,6 +3036,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				field: measure.ref,
 				index : measure.ref,
 				cellClass : "text-right",
+				headerCellClass: "cv-grid-header-measure",
 				sorttype : "number",
 				width : 75, //cubesviewer.views.cube.explore.defineColumnWidth(view, measure.ref, 75),
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
@@ -3504,6 +3508,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 				name: view.cube.cvdim_dim(e).label,
 				field: "key" + idx,
 				index : "key" + idx,
+				headerCellClass: "cv-grid-header-dimension",
 				//cellClass : "text-right",
 				//sorttype : "number",
 				width : 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + idx, 190)
@@ -3524,6 +3529,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 				name: "Measure",
 				field: "key0",
 				index : "key0",
+				headerCellClass: "cv-grid-header-measure",
 				//cellClass : "text-right",
 				//sorttype : "number",
 				width : 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "key0", 190)
@@ -5152,6 +5158,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "        <h3><i class=\"fa fa-fw fa-pie-chart\"></i> Chart\n" +
     "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
+    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "            <span class=\"loadingbar-expand\"></span>\n" +
+    "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartPieController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
@@ -5161,6 +5170,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "        <h3><i class=\"fa fa-fw fa-bar-chart\"></i> Chart\n" +
     "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
+    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "            <span class=\"loadingbar-expand\"></span>\n" +
+    "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartBarsVerticalController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
@@ -5170,6 +5182,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "        <h3><i class=\"fa fa-fw fa-line-chart\"></i> Chart\n" +
     "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
+    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "            <span class=\"loadingbar-expand\"></span>\n" +
+    "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartLinesController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
@@ -5179,6 +5194,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "        <h3><i class=\"fa fa-fw fa-area-chart\"></i> Chart\n" +
     "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
+    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "            <span class=\"loadingbar-expand\"></span>\n" +
+    "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartLinesController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
@@ -5188,6 +5206,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "        <h3><i class=\"fa fa-fw fa-bullseye\"></i> Chart\n" +
     "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
+    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "            <span class=\"loadingbar-expand\"></span>\n" +
+    "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartRadarController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
@@ -5573,6 +5594,10 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "    <h3><i class=\"fa fa-fw fa-arrow-circle-down\"></i> Aggregated data\n" +
     "        <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "    </h3>\n" +
+    "\n" +
+    "    <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <span class=\"loadingbar-expand\"></span>\n" +
+    "    </div>\n" +
     "\n" +
     "    <div ui-grid=\"gridOptions\"\n" +
     "         ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize\n" +

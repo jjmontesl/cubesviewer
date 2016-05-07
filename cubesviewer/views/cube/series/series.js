@@ -326,6 +326,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 				name: view.cube.cvdim_dim(e).label,
 				field: "key" + idx,
 				index : "key" + idx,
+				headerCellClass: "cv-grid-header-dimension",
 				//cellClass : "text-right",
 				//sorttype : "number",
 				width : 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + idx, 190)
@@ -346,6 +347,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 				name: "Measure",
 				field: "key0",
 				index : "key0",
+				headerCellClass: "cv-grid-header-measure",
 				//cellClass : "text-right",
 				//sorttype : "number",
 				width : 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "key0", 190)

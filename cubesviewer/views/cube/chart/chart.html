@@ -4,6 +4,9 @@
         <h3><i class="fa fa-fw fa-pie-chart"></i> Chart
             <i ng-show="pendingRequests > 0" class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right"></i>
         </h3>
+        <div ng-if="pendingRequests > 0" class="loadingbar-content">
+            <span class="loadingbar-expand"></span>
+        </div>
         <div ng-controller="CubesViewerViewsCubeChartPieController">
             <div ng-include="'views/cube/chart/chart-common.html'"></div>
         </div>
@@ -13,6 +16,9 @@
         <h3><i class="fa fa-fw fa-bar-chart"></i> Chart
             <i ng-show="pendingRequests > 0" class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right"></i>
         </h3>
+        <div ng-if="pendingRequests > 0" class="loadingbar-content">
+            <span class="loadingbar-expand"></span>
+        </div>
         <div ng-controller="CubesViewerViewsCubeChartBarsVerticalController">
             <div ng-include="'views/cube/chart/chart-common.html'"></div>
         </div>
@@ -22,6 +28,9 @@
         <h3><i class="fa fa-fw fa-line-chart"></i> Chart
             <i ng-show="pendingRequests > 0" class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right"></i>
         </h3>
+        <div ng-if="pendingRequests > 0" class="loadingbar-content">
+            <span class="loadingbar-expand"></span>
+        </div>
         <div ng-controller="CubesViewerViewsCubeChartLinesController">
             <div ng-include="'views/cube/chart/chart-common.html'"></div>
         </div>
@@ -31,6 +40,9 @@
         <h3><i class="fa fa-fw fa-area-chart"></i> Chart
             <i ng-show="pendingRequests > 0" class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right"></i>
         </h3>
+        <div ng-if="pendingRequests > 0" class="loadingbar-content">
+            <span class="loadingbar-expand"></span>
+        </div>
         <div ng-controller="CubesViewerViewsCubeChartLinesController">
             <div ng-include="'views/cube/chart/chart-common.html'"></div>
         </div>
@@ -40,6 +52,9 @@
         <h3><i class="fa fa-fw fa-bullseye"></i> Chart
             <i ng-show="pendingRequests > 0" class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right"></i>
         </h3>
+        <div ng-if="pendingRequests > 0" class="loadingbar-content">
+            <span class="loadingbar-expand"></span>
+        </div>
         <div ng-controller="CubesViewerViewsCubeChartRadarController">
             <div ng-include="'views/cube/chart/chart-common.html'"></div>
         </div>

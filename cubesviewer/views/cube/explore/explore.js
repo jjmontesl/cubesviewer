@@ -124,6 +124,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				index : ag.ref,
 				cellClass : "text-right",
 				//sorttype : "number",
+				headerCellClass: "cv-grid-header-measure",
 				width : 115, //view.cube.explore.defineColumnWidth(view, ag.ref, 95),
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				formatter: $scope.columnFormatFunction(ag),
@@ -168,6 +169,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				name: label[i],
 				field: "key" + i,
 				index: "key" + i,
+				headerCellClass: "cv-grid-header-dimension",
 				enableHiding: false,
 				cutDimension: cutDimension,
 				width: 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + i, 130)

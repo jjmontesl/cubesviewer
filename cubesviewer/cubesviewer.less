@@ -70,6 +70,14 @@
         white-space: nowrap;
         overflow: hidden;
     }
+    .ui-grid-canvas {
+        -webkit-touch-callout: initial;
+        -webkit-user-select: initial;
+        -khtml-user-select: initial;
+        -moz-user-select: initial;
+        -ms-user-select: initial;
+        user-select: initial;
+    }
 
     /* Datepicker popup hack */
     div ul.uib-datepicker-popup.dropdown-menu {
@@ -98,7 +106,6 @@
     }
 
 }
-
 
 
 /*
@@ -142,15 +149,14 @@
 }
 */
 
-
-.cv-view-panel table, .cv-view-panel tr, .cv-view-panel td {
-	-webkit-touch-callout: initial;
-    -webkit-user-select: initial;
-    -khtml-user-select: initial;
-    -moz-user-select: initial;
-    -ms-user-select: initial;
-    user-select: initial;
+.cv-grid-header-dimension {
+    color: #004400;
 }
+.cv-grid-header-measure {
+    color: #444477;
+}
+
+
 
 /*
 .ui-slider-range {
@@ -309,3 +315,35 @@ div.nvtooltip {
 */
 
 
+/* Loading bar */
+
+.loadingbar-content {
+    width: 100%;
+    /* Full Width */
+    height: 4px;
+    margin: 0px auto 4px auto;
+    /*position: fixed;*/
+    overflow-x: hidden;
+}
+
+.loadingbar-expand {
+    width: 100%;
+    max-width: 100%;
+    height: 2px;
+    margin: 2px 0;
+    background: #2187e7;
+    position: absolute;
+    box-shadow: 0px 0px 6px 1px rgba(0,198,255,0.8);
+    -moz-animation: fullexpand 10s ease-out;
+    -webkit-animation: fullexpand 10s ease-out;
+}
+
+@-moz-keyframes fullexpand {
+    0%  { width: 0px; }
+    100% { width: 100%; }
+}
+
+@-webkit-keyframes fullexpand {
+    0% { width: 0px; }
+    100% { width: 100%; };
+}

@@ -255,6 +255,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        <h3><i class=\"fa fa-fw fa-pie-chart\"></i> Chart\n" +
     "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
+    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "            <span class=\"loadingbar-expand\"></span>\n" +
+    "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartPieController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
@@ -264,6 +267,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        <h3><i class=\"fa fa-fw fa-bar-chart\"></i> Chart\n" +
     "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
+    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "            <span class=\"loadingbar-expand\"></span>\n" +
+    "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartBarsVerticalController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
@@ -273,6 +279,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        <h3><i class=\"fa fa-fw fa-line-chart\"></i> Chart\n" +
     "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
+    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "            <span class=\"loadingbar-expand\"></span>\n" +
+    "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartLinesController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
@@ -282,6 +291,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        <h3><i class=\"fa fa-fw fa-area-chart\"></i> Chart\n" +
     "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
+    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "            <span class=\"loadingbar-expand\"></span>\n" +
+    "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartLinesController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
@@ -291,6 +303,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        <h3><i class=\"fa fa-fw fa-bullseye\"></i> Chart\n" +
     "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
+    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "            <span class=\"loadingbar-expand\"></span>\n" +
+    "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartRadarController\">\n" +
     "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
     "        </div>\n" +
@@ -676,6 +691,10 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    <h3><i class=\"fa fa-fw fa-arrow-circle-down\"></i> Aggregated data\n" +
     "        <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "    </h3>\n" +
+    "\n" +
+    "    <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <span class=\"loadingbar-expand\"></span>\n" +
+    "    </div>\n" +
     "\n" +
     "    <div ui-grid=\"gridOptions\"\n" +
     "         ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize\n" +

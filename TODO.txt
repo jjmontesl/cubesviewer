@@ -60,6 +60,7 @@
     * Implement limits to items shown in charts or dimension filters...?
     * Show filter icon from "horizontal dimension". Also show its detail level (and perhaps not the hierarchy).
     * Tooltip columns: column=val remove columnTooltipAttr, enable tooltips?
+    * Abandon page warning?
 
 [2.1]
 
