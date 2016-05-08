@@ -1,5 +1,6 @@
 [2.0.1]
 
+    * Added horizontal columns chart.
     * Added two columns mode and hide controls mode.
     * New icon library and revamped UI.
     * Fixed incorrect column resize slider bug.

@@ -100,20 +100,6 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 
 function cubesviewerViews () {
 
-	/*
-	 * Shows an error message on a view container.
-	 */
-	this.showFatal = function (container, message) {
-		container.empty().append (
-				'<div class="ui-widget">' +
-				'<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">' +
-				'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' +
-				'<strong>Error</strong><br/><br/>' + message +
-				'</p></div></div>'
-		);
-	}
-
-
 
 	/*
 	 * Block the view interface.
@@ -154,19 +140,6 @@ function cubesviewerViews () {
 		// TODO: Review if if below is needed
 		//if (view == null) return;
 		$(document).trigger ("cubesviewerViewDraw", [ view ]);
-	}
-
-	/*
-	 * Updates view when the view is refreshed.
-	 */
-	this.onViewDraw = function (event, view) {
-
-		if (view.state == cubesviewer.views.STATE_ERROR) {
-			cubesviewer.views.showFatal (view.container, 'An error has occurred. Cannot present view.');
-			event.stopImmediatePropagation();
-			return;
-		}
-
 	}
 
 };

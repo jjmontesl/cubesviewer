@@ -1,0 +1,33 @@
+<div class="modal fade" id="cvServerInfo" tabindex="-1" role="dialog" aria-labelledby="">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-fw fa-close"></i></span></button>
+        <h4 class="modal-title" id="myModalLabel"><i class="fa fa-fw fa-database"></i> Server info</h4>
+      </div>
+      <div class="modal-body">
+
+            <p>
+                <i>This CubesViewer version supports Cubes Server version 1.0.x</i><br />
+                <br />
+                <b>Server version:</b> {{ cubesService.cubesserver.server_version }} <br />
+                <b>Cubes version:</b> {{ cubesService.cubesserver.cubes_version }} <br />
+                <b>API version:</b> {{ cubesService.cubesserver.api_version }} <br />
+            </p>
+            <p>
+                <b>Timezone:</b> {{ cubesService.cubesserver.info.timezone }} <br />
+                <b>Week start:</b> {{ cubesService.cubesserver.info.first_weekday }} <br />
+            </p>
+            <p>
+                <b>Result limit:</b> {{ cubesService.cubesserver.info.json_record_limit }} items<br />
+            </p>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal"> Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

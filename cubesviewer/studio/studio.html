@@ -9,6 +9,10 @@
 
           <ul class="dropdown-menu cv-gui-cubeslist-menu">
 
+            <li ng-show="cubesService.state === 1" class="disabled"><a>Loading...</a></li>
+            <li ng-show="cubesService.state === 2 && cubesService.cubesserver._cube_list.length === 0" class="disabled"><a>No cubes found</a></li>
+            <li ng-show="cubesService.state === 3" class="disabled"><a>Server error</a></li>
+
             <li ng-repeat="cube in cubesService.cubesserver._cube_list | orderBy:'label'" ng-click="studioViewsService.addViewCube(cube.name)"><a>{{ cube.label }}</a></li>
 
           </ul>
@@ -35,7 +39,12 @@
 
                 <div class="divider"></div>
 
-                <li class=""><a href="http://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-user-main.md" target="_blank"><i class="fa fa-fw fa-question"></i> User Guide</a></li>
+                <!-- <li class=""><a data-toggle="modal" data-target="#cvServerInfo"><i class="fa fa-fw fa-server"></i> Data model</a></li> -->
+                <li class="" ng-class="{ 'disabled': cubesService.state != 2 }"><a data-toggle="modal" data-target="#cvServerInfo" ><i class="fa fa-fw fa-database"></i> Server info</a></li>
+
+                <div class="divider"></div>
+
+                <li class=""><a href="http://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-user-main.md" target="_blank"><i class="fa fa-fw fa-question"></i> User guide</a></li>
                 <li class=""><a data-toggle="modal" data-target="#cvAboutModal"><i class="fa fa-fw fa-info"></i> About CubesViewer...</a></li>
 
             </ul>
@@ -43,11 +52,24 @@
 
         <div class="cv-gui-modals">
             <div ng-include="'studio/about.html'"></div>
+            <div ng-include="'studio/serverinfo.html'"></div>
         </div>
 
     </div>
 
     <div class="cv-gui-workspace">
+
+        <div class="row">
+            <div ng-if="cubesService.state == 3" class="col-xs-12">
+                <div class="alert alert-danger" style="margin: 0px;">
+                    <p>Could not connect to server.</p>
+                    <p>Please try again and contact your administrator if the problem persists.</p>
+                    <p class="text-right">
+                        <a class="alert-link" href="http://jjmontesl.github.io/cubesviewer/" target="_blank">CubesViewer Data Visualizer</a>
+                    </p>
+                </div>
+            </div>
+        </div>
 
         <div class="row">
 

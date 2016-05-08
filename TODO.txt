@@ -82,6 +82,7 @@
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
 
     * Issue #39, "strings with hyphen cause dimension filter to work inexpectedly".
+    * Cleaning nvtooltips seems is causing problems: tooltips not shown for previously drawn figures: clean only self figures.
 
     * Reviewed and improved doc
     * Move doc to site (but import from repository markdown, to keep
@@ -91,6 +92,9 @@
     * Server side.
     * Support negated cuts (add quick "invert" button in the cut-box?).
     * Columns config "hooks" (hide / size)
+
+    * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative).
+    * Implement server info.
 
     * Fix analytics plugin to ignore first N seconds of events as for bounce rate calculation.
     * Cleanup code.

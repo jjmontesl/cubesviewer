@@ -30,6 +30,8 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 
 	this.cubesserver = null;
 
+	this.state = cubesviewer.VIEW_STATE_INITIALIZING;
+
 	this.initialize = function() {
 	};
 
@@ -42,7 +44,11 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 		console.debug("Cubes client connecting to: " + cvOptions.cubesUrl);
 		this.cubesserver.connect (cvOptions.cubesUrl, function() {
 			console.debug('Cubes client initialized (server version: ' + cubesService.cubesserver.server_version + ')');
-			//$(document).trigger ("cubesviewerInitialized", [ this ]);
+			cubesService.state = cubesviewer.VIEW_STATE_INITIALIZED;
+			$rootScope.$apply();
+		}, function(xhr) {
+			console.debug('Could not connect to Cubes server [code=' + xhr.status + "]");
+			cubesService.state = cubesviewer.VIEW_STATE_ERROR;
 			$rootScope.$apply();
 		} );
 	};
@@ -52,21 +58,21 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 	 * Ajax handler for cubes library
 	 */
 	this.cubesAjaxHandler = function (settings) {
-		return cubesService.cubesRequest(settings.url, settings.data || [], settings.success);
+		return cubesService.cubesRequest(settings.url, settings.data || [], settings.success, settings.error);
 	};
 
 
 	/*
 	 * Cubes centralized request
 	 */
-	this.cubesRequest = function(path, params, successCallback) {
+	this.cubesRequest = function(path, params, successCallback, errCallback) {
 
 		// TODO: normalize how URLs are used (full URL shall come from client code)
 		if (path.charAt(0) == '/') path = cvOptions.cubesUrl + path;
 
 		var jqxhr = $.get(path, params, cubesService._cubesRequestCallback(successCallback), cvOptions.jsonRequestType);
 
-		jqxhr.fail(cubesService.defaultRequestErrorHandler);
+		jqxhr.fail(errCallback || cubesService.defaultRequestErrorHandler);
 
 		return jqxhr;
 
@@ -91,9 +97,9 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 		} else if (xhr.status == 400) {
 			cubesviewer.alert($.parseJSON(xhr.responseText).message);
 		} else {
+			console.debug("CubesViewer: An error occurred while accessing the data server.\n\n" +
+						  "Please try again or contact the application administrator if the problem persists.\n");
 			console.debug(xhr);
-			cubesviewer.showInfoMessage("CubesViewer: An error occurred while accessing the data server.\n\n" +
-										"Please try again or contact the application administrator if the problem persists.\n");
 		}
 		//$('.ajaxloader').hide();
 	};

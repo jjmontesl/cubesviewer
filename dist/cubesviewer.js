@@ -1032,6 +1032,8 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 
 	this.cubesserver = null;
 
+	this.state = cubesviewer.VIEW_STATE_INITIALIZING;
+
 	this.initialize = function() {
 	};
 
@@ -1044,7 +1046,11 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 		console.debug("Cubes client connecting to: " + cvOptions.cubesUrl);
 		this.cubesserver.connect (cvOptions.cubesUrl, function() {
 			console.debug('Cubes client initialized (server version: ' + cubesService.cubesserver.server_version + ')');
-			//$(document).trigger ("cubesviewerInitialized", [ this ]);
+			cubesService.state = cubesviewer.VIEW_STATE_INITIALIZED;
+			$rootScope.$apply();
+		}, function(xhr) {
+			console.debug('Could not connect to Cubes server [code=' + xhr.status + "]");
+			cubesService.state = cubesviewer.VIEW_STATE_ERROR;
 			$rootScope.$apply();
 		} );
 	};
@@ -1054,21 +1060,21 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 	 * Ajax handler for cubes library
 	 */
 	this.cubesAjaxHandler = function (settings) {
-		return cubesService.cubesRequest(settings.url, settings.data || [], settings.success);
+		return cubesService.cubesRequest(settings.url, settings.data || [], settings.success, settings.error);
 	};
 
 
 	/*
 	 * Cubes centralized request
 	 */
-	this.cubesRequest = function(path, params, successCallback) {
+	this.cubesRequest = function(path, params, successCallback, errCallback) {
 
 		// TODO: normalize how URLs are used (full URL shall come from client code)
 		if (path.charAt(0) == '/') path = cvOptions.cubesUrl + path;
 
 		var jqxhr = $.get(path, params, cubesService._cubesRequestCallback(successCallback), cvOptions.jsonRequestType);
 
-		jqxhr.fail(cubesService.defaultRequestErrorHandler);
+		jqxhr.fail(errCallback || cubesService.defaultRequestErrorHandler);
 
 		return jqxhr;
 
@@ -1093,9 +1099,9 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 		} else if (xhr.status == 400) {
 			cubesviewer.alert($.parseJSON(xhr.responseText).message);
 		} else {
+			console.debug("CubesViewer: An error occurred while accessing the data server.\n\n" +
+						  "Please try again or contact the application administrator if the problem persists.\n");
 			console.debug(xhr);
-			cubesviewer.showInfoMessage("CubesViewer: An error occurred while accessing the data server.\n\n" +
-										"Please try again or contact the application administrator if the problem persists.\n");
 		}
 		//$('.ajaxloader').hide();
 	};
@@ -1227,19 +1233,6 @@ function cubesviewerOLD() {
 
 
 	/*
-	 * Change language for Cubes operations
-	 * (locale must be one of the possible languages for the model).
-	 */
-	this.changeCubesLang = function(lang) {
-
-		this.options.cubesLang = (lang == "" ? null : lang);
-
-		// Reinitialize system
-		this.refresh();
-
-	};
-
-	/*
 	 * Show quick tip message.
 	 */
 	this.showInfoMessage = function(message, delay) {
@@ -1320,6 +1313,7 @@ var cubesviewer = {
 	// CubesViewer version
 	version: "2.0.1-devel",
 
+	// View states, also used for cubesserver service state.
 	VIEW_STATE_INITIALIZING: 1,
 	VIEW_STATE_INITIALIZED: 2,
 	VIEW_STATE_ERROR: 3,
@@ -1466,20 +1460,6 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 
 function cubesviewerViews () {
 
-	/*
-	 * Shows an error message on a view container.
-	 */
-	this.showFatal = function (container, message) {
-		container.empty().append (
-				'<div class="ui-widget">' +
-				'<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">' +
-				'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' +
-				'<strong>Error</strong><br/><br/>' + message +
-				'</p></div></div>'
-		);
-	}
-
-
 
 	/*
 	 * Block the view interface.
@@ -1522,19 +1502,6 @@ function cubesviewerViews () {
 		$(document).trigger ("cubesviewerViewDraw", [ view ]);
 	}
 
-	/*
-	 * Updates view when the view is refreshed.
-	 */
-	this.onViewDraw = function (event, view) {
-
-		if (view.state == cubesviewer.views.STATE_ERROR) {
-			cubesviewer.views.showFatal (view.container, 'An error has occurred. Cannot present view.');
-			event.stopImmediatePropagation();
-			return;
-		}
-
-	}
-
 };
 
 ;/*
@@ -1571,8 +1538,8 @@ angular.module('cv.views.cube', []);
 /**
  * cvViewCube directive and controller.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
-                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
 
 	$scope.$rootScope = $rootScope;
 	$scope.viewsService = viewsService;
@@ -1580,12 +1547,17 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	$scope.dimensionFilter = null;
 
-
 	$scope.$watch ("view", function(view) {
 		if (view) {
 			view._cubeDataUpdated = false;
 		}
 	});
+
+	$scope.refresh = function() {
+		if (view) {
+			$scope.view._cubeDataUpdated = true;
+		}
+	};
 
 	/**
 	 * Define view mode ('explore', 'series', 'facts', 'chart').
@@ -1608,7 +1580,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 			"datefilters": []
 		};
-		$scope.view.params = $.extend(true, {}, cubeViewDefaultParams, $scope.view.params);
 
 		var jqxhr = cubesService.cubesserver.get_cube($scope.view.params.cubename, function(cube) {
 
@@ -1617,19 +1588,22 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 			// Apply parameters if cube metadata contains specific cv-view-params
 			// TODO: Don't do this if this was a saved or pre-initialized view, only for new views
-			if ('cv-view-params' in $scope.view.cube.info) $.extend($scope.view.params, $scope.view.cube.info['cv-view-params']);
+			if ('cv-view-params' in $scope.view.cube.info) {
+				$scope.view.params = $.extend({}, cubeViewDefaultParams, $scope.view.cube.info['cv-view-params'], $scope.view.params);
+			} else {
+				$scope.view.params = $.extend({}, cubeViewDefaultParams, $scope.view.params);
+			}
 
-			$scope.view._cubeDataUpdated = true;
-
-			//$rootScope.$apply();
+			$timeout(function() {
+				$scope.view._cubeDataUpdated = true;
+			}, 0);
 
 		});
-		if (jqxhr) {
-			jqxhr.fail(function() {
-				$scope.view.state = cubesviewer.STATE_ERROR;
-				$rootScope.$apply();
-			});
-		}
+		jqxhr.fail(function() {
+			$scope.view.state = cubesviewer.VIEW_STATE_ERROR;
+			console.debug(cubesviewer.VIEW_STATE_ERROR);
+			$rootScope.$apply();
+		});
 	};
 
 	/**
@@ -3488,7 +3462,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 					index : colKey,
 					cellClass : "text-right",
 					sorttype : "number",
-					width : 75, //cubesviewer.views.cube.explore.defineColumnWidth(view, colKey, 75),
+					width : 90, //cubesviewer.views.cube.explore.defineColumnWidth(view, colKey, 75),
 					cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 					formatter: $scope.columnFormatFunction(ag),
 					//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
@@ -4752,6 +4726,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'studioViewsService',
                                                      function ($rootScope, $scope, cvOptions, cubesService, studioViewsService) {
 
+	$scope.cubesService = cubesService;
 	$scope.studioViewsService = studioViewsService;
 	$scope.cvOptions = cvOptions;
 
@@ -4828,7 +4803,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 	    	templateUrl: 'studio/rename.html',
 	    	controller: 'CubesViewerRenameController',
 	    	appendTo: angular.element($($element).find('.cv-gui-modals')[0]),
-	    	size: "sm",
+	    	size: "md",
 		    resolve: {
 		        view: function () { return view; },
 	    		element: function() { return $($element).find('.cv-gui-modals')[0] },
@@ -5085,12 +5060,12 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "    <div class=\"modal-content\">\n" +
     "      <div class=\"modal-header\">\n" +
     "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\"><i class=\"fa fa-fw fa-close\"></i></span></button>\n" +
-    "        <h4 class=\"modal-title\" id=\"myModalLabel\"><i class=\"fa fa-cube\"></i> CubesViewer</h4>\n" +
+    "        <h4 class=\"modal-title\" id=\"myModalLabel\"><i class=\"cv-logo-embedded\"></i> CubesViewer</h4>\n" +
     "      </div>\n" +
     "      <div class=\"modal-body\">\n" +
     "\n" +
-    "            <p><a href=\"http://jjmontesl.github.io/cubesviewer/\">CubesViewer</a> is a visual, web-based tool application for exploring and analyzing\n" +
-    "            OLAP databases served by the <a href=\"http://cubes.databrewery.org/\">Cubes OLAP Framework</a>.</p>\n" +
+    "            <p><a href=\"http://jjmontesl.github.io/cubesviewer/\" target=\"_blank\">CubesViewer</a> is a visual, web-based application for exploring and analyzing\n" +
+    "            OLAP databases served by the <a href=\"http://cubes.databrewery.org/\" target=\"_blank\">Cubes OLAP Framework</a>.</p>\n" +
     "            <hr />\n" +
     "\n" +
     "            <p>Version {{ cvVersion }}<br />\n" +
@@ -5100,12 +5075,12 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "            2012 - 2016</p>\n" +
     "\n" +
     "            <p>\n" +
-    "            <a href=\"http://github.com/jjmontesl/cubesviewer/blob/master/LICENSE.txt\">LICENSE</a>\n" +
+    "            <a href=\"http://github.com/jjmontesl/cubesviewer/blob/master/LICENSE.txt\" target=\"_blank\">LICENSE</a>\n" +
     "            </p>\n" +
     "\n" +
     "      </div>\n" +
     "      <div class=\"modal-footer\">\n" +
-    "        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n" +
+    "        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\"><i class=\"fa fa-cube\"></i> Close</button>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "  </div>\n" +
@@ -5206,6 +5181,43 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
   );
 
 
+  $templateCache.put('studio/serverinfo.html',
+    "<div class=\"modal fade\" id=\"cvServerInfo\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"\">\n" +
+    "  <div class=\"modal-dialog\" role=\"document\">\n" +
+    "    <div class=\"modal-content\">\n" +
+    "      <div class=\"modal-header\">\n" +
+    "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\"><i class=\"fa fa-fw fa-close\"></i></span></button>\n" +
+    "        <h4 class=\"modal-title\" id=\"myModalLabel\"><i class=\"fa fa-fw fa-database\"></i> Server info</h4>\n" +
+    "      </div>\n" +
+    "      <div class=\"modal-body\">\n" +
+    "\n" +
+    "            <p>\n" +
+    "                <i>This CubesViewer version supports Cubes Server version 1.0.x</i><br />\n" +
+    "                <br />\n" +
+    "                <b>Server version:</b> {{ cubesService.cubesserver.server_version }} <br />\n" +
+    "                <b>Cubes version:</b> {{ cubesService.cubesserver.cubes_version }} <br />\n" +
+    "                <b>API version:</b> {{ cubesService.cubesserver.api_version }} <br />\n" +
+    "            </p>\n" +
+    "            <p>\n" +
+    "                <b>Timezone:</b> {{ cubesService.cubesserver.info.timezone }} <br />\n" +
+    "                <b>Week start:</b> {{ cubesService.cubesserver.info.first_weekday }} <br />\n" +
+    "            </p>\n" +
+    "            <p>\n" +
+    "                <b>Result limit:</b> {{ cubesService.cubesserver.info.json_record_limit }} items<br />\n" +
+    "            </p>\n" +
+    "\n" +
+    "      </div>\n" +
+    "      <div class=\"modal-footer\">\n" +
+    "        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\"> Close</button>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "\n" +
+    "\n"
+  );
+
+
   $templateCache.put('studio/studio.html',
     "<div class=\"cv-bootstrap\" ng-controller=\"CubesViewerStudioController\">\n" +
     "\n" +
@@ -5217,6 +5229,10 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "          </button>\n" +
     "\n" +
     "          <ul class=\"dropdown-menu cv-gui-cubeslist-menu\">\n" +
+    "\n" +
+    "            <li ng-show=\"cubesService.state === 1\" class=\"disabled\"><a>Loading...</a></li>\n" +
+    "            <li ng-show=\"cubesService.state === 2 && cubesService.cubesserver._cube_list.length === 0\" class=\"disabled\"><a>No cubes found</a></li>\n" +
+    "            <li ng-show=\"cubesService.state === 3\" class=\"disabled\"><a>Server error</a></li>\n" +
     "\n" +
     "            <li ng-repeat=\"cube in cubesService.cubesserver._cube_list | orderBy:'label'\" ng-click=\"studioViewsService.addViewCube(cube.name)\"><a>{{ cube.label }}</a></li>\n" +
     "\n" +
@@ -5244,7 +5260,12 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "                <div class=\"divider\"></div>\n" +
     "\n" +
-    "                <li class=\"\"><a href=\"http://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-user-main.md\" target=\"_blank\"><i class=\"fa fa-fw fa-question\"></i> User Guide</a></li>\n" +
+    "                <!-- <li class=\"\"><a data-toggle=\"modal\" data-target=\"#cvServerInfo\"><i class=\"fa fa-fw fa-server\"></i> Data model</a></li> -->\n" +
+    "                <li class=\"\" ng-class=\"{ 'disabled': cubesService.state != 2 }\"><a data-toggle=\"modal\" data-target=\"#cvServerInfo\" ><i class=\"fa fa-fw fa-database\"></i> Server info</a></li>\n" +
+    "\n" +
+    "                <div class=\"divider\"></div>\n" +
+    "\n" +
+    "                <li class=\"\"><a href=\"http://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-user-main.md\" target=\"_blank\"><i class=\"fa fa-fw fa-question\"></i> User guide</a></li>\n" +
     "                <li class=\"\"><a data-toggle=\"modal\" data-target=\"#cvAboutModal\"><i class=\"fa fa-fw fa-info\"></i> About CubesViewer...</a></li>\n" +
     "\n" +
     "            </ul>\n" +
@@ -5252,11 +5273,24 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "        <div class=\"cv-gui-modals\">\n" +
     "            <div ng-include=\"'studio/about.html'\"></div>\n" +
+    "            <div ng-include=\"'studio/serverinfo.html'\"></div>\n" +
     "        </div>\n" +
     "\n" +
     "    </div>\n" +
     "\n" +
     "    <div class=\"cv-gui-workspace\">\n" +
+    "\n" +
+    "        <div class=\"row\">\n" +
+    "            <div ng-if=\"cubesService.state == 3\" class=\"col-xs-12\">\n" +
+    "                <div class=\"alert alert-danger\" style=\"margin: 0px;\">\n" +
+    "                    <p>Could not connect to server.</p>\n" +
+    "                    <p>Please try again and contact your administrator if the problem persists.</p>\n" +
+    "                    <p class=\"text-right\">\n" +
+    "                        <a class=\"alert-link\" href=\"http://jjmontesl.github.io/cubesviewer/\" target=\"_blank\">CubesViewer Data Visualizer</a>\n" +
+    "                    </p>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
     "\n" +
     "        <div class=\"row\">\n" +
     "\n" +
@@ -5434,8 +5468,8 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut\">\n" +
     "\n" +
-    "    <li ng-click=\"$rootScope.$broadcast('filterSelected')\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected rows</a></li>\n" +
-    "    <div class=\"divider\"></div>\n" +
+    "    <li ng-show=\"view.params.mode == 'explore'\" ng-click=\"$rootScope.$broadcast('filterSelected')\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected rows</a></li>\n" +
+    "    <div ng-show=\"view.params.mode == 'explore'\" class=\"divider\"></div>\n" +
     "\n" +
     "    <li class=\"dropdown-submenu\">\n" +
     "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-bars\"></i> Dimension filter</a>\n" +
@@ -5671,101 +5705,115 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
   $templateCache.put('views/cube/cube.html',
     "<div class=\"cv-view-panel\" ng-controller=\"CubesViewerViewsCubeController\">\n" +
     "\n" +
-    "    <h2 ng-show=\"view.controlsHidden()\" style=\"margin-top: 5px;\">\n" +
-    "        <i class=\"fa fa-fw fa-file-o\"></i> {{ view.params.name }}\n" +
-    "    </h2>\n" +
+    "    <div ng-if=\"view.state == 3\">\n" +
+    "        <div class=\"alert alert-danger\" style=\"margin: 0px;\">\n" +
+    "            <p>An error has occurred. Cannot present view.</p>\n" +
+    "            <p>Please try again and contact your administrator if the problem persists.</p>\n" +
+    "            <p class=\"text-right\">\n" +
+    "                <a class=\"alert-link\" href=\"http://jjmontesl.github.io/cubesviewer/\" target=\"_blank\">CubesViewer Data Visualizer</a>\n" +
+    "            </p>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
     "\n" +
-    "    <div class=\"cv-view-viewmenu hidden-print\" ng-hide=\"view.controlsHidden()\">\n" +
+    "    <div ng-if=\"view.state != 3\" style=\"min-height: 80px;\">\n" +
     "\n" +
-    "        <div class=\"panel panel-primary pull-right\" style=\"padding: 3px; white-space: nowrap;\">\n" +
+    "        <h2 ng-show=\"view.controlsHidden()\" style=\"margin-top: 5px;\">\n" +
+    "            <i class=\"fa fa-fw fa-file-o\"></i> {{ view.params.name }}\n" +
+    "        </h2>\n" +
     "\n" +
-    "            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n" +
-    "              <button type=\"button\" ng-click=\"setViewMode('explore')\" ng-class=\"{'active': view.params.mode == 'explore'}\" class=\"btn btn-primary btn-sm explorebutton\" title=\"Explore\"><i class=\"fa fa-fw fa-arrow-circle-down\"></i></button>\n" +
-    "              <button type=\"button\" ng-click=\"setViewMode('facts')\" ng-class=\"{'active': view.params.mode == 'facts'}\" class=\"btn btn-primary btn-sm \" title=\"Facts\"><i class=\"fa fa-fw fa-th\"></i></button>\n" +
-    "              <button type=\"button\" ng-click=\"setViewMode('series')\" ng-class=\"{'active': view.params.mode == 'series'}\" class=\"btn btn-primary btn-sm \" title=\"Series\"><i class=\"fa fa-fw fa-clock-o\"></i></button>\n" +
-    "              <button type=\"button\" ng-click=\"setViewMode('chart')\" ng-class=\"{'active': view.params.mode == 'chart'}\" class=\"btn btn-primary btn-sm \" title=\"Charts\"><i class=\"fa fa-fw fa-area-chart\"></i></button>\n" +
+    "        <div class=\"cv-view-viewmenu hidden-print\" ng-hide=\"view.controlsHidden()\">\n" +
+    "\n" +
+    "            <div class=\"panel panel-primary pull-right\" style=\"padding: 3px; white-space: nowrap;\">\n" +
+    "\n" +
+    "                <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n" +
+    "                  <button type=\"button\" ng-click=\"setViewMode('explore')\" ng-class=\"{'active': view.params.mode == 'explore'}\" class=\"btn btn-primary btn-sm explorebutton\" title=\"Explore\"><i class=\"fa fa-fw fa-arrow-circle-down\"></i></button>\n" +
+    "                  <button type=\"button\" ng-click=\"setViewMode('facts')\" ng-class=\"{'active': view.params.mode == 'facts'}\" class=\"btn btn-primary btn-sm \" title=\"Facts\"><i class=\"fa fa-fw fa-th\"></i></button>\n" +
+    "                  <button type=\"button\" ng-click=\"setViewMode('series')\" ng-class=\"{'active': view.params.mode == 'series'}\" class=\"btn btn-primary btn-sm \" title=\"Series\"><i class=\"fa fa-fw fa-clock-o\"></i></button>\n" +
+    "                  <button type=\"button\" ng-click=\"setViewMode('chart')\" ng-class=\"{'active': view.params.mode == 'chart'}\" class=\"btn btn-primary btn-sm \" title=\"Charts\"><i class=\"fa fa-fw fa-area-chart\"></i></button>\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div ng-include=\"'views/cube/cube-menu-drilldown.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
+    "\n" +
+    "                <div ng-include=\"'views/cube/cube-menu-filter.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 2px;\"></div>\n" +
+    "\n" +
+    "                <div ng-include=\"'views/cube/cube-menu-view.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
+    "\n" +
+    "                <div ng-include=\"'views/cube/cube-menu-panel.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
+    "\n" +
     "            </div>\n" +
-    "\n" +
-    "            <div ng-include=\"'views/cube/cube-menu-drilldown.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
-    "\n" +
-    "            <div ng-include=\"'views/cube/cube-menu-filter.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 2px;\"></div>\n" +
-    "\n" +
-    "            <div ng-include=\"'views/cube/cube-menu-view.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
-    "\n" +
-    "            <div ng-include=\"'views/cube/cube-menu-panel.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
     "\n" +
     "        </div>\n" +
     "\n" +
-    "    </div>\n" +
+    "        <div class=\"cv-view-viewinfo\">\n" +
+    "            <div>\n" +
+    "                <div class=\"cv-view-viewinfo-drill\">\n" +
     "\n" +
-    "    <div class=\"cv-view-viewinfo\">\n" +
-    "        <div>\n" +
-    "            <div class=\"cv-view-viewinfo-drill\">\n" +
+    "                    <div class=\"label label-secondary cv-infopiece cv-view-viewinfo-cubename\" style=\"color: white; background-color: black;\">\n" +
+    "                        <span><i class=\"fa fa-fw fa-cube\"></i> <b>Cube:</b> {{ view.cube.label }}</span>\n" +
+    "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "                    </div>\n" +
     "\n" +
-    "                <div class=\"label label-secondary cv-infopiece cv-view-viewinfo-cubename\" style=\"color: white; background-color: black;\">\n" +
-    "                    <span><i class=\"fa fa-fw fa-cube\"></i> <b>Cube:</b> {{ view.cube.label }}</span>\n" +
-    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "                    <div ng-repeat=\"drilldown in view.params.drilldown\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-drill\" style=\"color: black; background-color: #ccffcc;\">\n" +
+    "                        <span><i class=\"fa fa-fw fa-arrow-down\"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>\n" +
+    "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(drilldown)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
+    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectDrill(drilldown, '')\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                </div>\n" +
+    "                <div class=\"cv-view-viewinfo-cut\">\n" +
+    "                    <!--\n" +
+    "                        var dimensionString = $(this).parents('.cv-view-infopiece-cut').first().attr('data-dimension');\n" +
+    "                        var parts = view.cube.cvdim_parts(dimensionString);\n" +
+    "                        var depth = $(this).parents('.cv-view-infopiece-cut').first().attr('data-value').split(';')[0].split(\",\").length;\n" +
+    "                        cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, dimensionString + \":\" + parts.hierarchy.levels[depth - 1] );\n" +
+    "                     -->\n" +
+    "                    <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
+    "                        <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.label }} <span ng-class=\"{ 'text-danger': cut.invert }\">{{ equality }}</span> <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
+    "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(cut.dimension)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
+    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectCut(cut.dimension, '', cut.invert)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "                    </div>\n" +
     "                </div>\n" +
     "\n" +
-    "                <div ng-repeat=\"drilldown in view.params.drilldown\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-drill\" style=\"color: black; background-color: #ccffcc;\">\n" +
-    "                    <span><i class=\"fa fa-fw fa-arrow-down\"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>\n" +
-    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
-    "                    <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(drilldown)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
-    "                    <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectDrill(drilldown, '')\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "                <div ng-include=\"'views/cube/filter/datefilter.html'\"></div>\n" +
+    "\n" +
+    "                <div class=\"cv-view-viewinfo-extra\">\n" +
+    "\n" +
+    "                    <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccccff;\">\n" +
+    "                        <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-crosshairs\"></i> <b>Measure:</b> {{ (view.params.yaxis != null) ? view.params.yaxis : \"None\" }}</span>\n" +
+    "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                    <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccddff;\">\n" +
+    "                        <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-long-arrow-right\"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : \"None\" }}</span>\n" +
+    "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "                        <!-- <button type=\"button\" ng-click=\"showDimensionFilter(view.params.xaxis)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>  -->\n" +
+    "                        <!-- <button type=\"button\" ng-click=\"selectXAxis(null)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>  -->\n" +
+    "                    </div>\n" +
+    "\n" +
     "                </div>\n" +
-    "\n" +
-    "            </div>\n" +
-    "            <div class=\"cv-view-viewinfo-cut\">\n" +
-    "                <!--\n" +
-    "                    var dimensionString = $(this).parents('.cv-view-infopiece-cut').first().attr('data-dimension');\n" +
-    "                    var parts = view.cube.cvdim_parts(dimensionString);\n" +
-    "                    var depth = $(this).parents('.cv-view-infopiece-cut').first().attr('data-value').split(';')[0].split(\",\").length;\n" +
-    "                    cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, dimensionString + \":\" + parts.hierarchy.levels[depth - 1] );\n" +
-    "                 -->\n" +
-    "                <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
-    "                    <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.label }} <span ng-class=\"{ 'text-danger': cut.invert }\">{{ equality }}</span> <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
-    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
-    "                    <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(cut.dimension)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
-    "                    <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectCut(cut.dimension, '', cut.invert)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
-    "                </div>\n" +
-    "            </div>\n" +
-    "\n" +
-    "            <div ng-include=\"'views/cube/filter/datefilter.html'\"></div>\n" +
-    "\n" +
-    "            <div class=\"cv-view-viewinfo-extra\">\n" +
-    "\n" +
-    "                <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccccff;\">\n" +
-    "                    <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-crosshairs\"></i> <b>Measure:</b> {{ (view.params.yaxis != null) ? view.params.yaxis : \"None\" }}</span>\n" +
-    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
-    "                </div>\n" +
-    "\n" +
-    "                <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccddff;\">\n" +
-    "                    <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-long-arrow-right\"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : \"None\" }}</span>\n" +
-    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
-    "                    <!-- <button type=\"button\" ng-click=\"showDimensionFilter(view.params.xaxis)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>  -->\n" +
-    "                    <!-- <button type=\"button\" ng-click=\"selectXAxis(null)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>  -->\n" +
-    "                </div>\n" +
-    "\n" +
     "            </div>\n" +
     "        </div>\n" +
+    "        <div class=\"clearfix\"></div>\n" +
+    "\n" +
+    "        <div class=\"cv-view-viewdialogs\">\n" +
+    "            <div ng-if=\"view.dimensionFilter\" ng-include=\"'views/cube/filter/dimension.html'\"></div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"cv-view-viewdata\">\n" +
+    "\n" +
+    "            <div ng-if=\"view.params.mode == 'explore'\" ng-include=\"'views/cube/explore/explore.html'\"></div>\n" +
+    "            <div ng-if=\"view.params.mode == 'facts'\" ng-include=\"'views/cube/facts/facts.html'\"></div>\n" +
+    "            <div ng-if=\"view.params.mode == 'series'\" ng-include=\"'views/cube/series/series.html'\"></div>\n" +
+    "            <div ng-if=\"view.params.mode == 'chart'\" ng-include=\"'views/cube/chart/chart.html'\"></div>\n" +
+    "\n" +
+    "        </div>\n" +
+    "        <div class=\"clearfix\"></div>\n" +
+    "\n" +
+    "        <div class=\"cv-view-viewfooter\"></div>\n" +
+    "\n" +
     "    </div>\n" +
-    "    <div class=\"clearfix\"></div>\n" +
-    "\n" +
-    "    <div class=\"cv-view-viewdialogs\">\n" +
-    "        <div ng-if=\"view.dimensionFilter\" ng-include=\"'views/cube/filter/dimension.html'\"></div>\n" +
-    "    </div>\n" +
-    "\n" +
-    "    <div class=\"cv-view-viewdata\">\n" +
-    "\n" +
-    "        <div ng-if=\"view.params.mode == 'explore'\" ng-include=\"'views/cube/explore/explore.html'\"></div>\n" +
-    "        <div ng-if=\"view.params.mode == 'facts'\" ng-include=\"'views/cube/facts/facts.html'\"></div>\n" +
-    "        <div ng-if=\"view.params.mode == 'series'\" ng-include=\"'views/cube/series/series.html'\"></div>\n" +
-    "        <div ng-if=\"view.params.mode == 'chart'\" ng-include=\"'views/cube/chart/chart.html'\"></div>\n" +
-    "\n" +
-    "    </div>\n" +
-    "    <div class=\"clearfix\"></div>\n" +
-    "\n" +
-    "    <div class=\"cv-view-viewfooter\"></div>\n" +
     "\n" +
     "</div>\n"
   );

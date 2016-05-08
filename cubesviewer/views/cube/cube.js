@@ -32,8 +32,8 @@ angular.module('cv.views.cube', []);
 /**
  * cvViewCube directive and controller.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
-                                                     function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
 
 	$scope.$rootScope = $rootScope;
 	$scope.viewsService = viewsService;
@@ -41,12 +41,17 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	$scope.dimensionFilter = null;
 
-
 	$scope.$watch ("view", function(view) {
 		if (view) {
 			view._cubeDataUpdated = false;
 		}
 	});
+
+	$scope.refresh = function() {
+		if (view) {
+			$scope.view._cubeDataUpdated = true;
+		}
+	};
 
 	/**
 	 * Define view mode ('explore', 'series', 'facts', 'chart').
@@ -69,7 +74,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 			"datefilters": []
 		};
-		$scope.view.params = $.extend(true, {}, cubeViewDefaultParams, $scope.view.params);
 
 		var jqxhr = cubesService.cubesserver.get_cube($scope.view.params.cubename, function(cube) {
 
@@ -78,19 +82,22 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 			// Apply parameters if cube metadata contains specific cv-view-params
 			// TODO: Don't do this if this was a saved or pre-initialized view, only for new views
-			if ('cv-view-params' in $scope.view.cube.info) $.extend($scope.view.params, $scope.view.cube.info['cv-view-params']);
+			if ('cv-view-params' in $scope.view.cube.info) {
+				$scope.view.params = $.extend({}, cubeViewDefaultParams, $scope.view.cube.info['cv-view-params'], $scope.view.params);
+			} else {
+				$scope.view.params = $.extend({}, cubeViewDefaultParams, $scope.view.params);
+			}
 
-			$scope.view._cubeDataUpdated = true;
-
-			//$rootScope.$apply();
+			$timeout(function() {
+				$scope.view._cubeDataUpdated = true;
+			}, 0);
 
 		});
-		if (jqxhr) {
-			jqxhr.fail(function() {
-				$scope.view.state = cubesviewer.STATE_ERROR;
-				$rootScope.$apply();
-			});
-		}
+		jqxhr.fail(function() {
+			$scope.view.state = cubesviewer.VIEW_STATE_ERROR;
+			console.debug(cubesviewer.VIEW_STATE_ERROR);
+			$rootScope.$apply();
+		});
 	};
 
 	/**

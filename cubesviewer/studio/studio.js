@@ -93,6 +93,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'studioViewsService',
                                                      function ($rootScope, $scope, cvOptions, cubesService, studioViewsService) {
 
+	$scope.cubesService = cubesService;
 	$scope.studioViewsService = studioViewsService;
 	$scope.cvOptions = cvOptions;
 
@@ -169,7 +170,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 	    	templateUrl: 'studio/rename.html',
 	    	controller: 'CubesViewerRenameController',
 	    	appendTo: angular.element($($element).find('.cv-gui-modals')[0]),
-	    	size: "sm",
+	    	size: "md",
 		    resolve: {
 		        view: function () { return view; },
 	    		element: function() { return $($element).find('.cv-gui-modals')[0] },

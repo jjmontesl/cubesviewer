@@ -306,7 +306,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 					index : colKey,
 					cellClass : "text-right",
 					sorttype : "number",
-					width : 75, //cubesviewer.views.cube.explore.defineColumnWidth(view, colKey, 75),
+					width : 90, //cubesviewer.views.cube.explore.defineColumnWidth(view, colKey, 75),
 					cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 					formatter: $scope.columnFormatFunction(ag),
 					//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)

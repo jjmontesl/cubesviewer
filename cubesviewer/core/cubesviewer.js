@@ -65,19 +65,6 @@ function cubesviewerOLD() {
 
 
 	/*
-	 * Change language for Cubes operations
-	 * (locale must be one of the possible languages for the model).
-	 */
-	this.changeCubesLang = function(lang) {
-
-		this.options.cubesLang = (lang == "" ? null : lang);
-
-		// Reinitialize system
-		this.refresh();
-
-	};
-
-	/*
 	 * Show quick tip message.
 	 */
 	this.showInfoMessage = function(message, delay) {
@@ -158,6 +145,7 @@ var cubesviewer = {
 	// CubesViewer version
 	version: "2.0.1-devel",
 
+	// View states, also used for cubesserver service state.
 	VIEW_STATE_INITIALIZING: 1,
 	VIEW_STATE_INITIALIZED: 2,
 	VIEW_STATE_ERROR: 3,
