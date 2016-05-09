@@ -1194,9 +1194,129 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
  * SOFTWARE.
  */
 
-
 "use strict";
 
+angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOptions', 'cubesService',
+                                                         function ($rootScope, cvOptions, cubesService) {
+
+	var cubesCacheService = this;
+
+	this.cache = {};
+
+	this._cacheOverridedCubesRequest = null;
+
+	this.initialize = function() {
+		if (this._cacheOverridedCubesRequest) {
+			console.debug("Error: tried to initialize CubesCacheService but it was already initialized.")
+			return;
+		}
+		if (cvOptions.cacheEnabled) {
+			// Replace request function
+			console.debug("Replacing Cubes request method with caching version.")
+			cubesCacheService._cacheOverridedCubesRequest = cubesService.cubesRequest;
+			cubesService.cubesRequest = cubesCacheService.cachedCubesRequest;
+		}
+	};
+
+	this.cachedCubesRequest = function(path, params, successCallback, errCallback) {
+
+		cubesCacheService._cacheCleanup();
+
+		var requestHash = path + "?" + $.param(params);
+		var jqxhr = null;
+		if (requestHash in cubesCacheService.cache && cvOptions.cacheEnabled) {
+
+			// TODO: What is the correct ordering of success/complete callbacks?
+			successCallback(cubesCacheService.cache[requestHash].data);
+
+			// Warn that data comes from cache (QTip can do this?)
+			var timediff = Math.round ((new Date().getTime() - cubesCacheService.cache[requestHash].time) / 1000);
+			if (timediff > cvOptions.cacheNotice) {
+				//cubesviewer.showInfoMessage("Data loaded from cache<br/>(" + timediff + " minutes old)", 1000);
+				console.debug("Data loaded from cache (" + timediff + " minutes old)");
+			}
+
+			jqxhr = $.Deferred().resolve().promise();
+
+
+		} else {
+			// Do request
+			jqxhr = cubesCacheService._cacheOverridedCubesRequest(path, params, cubesCacheService._cacheCubesRequestSuccess(successCallback, requestHash), errCallback);
+		}
+
+		return jqxhr;
+	};
+
+	/*
+	 * Reviews the cache and removes old elements and oldest if too many
+	 */
+	this._cacheCleanup = function() {
+
+		var cacheDuration = cvOptions.cacheDuration;
+		var cacheSize = cvOptions.cacheSize;
+
+		var oldestTime = new Date().getTime() - (1000 * cacheDuration);
+
+		var elements = [];
+		for (var element in cubesCacheService.cache) {
+			if (cubesCacheService.cache[element].time < oldestTime) {
+				delete cubesCacheService.cache[element];
+			} else {
+				elements.push (element);
+			}
+		}
+
+		elements.sort(function(a, b) {
+			return (cubesCacheService.cache[a].time - cubesCacheService.cache[b].time);
+		});
+		if (elements.length >= cacheSize) {
+			for (var i = 0; i < elements.length - cacheSize; i++) {
+				delete cubesCacheService.cache[elements[i]];
+			}
+		}
+
+	}
+
+	this._cacheCubesRequestSuccess = function(pCallback, pRequestHash) {
+		var requestHash = pRequestHash;
+		var callback = pCallback;
+		return function(data) {
+			// TODO: Check if cache is enabled
+			cubesCacheService.cache[pRequestHash] = {
+				"time": new Date().getTime(),
+				"data": data
+			};
+			pCallback(data);
+		};
+	};
+
+}]);
+
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+
+"use strict";
 
 
 // Main CubesViewer angular module
@@ -1206,13 +1326,15 @@ angular.module('cv', ['ui.bootstrap', 'bootstrapSubmenu',
                       'cv.cubes', 'cv.views']);
 
 // Configure moment.js
+/*
 angular.module('cv').constant('angularMomentConfig', {
 	// preprocess: 'unix', // optional
 	// timezone: 'Europe/London' // optional
 });
+*/
 
-angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', /* 'editableOptions', 'editableThemes', */
-                           function($timeout, cvOptions, cubesService /*, editableOptions, editableThemes */) {
+angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheService', /* 'editableOptions', 'editableThemes', */
+                           function($timeout, cvOptions, cubesService, cubesCacheService /*, editableOptions, editableThemes */) {
 
 	//console.debug("Bootstrapping CubesViewer.");
 
@@ -1222,7 +1344,12 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', /* 'editable
             pagingOptions: [15, 30, 100, 250],
             //datepickerShowWeek: true,
             //datepickerFirstDay: 1,
-            //tableResizeHackMinWidth: 350 ,
+
+            cacheEnabled: true,
+            cacheDuration: 30 * 60,
+            cacheNotice: 10 * 60,
+            cacheSize: 32,
+
             jsonRequestType: "json" // "json | jsonp"
     };
 	$.extend(defaultOptions, cvOptions);
@@ -1242,6 +1369,9 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', /* 'editable
 	editableThemes.bs3.buttonsClass = 'btn-sm';
 	editableOptions.theme = 'bs3';
 	*/
+
+	// Initialize cache service
+	cubesCacheService.initialize();
 
 	// Initialize Cubes service
 	cubesService.connect();
@@ -5313,7 +5443,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "        <button type=\"button\" class=\"close\" ng-click=\"view._resultLimitHit = false;\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>\n" +
     "        <div style=\"display: inline-block;\"><i class=\"fa fa-exclamation\"></i></div>\n" +
     "        <div style=\"display: inline-block; margin-left: 20px;\">\n" +
-    "            Limit of {{ cubesService.cubesserver.info.json_record_limit }} items has been hit. <b>Results are incomplete.</b>.<br />\n" +
+    "            Limit of {{ cubesService.cubesserver.info.json_record_limit }} items has been hit. <b>Results are incomplete.</b><br />\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
@@ -5339,16 +5469,16 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "    Cannot present chart: no <b>measure</b> has been selected.\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-if=\"pendingRequests == 0 &&  view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "<div ng-if=\"pendingRequests == 0 && view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "    Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-if=\"view.params.charttype == 'pie' && gridOptions.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "<div ng-if=\"pendingRequests == 0 && view.params.charttype == 'pie' && gridOptions.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.<br />\n" +
     "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>.\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-if=\"view.params.yaxis != null && view.params.charttype == 'radar' && gridOptions.columnDefs.length < 4\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "<div ng-if=\"pendingRequests == 0 && view.params.yaxis != null && view.params.charttype == 'radar' && gridOptions.columnDefs.length < 4\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "    Cannot present a <b>radar chart</b> when <b>less than 3 columns</b> are present.<br />\n" +
     "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>.\n" +
     "</div>\n"

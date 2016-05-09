@@ -285,7 +285,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        <button type=\"button\" class=\"close\" ng-click=\"view._resultLimitHit = false;\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>\n" +
     "        <div style=\"display: inline-block;\"><i class=\"fa fa-exclamation\"></i></div>\n" +
     "        <div style=\"display: inline-block; margin-left: 20px;\">\n" +
-    "            Limit of {{ cubesService.cubesserver.info.json_record_limit }} items has been hit. <b>Results are incomplete.</b>.<br />\n" +
+    "            Limit of {{ cubesService.cubesserver.info.json_record_limit }} items has been hit. <b>Results are incomplete.</b><br />\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
@@ -311,16 +311,16 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    Cannot present chart: no <b>measure</b> has been selected.\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-if=\"pendingRequests == 0 &&  view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "<div ng-if=\"pendingRequests == 0 && view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "    Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-if=\"view.params.charttype == 'pie' && gridOptions.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "<div ng-if=\"pendingRequests == 0 && view.params.charttype == 'pie' && gridOptions.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.<br />\n" +
     "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>.\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-if=\"view.params.yaxis != null && view.params.charttype == 'radar' && gridOptions.columnDefs.length < 4\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "<div ng-if=\"pendingRequests == 0 && view.params.yaxis != null && view.params.charttype == 'radar' && gridOptions.columnDefs.length < 4\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "    Cannot present a <b>radar chart</b> when <b>less than 3 columns</b> are present.<br />\n" +
     "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>.\n" +
     "</div>\n"

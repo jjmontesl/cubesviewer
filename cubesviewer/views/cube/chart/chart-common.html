@@ -15,16 +15,16 @@
     Cannot present chart: no <b>measure</b> has been selected.
 </div>
 
-<div ng-if="pendingRequests == 0 &&  view.params.yaxis != null && gridOptions.data.length == 0" class="alert alert-info" style="margin-bottom: 0px;">
+<div ng-if="pendingRequests == 0 && view.params.yaxis != null && gridOptions.data.length == 0" class="alert alert-info" style="margin-bottom: 0px;">
     Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.
 </div>
 
-<div ng-if="view.params.charttype == 'pie' && gridOptions.columnDefs.length > 2" class="alert alert-info" style="margin-bottom: 0px;">
+<div ng-if="pendingRequests == 0 && view.params.charttype == 'pie' && gridOptions.columnDefs.length > 2" class="alert alert-info" style="margin-bottom: 0px;">
     Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.<br />
     Tip: review chart data and columns in <a href="" ng-click="setViewMode('series')" class="alert-link">series mode</a>.
 </div>
 
-<div ng-if="view.params.yaxis != null && view.params.charttype == 'radar' && gridOptions.columnDefs.length < 4" class="alert alert-info" style="margin-bottom: 0px;">
+<div ng-if="pendingRequests == 0 && view.params.yaxis != null && view.params.charttype == 'radar' && gridOptions.columnDefs.length < 4" class="alert alert-info" style="margin-bottom: 0px;">
     Cannot present a <b>radar chart</b> when <b>less than 3 columns</b> are present.<br />
     Tip: review chart data and columns in <a href="" ng-click="setViewMode('series')" class="alert-link">series mode</a>.
 </div>

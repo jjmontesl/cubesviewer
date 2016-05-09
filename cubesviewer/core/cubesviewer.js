@@ -25,7 +25,6 @@
 "use strict";
 
 
-
 // Main CubesViewer angular module
 angular.module('cv', ['ui.bootstrap', 'bootstrapSubmenu',
                       'ui.grid', 'ui.grid.resizeColumns', 'ui.grid.selection', 'ui.grid.autoResize',
@@ -33,13 +32,15 @@ angular.module('cv', ['ui.bootstrap', 'bootstrapSubmenu',
                       'cv.cubes', 'cv.views']);
 
 // Configure moment.js
+/*
 angular.module('cv').constant('angularMomentConfig', {
 	// preprocess: 'unix', // optional
 	// timezone: 'Europe/London' // optional
 });
+*/
 
-angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', /* 'editableOptions', 'editableThemes', */
-                           function($timeout, cvOptions, cubesService /*, editableOptions, editableThemes */) {
+angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheService', /* 'editableOptions', 'editableThemes', */
+                           function($timeout, cvOptions, cubesService, cubesCacheService /*, editableOptions, editableThemes */) {
 
 	//console.debug("Bootstrapping CubesViewer.");
 
@@ -49,7 +50,12 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', /* 'editable
             pagingOptions: [15, 30, 100, 250],
             //datepickerShowWeek: true,
             //datepickerFirstDay: 1,
-            //tableResizeHackMinWidth: 350 ,
+
+            cacheEnabled: true,
+            cacheDuration: 30 * 60,
+            cacheNotice: 10 * 60,
+            cacheSize: 32,
+
             jsonRequestType: "json" // "json | jsonp"
     };
 	$.extend(defaultOptions, cvOptions);
@@ -69,6 +75,9 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', /* 'editable
 	editableThemes.bs3.buttonsClass = 'btn-sm';
 	editableOptions.theme = 'bs3';
 	*/
+
+	// Initialize cache service
+	cubesCacheService.initialize();
 
 	// Initialize Cubes service
 	cubesService.connect();

@@ -70,6 +70,8 @@
     * Issue #55 (chart shows measure name, not measure label).
     * Fix submenu timer hack: is causing issues already. Watch contents and perhaps debounce menu activation?
     * Add "accumulated", "difference" and other calculations to series and charts.
+    * Issue #39, "strings with hyphen cause dimension filter to work inexpectedly".
+    * Range filter.
 
 [2.0]
 
@@ -81,22 +83,28 @@
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
 
     * Review flow: if cube or menu loading is happening before initialization if views are created eagerly (views.html), etc.
-    * Issue #39, "strings with hyphen cause dimension filter to work inexpectedly".
     * Cleaning nvtooltips seems is causing problems: tooltips not shown for previously drawn figures: clean only self figures.
 
+    * Cleanup code.
     * Reviewed and improved doc
-    * Move doc to site (but import from repository markdown, to keep
-      doc sources along with the  project).
+    * Move doc to site. Use Sphynx?. Add more samples of code. (keep doc sources along with the  project).
     * Link from viewer to online doc.
     * Create site, update readme, and site screenshots.
-    * Server side.
+    * Site without styling, copy from Studio/GUI, use current background but make it fluid (sample views
+      extending outside centered content). Show a couple of charts view, a table, and a enabled-controls view.
+      SAME views to be automatically opened in the explorer sample.
     * Support negated cuts (add quick "invert" button in the cut-box?).
     * Columns config "hooks" (hide / size)
+    * Radar chart doesn't resize
 
-    * Defualt cube settings is incorrect: it should only be applied if the view is not otherwise configured (ie loaded or json)
+    * Default cube settings is incorrect: it should only be applied if the view is not otherwise configured (ie loaded or json)
     * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative), move "invert 2nd serie" as a calculation?
     * Error when loading incorrect JSON: error shall be reported by client (ie GUI), state incorrect, cannot access showDialog.
 
-    * Fix analytics plugin to ignore first N seconds of events as for bounce rate calculation.
-    * Cleanup code.
-    * Use strict. Check /* 'use strict'; */ in angular-bootstrap-submenu, which loads early.
+    * Analytics plugin, and fix it to ignore first N seconds of events as for bounce rate calculation.
+
+    * Server side.
+
+    * Datefilter.
+    * Undo/redo.
+    * Cache.
