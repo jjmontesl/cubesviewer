@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-'use strict';
+"use strict";
 
 /**
  * CubesViewer view module.
@@ -108,7 +108,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	};
 
 	$scope.validateData = function(data, status) {
-		console.debug(data);
+		//console.debug(data);
 		$scope.view._requestFailed = false;
 		$scope.view._resultLimitHit = false;
 		if ( ("cells" in data && data.cells.length >= cubesService.cubesserver.info.json_record_limit) ||

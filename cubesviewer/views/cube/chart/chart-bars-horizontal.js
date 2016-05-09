@@ -21,6 +21,8 @@
  * SOFTWARE.
  */
 
+"use strict";
+
 /*
  * Series chart object. Contains view functions for the 'chart' mode.
  * This is an optional component, part of the cube view.
@@ -57,7 +59,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	    var numRows = dataRows.length;
 	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
-	    	serie = [];
+	    	var serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		var value = e[columnDefs[i].name];
 
@@ -88,7 +90,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	    }
 	    */
 
-	    chartOptions = {
+	    var chartOptions = {
 	    	  //barColor: d3.scale.category20().range(),
 	    	  delay: 1200,
 	    	  groupSpacing: 0.1,
@@ -100,8 +102,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 		var colFormatter = $scope.columnFormatFunction(ag);
 
 		nv.addGraph(function() {
-	        var chart;
-	        chart = nv.models.multiBarHorizontalChart()
+	        var chart = nv.models.multiBarHorizontalChart()
 			      //.x(function(d) { return d.label })
 			      //.y(function(d) { return d.value })
 		          .showLegend(!!view.params.chartoptions.showLegend)
@@ -123,8 +124,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	        //chart.yAxis.tickFormat(d3.format(',.2f'));
 
 	        chart.yAxis.tickFormat(function(d, i) {
-	        	console.debug(d);
-	        	console.debug(i);
 	        	if (dataRows.length == 2 && view.params.chartoptions.mirrorSerie2 && d < 0) d = -d;
 	        	return colFormatter(d);
 	        });

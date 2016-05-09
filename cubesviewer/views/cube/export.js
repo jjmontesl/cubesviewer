@@ -26,6 +26,9 @@
  * It offers an "export facts" menu option for all cube view modes,
  * and a "export table" option in Explore and Series mode.
  */
+
+"use strict";
+
 function cubesviewerViewCubeExporter() {
 
 	this.cubesviewer = cubesviewer;

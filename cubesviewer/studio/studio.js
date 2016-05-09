@@ -21,6 +21,7 @@
  * SOFTWARE.
  */
 
+"use strict";
 
 angular.module('cv.studio', ['cv' /*'ui.bootstrap-slider', 'ui.validate', 'ngAnimate', */
                              /*'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',

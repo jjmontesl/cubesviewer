@@ -21,6 +21,8 @@
  * SOFTWARE.
  */
 
+"use strict";
+
 /**
  * View serialization inteface. This is an optional component.
  * Provides visual assistance for serializing views and instancing of views from

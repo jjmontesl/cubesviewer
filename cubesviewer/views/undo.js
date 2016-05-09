@@ -24,6 +24,9 @@
 /*
  * Undo/Redo plugin.
  */
+
+"use strict";
+
 function cubesviewerViewsUndo () {
 
 this.cubesviewer = cubesviewer;

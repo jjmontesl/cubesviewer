@@ -25,6 +25,9 @@
 /**
  * Facts table. Allows users to see the facts associated to current cut.
  */
+
+"use strict";
+
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
 

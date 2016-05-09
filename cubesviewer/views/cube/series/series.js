@@ -26,6 +26,9 @@
 /**
  * Manipulates series.
  */
+
+"use strict";
+
 angular.module('cv.views').service("seriesService", ['$rootScope', 'cvOptions', 'cubesService',
                                                     function ($rootScope, cvOptions, cubesService) {
 

@@ -92,11 +92,11 @@
     };
 
     cubes.Server.prototype.cubeinfo = function(cubename) {
-    	cubeinfos = $.grep(this._cube_list, function (ci) { return ci.name == cubename });
+    	var cubeinfos = $.grep(this._cube_list, function (ci) { return ci.name == cubename });
     	if (cubeinfos.length != 1) throw "Found " + cubeinfos.length + " cubes with name '" + cubename + "' in the cube list";
     	return cubeinfos[0];
     };
-    
+
     cubes.Server.prototype.ajaxRequest = function(settings) {
         throw "Must implement ajaxRequest for server to process jquery-style $.ajax settings object";
     };
@@ -104,6 +104,7 @@
     cubes.Server.prototype.query = function(query, cube, args, callback, errCallback, completeCallback) {
         var params = {dataType : 'json', type : "GET"};
 
+        var cube_name = null;
         if(cube.hasOwnProperty("name"))
             cube_name = cube.name;
         else
@@ -140,7 +141,7 @@
      * @param {errCallback} Function called on error
      *     one line.
      */
-    
+
     cubes.Server.prototype.connect = function(url, callback, errCallback) {
         var self = this;
 
@@ -202,7 +203,7 @@
             callback(this._cubes[name]);
             return null;
         }
-            
+
         var options = {dataType : 'json', type : "GET"};
 
         options.url = self.url + 'cube/' + encodeURI(name) + '/model';
@@ -300,7 +301,7 @@
     };
 
     cubes.Dimension.prototype.hierarchy = function(name) {
-        if ( _.isObject(name) ) 
+        if ( _.isObject(name) )
           return name;
         if ( ! name ) {
           return this.hierarchies[this.default_hierarchy_name];
@@ -310,7 +311,7 @@
     }
 
     cubes.Dimension.prototype.level = function(name) {
-        if ( _.isObject(name) ) 
+        if ( _.isObject(name) )
           return name;
         // Return a level with given name
         return _.find(this.levels, function(obj) {return obj.name == name;});
@@ -325,7 +326,7 @@
     };
 
     cubes.Dimension.prototype.hierarchy = function(name) {
-        if ( _.isObject(name) ) 
+        if ( _.isObject(name) )
           return name;
         else if(name != null)
             return this.hierarchies[name];
@@ -402,7 +403,7 @@
     cubes.Level.prototype.key = function() {
         // Key attribute is either explicitly specified or it is first attribute in the list
         var key = this._key;
-        the_attr = _.find(this.attributes, function(a) { return a.name === key; });
+        var the_attr = _.find(this.attributes, function(a) { return a.name === key; });
         return the_attr || this.attributes[0];
     };
 
@@ -491,7 +492,7 @@
 
 
     /*
-     * Browser 
+     * Browser
      * =======
      * */
 
@@ -520,7 +521,7 @@
 
         return this.server.query("aggregate", this.cube, args, callback);
     };
-    
+
     cubes.Browser.prototype.facts = function(args, callback) {
         if ( ! args )
           args = {};
@@ -533,7 +534,7 @@
         if (args.pagesize) http_args.pagesize = args.pagesize;
 
         return this.server.query("facts", this.cube, args, callback);
-    };    
+    };
 
     cubes.Drilldown = function(dimension, hierarchy, level) {
         if ( ! _.isObject(dimension) )
@@ -541,9 +542,9 @@
         this.dimension = dimension;
         this.hierarchy = dimension.hierarchy(hierarchy);
         this.level = dimension.level(level) || this.hierarchy.levels[0];
-        if ( ! this.hierarchy ) 
+        if ( ! this.hierarchy )
             throw "Drilldown cannot recognize hierarchy " + hierarchy + " for dimension " + dimension;
-        if ( ! this.level ) 
+        if ( ! this.level )
             throw "Drilldown cannot recognize level " + level  + " for dimension " + dimension;
     };
 
@@ -679,18 +680,18 @@
     cubes.SPLIT_DIMENSION_STRING = '__within_split__';
 
     cubes.SPLIT_DIMENSION = new cubes.Dimension({
-      name: cubes.SPLIT_DIMENSION_STRING, 
-      label: 'Matches Filters', 
+      name: cubes.SPLIT_DIMENSION_STRING,
+      label: 'Matches Filters',
       hierarchies: [ { name: 'default', levels: [ cubes.SPLIT_DIMENSION_STRING ] } ],
-      levels: [ { name: cubes.SPLIT_DIMENSION_STRING, attributes: [{name: cubes.SPLIT_DIMENSION_STRING}], label: 'Matches Filters' } ] 
+      levels: [ { name: cubes.SPLIT_DIMENSION_STRING, attributes: [{name: cubes.SPLIT_DIMENSION_STRING}], label: 'Matches Filters' } ]
     });
 
     cubes._split_with_negative_lookbehind = function(input, regex, lb) {
       var string = input;
       var match;
       var splits = [];
-      
-      
+
+
       while ((match = regex.exec(string)) != null) {
           if ( string.substr(match.index - lb.length, lb.length) != lb ) {
             splits.push(string.substring(0, match.index));
@@ -737,7 +738,7 @@
         if (!match) {
           return null;
         }
-        var invert = !!(match[1]), 
+        var invert = !!(match[1]),
             dim_name = match[2],
             hierarchy = match[3] || null,
             path_thingy = match[4];
@@ -772,14 +773,14 @@
         if (!match) {
           return null;
         }
-        var dim_name = match[1], 
+        var dim_name = match[1],
             hierarchy = match[2] || null,
             level = match[3] || null;
         var dimension = cube_or_model.dimension(dim_name);
         if ( ! dimension )
-          if ( dim_name === cubes.SPLIT_DIMENSION_STRING ) 
+          if ( dim_name === cubes.SPLIT_DIMENSION_STRING )
             dimension = cubes.SPLIT_DIMENSION;
-          else 
+          else
             return null;
         return new cubes.Drilldown(dimension, hierarchy, level);
     };

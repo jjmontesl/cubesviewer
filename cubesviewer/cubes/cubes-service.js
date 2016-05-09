@@ -21,6 +21,8 @@
  * SOFTWARE.
  */
 
+"use strict";
+
 angular.module('cv.cubes', []);
 
 angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',

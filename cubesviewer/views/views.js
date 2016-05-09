@@ -21,12 +21,16 @@
  * SOFTWARE.
  */
 
+"use strict";
 
-'use strict';
-
-
+/**
+ * The views module manages different views in CubesViewer.
+ */
 angular.module('cv.views', ['cv.views.cube']);
 
+/**
+ *
+ */
 angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', 'cubesService', 'dialogService',
                                                     function ($rootScope, cvOptions, cubesService, dialogService) {
 

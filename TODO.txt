@@ -80,6 +80,7 @@
     * Keep existing screenshots (or names) as they are referenced from 3rd party sites.
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
 
+    * Review flow: if cube or menu loading is happening before initialization if views are created eagerly (views.html), etc.
     * Issue #39, "strings with hyphen cause dimension filter to work inexpectedly".
     * Cleaning nvtooltips seems is causing problems: tooltips not shown for previously drawn figures: clean only self figures.
 
@@ -99,10 +100,3 @@
     * Fix analytics plugin to ignore first N seconds of events as for bounce rate calculation.
     * Cleanup code.
     * Use strict. Check /* 'use strict'; */ in angular-bootstrap-submenu, which loads early.
-    * Review flow: if cube or menu loading is happening before initialization if views are created eagerly (views.html), etc.
-    * Review readonly menus and pills, and invalid combinations and info messages.
-
-    * Make it clear when the results limit has been hit (for dimension values and aggregations).
-      Also impacts charts (missing items). Do not draw tables or charts in this case.
-    * Review alerts, where to show them, use alert service... (alerts out of view are not nice for an embeddable lib).
-

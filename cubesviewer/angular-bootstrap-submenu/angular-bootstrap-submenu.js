@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-/* 'use strict'; */
+"use strict";
 
 
 angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', function($timeout) {

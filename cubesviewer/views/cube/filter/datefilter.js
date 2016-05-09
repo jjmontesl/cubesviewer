@@ -31,6 +31,9 @@
  * (see integrator documentation for more information).
  *
  */
+
+"use strict";
+
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDateController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
                                                                                         function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
 

@@ -25,6 +25,9 @@
  * Series chart object. Contains view functions for the 'chart' mode.
  * This is an optional component, part of the cube view.
  */
+
+"use strict";
+
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVerticalController", ['$rootScope', '$scope', '$element', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $element, $timeout, cvOptions, cubesService, viewsService) {
 
@@ -57,7 +60,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	    var numRows = dataRows.length;
 	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
-	    	serie = [];
+	    	var serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		var value = e[columnDefs[i].name];
 	    		serie.push( { "x": columnDefs[i].name, "y":  (value != undefined) ? value : 0 } );
@@ -80,7 +83,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	    }
 	    */
 
-	    chartOptions = {
+	    var chartOptions = {
 	    	  //barColor: d3.scale.category20().range(),
 	    	  delay: 1200,
 	    	  groupSpacing: 0.1,
@@ -92,8 +95,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 		var colFormatter = $scope.columnFormatFunction(ag);
 
 	    nv.addGraph(function() {
-	        var chart;
-	        chart = nv.models.multiBarChart()
+	        var chart = nv.models.multiBarChart()
 		          //.margin({bottom: 100})
 		          .showLegend(!!view.params.chartoptions.showLegend)
 		          .margin({left: 120});

@@ -21,14 +21,13 @@
  * SOFTWARE.
  */
 
-
 "use strict";
 
 /* Extensions to cubesviewer client lib */
 cubes.Dimension.prototype.hierarchies_count = function()  {
 
 	var count = 0;
-	for (hiename in this.hierarchies) {
+	for (var hiename in this.hierarchies) {
 		if (this.hierarchies.hasOwnProperty(hiename)) {
 			count++;
 		}
@@ -153,7 +152,7 @@ cubes.Hierarchy.prototype.readCell = function(cell, level_limit) {
 
 	for (var i = 0; i < this.levels.length; i ++) {
 		var level = this.levels[i];
-		info = level.readCell(cell);
+		var info = level.readCell(cell);
 		if (info != null) result.push(info);
 
 		// Stop if we reach level_limit

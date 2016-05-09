@@ -25,6 +25,9 @@
  * Series chart object. Contains view functions for the 'chart' mode.
  * This is an optional component, part of the cube view.
  */
+
+"use strict";
+
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarController", ['$rootScope', '$scope', '$element', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $element, $timeout, cvOptions, cubesService, viewsService) {
 
@@ -54,9 +57,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
 
 	    var d = [];
 
-	    numRows = dataRows.length;
+	    var numRows = dataRows.length;
 	    $(dataRows).each(function(idx, e) {
-	    	serie = [];
+	    	var serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		var value = e[columnDefs[i].field];
 	    		if (value != undefined) {
@@ -69,7 +72,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
 	    });
 	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
 
-	    xticks = [];
+	    var xticks = [];
 	    for (var i = 1; i < columnDefs.length; i++) {
     		xticks.push([ i - 1, columnDefs[i].name ]);
 	    }

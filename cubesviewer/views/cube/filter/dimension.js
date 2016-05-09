@@ -25,6 +25,9 @@
 
 /**
  */
+
+"use strict";
+
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionController", ['$rootScope', '$scope', '$filter', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $filter, cvOptions, cubesService, viewsService) {
 
@@ -73,7 +76,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 		var tdimension = $scope.view.dimensionFilter;
 		$scope.loadingDimensionValues = true;
-		jqxhr = cubesService.cubesRequest(
+		var jqxhr = cubesService.cubesRequest(
                 // Doc says it's dimension, not members
 				"/cube/" + $scope.view.cube.name + "/members/" + $scope.parts.dimension.name,
 				params,

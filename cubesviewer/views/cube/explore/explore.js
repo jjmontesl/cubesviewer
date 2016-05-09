@@ -24,6 +24,9 @@
 
 /**
  */
+
+"use strict";
+
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
                                                      function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, dialogService) {
 

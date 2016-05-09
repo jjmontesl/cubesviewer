@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-'use strict';
+"use strict";
 
 /*
  * Series chart object. Contains view functions for the 'chart' mode.

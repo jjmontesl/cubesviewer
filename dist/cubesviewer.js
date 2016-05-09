@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-/* 'use strict'; */
+"use strict";
 
 
 angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', function($timeout) {
@@ -130,11 +130,11 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
     };
 
     cubes.Server.prototype.cubeinfo = function(cubename) {
-    	cubeinfos = $.grep(this._cube_list, function (ci) { return ci.name == cubename });
+    	var cubeinfos = $.grep(this._cube_list, function (ci) { return ci.name == cubename });
     	if (cubeinfos.length != 1) throw "Found " + cubeinfos.length + " cubes with name '" + cubename + "' in the cube list";
     	return cubeinfos[0];
     };
-    
+
     cubes.Server.prototype.ajaxRequest = function(settings) {
         throw "Must implement ajaxRequest for server to process jquery-style $.ajax settings object";
     };
@@ -142,6 +142,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
     cubes.Server.prototype.query = function(query, cube, args, callback, errCallback, completeCallback) {
         var params = {dataType : 'json', type : "GET"};
 
+        var cube_name = null;
         if(cube.hasOwnProperty("name"))
             cube_name = cube.name;
         else
@@ -178,7 +179,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
      * @param {errCallback} Function called on error
      *     one line.
      */
-    
+
     cubes.Server.prototype.connect = function(url, callback, errCallback) {
         var self = this;
 
@@ -240,7 +241,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
             callback(this._cubes[name]);
             return null;
         }
-            
+
         var options = {dataType : 'json', type : "GET"};
 
         options.url = self.url + 'cube/' + encodeURI(name) + '/model';
@@ -338,7 +339,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
     };
 
     cubes.Dimension.prototype.hierarchy = function(name) {
-        if ( _.isObject(name) ) 
+        if ( _.isObject(name) )
           return name;
         if ( ! name ) {
           return this.hierarchies[this.default_hierarchy_name];
@@ -348,7 +349,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
     }
 
     cubes.Dimension.prototype.level = function(name) {
-        if ( _.isObject(name) ) 
+        if ( _.isObject(name) )
           return name;
         // Return a level with given name
         return _.find(this.levels, function(obj) {return obj.name == name;});
@@ -363,7 +364,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
     };
 
     cubes.Dimension.prototype.hierarchy = function(name) {
-        if ( _.isObject(name) ) 
+        if ( _.isObject(name) )
           return name;
         else if(name != null)
             return this.hierarchies[name];
@@ -440,7 +441,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
     cubes.Level.prototype.key = function() {
         // Key attribute is either explicitly specified or it is first attribute in the list
         var key = this._key;
-        the_attr = _.find(this.attributes, function(a) { return a.name === key; });
+        var the_attr = _.find(this.attributes, function(a) { return a.name === key; });
         return the_attr || this.attributes[0];
     };
 
@@ -529,7 +530,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
 
 
     /*
-     * Browser 
+     * Browser
      * =======
      * */
 
@@ -558,7 +559,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
 
         return this.server.query("aggregate", this.cube, args, callback);
     };
-    
+
     cubes.Browser.prototype.facts = function(args, callback) {
         if ( ! args )
           args = {};
@@ -571,7 +572,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
         if (args.pagesize) http_args.pagesize = args.pagesize;
 
         return this.server.query("facts", this.cube, args, callback);
-    };    
+    };
 
     cubes.Drilldown = function(dimension, hierarchy, level) {
         if ( ! _.isObject(dimension) )
@@ -579,9 +580,9 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
         this.dimension = dimension;
         this.hierarchy = dimension.hierarchy(hierarchy);
         this.level = dimension.level(level) || this.hierarchy.levels[0];
-        if ( ! this.hierarchy ) 
+        if ( ! this.hierarchy )
             throw "Drilldown cannot recognize hierarchy " + hierarchy + " for dimension " + dimension;
-        if ( ! this.level ) 
+        if ( ! this.level )
             throw "Drilldown cannot recognize level " + level  + " for dimension " + dimension;
     };
 
@@ -717,18 +718,18 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
     cubes.SPLIT_DIMENSION_STRING = '__within_split__';
 
     cubes.SPLIT_DIMENSION = new cubes.Dimension({
-      name: cubes.SPLIT_DIMENSION_STRING, 
-      label: 'Matches Filters', 
+      name: cubes.SPLIT_DIMENSION_STRING,
+      label: 'Matches Filters',
       hierarchies: [ { name: 'default', levels: [ cubes.SPLIT_DIMENSION_STRING ] } ],
-      levels: [ { name: cubes.SPLIT_DIMENSION_STRING, attributes: [{name: cubes.SPLIT_DIMENSION_STRING}], label: 'Matches Filters' } ] 
+      levels: [ { name: cubes.SPLIT_DIMENSION_STRING, attributes: [{name: cubes.SPLIT_DIMENSION_STRING}], label: 'Matches Filters' } ]
     });
 
     cubes._split_with_negative_lookbehind = function(input, regex, lb) {
       var string = input;
       var match;
       var splits = [];
-      
-      
+
+
       while ((match = regex.exec(string)) != null) {
           if ( string.substr(match.index - lb.length, lb.length) != lb ) {
             splits.push(string.substring(0, match.index));
@@ -775,7 +776,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
         if (!match) {
           return null;
         }
-        var invert = !!(match[1]), 
+        var invert = !!(match[1]),
             dim_name = match[2],
             hierarchy = match[3] || null,
             path_thingy = match[4];
@@ -810,14 +811,14 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
         if (!match) {
           return null;
         }
-        var dim_name = match[1], 
+        var dim_name = match[1],
             hierarchy = match[2] || null,
             level = match[3] || null;
         var dimension = cube_or_model.dimension(dim_name);
         if ( ! dimension )
-          if ( dim_name === cubes.SPLIT_DIMENSION_STRING ) 
+          if ( dim_name === cubes.SPLIT_DIMENSION_STRING )
             dimension = cubes.SPLIT_DIMENSION;
-          else 
+          else
             return null;
         return new cubes.Drilldown(dimension, hierarchy, level);
     };
@@ -857,14 +858,13 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
  * SOFTWARE.
  */
 
-
 "use strict";
 
 /* Extensions to cubesviewer client lib */
 cubes.Dimension.prototype.hierarchies_count = function()  {
 
 	var count = 0;
-	for (hiename in this.hierarchies) {
+	for (var hiename in this.hierarchies) {
 		if (this.hierarchies.hasOwnProperty(hiename)) {
 			count++;
 		}
@@ -989,7 +989,7 @@ cubes.Hierarchy.prototype.readCell = function(cell, level_limit) {
 
 	for (var i = 0; i < this.levels.length; i ++) {
 		var level = this.levels[i];
-		info = level.readCell(cell);
+		var info = level.readCell(cell);
 		if (info != null) result.push(info);
 
 		// Stop if we reach level_limit
@@ -1022,6 +1022,8 @@ cubes.Hierarchy.prototype.readCell = function(cell, level_limit) {
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+"use strict";
 
 angular.module('cv.cubes', []);
 
@@ -1332,12 +1334,16 @@ var cubesviewer = {
  * SOFTWARE.
  */
 
+"use strict";
 
-'use strict';
-
-
+/**
+ * The views module manages different views in CubesViewer.
+ */
 angular.module('cv.views', ['cv.views.cube']);
 
+/**
+ *
+ */
 angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', 'cubesService', 'dialogService',
                                                     function ($rootScope, cvOptions, cubesService, dialogService) {
 
@@ -1425,7 +1431,7 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
  * SOFTWARE.
  */
 
-'use strict';
+"use strict";
 
 angular.module('cv.views').service("dialogService", ['$rootScope', '$uibModal', 'cvOptions', 'cubesService',
                                                     function ($rootScope, $uibModal, cvOptions, cubesService) {
@@ -1503,7 +1509,7 @@ angular.module('cv.views').controller("CubesViewerViewsDialogController", ['$roo
  * SOFTWARE.
  */
 
-'use strict';
+"use strict";
 
 /**
  * CubesViewer view module.
@@ -1590,7 +1596,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	};
 
 	$scope.validateData = function(data, status) {
-		console.debug(data);
+		//console.debug(data);
 		$scope.view._requestFailed = false;
 		$scope.view._resultLimitHit = false;
 		if ( ("cells" in data && data.cells.length >= cubesService.cubesserver.info.json_record_limit) ||
@@ -1855,6 +1861,9 @@ Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSe
 
 /**
  */
+
+"use strict";
+
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
                                                      function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, dialogService) {
 
@@ -2339,6 +2348,9 @@ function cubesviewerViewCubeExplore() {
 
 /**
  */
+
+"use strict";
+
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionController", ['$rootScope', '$scope', '$filter', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $filter, cvOptions, cubesService, viewsService) {
 
@@ -2387,7 +2399,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 		var tdimension = $scope.view.dimensionFilter;
 		$scope.loadingDimensionValues = true;
-		jqxhr = cubesService.cubesRequest(
+		var jqxhr = cubesService.cubesRequest(
                 // Doc says it's dimension, not members
 				"/cube/" + $scope.view.cube.name + "/members/" + $scope.parts.dimension.name,
 				params,
@@ -2585,6 +2597,9 @@ function cubesviewerViewCubeDimensionFilter () {
  * (see integrator documentation for more information).
  *
  */
+
+"use strict";
+
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDateController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
                                                                                         function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
 
@@ -2830,6 +2845,9 @@ function cubesviewerViewCubeDateFilter () {
 /**
  * Facts table. Allows users to see the facts associated to current cut.
  */
+
+"use strict";
+
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
 
@@ -3135,6 +3153,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 /**
  * Manipulates series.
  */
+
+"use strict";
+
 angular.module('cv.views').service("seriesService", ['$rootScope', 'cvOptions', 'cubesService',
                                                     function ($rootScope, cvOptions, cubesService) {
 
@@ -3499,7 +3520,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
  * SOFTWARE.
  */
 
-'use strict';
+"use strict";
 
 /*
  * Series chart object. Contains view functions for the 'chart' mode.
@@ -3790,6 +3811,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
  * Series chart object. Contains view functions for the 'chart' mode.
  * This is an optional component, part of the cube view.
  */
+
+"use strict";
+
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVerticalController", ['$rootScope', '$scope', '$element', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $element, $timeout, cvOptions, cubesService, viewsService) {
 
@@ -3822,7 +3846,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	    var numRows = dataRows.length;
 	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
-	    	serie = [];
+	    	var serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		var value = e[columnDefs[i].name];
 	    		serie.push( { "x": columnDefs[i].name, "y":  (value != undefined) ? value : 0 } );
@@ -3845,7 +3869,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	    }
 	    */
 
-	    chartOptions = {
+	    var chartOptions = {
 	    	  //barColor: d3.scale.category20().range(),
 	    	  delay: 1200,
 	    	  groupSpacing: 0.1,
@@ -3857,8 +3881,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 		var colFormatter = $scope.columnFormatFunction(ag);
 
 	    nv.addGraph(function() {
-	        var chart;
-	        chart = nv.models.multiBarChart()
+	        var chart = nv.models.multiBarChart()
 		          //.margin({bottom: 100})
 		          .showLegend(!!view.params.chartoptions.showLegend)
 		          .margin({left: 120});
@@ -3934,6 +3957,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
  * SOFTWARE.
  */
 
+"use strict";
+
 /*
  * Series chart object. Contains view functions for the 'chart' mode.
  * This is an optional component, part of the cube view.
@@ -3970,7 +3995,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	    var numRows = dataRows.length;
 	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
-	    	serie = [];
+	    	var serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		var value = e[columnDefs[i].name];
 
@@ -4001,7 +4026,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	    }
 	    */
 
-	    chartOptions = {
+	    var chartOptions = {
 	    	  //barColor: d3.scale.category20().range(),
 	    	  delay: 1200,
 	    	  groupSpacing: 0.1,
@@ -4013,8 +4038,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 		var colFormatter = $scope.columnFormatFunction(ag);
 
 		nv.addGraph(function() {
-	        var chart;
-	        chart = nv.models.multiBarHorizontalChart()
+	        var chart = nv.models.multiBarHorizontalChart()
 			      //.x(function(d) { return d.label })
 			      //.y(function(d) { return d.value })
 		          .showLegend(!!view.params.chartoptions.showLegend)
@@ -4036,8 +4060,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	        //chart.yAxis.tickFormat(d3.format(',.2f'));
 
 	        chart.yAxis.tickFormat(function(d, i) {
-	        	console.debug(d);
-	        	console.debug(i);
 	        	if (dataRows.length == 2 && view.params.chartoptions.mirrorSerie2 && d < 0) d = -d;
 	        	return colFormatter(d);
 	        });
@@ -4102,6 +4124,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
  * Series chart object. Contains view functions for the 'chart' mode.
  * This is an optional component, part of the cube view.
  */
+
+"use strict";
+
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesController", ['$rootScope', '$scope', '$element', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $element, $timeout, cvOptions, cubesService, viewsService) {
 
@@ -4138,7 +4163,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	    var numRows = dataRows.length;
 	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
-	    	serie = [];
+	    	var serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		if (columnDefs[i].field in e) {
 	    			var value = e[columnDefs[i].field];
@@ -4364,6 +4389,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
  * Series chart object. Contains view functions for the 'chart' mode.
  * This is an optional component, part of the cube view.
  */
+
+"use strict";
+
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieController", ['$rootScope', '$scope', '$element', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $element, $timeout, cvOptions, cubesService, viewsService) {
 
@@ -4396,7 +4424,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
 	    var numRows = dataRows.length;
 	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
-	    	serie = [];
+	    	var serie = [];
 	    	var value = e[columnDefs[1].field];
     		if ((value != undefined) && (value > 0)) {
 
@@ -4415,7 +4443,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
 	    });
 	    d.sort(function(a,b) { return a.y < b.y ? -1 : (a.y > b.y ? +1 : 0) });
 
-	    xticks = [];
+	    var xticks = [];
 	    for (var i = 1; i < columnDefs.length; i++) {
     		xticks.push([ i - 1, columnDefs[i].name ]);
 	    }
@@ -4503,6 +4531,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
  * Series chart object. Contains view functions for the 'chart' mode.
  * This is an optional component, part of the cube view.
  */
+
+"use strict";
+
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarController", ['$rootScope', '$scope', '$element', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $element, $timeout, cvOptions, cubesService, viewsService) {
 
@@ -4532,9 +4563,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
 
 	    var d = [];
 
-	    numRows = dataRows.length;
+	    var numRows = dataRows.length;
 	    $(dataRows).each(function(idx, e) {
-	    	serie = [];
+	    	var serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		var value = e[columnDefs[i].field];
 	    		if (value != undefined) {
@@ -4547,7 +4578,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
 	    });
 	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
 
-	    xticks = [];
+	    var xticks = [];
 	    for (var i = 1; i < columnDefs.length; i++) {
     		xticks.push([ i - 1, columnDefs[i].name ]);
 	    }
@@ -4611,6 +4642,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
  * SOFTWARE.
  */
 
+"use strict";
 
 angular.module('cv.studio', ['cv' /*'ui.bootstrap-slider', 'ui.validate', 'ngAnimate', */
                              /*'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',
@@ -4920,6 +4952,8 @@ cubesviewer.studio = {
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+"use strict";
 
 /**
  * View serialization inteface. This is an optional component.

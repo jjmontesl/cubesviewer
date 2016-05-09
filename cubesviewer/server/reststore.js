@@ -21,6 +21,8 @@
  * SOFTWARE.
  */
 
+"use strict";
+
 /*
  * View storage for GUI. This is an optional component.
  * Provides methods to access CubesViewer backend operations like saving and loading user views.
