@@ -46,7 +46,6 @@
 [2.4]
 
     * Alerts (server-backed, depending on criteria, with triggers (use cubetl)).
-    * http://nvd3.org/examples/multiBarHorizontal.html
     * http://bl.ocks.org/mbostock/4063269 (Bubble chart: categories/sizes)
     * https://mbostock.github.io/d3/talk/20111018/treemap.html (zoomable treemap)
 
@@ -93,8 +92,8 @@
     * Support negated cuts (add quick "invert" button in the cut-box?).
     * Columns config "hooks" (hide / size)
 
-    * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative).
-    * Implement server info.
+    * Defualt cube settings is incorrect: it should only be applied if the view is not otherwise configured (ie loaded or json)
+    * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative), move "invert 2nd serie" as a calculation?
 
     * Fix analytics plugin to ignore first N seconds of events as for bounce rate calculation.
     * Cleanup code.

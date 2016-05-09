@@ -32,6 +32,8 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 
 	this.state = cubesviewer.VIEW_STATE_INITIALIZING;
 
+	this.stateText = "";
+
 	this.initialize = function() {
 	};
 
@@ -47,8 +49,22 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 			cubesService.state = cubesviewer.VIEW_STATE_INITIALIZED;
 			$rootScope.$apply();
 		}, function(xhr) {
+
+			console.debug(xhr);
 			console.debug('Could not connect to Cubes server [code=' + xhr.status + "]");
 			cubesService.state = cubesviewer.VIEW_STATE_ERROR;
+
+			if (xhr.status == 401) {
+				cubesService.stateText = "Unauthorized.";
+			} else if (xhr.status == 403) {
+				cubesService.stateText = "Forbidden.";
+			} else if (xhr.status == 400) {
+				cubesService.stateText = "Bad request: " + ($.parseJSON(xhr.responseText).message);
+			} else {
+				cubesService.stateText = "Unknown error.";
+			}
+
+
 			$rootScope.$apply();
 		} );
 	};
@@ -90,20 +106,9 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 	 */
 	this.defaultRequestErrorHandler = function(xhr, textStatus, errorThrown) {
 		// TODO: These alerts are not acceptable.
-		if (xhr.status == 401) {
-			cubesviewer.alert("Unauthorized.");
-		} else if (xhr.status == 403) {
-			cubesviewer.alert("Forbidden.");
-		} else if (xhr.status == 400) {
-			cubesviewer.alert($.parseJSON(xhr.responseText).message);
-		} else {
-			console.debug("CubesViewer: An error occurred while accessing the data server.\n\n" +
-						  "Please try again or contact the application administrator if the problem persists.\n");
-			console.debug(xhr);
-		}
+		console.debug("Cubes request error: " + xhr)
 		//$('.ajaxloader').hide();
 	};
-
 
 	/*
 	 * Builds Cubes Server query parameters based on current view values.

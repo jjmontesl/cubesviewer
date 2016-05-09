@@ -38,12 +38,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	$scope.$rootScope = $rootScope;
 	$scope.viewsService = viewsService;
 	$scope.cvOptions = cvOptions;
+	$scope.cubesService = cubesService;
 
 	$scope.dimensionFilter = null;
 
 	$scope.$watch ("view", function(view) {
 		if (view) {
 			view._cubeDataUpdated = false;
+			view._resultLimitHit = false;
+			view._requestFailed = false;
 		}
 	});
 
@@ -98,6 +101,20 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			console.debug(cubesviewer.VIEW_STATE_ERROR);
 			$rootScope.$apply();
 		});
+	};
+
+	$scope.requestErrorHandler = function() {
+		$scope.view._requestFailed = true;
+	};
+
+	$scope.validateData = function(data, status) {
+		console.debug(data);
+		$scope.view._requestFailed = false;
+		$scope.view._resultLimitHit = false;
+		if ( ("cells" in data && data.cells.length >= cubesService.cubesserver.info.json_record_limit) ||
+		     (data.length && data.length >= cubesService.cubesserver.info.json_record_limit) ) {
+			$scope.view._resultLimitHit = true;
+		}
 	};
 
 	/**

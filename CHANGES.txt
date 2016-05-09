@@ -1,5 +1,7 @@
 [2.0.1]
 
+    * Added warning if server result limit has been hit.
+    * Added "server info" dialog.
     * Added horizontal columns chart.
     * Added two columns mode and hide controls mode.
     * New icon library and revamped UI.
@@ -20,8 +22,8 @@
     * Refactored to Angular. Dropped jQueryUI.
     * Now using embedded Bootstrap (no global CSS selectors) for styles, without
       impacting page styles and better avoiding being impacted by container page styling.
-    * Introduced Grunt/Bower build toolchain.
-    * Separated cubesviewer-server from client.
+    * Introduced Grunt and Bower build toolchain.
+    * Separated cubesviewer server and client into two projects.
     * License changed to pure MIT (removed extra clause).
 
 [0.0.11]

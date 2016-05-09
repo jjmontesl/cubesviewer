@@ -1,22 +1,6 @@
 angular.module('cv').run(['$templateCache', function($templateCache) {
   'use strict';
 
-  $templateCache.put('alerts/alerts.html',
-    "<div class=\"cv-bootstrap cv-alerts\">\n" +
-    "    <div style=\"min-width: 260px; width: 300px; z-index: 1000;\" >\n" +
-    "\n" +
-    "        {{# cv.alerts }}\n" +
-    "        <div class=\"alert alert-warning alert-dismissable\" style=\"margin-bottom: 5px;\">\n" +
-    "            <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
-    "            <i class=\"fa fa-bell\"></i> {{ text }}\n" +
-    "        </div>\n" +
-    "        {{/ cv.alerts }}\n" +
-    "\n" +
-    "    </div>\n" +
-    "</div>\n"
-  );
-
-
   $templateCache.put('studio/about.html',
     "<div class=\"modal fade\" id=\"cvAboutModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"\">\n" +
     "  <div class=\"modal-dialog\" role=\"document\">\n" +
@@ -246,11 +230,8 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        <div class=\"row\">\n" +
     "            <div ng-if=\"cubesService.state == 3\" class=\"col-xs-12\">\n" +
     "                <div class=\"alert alert-danger\" style=\"margin: 0px;\">\n" +
-    "                    <p>Could not connect to server.</p>\n" +
+    "                    <p>Could not connect to server: {{ cubesService.stateText }}</p>\n" +
     "                    <p>Please try again and contact your administrator if the problem persists.</p>\n" +
-    "                    <p class=\"text-right\">\n" +
-    "                        <a class=\"alert-link\" href=\"http://jjmontesl.github.io/cubesviewer/\" target=\"_blank\">CubesViewer Data Visualizer</a>\n" +
-    "                    </p>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
@@ -270,6 +251,29 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "</div>\n" +
     "\n" +
     "\n"
+  );
+
+
+  $templateCache.put('views/cube/alerts.html',
+    "<div>\n" +
+    "\n" +
+    "    <div ng-if=\"view._requestFailed\" class=\"alert alert-dismissable alert-danger\" style=\"margin-bottom: 5px;\">\n" +
+    "        <div style=\"display: inline-block;\"><i class=\"fa fa-exclamation\"></i></div>\n" +
+    "        <div style=\"display: inline-block; margin-left: 20px;\">\n" +
+    "            An error has occurred. Cannot present view.<br />\n" +
+    "            Please try again and contact your administrator if the problem persists.\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ng-if=\"view._resultLimitHit\" class=\"alert alert-dismissable alert-warning\" style=\"margin-bottom: 5px;\">\n" +
+    "        <button type=\"button\" class=\"close\" ng-click=\"view._resultLimitHit = false;\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>\n" +
+    "        <div style=\"display: inline-block;\"><i class=\"fa fa-exclamation\"></i></div>\n" +
+    "        <div style=\"display: inline-block; margin-left: 20px;\">\n" +
+    "            Limit of {{ cubesService.cubesserver.info.json_record_limit }} items has been hit. <b>Results are incomplete.</b>.<br />\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "</div>\n"
   );
 
 
@@ -684,6 +688,8 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "            <i class=\"fa fa-fw fa-file-o\"></i> {{ view.params.name }}\n" +
     "        </h2>\n" +
     "\n" +
+    "        <div ng-include=\"'views/cube/alerts.html'\"></div>\n" +
+    "\n" +
     "        <div class=\"cv-view-viewmenu hidden-print\" ng-hide=\"view.controlsHidden()\">\n" +
     "\n" +
     "            <div class=\"panel panel-primary pull-right\" style=\"padding: 3px; white-space: nowrap;\">\n" +
@@ -953,7 +959,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "            <div class=\"row\">\n" +
     "                <div class=\"col-xs-6\">\n" +
     "                <div style=\"margin-top: 5px;\">\n" +
-    "                    <div class=\"panel panel-default panel-outline\" style=\"margin-bottom: 0px;\"><div class=\"panel-body\" style=\"max-height: 180px; overflow-y: auto; overflow-x: hidden;\">\n" +
+    "                    <div class=\"panel panel-default panel-outline\" style=\"margin-bottom: 0px; \"><div class=\"panel-body\" style=\"max-height: 180px; overflow-y: auto; overflow-x: hidden;\">\n" +
     "                        <div ng-show=\"loadingDimensionValues\" ><i class=\"fa fa-circle-o-notch fa-spin fa-fw\"></i> Loading...</div>\n" +
     "                        <div ng-if=\"!loadingDimensionValues\">\n" +
     "                            <div ng-repeat=\"val in dimensionValues | filter:filterDimensionValue(searchString) track by val.value\" style=\"overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\">\n" +

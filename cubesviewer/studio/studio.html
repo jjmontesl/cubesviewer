@@ -62,11 +62,8 @@
         <div class="row">
             <div ng-if="cubesService.state == 3" class="col-xs-12">
                 <div class="alert alert-danger" style="margin: 0px;">
-                    <p>Could not connect to server.</p>
+                    <p>Could not connect to server: {{ cubesService.stateText }}</p>
                     <p>Please try again and contact your administrator if the problem persists.</p>
-                    <p class="text-right">
-                        <a class="alert-link" href="http://jjmontesl.github.io/cubesviewer/" target="_blank">CubesViewer Data Visualizer</a>
-                    </p>
                 </div>
             </div>
         </div>

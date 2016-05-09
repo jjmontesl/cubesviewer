@@ -75,10 +75,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		jqxhr.always(function() {
 			$scope.pendingRequests--;
 		});
+		jqxhr.error($scope.requestErrorHandler);
 
 	};
 
 	$scope._loadDataCallback = function(data, status) {
+		$scope.validateData(data, status);
 		$scope.processData(data);
 		$rootScope.$apply();
 		$scope.gridApi.core.refresh();
@@ -356,8 +358,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 			alert('Can only filter multiple values in a view with one level of drilldown.');
 			return;
 		}
-
-		console.debug($scope);
 
 		if ($scope.gridApi.selection.getSelectedCount() <= 0) {
 			alert('Cannot filter. No rows are selected.');

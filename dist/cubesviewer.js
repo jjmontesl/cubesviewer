@@ -1034,6 +1034,8 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 
 	this.state = cubesviewer.VIEW_STATE_INITIALIZING;
 
+	this.stateText = "";
+
 	this.initialize = function() {
 	};
 
@@ -1049,8 +1051,22 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 			cubesService.state = cubesviewer.VIEW_STATE_INITIALIZED;
 			$rootScope.$apply();
 		}, function(xhr) {
+
+			console.debug(xhr);
 			console.debug('Could not connect to Cubes server [code=' + xhr.status + "]");
 			cubesService.state = cubesviewer.VIEW_STATE_ERROR;
+
+			if (xhr.status == 401) {
+				cubesService.stateText = "Unauthorized.";
+			} else if (xhr.status == 403) {
+				cubesService.stateText = "Forbidden.";
+			} else if (xhr.status == 400) {
+				cubesService.stateText = "Bad request: " + ($.parseJSON(xhr.responseText).message);
+			} else {
+				cubesService.stateText = "Unknown error.";
+			}
+
+
 			$rootScope.$apply();
 		} );
 	};
@@ -1092,20 +1108,9 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 	 */
 	this.defaultRequestErrorHandler = function(xhr, textStatus, errorThrown) {
 		// TODO: These alerts are not acceptable.
-		if (xhr.status == 401) {
-			cubesviewer.alert("Unauthorized.");
-		} else if (xhr.status == 403) {
-			cubesviewer.alert("Forbidden.");
-		} else if (xhr.status == 400) {
-			cubesviewer.alert($.parseJSON(xhr.responseText).message);
-		} else {
-			console.debug("CubesViewer: An error occurred while accessing the data server.\n\n" +
-						  "Please try again or contact the application administrator if the problem persists.\n");
-			console.debug(xhr);
-		}
+		console.debug("Cubes request error: " + xhr)
 		//$('.ajaxloader').hide();
 	};
-
 
 	/*
 	 * Builds Cubes Server query parameters based on current view values.
@@ -1544,12 +1549,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	$scope.$rootScope = $rootScope;
 	$scope.viewsService = viewsService;
 	$scope.cvOptions = cvOptions;
+	$scope.cubesService = cubesService;
 
 	$scope.dimensionFilter = null;
 
 	$scope.$watch ("view", function(view) {
 		if (view) {
 			view._cubeDataUpdated = false;
+			view._resultLimitHit = false;
+			view._requestFailed = false;
 		}
 	});
 
@@ -1604,6 +1612,20 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			console.debug(cubesviewer.VIEW_STATE_ERROR);
 			$rootScope.$apply();
 		});
+	};
+
+	$scope.requestErrorHandler = function() {
+		$scope.view._requestFailed = true;
+	};
+
+	$scope.validateData = function(data, status) {
+		console.debug(data);
+		$scope.view._requestFailed = false;
+		$scope.view._resultLimitHit = false;
+		if ( ("cells" in data && data.cells.length >= cubesService.cubesserver.info.json_record_limit) ||
+		     (data.length && data.length >= cubesService.cubesserver.info.json_record_limit) ) {
+			$scope.view._resultLimitHit = true;
+		}
 	};
 
 	/**
@@ -1914,10 +1936,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		jqxhr.always(function() {
 			$scope.pendingRequests--;
 		});
+		jqxhr.error($scope.requestErrorHandler);
 
 	};
 
 	$scope._loadDataCallback = function(data, status) {
+		$scope.validateData(data, status);
 		$scope.processData(data);
 		$rootScope.$apply();
 		$scope.gridApi.core.refresh();
@@ -2196,8 +2220,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 			return;
 		}
 
-		console.debug($scope);
-
 		if ($scope.gridApi.selection.getSelectedCount() <= 0) {
 			alert('Cannot filter. No rows are selected.');
 			return;
@@ -2360,6 +2382,16 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 	$scope.initialize = function() {
 
+		// Check if current filter is inverted
+		var view = $scope.view;
+		var parts = view.cube.cvdim_parts($scope.view.dimensionFilter);
+		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+		for (var i = 0; i < view.params.cuts.length ; i++) {
+			if (view.params.cuts[i].dimension == cutDimension) {
+				$scope.filterInverted = view.params.cuts[i].invert;
+				break;
+			}
+		}
 	};
 
 	$scope.$watch("view.dimensionFilter", function() {
@@ -2432,8 +2464,20 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 	$scope._processData = function(data) {
 
 		// Get dimension
+		var view = $scope.view;
 		var dimension = $scope.view.cube.cvdim_dim($scope.view.dimensionFilter);
 		var dimensionValues = [];
+
+		var parts = view.cube.cvdim_parts($scope.view.dimensionFilter);
+		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+		var filterValues = [];
+		for (var i = 0; i < view.params.cuts.length ; i++) {
+			if (view.params.cuts[i].dimension == cutDimension) {
+				$scope.filterInverted = view.params.cuts[i].invert;
+				filterValues = view.params.cuts[i].value.split(";");
+				break;
+			}
+		}
 
 		$(data.data).each( function(idx, e) {
 
@@ -2453,12 +2497,13 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 			dimensionValues.push({
 				'label': drilldown_level_labels.join(' / '),
 				'value': drilldown_level_values.join (','),
-				'selected': false
+				'selected': filterValues.indexOf(drilldown_level_values.join (',')) >= 0
 			});
 
 		});
 
 		$scope.dimensionValues = dimensionValues;
+		$scope.$apply();
 	};
 
 	/*
@@ -2479,8 +2524,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 		// Cut dimension
 		var cutDimension = $scope.parts.dimension.name + ( $scope.parts.hierarchy.name != "default" ? "@" + $scope.parts.hierarchy.name : "" );
-		console.debug(cutDimension);
-		console.debug(filterValues);
 		$scope.selectCut(cutDimension, filterValues.join(";"), $scope.filterInverted);
 
 	};
@@ -2533,68 +2576,6 @@ function cubesviewerViewCubeDimensionFilter () {
 			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox").filter(":checked").trigger('click');
 		});
 
-
-	};	/*
-	 * Searches labels by string and filters from view.
-	 */
-	this.searchDimensionValues = function(view, search) {
-
-		$(view.container).find(".cv-view-dimensionfilter-list").find("input").each (function (idx, e) {
-			if ((search == "") || ($(e).parent().text().toLowerCase().indexOf(search.toLowerCase()) >= 0)) {
-				$(e).parents('.cv-view-dimensionfilter-item').first().show();
-			} else {
-				$(e).parents('.cv-view-dimensionfilter-item').first().hide();
-			}
-		} );
-
-	};
-
-
-
-	/*
-	 * Shows the dimension filter
-	 */
-	this.drawDimensionValues = function (view, tdimension, data) {
-
-		$(view.container).find(".cv-view-dimensionfilter-list").empty();
-
-
-		// Update selected
-		view.cubesviewer.views.cube.dimensionfilter.updateFromCut(view, tdimension);
-
-	};
-
-	/*
-	 * Updates selection after loading data.
-	 */
-	this.updateFromCut = function(view, dimensionString) {
-
-		var parts = view.cube.cvdim_parts(dimensionString);
-		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
-
-		var invert = false;
-		var filterValues = [];
-		for (var i = 0; i < view.params.cuts.length ; i++) {
-			if (view.params.cuts[i].dimension == cutDimension) {
-				invert = view.params.cuts[i].invert;
-				filterValues = view.params.cuts[i].value.split(";");
-				break;
-			}
-		}
-
-		if (invert) {
-			$(view.container).find(".cv-view-dimensionfilter-cont .invert-cut").attr("checked", "checked");
-		}
-
-		if (filterValues.length > 0) {
-			$(view.container).find(".cv-view-dimensionfilter-list").find("input").each (function (idx, e) {
-				for (var i = 0; i < filterValues.length; i++) {
-					if ($(e).attr("value") == filterValues[i]) {
-						$(e).attr("checked", "checked");
-					}
-				}
-			} );
-		}
 
 	};
 
@@ -2924,10 +2905,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 		jqxhr.always(function() {
 			$scope.pendingRequests--;
 		});
+		jqxhr.error($scope.requestErrorHandler);
 
 	};
 
 	$scope._loadDataCallback = function(data, status) {
+		$scope.validateData(data, status);
 		$scope.processData(data);
 		$rootScope.$apply();
 		$scope.gridApi.core.refresh();
@@ -3306,10 +3289,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 		jqxhr.always(function() {
 			$scope.pendingRequests--;
 		});
+		jqxhr.error($scope.requestErrorHandler);
 
 	};
 
 	$scope._loadDataCallback = function(data, status) {
+		$scope.validateData(data, status);
 		$scope.processData(data);
 		$rootScope.$apply();
 		if ($scope.gridApi) {
@@ -3594,10 +3579,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 		jqxhr.always(function() {
 			$scope.pendingRequests--;
 		});
+		jqxhr.error($scope.requestErrorHandler);
 
 	};
 
 	$scope._loadDataCallback = function(data, status) {
+		$scope.validateData(data, status);
 		$scope.processData(data);
 		$rootScope.$apply();
 	};
@@ -5038,22 +5025,6 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
 ;angular.module('cv').run(['$templateCache', function($templateCache) {
   'use strict';
 
-  $templateCache.put('alerts/alerts.html',
-    "<div class=\"cv-bootstrap cv-alerts\">\n" +
-    "    <div style=\"min-width: 260px; width: 300px; z-index: 1000;\" >\n" +
-    "\n" +
-    "        {{# cv.alerts }}\n" +
-    "        <div class=\"alert alert-warning alert-dismissable\" style=\"margin-bottom: 5px;\">\n" +
-    "            <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
-    "            <i class=\"fa fa-bell\"></i> {{ text }}\n" +
-    "        </div>\n" +
-    "        {{/ cv.alerts }}\n" +
-    "\n" +
-    "    </div>\n" +
-    "</div>\n"
-  );
-
-
   $templateCache.put('studio/about.html',
     "<div class=\"modal fade\" id=\"cvAboutModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"\">\n" +
     "  <div class=\"modal-dialog\" role=\"document\">\n" +
@@ -5283,11 +5254,8 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "        <div class=\"row\">\n" +
     "            <div ng-if=\"cubesService.state == 3\" class=\"col-xs-12\">\n" +
     "                <div class=\"alert alert-danger\" style=\"margin: 0px;\">\n" +
-    "                    <p>Could not connect to server.</p>\n" +
+    "                    <p>Could not connect to server: {{ cubesService.stateText }}</p>\n" +
     "                    <p>Please try again and contact your administrator if the problem persists.</p>\n" +
-    "                    <p class=\"text-right\">\n" +
-    "                        <a class=\"alert-link\" href=\"http://jjmontesl.github.io/cubesviewer/\" target=\"_blank\">CubesViewer Data Visualizer</a>\n" +
-    "                    </p>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
@@ -5307,6 +5275,29 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "</div>\n" +
     "\n" +
     "\n"
+  );
+
+
+  $templateCache.put('views/cube/alerts.html',
+    "<div>\n" +
+    "\n" +
+    "    <div ng-if=\"view._requestFailed\" class=\"alert alert-dismissable alert-danger\" style=\"margin-bottom: 5px;\">\n" +
+    "        <div style=\"display: inline-block;\"><i class=\"fa fa-exclamation\"></i></div>\n" +
+    "        <div style=\"display: inline-block; margin-left: 20px;\">\n" +
+    "            An error has occurred. Cannot present view.<br />\n" +
+    "            Please try again and contact your administrator if the problem persists.\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ng-if=\"view._resultLimitHit\" class=\"alert alert-dismissable alert-warning\" style=\"margin-bottom: 5px;\">\n" +
+    "        <button type=\"button\" class=\"close\" ng-click=\"view._resultLimitHit = false;\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>\n" +
+    "        <div style=\"display: inline-block;\"><i class=\"fa fa-exclamation\"></i></div>\n" +
+    "        <div style=\"display: inline-block; margin-left: 20px;\">\n" +
+    "            Limit of {{ cubesService.cubesserver.info.json_record_limit }} items has been hit. <b>Results are incomplete.</b>.<br />\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "</div>\n"
   );
 
 
@@ -5721,6 +5712,8 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "            <i class=\"fa fa-fw fa-file-o\"></i> {{ view.params.name }}\n" +
     "        </h2>\n" +
     "\n" +
+    "        <div ng-include=\"'views/cube/alerts.html'\"></div>\n" +
+    "\n" +
     "        <div class=\"cv-view-viewmenu hidden-print\" ng-hide=\"view.controlsHidden()\">\n" +
     "\n" +
     "            <div class=\"panel panel-primary pull-right\" style=\"padding: 3px; white-space: nowrap;\">\n" +
@@ -5990,7 +5983,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "            <div class=\"row\">\n" +
     "                <div class=\"col-xs-6\">\n" +
     "                <div style=\"margin-top: 5px;\">\n" +
-    "                    <div class=\"panel panel-default panel-outline\" style=\"margin-bottom: 0px;\"><div class=\"panel-body\" style=\"max-height: 180px; overflow-y: auto; overflow-x: hidden;\">\n" +
+    "                    <div class=\"panel panel-default panel-outline\" style=\"margin-bottom: 0px; \"><div class=\"panel-body\" style=\"max-height: 180px; overflow-y: auto; overflow-x: hidden;\">\n" +
     "                        <div ng-show=\"loadingDimensionValues\" ><i class=\"fa fa-circle-o-notch fa-spin fa-fw\"></i> Loading...</div>\n" +
     "                        <div ng-if=\"!loadingDimensionValues\">\n" +
     "                            <div ng-repeat=\"val in dimensionValues | filter:filterDimensionValue(searchString) track by val.value\" style=\"overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\">\n" +

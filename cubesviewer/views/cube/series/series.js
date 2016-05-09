@@ -150,10 +150,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 		jqxhr.always(function() {
 			$scope.pendingRequests--;
 		});
+		jqxhr.error($scope.requestErrorHandler);
 
 	};
 
 	$scope._loadDataCallback = function(data, status) {
+		$scope.validateData(data, status);
 		$scope.processData(data);
 		$rootScope.$apply();
 		if ($scope.gridApi) {

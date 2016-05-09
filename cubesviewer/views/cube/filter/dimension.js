@@ -38,6 +38,16 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 	$scope.initialize = function() {
 
+		// Check if current filter is inverted
+		var view = $scope.view;
+		var parts = view.cube.cvdim_parts($scope.view.dimensionFilter);
+		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+		for (var i = 0; i < view.params.cuts.length ; i++) {
+			if (view.params.cuts[i].dimension == cutDimension) {
+				$scope.filterInverted = view.params.cuts[i].invert;
+				break;
+			}
+		}
 	};
 
 	$scope.$watch("view.dimensionFilter", function() {
@@ -110,8 +120,20 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 	$scope._processData = function(data) {
 
 		// Get dimension
+		var view = $scope.view;
 		var dimension = $scope.view.cube.cvdim_dim($scope.view.dimensionFilter);
 		var dimensionValues = [];
+
+		var parts = view.cube.cvdim_parts($scope.view.dimensionFilter);
+		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+		var filterValues = [];
+		for (var i = 0; i < view.params.cuts.length ; i++) {
+			if (view.params.cuts[i].dimension == cutDimension) {
+				$scope.filterInverted = view.params.cuts[i].invert;
+				filterValues = view.params.cuts[i].value.split(";");
+				break;
+			}
+		}
 
 		$(data.data).each( function(idx, e) {
 
@@ -131,12 +153,13 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 			dimensionValues.push({
 				'label': drilldown_level_labels.join(' / '),
 				'value': drilldown_level_values.join (','),
-				'selected': false
+				'selected': filterValues.indexOf(drilldown_level_values.join (',')) >= 0
 			});
 
 		});
 
 		$scope.dimensionValues = dimensionValues;
+		$scope.$apply();
 	};
 
 	/*
@@ -157,8 +180,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 		// Cut dimension
 		var cutDimension = $scope.parts.dimension.name + ( $scope.parts.hierarchy.name != "default" ? "@" + $scope.parts.hierarchy.name : "" );
-		console.debug(cutDimension);
-		console.debug(filterValues);
 		$scope.selectCut(cutDimension, filterValues.join(";"), $scope.filterInverted);
 
 	};
@@ -211,68 +232,6 @@ function cubesviewerViewCubeDimensionFilter () {
 			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox").filter(":checked").trigger('click');
 		});
 
-
-	};	/*
-	 * Searches labels by string and filters from view.
-	 */
-	this.searchDimensionValues = function(view, search) {
-
-		$(view.container).find(".cv-view-dimensionfilter-list").find("input").each (function (idx, e) {
-			if ((search == "") || ($(e).parent().text().toLowerCase().indexOf(search.toLowerCase()) >= 0)) {
-				$(e).parents('.cv-view-dimensionfilter-item').first().show();
-			} else {
-				$(e).parents('.cv-view-dimensionfilter-item').first().hide();
-			}
-		} );
-
-	};
-
-
-
-	/*
-	 * Shows the dimension filter
-	 */
-	this.drawDimensionValues = function (view, tdimension, data) {
-
-		$(view.container).find(".cv-view-dimensionfilter-list").empty();
-
-
-		// Update selected
-		view.cubesviewer.views.cube.dimensionfilter.updateFromCut(view, tdimension);
-
-	};
-
-	/*
-	 * Updates selection after loading data.
-	 */
-	this.updateFromCut = function(view, dimensionString) {
-
-		var parts = view.cube.cvdim_parts(dimensionString);
-		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
-
-		var invert = false;
-		var filterValues = [];
-		for (var i = 0; i < view.params.cuts.length ; i++) {
-			if (view.params.cuts[i].dimension == cutDimension) {
-				invert = view.params.cuts[i].invert;
-				filterValues = view.params.cuts[i].value.split(";");
-				break;
-			}
-		}
-
-		if (invert) {
-			$(view.container).find(".cv-view-dimensionfilter-cont .invert-cut").attr("checked", "checked");
-		}
-
-		if (filterValues.length > 0) {
-			$(view.container).find(".cv-view-dimensionfilter-list").find("input").each (function (idx, e) {
-				for (var i = 0; i < filterValues.length; i++) {
-					if ($(e).attr("value") == filterValues[i]) {
-						$(e).attr("checked", "checked");
-					}
-				}
-			} );
-		}
 
 	};
 

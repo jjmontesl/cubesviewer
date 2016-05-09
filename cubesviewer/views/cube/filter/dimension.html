@@ -49,7 +49,7 @@
             <div class="row">
                 <div class="col-xs-6">
                 <div style="margin-top: 5px;">
-                    <div class="panel panel-default panel-outline" style="margin-bottom: 0px;"><div class="panel-body" style="max-height: 180px; overflow-y: auto; overflow-x: hidden;">
+                    <div class="panel panel-default panel-outline" style="margin-bottom: 0px; "><div class="panel-body" style="max-height: 180px; overflow-y: auto; overflow-x: hidden;">
                         <div ng-show="loadingDimensionValues" ><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Loading...</div>
                         <div ng-if="!loadingDimensionValues">
                             <div ng-repeat="val in dimensionValues | filter:filterDimensionValue(searchString) track by val.value" style="overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;">
