@@ -27,8 +27,8 @@
 
 angular.module('cv.views', ['cv.views.cube']);
 
-angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', 'cubesService',
-                                                    function ($rootScope, cvOptions, cubesService) {
+angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', 'cubesService', 'dialogService',
+                                                    function ($rootScope, cvOptions, cubesService, dialogService) {
 
 	this.views = [];
 
@@ -53,7 +53,7 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 				params = $.parseJSON(data);
 			} catch (err) {
 				console.debug('Error: could not process serialized data (JSON parse error)');
-				alert ('Error: could not process serialized data (JSON parse error)');
+				dialogService.show('Error: could not process serialized data (JSON parse error).')
 				params["name"] = "Undefined view";
 			}
 		} else {
@@ -90,57 +90,4 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 
 }]);
 
-
-/**
- * cvView directive. This is the core CubesViewer directive, which shows
- * a configured view.
- */
-/* */
-
-
-function cubesviewerViews () {
-
-
-	/*
-	 * Block the view interface.
-	 */
-	this.blockView = function (view, message) {
-		if (message == "undef") message = null;
-		$(view.container).block({
-			"message": message,
-			"fadeOut": 200,
-			"onUnblock": function() {
-				// Fix conflict with jqBlock which makes menus to not overflow off the view (makes menus innacessible)
-				$(view.container).css("position", "inherit");
-			}
-		});
-	}
-
-	/*
-	 * Block the view interface with a loading message
-	 */
-	this.blockViewLoading = function (view) {
-		this.blockView (view, '<span class="ajaxloader" title="Loading..." >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Loading</span>');
-	}
-
-	/*
-	 * Unblock the view interface.
-	 */
-	this.unblockView = function (view) {
-
-		$(view.container).unblock();
-
-	}
-
-
-	/*
-	 * Triggers redraw for a given view.
-	 */
-	this.redrawView = function (view) {
-		// TODO: Review if if below is needed
-		//if (view == null) return;
-		$(document).trigger ("cubesviewerViewDraw", [ view ]);
-	}
-
-};
 

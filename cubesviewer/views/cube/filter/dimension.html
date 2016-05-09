@@ -8,30 +8,24 @@
         <div class="panel-body">
 
             <div >
-            <form class="form-inline">
+            <form >
 
-              <div class="form-group has-feedback">
+              <div class="form-group has-feedback" style="display: inline-block; margin-bottom: 0; vertical-align: middle;">
                 <!-- <label for="search">Search:</label>  -->
                 <input type="text" class="form-control" ng-model="searchString" placeholder="Search..." style="width: 16em;">
                 <i class="fa fa-fw fa-times-circle form-control-feedback" ng-click="searchString = ''" style="cursor: pointer; pointer-events: inherit;"></i>
               </div>
 
-              <div class="form-group">
-
-                <div class="input-group" style="margin-left: 10px;">
-                  <span class="input-group-btn">
+              <div class="btn-group" style="margin-left: 10px; display: inline-block; margin-bottom: 0; vertical-align: middle;">
                     <button class="btn btn-default" ng-click="selectAll();" type="button" title="Select all"><i class="fa fa-fw fa-check-square-o"></i></button>
-                  </span>
-                  <span class="input-group-btn">
                     <button class="btn btn-default" ng-click="selectNone();" type="button" title="Select none"><i class="fa fa-fw fa-square-o"></i></button>
-                  </span>
-                </div>
-                <!-- <label for="search">Search:</label>  -->
               </div>
 
+             <div class="form-group" style="display: inline-block; margin-bottom: 0; vertical-align: middle;">
               <button class="btn btn-default" type="button" title="Drilldown this" ng-click="selectDrill(parts.fullDrilldownValue, true)"><i class="fa fa-fw fa-arrow-down"></i></button>
+              </div>
 
-              <div class="form-group">
+              <div class="form-group" style="display: inline-block; margin-bottom: 0; vertical-align: middle;">
 
                   <div class="btn btn-default" ng-click="filterInverted = !filterInverted" ng-class="{ 'active': filterInverted, 'btn-danger': filterInverted }">
                     <input type="checkbox" ng-model="filterInverted" style="pointer-events: none; margin: 0px; vertical-align: middle;" ></input>
@@ -40,7 +34,9 @@
 
               </div>
 
+                <div class="form-group" style="display: inline-block; margin-bottom: 0; vertical-align: middle;">
               <button ng-click="applyFilter()" class="btn btn-success" type="button"><i class="fa fa-fw fa-filter"></i> Apply</button>
+              </div>
             </form>
             </div>
 
@@ -51,15 +47,31 @@
                 <div style="margin-top: 5px;">
                     <div class="panel panel-default panel-outline" style="margin-bottom: 0px; "><div class="panel-body" style="max-height: 180px; overflow-y: auto; overflow-x: hidden;">
                         <div ng-show="loadingDimensionValues" ><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Loading...</div>
+
                         <div ng-if="!loadingDimensionValues">
                             <div ng-repeat="val in dimensionValues | filter:filterDimensionValue(searchString) track by val.value" style="overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                 <label style="font-weight: normal; margin-bottom: 2px;">
-                                    <input type="checkbox" name="selectedValues[]" ng-model="val.selected" value="{{ val.value }}" style="vertical-align: bottom;" />
-                                    {{ val.label }}
+                                    <input type="checkbox" name="selectedValues[]" ng-model="val.selected" value="{{ ::val.value }}" style="vertical-align: bottom;" />
+                                    {{ ::val.label }}
                                 </label>
                             </div>
                         </div>
+
                     </div></div>
+
+                    <div ng-if="!loadingDimensionValues" class="" style="margin-bottom: 0px; ">
+                        <div class="text-right">
+                            {{ dimensionValues.length }} items
+                        </div>
+                    </div>
+
+                    <div ng-if="dimensionValues.length >= cubesService.cubesserver.info.json_record_limit" class="alert alert-warning" style="margin-bottom: 0px;">
+                        <div style="display: inline-block;"><i class="fa fa-exclamation"></i></div>
+                        <div style="display: inline-block; margin-left: 20px;">
+                            Limit of {{ cubesService.cubesserver.info.json_record_limit }} items has been hit. Dimension value list is <b>incomplete</b>.<br />
+                        </div>
+                    </div>
+
                 </div>
                 </div>
             </div>

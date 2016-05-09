@@ -1,6 +1,22 @@
 angular.module('cv').run(['$templateCache', function($templateCache) {
   'use strict';
 
+  $templateCache.put('dialog/dialog.html',
+    "  <div class=\"modal-header\">\n" +
+    "    <button type=\"button\" ng-click=\"close()\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\"><i class=\"fa fa-fw fa-close\"></i></span></button>\n" +
+    "    <h4 class=\"modal-title\" id=\"myModalLabel\"><i class=\"fa fa-info\"></i> CubesViewer</h4>\n" +
+    "  </div>\n" +
+    "  <div class=\"modal-body\">\n" +
+    "        <p>{{ dialog.text }}</p>\n" +
+    "  </div>\n" +
+    "  <div class=\"modal-footer\">\n" +
+    "    <!-- <button type=\"button\" ng-click=\"close()\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Cancel</button>  -->\n" +
+    "    <button type=\"button\" ng-click=\"close()\" class=\"btn btn-primary\" data-dismiss=\"modal\">Close</button>\n" +
+    "  </div>\n" +
+    "\n"
+  );
+
+
   $templateCache.put('studio/about.html',
     "<div class=\"modal fade\" id=\"cvAboutModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"\">\n" +
     "  <div class=\"modal-dialog\" role=\"document\">\n" +
@@ -435,7 +451,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut\">\n" +
     "\n" +
-    "    <li ng-show=\"view.params.mode == 'explore'\" ng-click=\"$rootScope.$broadcast('filterSelected')\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected rows</a></li>\n" +
+    "    <li ng-show=\"view.params.mode == 'explore'\" ng-click=\"$rootScope.$broadcast('filterSelected')\" ng-class=\"{ 'disabled': view.params.drilldown.length != 1 }\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected rows</a></li>\n" +
     "    <div ng-show=\"view.params.mode == 'explore'\" class=\"divider\"></div>\n" +
     "\n" +
     "    <li class=\"dropdown-submenu\">\n" +
@@ -918,30 +934,24 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        <div class=\"panel-body\">\n" +
     "\n" +
     "            <div >\n" +
-    "            <form class=\"form-inline\">\n" +
+    "            <form >\n" +
     "\n" +
-    "              <div class=\"form-group has-feedback\">\n" +
+    "              <div class=\"form-group has-feedback\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
     "                <!-- <label for=\"search\">Search:</label>  -->\n" +
     "                <input type=\"text\" class=\"form-control\" ng-model=\"searchString\" placeholder=\"Search...\" style=\"width: 16em;\">\n" +
     "                <i class=\"fa fa-fw fa-times-circle form-control-feedback\" ng-click=\"searchString = ''\" style=\"cursor: pointer; pointer-events: inherit;\"></i>\n" +
     "              </div>\n" +
     "\n" +
-    "              <div class=\"form-group\">\n" +
-    "\n" +
-    "                <div class=\"input-group\" style=\"margin-left: 10px;\">\n" +
-    "                  <span class=\"input-group-btn\">\n" +
+    "              <div class=\"btn-group\" style=\"margin-left: 10px; display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
     "                    <button class=\"btn btn-default\" ng-click=\"selectAll();\" type=\"button\" title=\"Select all\"><i class=\"fa fa-fw fa-check-square-o\"></i></button>\n" +
-    "                  </span>\n" +
-    "                  <span class=\"input-group-btn\">\n" +
     "                    <button class=\"btn btn-default\" ng-click=\"selectNone();\" type=\"button\" title=\"Select none\"><i class=\"fa fa-fw fa-square-o\"></i></button>\n" +
-    "                  </span>\n" +
-    "                </div>\n" +
-    "                <!-- <label for=\"search\">Search:</label>  -->\n" +
     "              </div>\n" +
     "\n" +
+    "             <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
     "              <button class=\"btn btn-default\" type=\"button\" title=\"Drilldown this\" ng-click=\"selectDrill(parts.fullDrilldownValue, true)\"><i class=\"fa fa-fw fa-arrow-down\"></i></button>\n" +
+    "              </div>\n" +
     "\n" +
-    "              <div class=\"form-group\">\n" +
+    "              <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
     "\n" +
     "                  <div class=\"btn btn-default\" ng-click=\"filterInverted = !filterInverted\" ng-class=\"{ 'active': filterInverted, 'btn-danger': filterInverted }\">\n" +
     "                    <input type=\"checkbox\" ng-model=\"filterInverted\" style=\"pointer-events: none; margin: 0px; vertical-align: middle;\" ></input>\n" +
@@ -950,7 +960,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "              </div>\n" +
     "\n" +
+    "                <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
     "              <button ng-click=\"applyFilter()\" class=\"btn btn-success\" type=\"button\"><i class=\"fa fa-fw fa-filter\"></i> Apply</button>\n" +
+    "              </div>\n" +
     "            </form>\n" +
     "            </div>\n" +
     "\n" +
@@ -961,15 +973,31 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                <div style=\"margin-top: 5px;\">\n" +
     "                    <div class=\"panel panel-default panel-outline\" style=\"margin-bottom: 0px; \"><div class=\"panel-body\" style=\"max-height: 180px; overflow-y: auto; overflow-x: hidden;\">\n" +
     "                        <div ng-show=\"loadingDimensionValues\" ><i class=\"fa fa-circle-o-notch fa-spin fa-fw\"></i> Loading...</div>\n" +
+    "\n" +
     "                        <div ng-if=\"!loadingDimensionValues\">\n" +
     "                            <div ng-repeat=\"val in dimensionValues | filter:filterDimensionValue(searchString) track by val.value\" style=\"overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\">\n" +
     "                                <label style=\"font-weight: normal; margin-bottom: 2px;\">\n" +
-    "                                    <input type=\"checkbox\" name=\"selectedValues[]\" ng-model=\"val.selected\" value=\"{{ val.value }}\" style=\"vertical-align: bottom;\" />\n" +
-    "                                    {{ val.label }}\n" +
+    "                                    <input type=\"checkbox\" name=\"selectedValues[]\" ng-model=\"val.selected\" value=\"{{ ::val.value }}\" style=\"vertical-align: bottom;\" />\n" +
+    "                                    {{ ::val.label }}\n" +
     "                                </label>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
+    "\n" +
     "                    </div></div>\n" +
+    "\n" +
+    "                    <div ng-if=\"!loadingDimensionValues\" class=\"\" style=\"margin-bottom: 0px; \">\n" +
+    "                        <div class=\"text-right\">\n" +
+    "                            {{ dimensionValues.length }} items\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                    <div ng-if=\"dimensionValues.length >= cubesService.cubesserver.info.json_record_limit\" class=\"alert alert-warning\" style=\"margin-bottom: 0px;\">\n" +
+    "                        <div style=\"display: inline-block;\"><i class=\"fa fa-exclamation\"></i></div>\n" +
+    "                        <div style=\"display: inline-block; margin-left: 20px;\">\n" +
+    "                            Limit of {{ cubesService.cubesserver.info.json_record_limit }} items has been hit. Dimension value list is <b>incomplete</b>.<br />\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "\n" +
     "                </div>\n" +
     "                </div>\n" +
     "            </div>\n" +

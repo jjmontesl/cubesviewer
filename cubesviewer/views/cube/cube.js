@@ -200,7 +200,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 					return e.dimension == dimension;
 				});
 				if (existing_cut.length > 0) {
-					//view.cubesviewer.alert("Cannot cut dataset. Dimension '" + dimension + "' is already filtered.");
+					//dialogService.show("Cannot cut dataset. Dimension '" + dimension + "' is already filtered.");
 					//return;
 				} else {*/
 					view.params.cuts = $.grep(view.params.cuts, function(e) {
@@ -302,7 +302,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		$scope.view._cubeDataUpdated = true;
 
 	};
-
 
 }]).directive("cvViewCube", function() {
 	return {

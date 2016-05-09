@@ -105,9 +105,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 	 * Default XHR error handler for CubesRequests
 	 */
 	this.defaultRequestErrorHandler = function(xhr, textStatus, errorThrown) {
-		// TODO: These alerts are not acceptable.
 		console.debug("Cubes request error: " + xhr)
-		//$('.ajaxloader').hide();
 	};
 
 	/*

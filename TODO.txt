@@ -94,6 +94,7 @@
 
     * Defualt cube settings is incorrect: it should only be applied if the view is not otherwise configured (ie loaded or json)
     * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative), move "invert 2nd serie" as a calculation?
+    * Error when loading incorrect JSON: error shall be reported by client (ie GUI), state incorrect, cannot access showDialog.
 
     * Fix analytics plugin to ignore first N seconds of events as for bounce rate calculation.
     * Cleanup code.

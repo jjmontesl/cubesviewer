@@ -1107,9 +1107,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 	 * Default XHR error handler for CubesRequests
 	 */
 	this.defaultRequestErrorHandler = function(xhr, textStatus, errorThrown) {
-		// TODO: These alerts are not acceptable.
 		console.debug("Cubes request error: " + xhr)
-		//$('.ajaxloader').hide();
 	};
 
 	/*
@@ -1197,70 +1195,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 
 "use strict";
 
-/*
- * Main cubesviewer object. It is created by the library and made
- * available as the global "cubesviewer" variable.
- */
-function cubesviewerOLD() {
 
-	// Alerts component
-	this._alerts = null;
-
-	// Current alerts
-	this.alerts = [];
-
-
-	/*
-	 * Show a global alert
-	 */
-	this.alert = function (message) {
-		alert ("CubesViewer " + this.version + "\n\n" + message);
-	}
-
-	/*
-	 * Refresh
-	 */
-	this.refresh = function() {
-		$(document).trigger("cubesviewerRefresh");
-	}
-
-  /*
-   * Save typing while debugging - get a view object with: cubesviewer.getView(1)
-   */
-
-  this.getView = function(id) {
-    var viewid = id.toString();
-    viewid = viewid.indexOf('view') === 0 ? viewid : 'view' + viewid;
-    viewid = viewid[0] === '#' ? viewid : '#' + viewid;
-
-    return $(viewid + ' .cv-gui-viewcontent').data('cubesviewer-view');
-  };
-
-
-	/*
-	 * Show quick tip message.
-	 */
-	this.showInfoMessage = function(message, delay) {
-
-		if (this._alerts == null) {
-
-			this._alerts = new Ractive({
-				el: $("body")[0],
-				append: true,
-				template: cvtemplates.alerts,
-				partials: cvtemplates,
-				data: { 'cv': this }
-			});
-		}
-
-		if (delay == undefined) delay = 5000;
-
-		this.alerts.push({ 'text': message });
-		this._alerts.reset({ 'cv': this });
-
-	};
-
-};
 
 // Main CubesViewer angular module
 angular.module('cv', ['ui.bootstrap', 'bootstrapSubmenu',
@@ -1357,7 +1292,18 @@ var cubesviewer = {
 
 		$compile($(container).contents())(templateScope);
 
-	}
+	},
+
+
+	/*
+	this.getView = function(id) {
+	    var viewid = id.toString();
+	    viewid = viewid.indexOf('view') === 0 ? viewid : 'view' + viewid;
+	    viewid = viewid[0] === '#' ? viewid : '#' + viewid;
+
+	    return $(viewid + ' .cv-gui-viewcontent').data('cubesviewer-view');
+	  };
+	*/
 
 };
 
@@ -1392,8 +1338,8 @@ var cubesviewer = {
 
 angular.module('cv.views', ['cv.views.cube']);
 
-angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', 'cubesService',
-                                                    function ($rootScope, cvOptions, cubesService) {
+angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', 'cubesService', 'dialogService',
+                                                    function ($rootScope, cvOptions, cubesService, dialogService) {
 
 	this.views = [];
 
@@ -1418,7 +1364,7 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 				params = $.parseJSON(data);
 			} catch (err) {
 				console.debug('Error: could not process serialized data (JSON parse error)');
-				alert ('Error: could not process serialized data (JSON parse error)');
+				dialogService.show('Error: could not process serialized data (JSON parse error).')
 				params["name"] = "Undefined view";
 			}
 		} else {
@@ -1456,58 +1402,83 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 }]);
 
 
-/**
- * cvView directive. This is the core CubesViewer directive, which shows
- * a configured view.
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
-/* */
+
+'use strict';
+
+angular.module('cv.views').service("dialogService", ['$rootScope', '$uibModal', 'cvOptions', 'cubesService',
+                                                    function ($rootScope, $uibModal, cvOptions, cubesService) {
+
+	var dialogService = this;
+
+	this.initialize = function() {
+		$("body").append('<div class="cv-modals cv-bootstrap"></div>');
+	};
+
+	this.show = function(text) {
+
+	    var modalInstance = $uibModal.open({
+	    	animation: true,
+	    	templateUrl: 'dialog/dialog.html',
+	    	controller: 'CubesViewerViewsDialogController',
+	    	appendTo: angular.element($("body").find('.cv-modals')[0]),
+		    resolve: {
+	    		dialog: function() { return { 'text': text }; }
+		    },
+	    	/*
+		    size: size,
+	    	 */
+	    });
+
+	    modalInstance.result.then(function (selectedItem) {
+	    	//$scope.selected = selectedItem;
+	    }, function () {
+	        //console.debug('Modal dismissed at: ' + new Date());
+	    });
+
+	};
+
+	this.initialize();
+
+}]);
 
 
-function cubesviewerViews () {
+/**
+ */
+angular.module('cv.views').controller("CubesViewerViewsDialogController", ['$rootScope', '$scope', '$timeout', '$uibModalInstance', 'cvOptions', 'cubesService', 'viewsService', 'dialog',
+                                                                           function ($rootScope, $scope, $timeout, $uibModalInstance, cvOptions, cubesService, viewsService, dialog) {
+
+	$scope.$rootScope = $rootScope;
+
+	$scope.dialog = dialog;
+
+	$scope.close = function() {
+		$uibModalInstance.dismiss('cancel');
+	};
 
 
-	/*
-	 * Block the view interface.
-	 */
-	this.blockView = function (view, message) {
-		if (message == "undef") message = null;
-		$(view.container).block({
-			"message": message,
-			"fadeOut": 200,
-			"onUnblock": function() {
-				// Fix conflict with jqBlock which makes menus to not overflow off the view (makes menus innacessible)
-				$(view.container).css("position", "inherit");
-			}
-		});
-	}
-
-	/*
-	 * Block the view interface with a loading message
-	 */
-	this.blockViewLoading = function (view) {
-		this.blockView (view, '<span class="ajaxloader" title="Loading..." >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Loading</span>');
-	}
-
-	/*
-	 * Unblock the view interface.
-	 */
-	this.unblockView = function (view) {
-
-		$(view.container).unblock();
-
-	}
-
-
-	/*
-	 * Triggers redraw for a given view.
-	 */
-	this.redrawView = function (view) {
-		// TODO: Review if if below is needed
-		//if (view == null) return;
-		$(document).trigger ("cubesviewerViewDraw", [ view ]);
-	}
-
-};
+}]);
 
 ;/*
  * CubesViewer
@@ -1711,7 +1682,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 					return e.dimension == dimension;
 				});
 				if (existing_cut.length > 0) {
-					//view.cubesviewer.alert("Cannot cut dataset. Dimension '" + dimension + "' is already filtered.");
+					//dialogService.show("Cannot cut dataset. Dimension '" + dimension + "' is already filtered.");
 					//return;
 				} else {*/
 					view.params.cuts = $.grep(view.params.cuts, function(e) {
@@ -1814,7 +1785,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	};
 
-
 }]).directive("cvViewCube", function() {
 	return {
 		restrict: 'A',
@@ -1885,8 +1855,8 @@ Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSe
 
 /**
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
-                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, dialogService) {
 
 	$scope.$parent.gridData = [];
 
@@ -2216,12 +2186,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		var view = $scope.view;
 
 		if (view.params.drilldown.length != 1) {
-			alert('Can only filter multiple values in a view with one level of drilldown.');
+			dialogService.show('Can only filter multiple values in a view with one level of drilldown.');
 			return;
 		}
 
 		if ($scope.gridApi.selection.getSelectedCount() <= 0) {
-			alert('Cannot filter. No rows are selected.');
+			dialogService.show('Cannot filter. No rows are selected.');
 			return;
 		}
 
@@ -2789,7 +2759,7 @@ function cubesviewerViewCubeDateFilter () {
 			} else if (field == "day") {
 				values.push(tdate.getDate());
 			} else {
-				cubesviewer.alert ("Wrong configuration of model: time role of level '" + level.name + "' is invalid.");
+				dialogService.show("Wrong configuration of model: time role of level '" + level.name + "' is invalid.");
 			}
 		}
 
@@ -5025,6 +4995,22 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
 ;angular.module('cv').run(['$templateCache', function($templateCache) {
   'use strict';
 
+  $templateCache.put('dialog/dialog.html',
+    "  <div class=\"modal-header\">\n" +
+    "    <button type=\"button\" ng-click=\"close()\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\"><i class=\"fa fa-fw fa-close\"></i></span></button>\n" +
+    "    <h4 class=\"modal-title\" id=\"myModalLabel\"><i class=\"fa fa-info\"></i> CubesViewer</h4>\n" +
+    "  </div>\n" +
+    "  <div class=\"modal-body\">\n" +
+    "        <p>{{ dialog.text }}</p>\n" +
+    "  </div>\n" +
+    "  <div class=\"modal-footer\">\n" +
+    "    <!-- <button type=\"button\" ng-click=\"close()\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Cancel</button>  -->\n" +
+    "    <button type=\"button\" ng-click=\"close()\" class=\"btn btn-primary\" data-dismiss=\"modal\">Close</button>\n" +
+    "  </div>\n" +
+    "\n"
+  );
+
+
   $templateCache.put('studio/about.html',
     "<div class=\"modal fade\" id=\"cvAboutModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"\">\n" +
     "  <div class=\"modal-dialog\" role=\"document\">\n" +
@@ -5459,7 +5445,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut\">\n" +
     "\n" +
-    "    <li ng-show=\"view.params.mode == 'explore'\" ng-click=\"$rootScope.$broadcast('filterSelected')\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected rows</a></li>\n" +
+    "    <li ng-show=\"view.params.mode == 'explore'\" ng-click=\"$rootScope.$broadcast('filterSelected')\" ng-class=\"{ 'disabled': view.params.drilldown.length != 1 }\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected rows</a></li>\n" +
     "    <div ng-show=\"view.params.mode == 'explore'\" class=\"divider\"></div>\n" +
     "\n" +
     "    <li class=\"dropdown-submenu\">\n" +
@@ -5942,30 +5928,24 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "        <div class=\"panel-body\">\n" +
     "\n" +
     "            <div >\n" +
-    "            <form class=\"form-inline\">\n" +
+    "            <form >\n" +
     "\n" +
-    "              <div class=\"form-group has-feedback\">\n" +
+    "              <div class=\"form-group has-feedback\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
     "                <!-- <label for=\"search\">Search:</label>  -->\n" +
     "                <input type=\"text\" class=\"form-control\" ng-model=\"searchString\" placeholder=\"Search...\" style=\"width: 16em;\">\n" +
     "                <i class=\"fa fa-fw fa-times-circle form-control-feedback\" ng-click=\"searchString = ''\" style=\"cursor: pointer; pointer-events: inherit;\"></i>\n" +
     "              </div>\n" +
     "\n" +
-    "              <div class=\"form-group\">\n" +
-    "\n" +
-    "                <div class=\"input-group\" style=\"margin-left: 10px;\">\n" +
-    "                  <span class=\"input-group-btn\">\n" +
+    "              <div class=\"btn-group\" style=\"margin-left: 10px; display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
     "                    <button class=\"btn btn-default\" ng-click=\"selectAll();\" type=\"button\" title=\"Select all\"><i class=\"fa fa-fw fa-check-square-o\"></i></button>\n" +
-    "                  </span>\n" +
-    "                  <span class=\"input-group-btn\">\n" +
     "                    <button class=\"btn btn-default\" ng-click=\"selectNone();\" type=\"button\" title=\"Select none\"><i class=\"fa fa-fw fa-square-o\"></i></button>\n" +
-    "                  </span>\n" +
-    "                </div>\n" +
-    "                <!-- <label for=\"search\">Search:</label>  -->\n" +
     "              </div>\n" +
     "\n" +
+    "             <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
     "              <button class=\"btn btn-default\" type=\"button\" title=\"Drilldown this\" ng-click=\"selectDrill(parts.fullDrilldownValue, true)\"><i class=\"fa fa-fw fa-arrow-down\"></i></button>\n" +
+    "              </div>\n" +
     "\n" +
-    "              <div class=\"form-group\">\n" +
+    "              <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
     "\n" +
     "                  <div class=\"btn btn-default\" ng-click=\"filterInverted = !filterInverted\" ng-class=\"{ 'active': filterInverted, 'btn-danger': filterInverted }\">\n" +
     "                    <input type=\"checkbox\" ng-model=\"filterInverted\" style=\"pointer-events: none; margin: 0px; vertical-align: middle;\" ></input>\n" +
@@ -5974,7 +5954,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "              </div>\n" +
     "\n" +
+    "                <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
     "              <button ng-click=\"applyFilter()\" class=\"btn btn-success\" type=\"button\"><i class=\"fa fa-fw fa-filter\"></i> Apply</button>\n" +
+    "              </div>\n" +
     "            </form>\n" +
     "            </div>\n" +
     "\n" +
@@ -5985,15 +5967,31 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "                <div style=\"margin-top: 5px;\">\n" +
     "                    <div class=\"panel panel-default panel-outline\" style=\"margin-bottom: 0px; \"><div class=\"panel-body\" style=\"max-height: 180px; overflow-y: auto; overflow-x: hidden;\">\n" +
     "                        <div ng-show=\"loadingDimensionValues\" ><i class=\"fa fa-circle-o-notch fa-spin fa-fw\"></i> Loading...</div>\n" +
+    "\n" +
     "                        <div ng-if=\"!loadingDimensionValues\">\n" +
     "                            <div ng-repeat=\"val in dimensionValues | filter:filterDimensionValue(searchString) track by val.value\" style=\"overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\">\n" +
     "                                <label style=\"font-weight: normal; margin-bottom: 2px;\">\n" +
-    "                                    <input type=\"checkbox\" name=\"selectedValues[]\" ng-model=\"val.selected\" value=\"{{ val.value }}\" style=\"vertical-align: bottom;\" />\n" +
-    "                                    {{ val.label }}\n" +
+    "                                    <input type=\"checkbox\" name=\"selectedValues[]\" ng-model=\"val.selected\" value=\"{{ ::val.value }}\" style=\"vertical-align: bottom;\" />\n" +
+    "                                    {{ ::val.label }}\n" +
     "                                </label>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
+    "\n" +
     "                    </div></div>\n" +
+    "\n" +
+    "                    <div ng-if=\"!loadingDimensionValues\" class=\"\" style=\"margin-bottom: 0px; \">\n" +
+    "                        <div class=\"text-right\">\n" +
+    "                            {{ dimensionValues.length }} items\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                    <div ng-if=\"dimensionValues.length >= cubesService.cubesserver.info.json_record_limit\" class=\"alert alert-warning\" style=\"margin-bottom: 0px;\">\n" +
+    "                        <div style=\"display: inline-block;\"><i class=\"fa fa-exclamation\"></i></div>\n" +
+    "                        <div style=\"display: inline-block; margin-left: 20px;\">\n" +
+    "                            Limit of {{ cubesService.cubesserver.info.json_record_limit }} items has been hit. Dimension value list is <b>incomplete</b>.<br />\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "\n" +
     "                </div>\n" +
     "                </div>\n" +
     "            </div>\n" +

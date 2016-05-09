@@ -205,7 +205,7 @@ function cubesviewerViewCubeDateFilter () {
 			} else if (field == "day") {
 				values.push(tdate.getDate());
 			} else {
-				cubesviewer.alert ("Wrong configuration of model: time role of level '" + level.name + "' is invalid.");
+				dialogService.show("Wrong configuration of model: time role of level '" + level.name + "' is invalid.");
 			}
 		}
 

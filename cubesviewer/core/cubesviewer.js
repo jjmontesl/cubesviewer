@@ -24,70 +24,7 @@
 
 "use strict";
 
-/*
- * Main cubesviewer object. It is created by the library and made
- * available as the global "cubesviewer" variable.
- */
-function cubesviewerOLD() {
 
-	// Alerts component
-	this._alerts = null;
-
-	// Current alerts
-	this.alerts = [];
-
-
-	/*
-	 * Show a global alert
-	 */
-	this.alert = function (message) {
-		alert ("CubesViewer " + this.version + "\n\n" + message);
-	}
-
-	/*
-	 * Refresh
-	 */
-	this.refresh = function() {
-		$(document).trigger("cubesviewerRefresh");
-	}
-
-  /*
-   * Save typing while debugging - get a view object with: cubesviewer.getView(1)
-   */
-
-  this.getView = function(id) {
-    var viewid = id.toString();
-    viewid = viewid.indexOf('view') === 0 ? viewid : 'view' + viewid;
-    viewid = viewid[0] === '#' ? viewid : '#' + viewid;
-
-    return $(viewid + ' .cv-gui-viewcontent').data('cubesviewer-view');
-  };
-
-
-	/*
-	 * Show quick tip message.
-	 */
-	this.showInfoMessage = function(message, delay) {
-
-		if (this._alerts == null) {
-
-			this._alerts = new Ractive({
-				el: $("body")[0],
-				append: true,
-				template: cvtemplates.alerts,
-				partials: cvtemplates,
-				data: { 'cv': this }
-			});
-		}
-
-		if (delay == undefined) delay = 5000;
-
-		this.alerts.push({ 'text': message });
-		this._alerts.reset({ 'cv': this });
-
-	};
-
-};
 
 // Main CubesViewer angular module
 angular.module('cv', ['ui.bootstrap', 'bootstrapSubmenu',
@@ -184,7 +121,18 @@ var cubesviewer = {
 
 		$compile($(container).contents())(templateScope);
 
-	}
+	},
+
+
+	/*
+	this.getView = function(id) {
+	    var viewid = id.toString();
+	    viewid = viewid.indexOf('view') === 0 ? viewid : 'view' + viewid;
+	    viewid = viewid[0] === '#' ? viewid : '#' + viewid;
+
+	    return $(viewid + ' .cv-gui-viewcontent').data('cubesviewer-view');
+	  };
+	*/
 
 };
 

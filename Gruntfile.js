@@ -16,6 +16,7 @@ module.exports = function(grunt) {
               'cubesviewer/core/cubesviewer.js',
               //'cubesviewer/core/cache.js',
               'cubesviewer/views/views.js',
+              'cubesviewer/dialog/dialog.js',
               'cubesviewer/views/cube/cube.js',
               'cubesviewer/views/cube/explore/explore.js',
               'cubesviewer/views/cube/filter/dimension.js',

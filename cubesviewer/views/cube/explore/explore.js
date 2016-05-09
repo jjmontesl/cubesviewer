@@ -24,8 +24,8 @@
 
 /**
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
-                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, dialogService) {
 
 	$scope.$parent.gridData = [];
 
@@ -355,12 +355,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		var view = $scope.view;
 
 		if (view.params.drilldown.length != 1) {
-			alert('Can only filter multiple values in a view with one level of drilldown.');
+			dialogService.show('Can only filter multiple values in a view with one level of drilldown.');
 			return;
 		}
 
 		if ($scope.gridApi.selection.getSelectedCount() <= 0) {
-			alert('Cannot filter. No rows are selected.');
+			dialogService.show('Cannot filter. No rows are selected.');
 			return;
 		}
 
