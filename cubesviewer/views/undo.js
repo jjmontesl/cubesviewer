@@ -39,7 +39,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsUndoController", ['$
 
   	$scope.initialize();
 
-  	$scope.$on('', $scope._processState)
+  	$scope.$on('ViewRefresh', function(view) { $scope._processState(view); });
 
 	$scope._processState = function() {
 

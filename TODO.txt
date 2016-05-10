@@ -108,8 +108,6 @@
     * Error when loading incorrect JSON: error shall be reported by client (ie GUI), state incorrect, cannot access showDialog.
 
     * Analytics plugin, and fix it to ignore first N seconds of events as for bounce rate calculation.
-
     * Server side.
-
     * Datefilter.
-    * Undo/redo.
+

@@ -60,17 +60,14 @@ angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOption
 				console.debug("Data loaded from cache (" + timediff + " minutes old)");
 			}
 
-			console.debug("Hey");
 			jqxhr = $.Deferred();
 			jqxhr.error = function() { };
 
 			setTimeout(function() {
-				console.debug("Resolving");
 				// TODO: What is the correct ordering of success/complete callbacks?
 				successCallback(cubesCacheService.cache[requestHash].data);
 				jqxhr.resolve(); //.promise();
 			}, 0);
-
 
 		} else {
 			// Do request

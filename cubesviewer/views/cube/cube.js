@@ -48,15 +48,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		if (view) {
 			view._resultLimitHit = false;
 			view._requestFailed = false;
-			view._cubeDataUpdated = false;
 		}
 	});
 
 	$scope.refreshView = function() {
-		if (view) {
-			$scope.view._cubeDataUpdated = true;
-		}
-		//$scope.$broadcast("ViewRefresh", view);
+		if ($scope.view && $scope.view.cube) $scope.$broadcast("ViewRefresh", $scope.view);
 	};
 
 	/**
@@ -64,7 +60,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.setViewMode = function(mode) {
 		$scope.view.params.mode = mode;
-		$scope.view._cubeDataUpdated = true;
+		//$scope.refreshView();
 	};
 
 
@@ -95,7 +91,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			}
 
 			$timeout(function() {
-				$scope.view._cubeDataUpdated = true;
+				//$scope.refreshView();
 			}, 0);
 
 		});
@@ -138,7 +134,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			}
 		}
 
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 	};
 
 	/**
@@ -155,7 +151,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			}
 		}
 
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 	};
 
 	/**
@@ -224,7 +220,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			view.params.cuts = [];
 		}
 
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 
 	};
 
@@ -237,7 +233,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.selectMeasure = function(measure) {
 		$scope.view.params.yaxis = measure;
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 	}
 
 	/*
@@ -245,7 +241,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.selectXAxis = function(dimension) {
 		$scope.view.params.xaxis = (dimension == "" ? null : dimension);
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 	}
 
 	/*
@@ -253,7 +249,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.selectChartType = function(charttype) {
 		$scope.view.params.charttype = charttype;
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 	};
 
 	/*
@@ -261,7 +257,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.selectCalculation = function(calculation) {
 		$scope.view.params.calculation = calculation;
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 	};
 
 
@@ -302,7 +298,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			view.params.datefilters = [];
 		}
 
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 
 	};
 

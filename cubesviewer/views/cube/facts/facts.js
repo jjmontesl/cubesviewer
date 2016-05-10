@@ -52,16 +52,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 
 	$scope.initialize = function() {
+		$scope.refreshView();
 	};
 
-	$scope.$watch("view._cubeDataUpdated", function(newVal) {
-		if (newVal) {
-			$scope.view._cubeDataUpdated = false;
-			$scope.loadData();
-		}
+	$scope.$on("ViewRefresh", function(view) {
+		$scope.loadData();
 	});
-
-
 
 	$scope.loadData = function() {
 

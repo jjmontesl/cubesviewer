@@ -295,7 +295,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('views/cube/chart/chart-common.html',
-    "<div ng-show=\"gridOptions.data.length > 0\" style=\"width: 99%;\">\n" +
+    "<div ng-show=\"gridOptions.data.length > 0 && view.params.yaxis != null\" style=\"width: 99%;\">\n" +
     "    <div>\n" +
     "        <div class=\"cv-chart-container\">\n" +
     "            <svg style=\"height: 400px;\" />\n" +
@@ -594,13 +594,13 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +
-    "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend; view._cubeDataUpdated = true;\">\n" +
+    "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend; refreshView();\">\n" +
     "        <a><i class=\"fa fa-fw\" ng-class=\"{'fa-toggle-on': view.params.chartoptions.showLegend, 'fa-toggle-off': ! view.params.chartoptions.showLegend }\"></i> Toggle legend\n" +
     "            <span style=\"margin-left: 5px;\" class=\"label label-default\" ng-class=\"{ 'label-success': view.params.chartoptions.showLegend }\">{{ view.params.chartoptions.showLegend ? \"ON\" : \"OFF\" }}</span>\n" +
     "        </a>\n" +
     "    </li>\n" +
     "\n" +
-    "    <li ng-show=\"view.params.mode == 'chart' && view.params.charttype == 'bars-horizontal'\" ng-click=\"view.params.chartoptions.mirrorSerie2 = !view.params.chartoptions.mirrorSerie2; view._cubeDataUpdated = true;\">\n" +
+    "    <li ng-show=\"view.params.mode == 'chart' && view.params.charttype == 'bars-horizontal'\" ng-click=\"view.params.chartoptions.mirrorSerie2 = !view.params.chartoptions.mirrorSerie2; refreshView();\">\n" +
     "        <a><i class=\"fa fa-fw fa-arrows-h\"></i> Invert 2nd serie\n" +
     "            <span style=\"margin-left: 5px;\" class=\"label label-default\" ng-class=\"{ 'label-success': view.params.chartoptions.mirrorSerie2 }\">{{ view.params.chartoptions.mirrorSerie2 ? \"ON\" : \"OFF\" }}</span>\n" +
     "        </a>\n" +

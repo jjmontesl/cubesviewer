@@ -130,13 +130,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 			{ "xaxis" : null, "yaxis" : null },
 			$scope.view.params
 		);
+		$scope.refreshView();
 	};
 
-	$scope.$watch("view._cubeDataUpdated", function(newVal) {
-		if (newVal) {
-			$scope.view._cubeDataUpdated = false;
-			$scope.loadData();
-		}
+	$scope.$on("ViewRefresh", function(view) {
+		$scope.loadData();
 	});
 
 	$scope.loadData = function() {

@@ -1233,17 +1233,14 @@ angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOption
 				console.debug("Data loaded from cache (" + timediff + " minutes old)");
 			}
 
-			console.debug("Hey");
 			jqxhr = $.Deferred();
 			jqxhr.error = function() { };
 
 			setTimeout(function() {
-				console.debug("Resolving");
 				// TODO: What is the correct ordering of success/complete callbacks?
 				successCallback(cubesCacheService.cache[requestHash].data);
 				jqxhr.resolve(); //.promise();
 			}, 0);
-
 
 		} else {
 			// Do request
@@ -1675,15 +1672,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		if (view) {
 			view._resultLimitHit = false;
 			view._requestFailed = false;
-			view._cubeDataUpdated = false;
 		}
 	});
 
 	$scope.refreshView = function() {
-		if (view) {
-			$scope.view._cubeDataUpdated = true;
-		}
-		//$scope.$broadcast("ViewRefresh", view);
+		if ($scope.view && $scope.view.cube) $scope.$broadcast("ViewRefresh", $scope.view);
 	};
 
 	/**
@@ -1691,7 +1684,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.setViewMode = function(mode) {
 		$scope.view.params.mode = mode;
-		$scope.view._cubeDataUpdated = true;
+		//$scope.refreshView();
 	};
 
 
@@ -1722,7 +1715,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			}
 
 			$timeout(function() {
-				$scope.view._cubeDataUpdated = true;
+				//$scope.refreshView();
 			}, 0);
 
 		});
@@ -1765,7 +1758,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			}
 		}
 
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 	};
 
 	/**
@@ -1782,7 +1775,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			}
 		}
 
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 	};
 
 	/**
@@ -1851,7 +1844,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			view.params.cuts = [];
 		}
 
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 
 	};
 
@@ -1864,7 +1857,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.selectMeasure = function(measure) {
 		$scope.view.params.yaxis = measure;
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 	}
 
 	/*
@@ -1872,7 +1865,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.selectXAxis = function(dimension) {
 		$scope.view.params.xaxis = (dimension == "" ? null : dimension);
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 	}
 
 	/*
@@ -1880,7 +1873,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.selectChartType = function(charttype) {
 		$scope.view.params.charttype = charttype;
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 	};
 
 	/*
@@ -1888,7 +1881,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.selectCalculation = function(calculation) {
 		$scope.view.params.calculation = calculation;
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 	};
 
 
@@ -1929,7 +1922,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			view.params.datefilters = [];
 		}
 
-		$scope.view._cubeDataUpdated = true;
+		$scope.refreshView();
 
 	};
 
@@ -2035,16 +2028,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 
 
 	$scope.initialize = function() {
+		$scope.refreshView();
 	};
 
-	$scope.$watch("view._cubeDataUpdated", function(newVal) {
-		if (newVal) {
-			$scope.view._cubeDataUpdated = false;
-			$scope.loadData();
-		}
+	$scope.$on("ViewRefresh", function(view) {
+		$scope.loadData();
 	});
-
-
 
 	$scope.loadData = function() {
 
@@ -3014,16 +3003,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 
 	$scope.initialize = function() {
+		$scope.refreshView();
 	};
 
-	$scope.$watch("view._cubeDataUpdated", function(newVal) {
-		if (newVal) {
-			$scope.view._cubeDataUpdated = false;
-			$scope.loadData();
-		}
+	$scope.$on("ViewRefresh", function(view) {
+		$scope.loadData();
 	});
-
-
 
 	$scope.loadData = function() {
 
@@ -3399,13 +3384,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 			{ "xaxis" : null, "yaxis" : null },
 			$scope.view.params
 		);
+		$scope.refreshView();
 	};
 
-	$scope.$watch("view._cubeDataUpdated", function(newVal) {
-		if (newVal) {
-			$scope.view._cubeDataUpdated = false;
-			$scope.loadData();
-		}
+	$scope.$on("ViewRefresh", function(view) {
+		$scope.loadData();
 	});
 
 	$scope.loadData = function() {
@@ -3688,13 +3671,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 			{ "charttype" : "bars-vertical", "chartoptions": { showLegend: true } },
 			$scope.view.params
 		);
+		$scope.refreshView();
 	};
 
-	$scope.$watch("view._cubeDataUpdated", function(newVal) {
-		if (newVal) {
-			$scope.view._cubeDataUpdated = false;
-			$scope.loadData();
-		}
+	$scope.$on("ViewRefresh", function(view) {
+		$scope.loadData();
 	});
 
 	$scope.loadData = function() {
@@ -4802,7 +4783,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsUndoController", ['$
 
   	$scope.initialize();
 
-  	$scope.$on('', $scope._processState)
+  	$scope.$on('ViewRefresh', function(view) { $scope._processState(view); });
 
 	$scope._processState = function() {
 
@@ -5561,7 +5542,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
 
 
   $templateCache.put('views/cube/chart/chart-common.html',
-    "<div ng-show=\"gridOptions.data.length > 0\" style=\"width: 99%;\">\n" +
+    "<div ng-show=\"gridOptions.data.length > 0 && view.params.yaxis != null\" style=\"width: 99%;\">\n" +
     "    <div>\n" +
     "        <div class=\"cv-chart-container\">\n" +
     "            <svg style=\"height: 400px;\" />\n" +
@@ -5860,13 +5841,13 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +
-    "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend; view._cubeDataUpdated = true;\">\n" +
+    "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend; refreshView();\">\n" +
     "        <a><i class=\"fa fa-fw\" ng-class=\"{'fa-toggle-on': view.params.chartoptions.showLegend, 'fa-toggle-off': ! view.params.chartoptions.showLegend }\"></i> Toggle legend\n" +
     "            <span style=\"margin-left: 5px;\" class=\"label label-default\" ng-class=\"{ 'label-success': view.params.chartoptions.showLegend }\">{{ view.params.chartoptions.showLegend ? \"ON\" : \"OFF\" }}</span>\n" +
     "        </a>\n" +
     "    </li>\n" +
     "\n" +
-    "    <li ng-show=\"view.params.mode == 'chart' && view.params.charttype == 'bars-horizontal'\" ng-click=\"view.params.chartoptions.mirrorSerie2 = !view.params.chartoptions.mirrorSerie2; view._cubeDataUpdated = true;\">\n" +
+    "    <li ng-show=\"view.params.mode == 'chart' && view.params.charttype == 'bars-horizontal'\" ng-click=\"view.params.chartoptions.mirrorSerie2 = !view.params.chartoptions.mirrorSerie2; refreshView();\">\n" +
     "        <a><i class=\"fa fa-fw fa-arrows-h\"></i> Invert 2nd serie\n" +
     "            <span style=\"margin-left: 5px;\" class=\"label label-default\" ng-class=\"{ 'label-success': view.params.chartoptions.mirrorSerie2 }\">{{ view.params.chartoptions.mirrorSerie2 ? \"ON\" : \"OFF\" }}</span>\n" +
     "        </a>\n" +
