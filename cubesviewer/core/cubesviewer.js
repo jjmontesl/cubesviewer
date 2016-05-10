@@ -56,6 +56,9 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheS
             cacheNotice: 10 * 60,
             cacheSize: 32,
 
+            undoEnabled: true,
+            undoSize: 32,
+
             jsonRequestType: "json" // "json | jsonp"
     };
 	$.extend(defaultOptions, cvOptions);

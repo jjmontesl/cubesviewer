@@ -1226,9 +1226,6 @@ angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOption
 		var jqxhr = null;
 		if (requestHash in cubesCacheService.cache && cvOptions.cacheEnabled) {
 
-			// TODO: What is the correct ordering of success/complete callbacks?
-			successCallback(cubesCacheService.cache[requestHash].data);
-
 			// Warn that data comes from cache (QTip can do this?)
 			var timediff = Math.round ((new Date().getTime() - cubesCacheService.cache[requestHash].time) / 1000);
 			if (timediff > cvOptions.cacheNotice) {
@@ -1236,7 +1233,16 @@ angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOption
 				console.debug("Data loaded from cache (" + timediff + " minutes old)");
 			}
 
-			jqxhr = $.Deferred().resolve().promise();
+			console.debug("Hey");
+			jqxhr = $.Deferred();
+			jqxhr.error = function() { };
+
+			setTimeout(function() {
+				console.debug("Resolving");
+				// TODO: What is the correct ordering of success/complete callbacks?
+				successCallback(cubesCacheService.cache[requestHash].data);
+				jqxhr.resolve(); //.promise();
+			}, 0);
 
 
 		} else {
@@ -1349,6 +1355,9 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheS
             cacheDuration: 30 * 60,
             cacheNotice: 10 * 60,
             cacheSize: 32,
+
+            undoEnabled: true,
+            undoSize: 32,
 
             jsonRequestType: "json" // "json | jsonp"
     };
@@ -1649,6 +1658,8 @@ angular.module('cv.views.cube', []);
 
 /**
  * cvViewCube directive and controller.
+ *
+ * FIXME: Some of this code shall be on a parent generic "view" directive.
  */
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
@@ -1662,16 +1673,17 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	$scope.$watch ("view", function(view) {
 		if (view) {
-			view._cubeDataUpdated = false;
 			view._resultLimitHit = false;
 			view._requestFailed = false;
+			view._cubeDataUpdated = false;
 		}
 	});
 
-	$scope.refresh = function() {
+	$scope.refreshView = function() {
 		if (view) {
 			$scope.view._cubeDataUpdated = true;
 		}
+		//$scope.$broadcast("ViewRefresh", view);
 	};
 
 	/**
@@ -3452,7 +3464,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
     		selectionRowHeaderWidth: 20,
     		//rowHeight: 50,
     		columnDefs: []
-	    });		$rootScope.$apply();
+	    });
 
 
 		// Process data
@@ -4772,6 +4784,102 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
  * SOFTWARE.
  */
 
+/*
+ * Undo/Redo plugin.
+ */
+
+"use strict";
+
+
+angular.module('cv.views.cube').controller("CubesViewerViewsUndoController", ['$rootScope', '$scope', '$timeout', '$element', 'cvOptions', 'cubesService', 'viewsService',
+                                                                                   function ($rootScope, $scope, $timeout, $element, cvOptions, cubesService, viewsService) {
+
+  	$scope.initialize = function() {
+  		// Add chart view parameters to view definition
+  		$scope.view.undoList = [];
+  		$scope.view.undoPos = -1;
+  	};
+
+  	$scope.initialize();
+
+  	$scope.$on('', $scope._processState)
+
+	$scope._processState = function() {
+
+		var drawn = viewsService.serializeView($scope.view);
+		var current = $scope.getCurrentUndoState();
+
+		if (drawn != current) {
+			$scope.pushUndo(drawn);
+		}
+
+	}
+
+	$scope.pushUndo = function (state) {
+
+		var view = $scope.view;
+
+		view.undoPos = view.undoPos + 1;
+		if (view.undoPos + 1 <= view.undoList.length) {
+			view.undoList.splice(view.undoPos, view.undoList.length - view.undoPos);
+		}
+		view.undoList.push(state);
+
+		if (view.undoList.length > cvOptions.undoSize) {
+			view.undoList.splice(0, view.undoList.length - cvOptions.undoSize);
+			view.undoPos = view.undoList.length - 1;
+		}
+	}
+
+	$scope.getCurrentUndoState = function () {
+		if ($scope.view.undoList.length == 0) return "{}";
+		return $scope.view.undoList[$scope.view.undoPos];
+	};
+
+	$scope.undo = function () {
+		$scope.view.undoPos = $scope.view.undoPos - 1;
+		if ($scope.view.undoPos < 0) $scope.view.undoPos = 0;
+		$scope.applyCurrentUndoState();
+	};
+
+	$scope.redo = function () {
+		$scope.view.undoPos = $scope.view.undoPos + 1;
+		$scope.applyCurrentUndoState ();
+	};
+
+	$scope.applyCurrentUndoState = function() {
+		var current = $scope.getCurrentUndoState();
+		$scope.view.params = $.parseJSON(current);
+		$scope.refreshView();
+	};
+
+
+}]);
+
+
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 "use strict";
 
 angular.module('cv.studio', ['cv' /*'ui.bootstrap-slider', 'ui.validate', 'ngAnimate', */
@@ -5368,6 +5476,10 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "          <ul class=\"dropdown-menu\">\n" +
     "\n" +
+    "                <li ng-click=\"showSerializeAdd()\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-code\"></i> Add view from JSON...</a></li>\n" +
+    "\n" +
+    "                <div class=\"divider\"></div>\n" +
+    "\n" +
     "                <li ng-click=\"toggleTwoColumn()\" ng-class=\"{ 'hidden-xs': ! cvOptions.studioTwoColumn, 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-columns\"></i> 2 column\n" +
     "                    <span class=\"label label-default pull-right\" ng-class=\"{ 'label-success': cvOptions.studioTwoColumn }\">{{ cvOptions.studioTwoColumn ? \"ON\" : \"OFF\" }}</span></a>\n" +
     "                </li>\n" +
@@ -5377,9 +5489,6 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "                <div class=\"divider\"></div>\n" +
     "\n" +
-    "                <li ng-click=\"showSerializeAdd()\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-code\"></i> Add view from JSON...</a></li>\n" +
-    "\n" +
-    "                <div class=\"divider\"></div>\n" +
     "\n" +
     "                <!-- <li class=\"\"><a data-toggle=\"modal\" data-target=\"#cvServerInfo\"><i class=\"fa fa-fw fa-server\"></i> Data model</a></li> -->\n" +
     "                <li class=\"\" ng-class=\"{ 'disabled': cubesService.state != 2 }\"><a data-toggle=\"modal\" data-target=\"#cvServerInfo\" ><i class=\"fa fa-fw fa-database\"></i> Server info</a></li>\n" +
@@ -5866,9 +5975,14 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "        <div class=\"cv-view-viewmenu hidden-print\" ng-hide=\"view.controlsHidden()\">\n" +
     "\n" +
-    "            <div class=\"panel panel-primary pull-right\" style=\"padding: 3px; white-space: nowrap;\">\n" +
+    "            <div class=\"panel panel-primary pull-right\" style=\"padding: 3px; white-space: nowrap; margin-bottom: 6px; margin-left: 6px;\">\n" +
     "\n" +
-    "                <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n" +
+    "                <div ng-if=\"cvOptions.undoEnabled\" class=\"btn-group\" role=\"group\" ng-controller=\"CubesViewerViewsUndoController\">\n" +
+    "                  <button type=\"button\" ng-click=\"undo()\" ng-disabled=\"view.undoPos <= 0\" class=\"btn btn-default btn-sm\" title=\"Undo\"><i class=\"fa fa-fw fa-undo\"></i></button>\n" +
+    "                  <button type=\"button\" ng-click=\"redo()\" ng-disabled=\"view.undoPos >= view.undoList.length - 1\" class=\"btn btn-default btn-sm\" title=\"Redo\"><i class=\"fa fa-fw fa-undo fa-flip-horizontal\"></i></button>\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div class=\"btn-group\" role=\"group\" aria-label=\"...\" style=\"margin-left: 5px;\">\n" +
     "                  <button type=\"button\" ng-click=\"setViewMode('explore')\" ng-class=\"{'active': view.params.mode == 'explore'}\" class=\"btn btn-primary btn-sm explorebutton\" title=\"Explore\"><i class=\"fa fa-fw fa-arrow-circle-down\"></i></button>\n" +
     "                  <button type=\"button\" ng-click=\"setViewMode('facts')\" ng-class=\"{'active': view.params.mode == 'facts'}\" class=\"btn btn-primary btn-sm \" title=\"Facts\"><i class=\"fa fa-fw fa-th\"></i></button>\n" +
     "                  <button type=\"button\" ng-click=\"setViewMode('series')\" ng-class=\"{'active': view.params.mode == 'series'}\" class=\"btn btn-primary btn-sm \" title=\"Series\"><i class=\"fa fa-fw fa-clock-o\"></i></button>\n" +
@@ -5885,6 +5999,10 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "            </div>\n" +
     "\n" +
+    "            <div class=\"pull-right\" style=\"white-space: nowrap; padding-top: 4px; padding-bottom: 4px; margin-left: 6px; margin-bottom: 6px;\">\n" +
+    "\n" +
+    "            </div>\n" +
+    "\n" +
     "        </div>\n" +
     "\n" +
     "        <div class=\"cv-view-viewinfo\">\n" +
@@ -5896,7 +6014,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                    </div>\n" +
     "\n" +
-    "                    <div ng-repeat=\"drilldown in view.params.drilldown\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-drill\" style=\"color: black; background-color: #ccffcc;\">\n" +
+    "                    <div ng-repeat=\"drilldown in view.params.drilldown\" ng-if=\"view.params.mode != 'facts'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-drill\" style=\"color: black; background-color: #ccffcc;\">\n" +
     "                        <span><i class=\"fa fa-fw fa-arrow-down\"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>\n" +
     "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(drilldown)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
@@ -6094,22 +6212,22 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "            <div >\n" +
     "            <form >\n" +
     "\n" +
-    "              <div class=\"form-group has-feedback\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
+    "              <div class=\"form-group has-feedback\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px;\">\n" +
     "                <!-- <label for=\"search\">Search:</label>  -->\n" +
     "                <input type=\"text\" class=\"form-control\" ng-model=\"searchString\" placeholder=\"Search...\" style=\"width: 16em;\">\n" +
     "                <i class=\"fa fa-fw fa-times-circle form-control-feedback\" ng-click=\"searchString = ''\" style=\"cursor: pointer; pointer-events: inherit;\"></i>\n" +
     "              </div>\n" +
     "\n" +
-    "              <div class=\"btn-group\" style=\"margin-left: 10px; display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
+    "              <div class=\"btn-group\" style=\"margin-left: 10px; display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px;\">\n" +
     "                    <button class=\"btn btn-default\" ng-click=\"selectAll();\" type=\"button\" title=\"Select all\"><i class=\"fa fa-fw fa-check-square-o\"></i></button>\n" +
     "                    <button class=\"btn btn-default\" ng-click=\"selectNone();\" type=\"button\" title=\"Select none\"><i class=\"fa fa-fw fa-square-o\"></i></button>\n" +
     "              </div>\n" +
     "\n" +
-    "             <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
+    "             <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px;\">\n" +
     "              <button class=\"btn btn-default\" type=\"button\" title=\"Drilldown this\" ng-click=\"selectDrill(parts.fullDrilldownValue, true)\"><i class=\"fa fa-fw fa-arrow-down\"></i></button>\n" +
     "              </div>\n" +
     "\n" +
-    "              <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
+    "              <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px;\">\n" +
     "\n" +
     "                  <div class=\"btn btn-default\" ng-click=\"filterInverted = !filterInverted\" ng-class=\"{ 'active': filterInverted, 'btn-danger': filterInverted }\">\n" +
     "                    <input type=\"checkbox\" ng-model=\"filterInverted\" style=\"pointer-events: none; margin: 0px; vertical-align: middle;\" ></input>\n" +
@@ -6118,8 +6236,8 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "              </div>\n" +
     "\n" +
-    "                <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle;\">\n" +
-    "              <button ng-click=\"applyFilter()\" class=\"btn btn-success\" type=\"button\"><i class=\"fa fa-fw fa-filter\"></i> Apply</button>\n" +
+    "                <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px;\">\n" +
+    "                 <button ng-click=\"applyFilter()\" class=\"btn btn-success\" type=\"button\"><i class=\"fa fa-fw fa-filter\"></i> Apply</button>\n" +
     "              </div>\n" +
     "            </form>\n" +
     "            </div>\n" +

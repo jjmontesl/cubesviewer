@@ -195,7 +195,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
     		selectionRowHeaderWidth: 20,
     		//rowHeight: 50,
     		columnDefs: []
-	    });		$rootScope.$apply();
+	    });
 
 
 		// Process data

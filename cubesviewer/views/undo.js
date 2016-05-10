@@ -27,153 +27,70 @@
 
 "use strict";
 
-function cubesviewerViewsUndo () {
 
-this.cubesviewer = cubesviewer;
+angular.module('cv.views.cube').controller("CubesViewerViewsUndoController", ['$rootScope', '$scope', '$timeout', '$element', 'cvOptions', 'cubesService', 'viewsService',
+                                                                                   function ($rootScope, $scope, $timeout, $element, cvOptions, cubesService, viewsService) {
 
-	this.maxUndo = 32;
+  	$scope.initialize = function() {
+  		// Add chart view parameters to view definition
+  		$scope.view.undoList = [];
+  		$scope.view.undoPos = -1;
+  	};
 
-	/*
-	 * Prepares the view.
-	 */
-	this.onViewCreate = function(event, view) {
+  	$scope.initialize();
 
-		$.extend(view.params, {
-			//"showUndo" : true,
-		});
+  	$scope.$on('', $scope._processState)
 
-		view.undoList = [];
-		view.undoPos = -1;
-	};
+	$scope._processState = function() {
 
-	/*
-	 * Draw cube view structure.
-	 */
-	this.onViewDraw = function(event, view) {
-
-		if (view.cube == null) return;
-
-		// Undo/Redo buttons
-		$(view.container).find('.cv-view-toolbar').before(
-			'<div style="margin-right: 15px; display: inline-block;">' +
-			'<button class="cv-view-undo cv-view-button-undo" title="Undo" style="margin-right: 5px;"><span class="ui-icon ui-icon-arrowreturnthick-1-w"></span></button>' +
-			'<button class="cv-view-redo cv-view-button-redo" title="Redo" style=""><span class="ui-icon ui-icon-arrowreturnthick-1-e"></span></button>' +
-			'</div>'
-		);
-
-		// Undo menu
-		view.cubesviewer.views.undo.drawUndoMenu(view);
-
-		// Buttonize and events
-		$(view.container).find('.cv-view-button-undo').button();
-		$(view.container).find('.cv-view-undo').click(function() {
-			view.cubesviewer.views.undo.undo(view);
-			return false;
-		});
-		$(view.container).find('.cv-view-button-redo').button();
-		$(view.container).find('.cv-view-redo').click(function() {
-			view.cubesviewer.views.undo.redo(view);
-			return false;
-		});
-
-		// Process undo operations
-		view.cubesviewer.views.undo._processDrawState(view);
-
-		// Disable
-		//$(view.container).find('.cv-view-button-chart').button("option", "disabled", "true").addClass('ui-state-active');
-		if (view.undoPos <= 0) {
-			$(view.container).find('.cv-view-button-undo').button("option", "disabled", "true")
-			$(view.container).find('.cv-view-undo').addClass('disabled');
-		}
-		if (view.undoPos >= view.undoList.length - 1) {
-			$(view.container).find('.cv-view-button-redo').button("option", "disabled", "true")
-			$(view.container).find('.cv-view-redo').addClass('disabled');
-		}
-
-
-
-	};
-
-	/*
-	 * Updates view options menus.
-	 */
-	this.drawUndoMenu = function (view) {
-
-		var menu = $(".cv-view-menu-view", $(view.container));
-		var cube = view.cube;
-
-		/*
-		menu.append(
-	  		'<div></div>' +
-			'<li><a href="#" class="cv-view-undo"><span class="ui-icon ui-icon-arrowreturnthick-1-w"></span> Undo</a></li>' +
-	  		'<li><a href="#" class="cv-view-redo"><span class="ui-icon ui-icon-arrowreturnthick-1-e"></span> Redo</a></li>'
-	  	);
-
-		$(menu).menu( "refresh" );
-		$(menu).addClass("ui-menu-icons");
-		*/
-
-		// Events are added by the drawView method
-
-	};
-
-	this._processDrawState = function(view) {
-
-		var drawn = view.cubesviewer.views.serialize(view);
-		var current = this.getCurrentUndoState(view);
+		var drawn = viewsService.serializeView($scope.view);
+		var current = $scope.getCurrentUndoState();
 
 		if (drawn != current) {
-			this.pushUndo(view, drawn);
+			$scope.pushUndo(drawn);
 		}
 
 	}
 
-	this.pushUndo = function (view, state) {
+	$scope.pushUndo = function (state) {
+
+		var view = $scope.view;
+
 		view.undoPos = view.undoPos + 1;
 		if (view.undoPos + 1 <= view.undoList.length) {
 			view.undoList.splice(view.undoPos, view.undoList.length - view.undoPos);
 		}
 		view.undoList.push(state);
 
-		if (view.undoList.length > this.maxUndo) {
-			view.undoList.splice(0, view.undoList.length - this.maxUndo);
+		if (view.undoList.length > cvOptions.undoSize) {
+			view.undoList.splice(0, view.undoList.length - cvOptions.undoSize);
 			view.undoPos = view.undoList.length - 1;
 		}
 	}
 
-	this.getCurrentUndoState = function (view) {
-		if (view.undoList.length == 0) return "{}";
-		return view.undoList[view.undoPos];
+	$scope.getCurrentUndoState = function () {
+		if ($scope.view.undoList.length == 0) return "{}";
+		return $scope.view.undoList[$scope.view.undoPos];
 	};
 
-	this.undo = function (view) {
-		view.undoPos = view.undoPos - 1;
-		if (view.undoPos < 0) view.undoPos = 0;
-		this.applyCurrentUndoState (view);
+	$scope.undo = function () {
+		$scope.view.undoPos = $scope.view.undoPos - 1;
+		if ($scope.view.undoPos < 0) $scope.view.undoPos = 0;
+		$scope.applyCurrentUndoState();
 	};
 
-	this.redo = function (view) {
-		view.undoPos = view.undoPos + 1;
-		this.applyCurrentUndoState (view);
+	$scope.redo = function () {
+		$scope.view.undoPos = $scope.view.undoPos + 1;
+		$scope.applyCurrentUndoState ();
 	};
 
-	this.applyCurrentUndoState = function(view) {
-		var current = this.getCurrentUndoState(view);
-		view.params = $.parseJSON(current);
-		view.cubesviewer.views.redrawView(view);
+	$scope.applyCurrentUndoState = function() {
+		var current = $scope.getCurrentUndoState();
+		$scope.view.params = $.parseJSON(current);
+		$scope.refreshView();
 	};
 
 
-};
+}]);
 
-/*
- * Create object.
- */
-cubesviewer.views.undo = new cubesviewerViewsUndo();
-
-/*
- * Bind events.
- */
-$(document).bind("cubesviewerViewCreate", { }, cubesviewer.views.undo.onViewCreate);
-$(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.undo.onViewDraw);
 

@@ -31,6 +31,8 @@ angular.module('cv.views.cube', []);
 
 /**
  * cvViewCube directive and controller.
+ *
+ * FIXME: Some of this code shall be on a parent generic "view" directive.
  */
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
@@ -44,16 +46,17 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	$scope.$watch ("view", function(view) {
 		if (view) {
-			view._cubeDataUpdated = false;
 			view._resultLimitHit = false;
 			view._requestFailed = false;
+			view._cubeDataUpdated = false;
 		}
 	});
 
-	$scope.refresh = function() {
+	$scope.refreshView = function() {
 		if (view) {
 			$scope.view._cubeDataUpdated = true;
 		}
+		//$scope.$broadcast("ViewRefresh", view);
 	};
 
 	/**

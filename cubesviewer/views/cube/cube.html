@@ -20,9 +20,14 @@
 
         <div class="cv-view-viewmenu hidden-print" ng-hide="view.controlsHidden()">
 
-            <div class="panel panel-primary pull-right" style="padding: 3px; white-space: nowrap;">
+            <div class="panel panel-primary pull-right" style="padding: 3px; white-space: nowrap; margin-bottom: 6px; margin-left: 6px;">
 
-                <div class="btn-group" role="group" aria-label="...">
+                <div ng-if="cvOptions.undoEnabled" class="btn-group" role="group" ng-controller="CubesViewerViewsUndoController">
+                  <button type="button" ng-click="undo()" ng-disabled="view.undoPos <= 0" class="btn btn-default btn-sm" title="Undo"><i class="fa fa-fw fa-undo"></i></button>
+                  <button type="button" ng-click="redo()" ng-disabled="view.undoPos >= view.undoList.length - 1" class="btn btn-default btn-sm" title="Redo"><i class="fa fa-fw fa-undo fa-flip-horizontal"></i></button>
+                </div>
+
+                <div class="btn-group" role="group" aria-label="..." style="margin-left: 5px;">
                   <button type="button" ng-click="setViewMode('explore')" ng-class="{'active': view.params.mode == 'explore'}" class="btn btn-primary btn-sm explorebutton" title="Explore"><i class="fa fa-fw fa-arrow-circle-down"></i></button>
                   <button type="button" ng-click="setViewMode('facts')" ng-class="{'active': view.params.mode == 'facts'}" class="btn btn-primary btn-sm " title="Facts"><i class="fa fa-fw fa-th"></i></button>
                   <button type="button" ng-click="setViewMode('series')" ng-class="{'active': view.params.mode == 'series'}" class="btn btn-primary btn-sm " title="Series"><i class="fa fa-fw fa-clock-o"></i></button>
@@ -39,6 +44,10 @@
 
             </div>
 
+            <div class="pull-right" style="white-space: nowrap; padding-top: 4px; padding-bottom: 4px; margin-left: 6px; margin-bottom: 6px;">
+
+            </div>
+
         </div>
 
         <div class="cv-view-viewinfo">
@@ -50,7 +59,7 @@
                         <button type="button" class="btn btn-info btn-xs" style="visibility: hidden;"><i class="fa fa-fw fa-info"></i></button>
                     </div>
 
-                    <div ng-repeat="drilldown in view.params.drilldown" class="label label-secondary cv-infopiece cv-view-viewinfo-drill" style="color: black; background-color: #ccffcc;">
+                    <div ng-repeat="drilldown in view.params.drilldown" ng-if="view.params.mode != 'facts'" class="label label-secondary cv-infopiece cv-view-viewinfo-drill" style="color: black; background-color: #ccffcc;">
                         <span><i class="fa fa-fw fa-arrow-down"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>
                         <button type="button" class="btn btn-info btn-xs" style="visibility: hidden; margin-left: -20px;"><i class="fa fa-fw fa-info"></i></button>
                         <button ng-hide="view.controlsHidden()" type="button" ng-click="showDimensionFilter(drilldown)" class="btn btn-secondary btn-xs" style="margin-left: 3px;"><i class="fa fa-fw fa-search"></i></button>

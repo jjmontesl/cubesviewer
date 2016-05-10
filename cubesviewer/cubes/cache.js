@@ -53,9 +53,6 @@ angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOption
 		var jqxhr = null;
 		if (requestHash in cubesCacheService.cache && cvOptions.cacheEnabled) {
 
-			// TODO: What is the correct ordering of success/complete callbacks?
-			successCallback(cubesCacheService.cache[requestHash].data);
-
 			// Warn that data comes from cache (QTip can do this?)
 			var timediff = Math.round ((new Date().getTime() - cubesCacheService.cache[requestHash].time) / 1000);
 			if (timediff > cvOptions.cacheNotice) {
@@ -63,7 +60,16 @@ angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOption
 				console.debug("Data loaded from cache (" + timediff + " minutes old)");
 			}
 
-			jqxhr = $.Deferred().resolve().promise();
+			console.debug("Hey");
+			jqxhr = $.Deferred();
+			jqxhr.error = function() { };
+
+			setTimeout(function() {
+				console.debug("Resolving");
+				// TODO: What is the correct ordering of success/complete callbacks?
+				successCallback(cubesCacheService.cache[requestHash].data);
+				jqxhr.resolve(); //.promise();
+			}, 0);
 
 
 		} else {

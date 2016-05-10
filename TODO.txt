@@ -39,13 +39,16 @@
     * Make charts more interactive (allow cut from chart, etc).
     * Migrate documentation to more-custom github.io (maintain version, etc...)
 
-    * Restore pluggability, publish API for views and GUI. Needed before adding stuff that
+
+
+    * [3.0] Restore pluggability, publish API for views and GUI. Needed before adding stuff that
       needs to be optional in viewer, like loading bars to Studio, and to restore optional
-      components (server-side stuff, etc).
+      components (server-side stuff, etc). Provide good API. Use object for views,
+      dimension, drilldown, etc...
 
 [2.4]
 
-    * Alerts (server-backed, depending on criteria, with triggers (use cubetl)).
+    * Data alerts (server-backed, depending on criteria, with triggers (use cubetl)).
     * http://bl.ocks.org/mbostock/4063269 (Bubble chart: categories/sizes)
     * https://mbostock.github.io/d3/talk/20111018/treemap.html (zoomable treemap)
 
@@ -75,6 +78,8 @@
 
 [2.0]
 
+    * Missing cached content alert.
+
     * Commit refactor branch, fork repository, commit refactor branch to cubesviewer-js
       and bring server changes to cubesviewer project. Rename repositories accordingly.
     * Test CORS issue from server (localhost:8000 -> localhost:5000), test JSONP.
@@ -97,6 +102,7 @@
     * Columns config "hooks" (hide / size)
     * Radar chart doesn't resize
 
+    * Only draw results for the requested view, otherwise discard result (is causing issues and confussion).
     * Default cube settings is incorrect: it should only be applied if the view is not otherwise configured (ie loaded or json)
     * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative), move "invert 2nd serie" as a calculation?
     * Error when loading incorrect JSON: error shall be reported by client (ie GUI), state incorrect, cannot access showDialog.
@@ -107,4 +113,3 @@
 
     * Datefilter.
     * Undo/redo.
-    * Cache.
