@@ -79,7 +79,6 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
 	 * Add a serialized view.
 	 */
 	$scope.addSerializedView = function (serialized) {
-		console.debug("Add: " + serialized);
 		if (serialized != null) {
 			var view = studioViewsService.addViewObject(serialized);
 		}

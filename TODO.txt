@@ -66,6 +66,7 @@
     * Show filter icon from "horizontal dimension". Also show its detail level (and perhaps not the hierarchy).
     * Tooltip columns: column=val remove columnTooltipAttr, enable tooltips?
     * Abandon page warning?
+    * Datepicker to show only to correct level (year, month, day)
 
 [2.1]
 
@@ -75,10 +76,10 @@
     * Add "accumulated", "difference" and other calculations to series and charts.
     * Issue #39, "strings with hyphen cause dimension filter to work inexpectedly".
     * Range filter.
+    * Restore cached content notice (is missing, commented out).
 
 [2.0]
 
-    * Missing cached content alert.
 
     * Commit refactor branch, fork repository, commit refactor branch to cubesviewer-js
       and bring server changes to cubesviewer project. Rename repositories accordingly.
@@ -102,12 +103,11 @@
     * Columns config "hooks" (hide / size)
     * Radar chart doesn't resize
 
-    * Only draw results for the requested view, otherwise discard result (is causing issues and confussion).
+    * Only draw results for the requested view, otherwise discard result (is causing issues and confusion).
     * Default cube settings is incorrect: it should only be applied if the view is not otherwise configured (ie loaded or json)
     * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative), move "invert 2nd serie" as a calculation?
     * Error when loading incorrect JSON: error shall be reported by client (ie GUI), state incorrect, cannot access showDialog.
 
     * Analytics plugin, and fix it to ignore first N seconds of events as for bounce rate calculation.
+    * Export.
     * Server side.
-    * Datefilter.
-

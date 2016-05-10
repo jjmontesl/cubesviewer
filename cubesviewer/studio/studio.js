@@ -27,8 +27,8 @@ angular.module('cv.studio', ['cv' /*'ui.bootstrap-slider', 'ui.validate', 'ngAni
                              /*'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',
                              'nvd3' */ ]);
 
-angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOptions', 'cubesService', 'viewsService',
-                                                            function ($rootScope, cvOptions, cubesService, viewsService) {
+angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
+                                                            function ($rootScope, cvOptions, cubesService, viewsService, dialogService) {
 
 	this.views = [];
 
@@ -58,6 +58,16 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 	 * Adds a view given its params descriptor.
 	 */
 	this.addViewObject = function(data) {
+
+		// Check at least JSON is valid to avoid creating an unusable view from Studio
+		if (typeof data == "string") {
+			try {
+				$.parseJSON(data);
+			} catch (err) {
+				dialogService.show('Could not process serialized data: JSON parse error.')
+				return;
+			}
+		}
 
 		var view = viewsService.createView("cube", data);
 		this.views.push(view);

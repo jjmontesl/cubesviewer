@@ -88,7 +88,8 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 	 * Serialize view data.
 	 */
 	this.serializeView = function(view) {
-		return JSON.stringify(view.params);
+		//return JSON.stringify(view.params);
+		return angular.toJson(view.params);  // Ignores $$ attributes
 	};
 
 

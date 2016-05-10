@@ -1148,21 +1148,132 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 
 		return args;
 
-	}
+	};
 
 	/*
 	 * Builds Query Cuts
 	 */
 	this.buildQueryCuts = function(view) {
 
-		// Include cuts
 		var cuts = [];
+
+		// Cuts
 		$(view.params.cuts).each(function(idx, e) {
 			var invert = e.invert ? "!" : "";
-			cuts.push(cubes.cut_from_string (view.cube, invert + e.dimension + ":" + e.value));
+			cuts.push(cubes.cut_from_string(view.cube, invert + e.dimension + ":" + e.value.replace("-", "\\-")));
+		});
+
+		// Date filters
+		$(view.params.datefilters).each(function(idx, e) {
+			var datefilterval = cubesService.datefilterValue(view, e);
+			if (datefilterval != null) {
+				cuts.push(cubes.cut_from_string(view.cube, e.dimension + ":" + datefilterval));
+			}
 		});
 
 		return cuts;
+	};
+
+	/*
+	 * Composes a filter with appropriate syntax and time grain from a
+	 * datefilter
+	 */
+	this.datefilterValue = function(view, datefilter) {
+
+		var date_from = null;
+		var date_to = null;
+
+		if (datefilter.mode.indexOf("auto-") == 0) {
+			if (datefilter.mode == "auto-last1m") {
+				date_from = new Date();
+				date_from.setMonth(date_from.getMonth() - 1);
+			} else if (datefilter.mode == "auto-last3m") {
+				date_from = new Date();
+				date_from.setMonth(date_from.getMonth() - 3);
+			} else if (datefilter.mode == "auto-last6m") {
+				date_from = new Date();
+				date_from.setMonth(date_from.getMonth() - 6);
+			} else if (datefilter.mode == "auto-last12m") {
+				date_from = new Date();
+				date_from.setMonth(date_from.getMonth() - 12);
+			} else if (datefilter.mode == "auto-last24m") {
+				date_from = new Date();
+				date_from.setMonth(date_from.getMonth() - 24);
+			} else if (datefilter.mode == "auto-january1st") {
+				date_from = new Date();
+				date_from.setMonth(0);
+				date_from.setDate(1);
+			} else if (datefilter.mode == "auto-yesterday") {
+				date_from = new Date();
+				date_from.setDate(date_from.getDate() - 1);
+				date_to = new Date();
+                date_to.setDate(date_from.getDate() - 1);
+			}
+
+		} else if (datefilter.mode == "custom") {
+			if ((datefilter.date_from != null) && (datefilter.date_from != "")) {
+				date_from = new Date(datefilter.date_from);
+			}
+			if ((datefilter.date_to != null) && (datefilter.date_to != "")) {
+				date_to = new Date(datefilter.date_to);
+			}
+		}
+
+		if ((date_from != null) || (date_to != null)) {
+			var datefiltervalue = "";
+			if (date_from != null)
+				datefiltervalue = datefiltervalue + cubesService._datefiltercell(view, datefilter, date_from);
+			datefiltervalue = datefiltervalue + "-";
+			if (date_to != null)
+				datefiltervalue = datefiltervalue + cubesService._datefiltercell(view, datefilter, date_to);
+			return datefiltervalue;
+		} else {
+			return null;
+		}
+
+	};
+
+	this._datefiltercell = function(view, datefilter, tdate) {
+
+		var values = [];
+
+		var dimensionparts = view.cube.cvdim_parts(datefilter.dimension);
+		for (var i = 0; i < dimensionparts.hierarchy.levels.length; i++) {
+			var level = dimensionparts.hierarchy.levels[i];
+
+			var field = level.role;
+			if (field == "year") {
+				values.push(tdate.getFullYear());
+			} else if (field == "month") {
+				values.push(tdate.getMonth() + 1);
+			} else if (field == "quarter") {
+				values.push((Math.floor(tdate.getMonth() / 3) + 1));
+			} else if (field == "week") {
+				values.push(this._weekNumber(tdate));
+			} else if (field == "day") {
+				values.push(tdate.getDate());
+			} else {
+				dialogService.show("Wrong configuration of model: time role of level '" + level.name + "' is invalid.");
+			}
+		}
+
+		return values.join(',');
+
+		/*return tdate.getFullYear() + ","
+				+ (Math.floor(tdate.getMonth() / 3) + 1) + ","
+				+ (tdate.getMonth() + 1); */
+	};
+
+	this._weekNumber = function(d) {
+	    // Copy date so don't modify original
+	    d = new Date(d);
+	    d.setHours(0,0,0);
+	    // Get first day of year
+	    var yearStart = new Date(d.getFullYear(),0,1);
+	    // Calculate full weeks to nearest Thursday
+	    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7)
+	    // Return array of year and week number
+	    return weekNo;
 	};
 
 
@@ -1342,22 +1453,25 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheS
 	//console.debug("Bootstrapping CubesViewer.");
 
     var defaultOptions = {
-            cubesUrl : null,
+
+    		cubesUrl : null,
             //cubesLang : null,
-            pagingOptions: [15, 30, 100, 250],
-            //datepickerShowWeek: true,
-            //datepickerFirstDay: 1,
+    		jsonRequestType: "json", // "json | jsonp"
+
+    		pagingOptions: [15, 30, 100, 250],
 
             cacheEnabled: true,
             cacheDuration: 30 * 60,
             cacheNotice: 10 * 60,
             cacheSize: 32,
 
+			datepickerShowWeeks: true,
+		    datepickerFirstDay: 1,  // Starting day of the week from 0-6 (0=Sunday, ..., 6=Saturday).
+
             undoEnabled: true,
             undoSize: 32,
-
-            jsonRequestType: "json" // "json | jsonp"
     };
+
 	$.extend(defaultOptions, cvOptions);
 	$.extend(cvOptions, defaultOptions);
 
@@ -1537,7 +1651,8 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 	 * Serialize view data.
 	 */
 	this.serializeView = function(view) {
-		return JSON.stringify(view.params);
+		//return JSON.stringify(view.params);
+		return angular.toJson(view.params);  // Ignores $$ attributes
 	};
 
 
@@ -2731,223 +2846,81 @@ function cubesviewerViewCubeDimensionFilter () {
 
 "use strict";
 
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDateController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'viewsService',
-                                                                                        function ($rootScope, $scope, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').filter("datefilterMode", ['$rootScope', 'cvOptions',
+                                                          function ($rootScope, cvOptions) {
+	return function(val) {
+		var text = "None";
+		switch (val) {
+			case "custom": text = "Custom"; break;
+			case "auto-last1m": text = "Last month"; break;
+			case "auto-last3m": text = "Last 3 months"; break;
+			case "auto-last6m": text = "Last 6 months"; break;
+			case "auto-last12m": text = "Last year"; break;
+			case "auto-last24m": text = "Last 2 years"; break;
+			case "auto-january1st": text = "From January 1st"; break;
+			case "auto-yesterday": text = "Yesterday"; break;
+		}
+		return text;
+	};
+}]);
 
-	$scope.dateStart = { "opened": false, "value": null };
-	$scope.dateEnd = { "opened": false, "value": null };
-
-	$scope.dateOptionsStart = {
-		//dateDisabled: disabled,
-    	formatYear: 'yyyy',
-    	maxDate: new Date(2020, 12, 31),
-    	minDate: new Date(1970, 1, 1),
-    	startingDay: 1,
-    };
-
-	$scope.dateOptionsEnd = {
-		//dateDisabled: disabled,
-    	formatYear: 'yyyy',
-    	maxDate: new Date(2020, 12, 31),
-    	minDate: new Date(1970, 1, 1),
-    	startingDay: 1,
-    };
-
-	 $scope.dateStartOpen = function() {
-		 $scope.dateStart.opened = true;
-	 }
-	 $scope.dateEndOpen = function() {
-		 $scope.dateEnd.opened = true;
-	 }
-
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDateController", ['$rootScope', '$scope', '$filter', 'cvOptions', 'cubesService', 'viewsService',
+                                                                                        function ($rootScope, $scope, $filter, cvOptions, cubesService, viewsService) {
 	$scope.initialize = function() {
-
+		$scope.dateStart.value = $scope.datefilter.date_from ? new Date($scope.datefilter.date_from) : null;
+		$scope.dateEnd.value = $scope.datefilter.date_to ? new Date($scope.datefilter.date_to) : null;
 	};
 
+	$scope.dateStart = {
+		opened: false,
+		value: null,
+		options: {
+			//dateDisabled: disabled,
+	    	formatYear: 'yyyy',
+	    	//maxDate: new Date(2020, 12, 31),
+	    	//minDate: new Date(1970, 1, 1),
+	    	startingDay: cvOptions.datepickerFirstDay,
+	    	showWeeks: cvOptions.datepickerShowWeeks
+	    }
+	};
+	$scope.dateEnd = {
+		opened: false,
+		value: null,
+		options: {
+			//dateDisabled: disabled,
+	    	formatYear: 'yyyy',
+	    	//maxDate: new Date(2020, 12, 31),
+	    	//minDate: new Date(1970, 1, 1),
+	    	startingDay: cvOptions.datepickerFirstDay,
+	    	showWeeks: cvOptions.datepickerShowWeeks
+	    }
+	};
+
+	$scope.dateStartOpen = function() {
+		$scope.dateStart.opened = true;
+	}
+	$scope.dateEndOpen = function() {
+		$scope.dateEnd.opened = true;
+	}
+
+	$scope.setMode = function(mode) {
+		$scope.datefilter.mode = mode;
+	};
+
+	$scope.updateDateFilter = function() {
+		$scope.datefilter.date_from = $scope.dateStart.value ? $filter('date')($scope.dateStart.value, "yyyy-MM-dd") : null;
+		$scope.datefilter.date_to = $scope.dateEnd.value? $filter('date')($scope.dateEnd.value, "yyyy-MM-dd") : null;
+		$scope.refreshView();
+	}
+
+	$scope.$watch("dateStart.value", $scope.updateDateFilter);
+	$scope.$watch("dateEnd.value", $scope.updateDateFilter);
+	$scope.$watch("datefilter.mode", $scope.updateDateFilter);
 
 	$scope.initialize();
 
 }]);
 
-
-
-function cubesviewerViewCubeDateFilter () {
-
-	this._overridedbuildQueryCuts = null;
-
-
-	/*
-	 * Override original Cut generation function to add support for datefilters
-	 */
-	cubesviewer.views.cube.datefilter._overridedbuildQueryCuts = cubesviewer.views.cube.buildQueryCuts;
-	cubesviewer.views.cube.buildQueryCuts = cubesviewer.views.cube.datefilter.buildQueryCuts;
-
-
-
-
-	this.drawDateFilter = function(view, datefilter, container) {
-
-		$("[name='date_start']", container).datepicker({
-			changeMonth : true,
-			changeYear : true,
-			dateFormat : "yy-mm-dd",
-			showWeek: cubesviewer.options.datepickerShowWeek,
-		    firstDay: cubesviewer.options.datepickerFirstDay
-		});
-		$("[name='date_end']", container).datepicker({
-			changeMonth : true,
-			changeYear : true,
-			dateFormat : "yy-mm-dd",
-			showWeek: cubesviewer.options.datepickerShowWeek,
-		    firstDay: cubesviewer.options.datepickerFirstDay
-		});
-
-		$("[name='date_start']", container).attr('autocomplete', 'off');
-		$("[name='date_end']", container).attr('autocomplete', 'off');
-
-		// Functionality
-		$("input,select", container).change(function() {
-			datefilter.mode = $("[name='date_mode']", container).val();
-			datefilter.date_from = $("[name='date_start']", container).val();
-			datefilter.date_to = $("[name='date_end']", container).val();
-			view.cubesviewer.views.redrawView (view);
-		});
-
-		// Set initial values
-		$("[name='date_mode']", container).val(datefilter.mode);
-		$("[name='date_start']", container).val(datefilter.date_from);
-		$("[name='date_end']", container).val(datefilter.date_to);
-		if ($("[name='date_mode']", container).val() != "custom") {
-			$("[name='date_start']", container).attr("disabled", "disabled");
-			$("[name='date_end']", container).attr("disabled", "disabled");
-		}
-
-	};
-
-	/*
-	 * Composes a filter with appropriate syntax and time grain from a
-	 * datefilter
-	 */
-	this.datefilterValue = function(view, datefilter) {
-
-		var date_from = null;
-		var date_to = null;
-
-		if (datefilter.mode.indexOf("auto-") == 0) {
-			if (datefilter.mode == "auto-last1m") {
-				date_from = new Date();
-				date_from.setMonth(date_from.getMonth() - 1);
-			} else if (datefilter.mode == "auto-last3m") {
-				date_from = new Date();
-				date_from.setMonth(date_from.getMonth() - 3);
-			} else if (datefilter.mode == "auto-last6m") {
-				date_from = new Date();
-				date_from.setMonth(date_from.getMonth() - 6);
-			} else if (datefilter.mode == "auto-last12m") {
-				date_from = new Date();
-				date_from.setMonth(date_from.getMonth() - 12);
-			} else if (datefilter.mode == "auto-last24m") {
-				date_from = new Date();
-				date_from.setMonth(date_from.getMonth() - 24);
-			} else if (datefilter.mode == "auto-january1st") {
-				date_from = new Date();
-				date_from.setMonth(0);
-				date_from.setDate(1);
-			} else if (datefilter.mode == "auto-yesterday") {
-				date_from = new Date();
-				date_from.setDate(date_from.getDate() - 1);
-				date_to = new Date();
-                date_to.setDate(date_from.getDate() - 1);
-			}
-
-		} else if (datefilter.mode == "custom") {
-			if ((datefilter.date_from != null) && (datefilter.date_from != "")) {
-				date_from = new Date(datefilter.date_from);
-			}
-			if ((datefilter.date_to != null) && (datefilter.date_to != "")) {
-				date_to = new Date(datefilter.date_to);
-			}
-		}
-
-		if ((date_from != null) || (date_to != null)) {
-			var datefiltervalue = "";
-			if (date_from != null)
-				datefiltervalue = datefiltervalue
-						+ this._datefiltercell(view, datefilter, date_from);
-			datefiltervalue = datefiltervalue + "-";
-			if (date_to != null)
-				datefiltervalue = datefiltervalue
-						+ this._datefiltercell(view, datefilter, date_to);
-			return datefiltervalue;
-		} else {
-			return null;
-		}
-
-	};
-
-	this._datefiltercell = function(view, datefilter, tdate) {
-
-		var values = [];
-
-		var dimensionparts = view.cube.cvdim_parts(datefilter.dimension);
-		for (var i = 0; i < dimensionparts.hierarchy.levels.length; i++) {
-			var level = dimensionparts.hierarchy.levels[i];
-
-			var field = level.role;
-			if (field == "year") {
-				values.push(tdate.getFullYear());
-			} else if (field == "month") {
-				values.push(tdate.getMonth() + 1);
-			} else if (field == "quarter") {
-				values.push((Math.floor(tdate.getMonth() / 3) + 1));
-			} else if (field == "week") {
-				values.push(this._weekNumber(tdate));
-			} else if (field == "day") {
-				values.push(tdate.getDate());
-			} else {
-				dialogService.show("Wrong configuration of model: time role of level '" + level.name + "' is invalid.");
-			}
-		}
-
-		return values.join(',');
-
-		/*return tdate.getFullYear() + ","
-				+ (Math.floor(tdate.getMonth() / 3) + 1) + ","
-				+ (tdate.getMonth() + 1); */
-	};
-
-	this._weekNumber = function(d) {
-	    // Copy date so don't modify original
-	    d = new Date(d);
-	    d.setHours(0,0,0);
-	    // Get first day of year
-	    var yearStart = new Date(d.getFullYear(),0,1);
-	    // Calculate full weeks to nearest Thursday
-	    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7)
-	    // Return array of year and week number
-	    return weekNo;
-	};
-
-	/*
-	 * Builds Query Cuts (overrides default cube cut build function).
-	 */
-	this.buildQueryCuts = function(view) {
-
-		// Include cuts and datefilters
-		var cuts = cubesviewer.views.cube.datefilter._overridedbuildQueryCuts(view);
-
-		$(view.params.datefilters).each(function(idx, e) {
-			var datefiltervalue = view.cubesviewer.views.cube.datefilter.datefilterValue(view, e);
-			if (datefiltervalue != null) {
-				cuts.push(cubes.cut_from_string (view.cube, e.dimension + ":" + datefiltervalue));
-			}
-		});
-
-		return cuts;
-
-	};
-
-}
 
 ;/*
  * CubesViewer
@@ -4867,8 +4840,8 @@ angular.module('cv.studio', ['cv' /*'ui.bootstrap-slider', 'ui.validate', 'ngAni
                              /*'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',
                              'nvd3' */ ]);
 
-angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOptions', 'cubesService', 'viewsService',
-                                                            function ($rootScope, cvOptions, cubesService, viewsService) {
+angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
+                                                            function ($rootScope, cvOptions, cubesService, viewsService, dialogService) {
 
 	this.views = [];
 
@@ -4898,6 +4871,16 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 	 * Adds a view given its params descriptor.
 	 */
 	this.addViewObject = function(data) {
+
+		// Check at least JSON is valid to avoid creating an unusable view from Studio
+		if (typeof data == "string") {
+			try {
+				$.parseJSON(data);
+			} catch (err) {
+				dialogService.show('Could not process serialized data: JSON parse error.')
+				return;
+			}
+		}
 
 		var view = viewsService.createView("cube", data);
 		this.views.push(view);
@@ -5230,7 +5213,6 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
 	 * Add a serialized view.
 	 */
 	$scope.addSerializedView = function (serialized) {
-		console.debug("Add: " + serialized);
 		if (serialized != null) {
 			var view = studioViewsService.addViewObject(serialized);
 		}
@@ -5251,7 +5233,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
   $templateCache.put('dialog/dialog.html',
     "  <div class=\"modal-header\">\n" +
     "    <button type=\"button\" ng-click=\"close()\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\"><i class=\"fa fa-fw fa-close\"></i></span></button>\n" +
-    "    <h4 class=\"modal-title\" id=\"myModalLabel\"><i class=\"fa fa-info\"></i> CubesViewer</h4>\n" +
+    "    <h4 class=\"modal-title\" id=\"myModalLabel\"><i class=\"fa fa-fw fa-exclamation\"></i> CubesViewer</h4>\n" +
     "  </div>\n" +
     "  <div class=\"modal-body\">\n" +
     "        <p>{{ dialog.text }}</p>\n" +
@@ -5988,12 +5970,13 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "        <div class=\"cv-view-viewinfo\">\n" +
     "            <div>\n" +
+    "                <div class=\"label label-secondary cv-infopiece cv-view-viewinfo-cubename\" style=\"color: white; background-color: black;\">\n" +
+    "                    <span><i class=\"fa fa-fw fa-cube\"></i> <b>Cube:</b> {{ view.cube.label }}</span>\n" +
+    "                    <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "                </div>\n" +
+    "\n" +
     "                <div class=\"cv-view-viewinfo-drill\">\n" +
     "\n" +
-    "                    <div class=\"label label-secondary cv-infopiece cv-view-viewinfo-cubename\" style=\"color: white; background-color: black;\">\n" +
-    "                        <span><i class=\"fa fa-fw fa-cube\"></i> <b>Cube:</b> {{ view.cube.label }}</span>\n" +
-    "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
-    "                    </div>\n" +
     "\n" +
     "                    <div ng-repeat=\"drilldown in view.params.drilldown\" ng-if=\"view.params.mode != 'facts'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-drill\" style=\"color: black; background-color: #ccffcc;\">\n" +
     "                        <span><i class=\"fa fa-fw fa-arrow-down\"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>\n" +
@@ -6104,7 +6087,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "    </div>\n" +
     "    <div ng-if=\"gridOptions.data.length > 0\" style=\"height: 30px;\">&nbsp;</div>\n" +
     "\n" +
-    "    <div ng-if=\"gridOptions.data.length == 0\">No facts are returned by the current filtering combination.</div>\n" +
+    "    <div ng-if=\"pendingRequests == 0 && gridOptions.data.length == 0\">No facts are returned by the current filtering combination.</div>\n" +
     "\n" +
     "</div>\n"
   );
@@ -6112,7 +6095,7 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
 
   $templateCache.put('views/cube/filter/datefilter.html',
     "<div class=\"cv-view-viewinfo-date\">\n" +
-    "    <div ng-repeat=\"cut in view.params.datefilters\" ng-controller=\"CubesViewerViewsCubeFilterDateController\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension);\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut text-left\" style=\"color: black; background-color: #ffdddd; text-align: left;\">\n" +
+    "    <div ng-repeat=\"datefilter in view.params.datefilters\" ng-controller=\"CubesViewerViewsCubeFilterDateController\" ng-init=\"dimparts = view.cube.cvdim_parts(datefilter.dimension);\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut text-left\" style=\"color: black; background-color: #ffdddd; text-align: left;\">\n" +
     "        <span style=\"max-width: 280px; white-space: nowrap;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.labelNoLevel }}:</span>\n" +
     "\n" +
     "        <!--\n" +
@@ -6126,52 +6109,58 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "                 <div class=\"form-group\" style=\"display: inline-block; margin: 0px;\">\n" +
     "                    <div class=\"dropdown\" style=\"display: inline-block;\">\n" +
-    "                      <button style=\"height: 20px;\" class=\"btn btn-default btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "                        <i class=\"fa fa-fw fa-calendar\"></i> Select <span class=\"caret\"></span>\n" +
+    "                      <button ng-hide=\"view.controlsHidden()\" style=\"height: 20px;\" class=\"btn btn-default btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
+    "                        <i class=\"fa fa-fw fa-calendar\"></i> {{ datefilter.mode | datefilterMode }} <span class=\"caret\"></span>\n" +
     "                      </button>\n" +
+    "                      <span ng-show=\"view.controlsHidden()\"><i class=\"fa fa-fw fa-calendar\"></i> {{ datefilter.mode | datefilterMode }}</span>\n" +
     "\n" +
     "                      <ul class=\"dropdown-menu cv-view-menu cv-view-menu-view\">\n" +
-    "                        <li class=\"dropdown-header\">Manual</li>\n" +
-    "                        <li ng-click=\"custom\"><a><i class=\"fa fa-fw\"></i> Custom</a></li>\n" +
-    "                        <li class=\"dropdown-header\">Auto</li>\n" +
-    "                        <li ng-click=\"auto-last1m\"><a><i class=\"fa fa-fw\"></i> Last month</a></li>\n" +
-    "                        <li ng-click=\"auto-last3m\"><a><i class=\"fa fa-fw\"></i> Last 3 months</a></li>\n" +
-    "                        <li ng-click=\"auto-last6m\"><a><i class=\"fa fa-fw\"></i> Last 6 months</a></li>\n" +
-    "                        <li ng-click=\"auto-last12m\"><a><i class=\"fa fa-fw\"></i> Last year</a></li>\n" +
-    "                        <li ng-click=\"auto-last24m\"><a><i class=\"fa fa-fw\"></i> Last 2 years</a></li>\n" +
-    "                        <li ng-click=\"auto-january1st\"><a><i class=\"fa fa-fw\"></i> From January 1st</a></li>\n" +
-    "                        <li ng-click=\"auto-yesterday\"><a><i class=\"fa fa-fw\"></i> Yesterday</a></li>\n" +
+    "                        <li ng-click=\"setMode('custom')\"><a><i class=\"fa fa-fw\"></i> Custom</a></li>\n" +
+    "                        <div class=\"divider\"></div>\n" +
+    "                        <li ng-click=\"setMode('auto-last1m')\"><a><i class=\"fa fa-fw\"></i> Last month</a></li>\n" +
+    "                        <li ng-click=\"setMode('auto-last3m')\"><a><i class=\"fa fa-fw\"></i> Last 3 months</a></li>\n" +
+    "                        <li ng-click=\"setMode('auto-last6m')\"><a><i class=\"fa fa-fw\"></i> Last 6 months</a></li>\n" +
+    "                        <li ng-click=\"setMode('auto-last12m')\"><a><i class=\"fa fa-fw\"></i> Last year</a></li>\n" +
+    "                        <li ng-click=\"setMode('auto-last24m')\"><a><i class=\"fa fa-fw\"></i> Last 2 years</a></li>\n" +
+    "                        <li ng-click=\"setMode('auto-january1st')\"><a><i class=\"fa fa-fw\"></i> From January 1st</a></li>\n" +
+    "                        <li ng-click=\"setMode('auto-yesterday')\"><a><i class=\"fa fa-fw\"></i> Yesterday</a></li>\n" +
     "                      </ul>\n" +
     "                  </div>\n" +
     "                 </div>\n" +
     "\n" +
-    "             &rArr;\n" +
+    "            <div ng-show=\"datefilter.mode == 'custom'\" style=\"display: inline-block; margin: 0px;\">\n" +
     "\n" +
-    "             <div class=\"form-group\" style=\"display: inline-block; margin: 0px;\">\n" +
-    "                <p class=\"input-group\" style=\"margin: 0px; display: inline-block;\">\n" +
-    "                  <input type=\"text\" style=\"height: 20px; width: 80px; display: inline-block;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateStart.value\" is-open=\"dateStart.opened\" datepicker-options=\"dateOptionsStart\" ng-required=\"true\" close-text=\"Close\" />\n" +
-    "                  <span class=\"input-group-btn\" style=\"display: inline-block;\">\n" +
-    "                    <button type=\"button\" style=\"height: 20px;\" class=\"btn btn-default\" ng-click=\"dateStartOpen()\"><i class=\"fa fa-fw fa-calendar\"></i></button>\n" +
-    "                  </span>\n" +
-    "                </p>\n" +
-    "            </div>\n" +
+    "                 &rArr;\n" +
     "\n" +
-    "            <span style=\"margin-left: 17px; margin-right: 0px;\">-</span>\n" +
+    "                 <div class=\"form-group\" style=\"display: inline-block; margin: 0px;\">\n" +
+    "                    <p class=\"input-group disabled\" style=\"margin: 0px; display: inline-block;\">\n" +
+    "                      <input ng-disabled=\"view.controlsHidden()\" autocomplete=\"off\" type=\"text\" style=\"height: 20px; width: 80px; display: inline-block;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateStart.value\" is-open=\"dateStart.opened\" datepicker-options=\"dateStart.options\" ng-required=\"true\" close-text=\"Close\" />\n" +
+    "                      <span ng-hide=\"view.controlsHidden()\"  class=\"input-group-btn\" style=\"display: inline-block;\">\n" +
+    "                        <button type=\"button\" style=\"height: 20px;\" class=\"btn btn-default\" ng-click=\"dateStartOpen()\"><i class=\"fa fa-fw fa-calendar\"></i></button>\n" +
+    "                      </span>\n" +
+    "                    </p>\n" +
+    "                </div>\n" +
     "\n" +
-    "             <div class=\"form-group\" style=\"display: inline-block; margin: 0px;\">\n" +
-    "                <p class=\"input-group\" style=\"margin: 0px; display: inline-block;\">\n" +
-    "                  <input type=\"text\" style=\"height: 20px; width: 80px; display: inline-block;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateEnd.value\" is-open=\"dateEnd.opened\" datepicker-options=\"dateOptionsEnd\" ng-required=\"true\" close-text=\"Close\" />\n" +
-    "                  <span class=\"input-group-btn\" style=\"display: inline-block;\">\n" +
-    "                    <button type=\"button\" style=\"height: 20px;\" class=\"btn btn-default\" ng-click=\"dateEndOpen()\"><i class=\"fa fa-fw fa-calendar\"></i></button>\n" +
-    "                  </span>\n" +
-    "                </p>\n" +
+    "                <span ng-hide=\"view.controlsHidden()\" style=\"margin-left: 17px; margin-right: 0px;\">-</span>\n" +
+    "                <span ng-show=\"view.controlsHidden()\" style=\"margin-left: 0px; margin-right: 0px;\">-</span>\n" +
+    "\n" +
+    "                 <div class=\"form-group\" style=\"display: inline-block; margin: 0px;\">\n" +
+    "                    <p class=\"input-group\" style=\"margin: 0px; display: inline-block;\">\n" +
+    "                      <input ng-disabled=\"view.controlsHidden()\" autocomplete=\"off\" type=\"text\" style=\"height: 20px; width: 80px; display: inline-block;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateEnd.value\" is-open=\"dateEnd.opened\" datepicker-options=\"dateEnd.options\" ng-required=\"true\" close-text=\"Close\" />\n" +
+    "                      <span ng-hide=\"view.controlsHidden()\" class=\"input-group-btn\" style=\"display: inline-block;\">\n" +
+    "                        <button type=\"button\" style=\"height: 20px;\" class=\"btn btn-default\" ng-click=\"dateEndOpen()\"><i class=\"fa fa-fw fa-calendar\"></i></button>\n" +
+    "                      </span>\n" +
+    "                    </p>\n" +
+    "                </div>\n" +
+    "\n" +
     "            </div>\n" +
     "\n" +
     "        </form>\n" +
     "\n" +
     "        </div>\n" +
     "\n" +
-    "        <button type=\"button\" ng-click=\"selectDateFilter(cut.dimension, false)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 20px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "        <button type=\"button\" ng-hide=\"view.controlsHidden()\" ng-click=\"selectDateFilter(datefilter.dimension, false)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 20px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "\n" +
     "\n" +
     "    </div>\n" +

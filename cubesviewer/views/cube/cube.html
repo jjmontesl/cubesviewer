@@ -52,12 +52,13 @@
 
         <div class="cv-view-viewinfo">
             <div>
+                <div class="label label-secondary cv-infopiece cv-view-viewinfo-cubename" style="color: white; background-color: black;">
+                    <span><i class="fa fa-fw fa-cube"></i> <b>Cube:</b> {{ view.cube.label }}</span>
+                    <button type="button" class="btn btn-info btn-xs" style="visibility: hidden;"><i class="fa fa-fw fa-info"></i></button>
+                </div>
+
                 <div class="cv-view-viewinfo-drill">
 
-                    <div class="label label-secondary cv-infopiece cv-view-viewinfo-cubename" style="color: white; background-color: black;">
-                        <span><i class="fa fa-fw fa-cube"></i> <b>Cube:</b> {{ view.cube.label }}</span>
-                        <button type="button" class="btn btn-info btn-xs" style="visibility: hidden;"><i class="fa fa-fw fa-info"></i></button>
-                    </div>
 
                     <div ng-repeat="drilldown in view.params.drilldown" ng-if="view.params.mode != 'facts'" class="label label-secondary cv-infopiece cv-view-viewinfo-drill" style="color: black; background-color: #ccffcc;">
                         <span><i class="fa fa-fw fa-arrow-down"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>

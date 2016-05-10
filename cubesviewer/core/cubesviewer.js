@@ -45,22 +45,25 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheS
 	//console.debug("Bootstrapping CubesViewer.");
 
     var defaultOptions = {
-            cubesUrl : null,
+
+    		cubesUrl : null,
             //cubesLang : null,
-            pagingOptions: [15, 30, 100, 250],
-            //datepickerShowWeek: true,
-            //datepickerFirstDay: 1,
+    		jsonRequestType: "json", // "json | jsonp"
+
+    		pagingOptions: [15, 30, 100, 250],
 
             cacheEnabled: true,
             cacheDuration: 30 * 60,
             cacheNotice: 10 * 60,
             cacheSize: 32,
 
+			datepickerShowWeeks: true,
+		    datepickerFirstDay: 1,  // Starting day of the week from 0-6 (0=Sunday, ..., 6=Saturday).
+
             undoEnabled: true,
             undoSize: 32,
-
-            jsonRequestType: "json" // "json | jsonp"
     };
+
 	$.extend(defaultOptions, cvOptions);
 	$.extend(cvOptions, defaultOptions);
 
