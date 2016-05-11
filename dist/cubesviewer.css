@@ -6781,6 +6781,12 @@ button.cv-bootstrap .close {
   -ms-user-select: initial;
   user-select: initial;
 }
+.cv-bootstrap .ui-grid-row:nth-child(even) .ui-grid-cell {
+  background-color: #EEE9FF;
+}
+.cv-bootstrap .ui-grid-row .ui-grid-cell.ui-grid-row-header-cell {
+  background-color: #f0f0ee;
+}
 .cv-bootstrap div ul.uib-datepicker-popup.dropdown-menu {
   display: block;
   font-size: 12px;
