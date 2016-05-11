@@ -39,7 +39,7 @@ Online Demos
 Download
 --------
 
-Latest CubesViewer release is 2.0:
+Latest CubesViewer release is 2.0.1:
 
 * CubesViewer 2.0.1
   * [cubesviewer-2.0.1.zip](https://github.com/jjmontesl/cubesviewer/archive/cubesviewer-2.0.1.zip)
@@ -82,6 +82,7 @@ aggregated data in different ways, allowing you to build tables and charts
 based on the analytical data available from the server.
 
 * [CubesViewer Documentation](https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/index.md)
+
 
 Screenshots
 -----------

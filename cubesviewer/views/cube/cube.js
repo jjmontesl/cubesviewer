@@ -59,7 +59,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 * Define view mode ('explore', 'series', 'facts', 'chart').
 	 */
 	$scope.setViewMode = function(mode) {
-		$scope.view.params.mode = mode;
+		$scope.view.setViewMode(mode);
 		//$scope.refreshView();
 	};
 

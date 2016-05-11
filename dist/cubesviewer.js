@@ -1533,7 +1533,7 @@ var cubesviewer = {
 		var view = viewsService.createView("cube", viewData);
 
 		var viewDirective = '<div class="cv-bootstrap"><div cv-view-cube view="view"></div></div>';
-		$(container).html(viewDirective);
+		$(container).first().html(viewDirective);
 
 		var scope = angular.element(document).scope();
 		var templateScope = scope.$new();
@@ -1542,10 +1542,15 @@ var cubesviewer = {
 		//templateCtrl = $controller("CubesViewerStudioController", { $scope: templateScope } );
 		//$(cvOptions.container).children().data('$ngControllerController', templateCtrl);
 
-		$compile($(container).contents())(templateScope);
+		$compile($(container).first().contents())(templateScope);
+
+		return view;
 
 	},
 
+	apply: function(routine) {
+		angular.element(document).scope().$apply(routine);
+	}
 
 	/*
 	this.getView = function(id) {
@@ -1629,6 +1634,7 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 
 		// TODO: Define a view object
 		var view = {
+
 			"id": "view-" + this.lastViewId,
 			"type": type,
 			"state": cubesviewer.STATE_INITIALIZING,
@@ -1636,6 +1642,15 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 
 			controlsHidden: function() {
 				return !!this.params.controlsHidden || !!cvOptions.studioHideControls;
+			},
+
+			setControlsHidden: function(controlsHidden) {
+				this.params.controlsHidden = controlsHidden;
+			},
+
+			setViewMode: function(mode) {
+				this.params.mode = mode;
+				//$scope.refreshView();
 			}
 
 		};
@@ -1798,7 +1813,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 * Define view mode ('explore', 'series', 'facts', 'chart').
 	 */
 	$scope.setViewMode = function(mode) {
-		$scope.view.params.mode = mode;
+		$scope.view.setViewMode(mode);
 		//$scope.refreshView();
 	};
 

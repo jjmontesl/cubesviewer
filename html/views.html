@@ -5,6 +5,11 @@
     <title>CubesViewer Embedded View Example</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
+    <link rel="icon" type="image/png" href="img/favicon/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-194x194.png" sizes="194x194">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-96x96.png" sizes="96x96">
+    <link rel="shortcut icon" href="img/favicon/favicon.ico">
+
     <!-- <link rel="stylesheet" href="../lib/bootstrap/bootstrap.css" /> -->
     <link rel="stylesheet" href="lib/angular-ui-grid/ui-grid.css" />
     <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.css" />
@@ -49,7 +54,7 @@
         var serializedView =
             '{"cubename":"webshop_sales","name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
 
-        serializedView = {"charttype":"bars-vertical","chartoptions":{"showLegend":true},"mode":"chart","drilldown":[],"cuts":[],"cubename":"boe_article","name":"BOE / Artículos (undefined)","xaxis":"date_published@daily:quarter","yaxis":"page_count_sum"};
+        //serializedView = {"charttype":"bars-vertical","chartoptions":{"showLegend":true},"mode":"chart","drilldown":[],"cuts":[],"cubename":"boe_article","name":"BOE / Artículos (undefined)","xaxis":"date_published@daily:quarter","yaxis":"page_count_sum"};
 
         // Add views
 
@@ -58,17 +63,23 @@
 
         // You can use a serialized JSON string of the object with view arguments
         setTimeout(function() {
-            view1 = cubesviewer.createView($('#cv-view1').get(0), "cube", serializedView);
+            view1 = cubesviewer.createView('#cv-view-1', "cube", serializedView);
         }, 0);
 
 
-        // Scripting example for the "switch mode" link
-        $('#switchToSeriesTable').click(function() {
-            view1.setMode('series');
-            return false;
-        });
-
     });
+
+    function switchMode(mode) {
+    	cubesviewer.apply(function() {
+    		view1.setViewMode(mode);
+    	});
+    }
+
+    function toggleControls() {
+        cubesviewer.apply(function() {
+            view1.setControlsHidden(! view1.params.controlsHidden);
+        });
+    }
 
 </script>
 
@@ -92,11 +103,11 @@
 
         <p>
         This is an example CubesView inserted in this page. It loads a serialized view which uses the
-        Cubes <a href="https://github.com/jjmontesl/cubes-examples">example webshop</a> project.
+        Cubes <a href="https://github.com/jjmontesl/cubes-examples/tree/master/webshop">example webshop</a> project.
         </p>
 
         <div style="border: none; margin-top: 22px; margin-bottom: 22px;">
-            <div id="cv-view1" style="width: 100%; min-height: 120px;">The view should appear here...</div>
+            <div id="cv-view-1" style="width: 100%; min-height: 120px;">CubesViewer view should appear here...</div>
         </div>
 
         <h2>Scripting</h2>
@@ -105,7 +116,9 @@
         The view above can be scripted using CubesViewer View API.
         </p>
         <p>
-        For example, <a id="switchToSeriesTable" href="">click here</a> to switch to Series Table mode.
+        Click to switch to <a href="" onclick="switchMode('series'); return false;">series table</a> mode or
+        <a href="" onclick="switchMode('chart'); return false;">chart mode</a>, or
+        <a href="" onclick="toggleControls(); return false;">toggle controls visibility</a>.
         </p>
 
         <h2>Code</h2>

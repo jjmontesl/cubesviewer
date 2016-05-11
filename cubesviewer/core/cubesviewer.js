@@ -125,7 +125,7 @@ var cubesviewer = {
 		var view = viewsService.createView("cube", viewData);
 
 		var viewDirective = '<div class="cv-bootstrap"><div cv-view-cube view="view"></div></div>';
-		$(container).html(viewDirective);
+		$(container).first().html(viewDirective);
 
 		var scope = angular.element(document).scope();
 		var templateScope = scope.$new();
@@ -134,10 +134,15 @@ var cubesviewer = {
 		//templateCtrl = $controller("CubesViewerStudioController", { $scope: templateScope } );
 		//$(cvOptions.container).children().data('$ngControllerController', templateCtrl);
 
-		$compile($(container).contents())(templateScope);
+		$compile($(container).first().contents())(templateScope);
+
+		return view;
 
 	},
 
+	apply: function(routine) {
+		angular.element(document).scope().$apply(routine);
+	}
 
 	/*
 	this.getView = function(id) {
