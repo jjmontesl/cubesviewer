@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <title>CubesViewer - Visual OLAP analysis and reporting tool</title>
+
+<script type="text/javascript">
+
+    // Initialize CubesViewer when document is ready
+    $(document).ready(function() {
+
+        //var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
+        var cubesUrl = "http://cubesdemo.anastutia.com";
+
+        // Add views
+        $(document).bind("cubesviewerModelLoaded", { }, function() {
+            $('.cv-demo-example-view').slice(0, 3).click();
+        });
+
+        cubesviewer.init({
+            cubesUrl: cubesUrl
+        });
+
+        cubesviewer.gui.init({
+            container: $('#cubesviewer').get(0)
+        });
+
+        // Start Cubesviewer system
+        cubesviewer.refresh();
+
+        $('.cv-gui-panel').sticky({topSpacing:0});
+
+
+
+        serialized = '{"cubename":"webshop_sales","name":"Product sales monthly","mode":"chart","drilldown":["product:product_category"],"cuts":[],"datefilters":[],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+        var view = cubesviewer.gui.addViewObject(serialized);
+        cubesviewer.views.redrawView (view);
+
+
+        serialized = '{"cubename":"webshop_sales","name":"Product sales per region","mode":"chart","drilldown":["product:product_category"],"cuts":[],"datefilters":[],"rangefilters":[],"xaxis":"country:continent","yaxis":"price_total_sum","charttype":"bars-vertical","columnHide":{},"columnWidths":{},"columnSort":{}}';
+        var view = cubesviewer.gui.addViewObject(serialized);
+        cubesviewer.views.redrawView (view);
+
+        serialized = '{"cubename":"webshop_sales","name":"Product sales quarterly filtered","mode":"series","drilldown":["product:product_product"],"cuts":[{"dimension":"country@contcountry","value":"europe;north_america;south_america"}],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:quarter","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+        var view = cubesviewer.gui.addViewObject(serialized);
+        cubesviewer.views.redrawView (view);
+
+        serialized = '{"cubename":"webshop_visits","name":"Web visits per country","mode":"chart","drilldown":["country:country"],"cuts":[],"datefilters":[{"dimension":"date_visit@daily","mode":"auto-last12m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_visit@daily:month","yaxis":"pageviews_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"browser","disabled":{"Chrome":false,"Firefox":false,"Lynx":false}}}';
+        var view = cubesviewer.gui.addViewObject(serialized);
+        cubesviewer.views.redrawView (view);
+
+    	serialized = '{"cubename":"webshop_visits","name":"Web visits per browser","mode":"chart","drilldown":["browser"],"cuts":[],"datefilters":[],"rangefilters":[],"xaxis":"date_visit@daily:month","yaxis":"pageviews_sum","charttype":"lines","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"browser","disabled":{"Chrome":false,"Firefox":false,"Lynx":false}}}';
+    	var view = cubesviewer.gui.addViewObject(serialized);
+        cubesviewer.views.redrawView (view);
+
+    });
+
+</script>
+
+
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner" style="width: 96%;">
+
+        <header>
+          <div style="float: right;"><img alt="CubesViewer" src="static/img/cubesviewer-logo.png" style="width: 60%; height: 60%;" /></div>
+          <h1>CubesViewer</h1>
+          <h2>Visual data analysis and explore tool</h2>
+        </header>
+
+        <section id="main_content">
+            <p>Welcome to <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a>
+            Explorer Demo. This is a visual, web-based tool application for exploring and analyzing
+            data. CubesViewer can be used for data exploration and data auditory,
+            generation of reports, chart design and embedding,
+            and as a (simple) company-wide analytics application.
+            This demo shows a reduced set of the full applicaton features.</p>
+            <p>
+
+            <p>You can use the menu and interface to navigate this example dataset, which is composed of fictional
+               sales of a web store during years 2012-2013 and also fictional web visit data.</p>
+
+            <p> <span style="font-weight: bold;">Explore the example views, or create a new
+               view from scratch selecting "Cubes" from the top menu. New views are added at the bottom.</span>
+            </p>
+        </section>
+
+        <p><span style="font-weight: bold;">Learn more! </span>
+            <a style="margin-left: 20px;" href="index.html">CubesViewer Demo Site</a>
+            <a style="margin-left: 20px;" href="https://github.com/jjmontesl/cubesviewer/">CubesViewer Main Site</a> at Github
+            <a style="margin-left: 20px;" href="http://cubes.databrewery.org/">Cubes OLAP Server</a>
+        </p>
+
+        <hr>
+
+        <!-- Cubes Viewer GUI container -->
+        <div id="cubesviewer">
+
+            <div class="cv-gui-panel ui-widget ui-widget-content ui-corner-all" >
+            </div>
+
+            <div class="cv-gui-workspace" style="min-height: 400px;">
+            </div>
+
+        </div>
+
+        <footer>
+          <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a> by <a href="https://github.com/jjmontesl">Jose Juan Montes</a><br>
+        </footer>
+
+      </div>
+    </div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-6169223-4']); // jjmontesl.github.io
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+  function eventLogTimeGoogleAnalytics() {
+      _gaq.push(['_trackEvent', 'Time', 'Ping']);
+  }
+  setInterval( eventLogTimeGoogleAnalytics, 30000 );
+
+</script>
+
+  </body>
+</html>

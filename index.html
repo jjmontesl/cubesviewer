@@ -1,79 +1,46 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="static/css/gh/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="static/css/gh/print.css" media="print" />
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
-
-    <!-- CubesViewer CSS resources -->
-    <link type="text/css" rel="stylesheet" href="static/js/jqueryui/jquery-ui.min.css" />
-    <link type="text/css" rel="stylesheet" href="static/css/jqgrid/ui.jqgrid.css" media="screen" />
-    <link type="text/css" rel="stylesheet" href="static/js/qtip/jquery.qtip.css"  />
-    <link type="text/css" rel="stylesheet" href="static/js/wiky/wiky.math.css" />
-    <link type="text/css" rel="stylesheet" href="static/js/nvd3/nv.d3.min.css" />
-
-    <link type="text/css" rel="stylesheet" href="static/css/cubesviewer/cubesviewer.css" />
-
-    <!-- CubesViewer JS dependencies -->
-
-    <script type="text/javascript" src="static/js/jquery/jquery-1.8.3.js"></script>
-    <script type="text/javascript" src="static/js/jquery/jquery-ui-1.9.2.custom.min.js"></script>
-    <script type="text/javascript" src="static/js/jquery/jquery.cookie.js"></script>
-
-    <script type="text/javascript" src="static/js/dateformat/dateformat.js"></script>
-
-    <script type="text/javascript" src="static/js/jquery/jquery.sticky.js"></script> <!-- for CubesViewer GUI -->
-    <script type="text/javascript" src="static/js/jquery/jquery.blockUI.js"></script>
-
-    <script type="text/javascript" src="static/js/wiky/wiky.js"></script>
-    <script type="text/javascript" src="static/js/wiky/wiky.math.js"></script>
-    <script type="text/javascript" src="static/js/flotr2/flotr2.min.js"></script>
-
-    <script type="text/javascript" src="static/js/d3js/d3.v3.js"></script>
-    <script type="text/javascript" src="static/js/nvd3/nv.d3.js"></script>
-    <script type="text/javascript" src="static/js/qtip/jquery.qtip.js"></script>
-
-    <script type="text/javascript" src="static/js/jqgrid/i18n/grid.locale-en.js" ></script>
-    <script type="text/javascript" src="static/js/jqgrid/migrate-jquery-browser.js" ></script>
-    <script type="text/javascript" src="static/js/jqgrid/jquery.jqGrid.min.js" ></script>
-
-    <script type="text/javascript" src="static/js/cubes/cubes.js"></script>
-
-    <!-- Cubesviewer modules -->
-
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.cache.js"></script>
-    <!-- <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.googleanalytics.js"></script>  -->
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.explore.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.datefilter.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.rangefilter.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.series.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.chart.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.facts.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.dimensionfilter.js"></script>
-    <script type="text/javascript" src="static/js/cubesviewer/cubesviewer.views.cube.columns.js"></script>
-
 
     <title>CubesViewer - Visual OLAP analysis and reporting tool</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link rel="icon" type="image/png" href="img/favicon/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-194x194.png" sizes="194x194">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="img/favicon/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-16x16.png" sizes="16x16">
+    <link rel="shortcut icon" href="img/favicon/favicon.ico">
+
+    <!-- <link rel="stylesheet" href="../lib/bootstrap/bootstrap.css" /> -->
+    <link rel="stylesheet" href="lib/angular-ui-grid/ui-grid.css" />
+    <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="lib/nvd3/nv.d3.css" />
+    <link rel="stylesheet" href="lib/cubesviewer/cubesviewer.css" />
+    <link rel="stylesheet" href="lib/bootstrap-submenu/css/bootstrap-submenu.css" />
+
+    <link rel="stylesheet" href="cvapp.css" />
+
+    <script src="lib/jquery/jquery.js"></script>
+    <script src="lib/bootstrap/bootstrap.js"></script>
+    <script src="lib/bootstrap-submenu/js/bootstrap-submenu.js"></script>
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="lib/angular-ui-grid/ui-grid.js"></script>
+    <script src="lib/d3/d3.js"></script>
+    <script src="lib/nvd3/nv.d3.js"></script>
+    <script src="lib/flotr2/flotr2.min.js"></script>
+    <script src="lib/cubesviewer/cubesviewer.js"></script>
+
 
 <script type="text/javascript">
 
-    // Reference to the created view
+    //Reference to the created view
     var view1 = null;
 
     // Initialize CubesViewer when document is ready
     $(document).ready(function() {
 
-        // Get user Cubes information for the example
-        //var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
         var cubesUrl = "http://cubesdemo.anastutia.com";
 
         // Initialize CubesViewer system
@@ -88,18 +55,17 @@
         // Add views
 
         // You can use a Javascript object with view arguments (ie. "cubename")
-        //view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", { "cubename": "contracts" });
+        //view1 = cubesviewer.views.createView($('#cv-view1'), "cube", { "cubename": "webshop_visits" });
 
         // You can use a serialized JSON string of the object with view arguments
-        view1 = cubesviewer.views.createView("olapview1", $('#cv-view1'), "cube", serializedView);
+        setTimeout(function() {
+            view1 = cubesviewer.createView('#cv-view-1', "cube", serializedView);
+        }, 0);
 
-        // Start Cubesviewer system
-        cubesviewer.refresh();
 
     });
 
 </script>
-
 
   </head>
 
@@ -151,8 +117,7 @@
                     years 2014-2015):</p>
 
                 <div style="margin-bottom: 22px; padding: 5px; background-color: #eeeeee;" >
-                    <div id="cv-view1" class="olapview"
-                        style="min-width: 400px;"></div>
+                    <div id="cv-view-1" style="min-width: 400px;"></div>
                 </div>
 
                 <br />
@@ -162,8 +127,7 @@
                 <p>
                     CubesViewer is an open source application hosted on
                     Github. Please visit the main site for full up to
-                    date information: <a
-                        href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a>.
+                    date information: <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a>.
                 </p>
 
             </section>
@@ -175,10 +139,12 @@
                 <a
                     href="https://github.com/jjmontesl/cubesviewer/zipball/master"
                     id="download-zip" class="button"><span>Download
-                        .zip</span></a> <a
+                        .zip</span></a>
+                <a
                     href="https://github.com/jjmontesl/cubesviewer/tarball/master"
                     id="download-tar-gz" class="button"><span>Download
-                        .tar.gz</span></a> <a
+                        .tar.gz</span></a>
+                <a
                     href="https://github.com/jjmontesl/cubesviewer"
                     id="view-on-github" class="button"><span>View
                         on GitHub</span></a>

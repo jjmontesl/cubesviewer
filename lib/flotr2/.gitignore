@@ -1,0 +1,12 @@
+build
+.vimrc
+*.swp
+*.swm
+*.swo
+*.vim
+.jhw-cache
+dev
+
+# Node
+node_modules
+npm-debug.log
