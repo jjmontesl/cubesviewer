@@ -29,61 +29,15 @@
 
 "use strict";
 
-function cubesviewerViewCubeExporter() {
+angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesService',
+                                                              function ($rootScope, $timeout, cvOptions, cubesService, viewsService, seriesService) {
 
-	this.cubesviewer = cubesviewer;
-
-	/*
-	 * Draw export options.
-	 */
-	this.onViewDraw = function(event, view) {
-
-		//if (view.params.mode != "explore") return;
-
-		view.cubesviewer.views.cube.exporter.drawMenu(view);
-
-	};
-
-	/*
-	 * Draw export menu options.
-	 */
-	this.drawMenu = function(view) {
-
-		if (view.cube == null) return;
-
-		var menu = $(".cv-view-menu-view", $(view.container));
-		var cube = view.cube;
-
-		// Draw menu options (depending on mode)
-
-		menu.append('<div></div>');
-		if ((view.params.mode == "explore") || (view.params.mode == "series")) {
-			menu.append('<li><a href="#" class="cv-view-export-table"><span class="ui-icon ui-icon-script"></span>Export table</a></li>');
-		}
-		menu.append('<li><a href="#" class="cv-view-export-facts"><span class="ui-icon ui-icon-script"></span>Export facts</a></li>');
-
-		$(menu).menu( "refresh" );
-		$(menu).addClass("ui-menu-icons");
-
-		// Events
-		$(view.container).find('.cv-view-export-table').click(function() {
-			view.cubesviewer.views.cube.exporter.exportCsv(view);
-			return false;
-		});
-		$(view.container).find('.cv-view-export-facts').click(function() {
-			view.cubesviewer.views.cube.exporter.exportFacts(view);
-			return false;
-		});
-
-
-	};
-
-	/*
+	/**
 	 * Download facts in CSV format from Cubes Server
 	 */
 	this.exportFacts = function(view) {
 
-		var args = view.cubesviewer.views.cube.buildBrowserArgs(view, false, true);
+		var args = cubesService.buildBrowserArgs(view, false, true);
 
         var http_args = {};
         http_args["format"] = "csv";
@@ -92,62 +46,58 @@ function cubesviewerViewCubeExporter() {
         if (args.order) http_args.order = args.order.toString();
 
 
-		var url = view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/facts?" + $.param(http_args);
+		var url = cvOptions.cubesUrl + "/cube/" + view.cube.name + "/facts?" + $.param(http_args);
 		window.open(url, '_blank');
 		window.focus();
 
 	};
 
-	/*
+	/**
 	 * Export a view (either in "explore" or "series" mode) in CSV format.
 	 */
-	this.exportCsv = function (view) {
+	this.exportGridAsCsv = function (view) {
+
+		if (!view.grid) {
+			console.debug("View has no grid that can be exported.");
+			return;
+		}
+
+		var gridOptions = view.grid;
+		var dataRows = view.grid.data;
 
 		var content = "";
-
-		if (view.params.mode == "explore") {
-			var grid = $('#summaryTable-' + view.id);
-		} else {
-			var grid = $('#seriesTable-' + view.id);
-		}
-
 		var values = [];
-		for (var i = ((view.params.mode == "explore") ? 1 : 0); i < grid.jqGrid('getGridParam','colNames').length; i++) {
-			values.push ('"' + grid.jqGrid('getGridParam','colNames')[i] + '"');
-		}
+
+		$(gridOptions.columnDefs).each(function(idx, e) {
+			values.push ('"' + e.name + '"');
+		});
 		content = content + (values.join(",")) + "\n";
 
-		//var m = grid.getDataIDs();
-		var m = grid.jqGrid('getGridParam', 'data');
+		$(dataRows).each(function(idxr, r) {
+			values = [];
+			$(gridOptions.columnDefs).each(function(idx, e) {
+				values.push ('"' + r[e.field] + '"');
+			});
+			content = content + (values.join(",")) + "\n";
+		});
 
-		for (var i = 0; i < m.length; i++) {
-		    var record = m[i];
-		    values = [];
-		    //values.push ('"' + $('<div>' + record.key + '</div>').text() + '"');
-			//for (var j = ((view.params.mode == "explore") ? 2 : 1); j < grid.jqGrid('getGridParam','colNames').length; j++) {
-		    for (var j = ((view.params.mode == "explore") ? 1 : 0); j < grid.jqGrid('getGridParam','colModel').length; j++) {
-				var columnname = grid.jqGrid('getGridParam','colModel')[j].name;
-				var colval = record[columnname];
-				colval = $('<div>' + colval + '</div>').text();
-				if (colval == undefined) colval = 0;
-				values.push ('"' + colval + '"');
-			}
-		    content = content + (values.join(",")) + "\n";
-		}
-
-		var url = "data:text/csv;charset=utf-8," + encodeURIComponent(content);
-		window.open (url, "_blank");
+		var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(content);
+		//window.open (url, "_blank");
+		this.saveAs(uri, view.cube.name + "-summary.csv")
 	};
 
-};
+	this.saveAs = function(uri, filename) {
+	    var link = document.createElement('a');
+	    if (typeof link.download === 'string') {
+	        document.body.appendChild(link); // Firefox requires the link to be in the body
+	        link.download = filename;
+	        link.href = uri;
+	        link.click();
+	        document.body.removeChild(link); // remove the link when done
+	    } else {
+	        location.replace(uri);
+	    }
+	};
 
+}]);
 
-/*
- * Create object.
- */
-cubesviewer.views.cube.exporter = new cubesviewerViewCubeExporter();
-
-/*
- * Bind events.
- */
-$(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.cube.exporter.onViewDraw);

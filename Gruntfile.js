@@ -32,8 +32,8 @@ module.exports = function(grunt) {
               /*
               'cubesviewer/cubesviewer.views.cube.rangefilter.js',
               'cubesviewer/cubesviewer.views.cube.columns.js',
-              'cubesviewer/cubesviewer.views.cube.export.js',
               */
+              'cubesviewer/views/cube/export.js',
               'cubesviewer/views/undo.js',
               'cubesviewer/studio/studio.js',
               'cubesviewer/studio/serialize.js',

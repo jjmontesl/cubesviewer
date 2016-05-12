@@ -171,6 +171,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 
 		$scope.gridData = [];
 
+		$scope.view.grid = $scope.$parent.gridOptions;
+
 		// Configure grid
 	    angular.extend($scope.$parent.gridOptions, {
     		data: $scope.gridData,

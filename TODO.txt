@@ -1,4 +1,4 @@
-[HEAD]
+[ROADMAP]
 
     * Support multiple servers and multiple versions.
 
@@ -16,7 +16,7 @@
     * Support better exploration of facts
     * Drop notes system 2: use metadata for info and add a comments system
 
-    * Ability to filter from chart filter / synchronize filter and chart filter (?).
+    * Filter from chart filter / synchronize filter and chart filter (?).
     * GUI options (and all other plugin options) now as cubesviewer options
       (with plugin namespace?).
     * Hide interface mode (also, make these programmable options for the views)
@@ -37,11 +37,8 @@
     * 3rd dimension scrollbar and play mode (for charts and series)
     * Time filter dynamic (zoomable, etc) when is horizontal dimension in appropriate chart mode (nvd3 does this ootb)
     * Make charts more interactive (allow cut from chart, etc).
-    * Migrate documentation to more-custom github.io (maintain version, etc...)
 
-
-
-    * [3.0] Restore pluggability, publish API for views and GUI. Needed before adding stuff that
+    * Restore pluggability, publish API for views and GUI. Needed before adding stuff that
       needs to be optional in viewer, like loading bars to Studio, and to restore optional
       components (server-side stuff, etc). Provide good API. Use object for views,
       dimension, drilldown, etc...
@@ -80,11 +77,11 @@
 
 [2.0]
 
-
     * Commit refactor branch, fork repository, commit refactor branch to cubesviewer-js
       and bring server changes to cubesviewer project. Rename repositories accordingly.
-    * Test CORS issue from server (localhost:8000 -> localhost:5000), test JSONP.
     * Uncomment studio.html code that asks for the server url to connect to.
+    * Test CORS issue from server (localhost:8000 -> localhost:5000), test JSONP.
+    * Create site, update readme, and site screenshots.
     * Keep existing screenshots (or names) as they are referenced from 3rd party sites.
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
 
@@ -95,18 +92,15 @@
     * Reviewed and improved doc
     * Move doc to site. Use Sphynx?. Add more samples of code. (keep doc sources along with the  project).
     * Link from viewer to online doc.
-    * Create site, update readme, and site screenshots.
     * Site without styling, copy from Studio/GUI, use current background but make it fluid (sample views
       extending outside centered content). Show a couple of charts view, a table, and a enabled-controls view.
       SAME views to be automatically opened in the explorer sample.
-    * Support negated cuts (add quick "invert" button in the cut-box?).
     * Columns config "hooks" (hide / size)
     * Radar chart doesn't resize
 
     * Only draw results for the requested view, otherwise discard result (is causing issues and confusion).
     * Default cube settings is incorrect: it should only be applied if the view is not otherwise configured (ie loaded or json)
     * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative), move "invert 2nd serie" as a calculation?
-    * Error when loading incorrect JSON: error shall be reported by client (ie GUI), state incorrect, cannot access showDialog.
 
     * Analytics plugin, and fix it to ignore first N seconds of events as for bounce rate calculation.
     * Export.

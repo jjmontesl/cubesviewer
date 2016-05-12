@@ -678,8 +678,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
     "\n" +
-    "    <li ng-show=\"view.params.mode != 'chart'\" ><a><i class=\"fa fa-fw fa-table\"></i> Export table</a></li>\n" +
-    "    <li><a><i class=\"fa fa-fw fa-th\"></i> Export facts</a></li>\n" +
+    "    <li ng-show=\"view.params.mode != 'chart'\" ng-click=\"exportService.exportGridAsCsv(view)\"><a><i class=\"fa fa-fw fa-table\"></i> Export table</a></li>\n" +
+    "    <li ng-click=\"exportService.exportFacts(view)\"><a><i class=\"fa fa-fw fa-th\"></i> Export facts</a></li>\n" +
+    "\n" +
     "\n" +
     "  </ul>\n" +
     "\n"
@@ -687,7 +688,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('views/cube/cube.html',
-    "<div class=\"cv-view-panel\" ng-controller=\"CubesViewerViewsCubeController\">\n" +
+    "<div class=\"cv-view-panel\" ng-controller=\"CubesViewerViewsCubeController\" >\n" +
     "\n" +
     "    <div ng-if=\"view.state == 3\">\n" +
     "        <div class=\"alert alert-danger\" style=\"margin: 0px;\">\n" +
@@ -1049,11 +1050,11 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    </div>\n" +
     "    <div ng-if=\"gridOptions.data.length > 0\" style=\"height: 30px;\">&nbsp;</div>\n" +
     "\n" +
-    "    <div ng-if=\"view.params.yaxis == null\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "    <div ng-if=\"pendingRequests == 0 && view.params.yaxis == null\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "        Cannot present series table: no <b>measure</b> has been selected.\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ng-if=\"view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "    <div ng-if=\"pendingRequests == 0 && view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "        Cannot present series table: no rows are returned by the current filtering, horizontal dimension, and drilldown combination.\n" +
     "    </div>\n" +
     "\n" +

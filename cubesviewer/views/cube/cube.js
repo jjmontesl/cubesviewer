@@ -34,25 +34,33 @@ angular.module('cv.views.cube', []);
  *
  * FIXME: Some of this code shall be on a parent generic "view" directive.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
-                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, exportService) {
+
+	// TODO: Functions shall be here?
+	$scope.viewController = {};
 
 	$scope.$rootScope = $rootScope;
 	$scope.viewsService = viewsService;
 	$scope.cvOptions = cvOptions;
 	$scope.cubesService = cubesService;
+	$scope.exportService = exportService;
 
 	$scope.dimensionFilter = null;
 
-	$scope.$watch ("view", function(view) {
+	$scope.$watch("view", function(view) {
 		if (view) {
 			view._resultLimitHit = false;
 			view._requestFailed = false;
 		}
 	});
 
+
 	$scope.refreshView = function() {
-		if ($scope.view && $scope.view.cube) $scope.$broadcast("ViewRefresh", $scope.view);
+		if ($scope.view && $scope.view.cube) {
+			$scope.view.grid = null;
+			$scope.$broadcast("ViewRefresh", $scope.view);
+		}
 	};
 
 	/**
