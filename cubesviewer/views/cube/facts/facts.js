@@ -49,6 +49,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
         		$scope.view.params.columnHide[column.field] = true;
         		delete ($scope.view.params.columnWidths[column.field]);
         	}
+        	$scope.view.updateUndo();
         });
         gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
             // do something
@@ -56,6 +57,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
         	$(sortColumns).each(function (idx, col) {
         		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };
         	});
+        	$scope.view.updateUndo();
         });
         gridApi.colResizable.on.columnSizeChanged($scope, function(colDef, deltaChange) {
         	var colIndex = -1;
@@ -65,6 +67,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
         	if (colIndex >= 0) {
         		$scope.view.params.columnWidths[colDef.field] = gridApi.grid.columns[colIndex].width;
         	}
+        	$scope.view.updateUndo();
         });
     };
 	$scope.$parent.gridApi = null;

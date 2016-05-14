@@ -66,7 +66,16 @@ angular.module('cv.views.cube').controller("CubesViewerViewsUndoController", ['$
 			view.undoList.splice(0, view.undoList.length - cvOptions.undoSize);
 			view.undoPos = view.undoList.length - 1;
 		}
-	}
+	};
+
+	$scope.view.updateUndo = function() {
+		var view = $scope.view;
+		var state = viewsService.serializeView(view);
+
+		if (view.undoList[view.undoPos]) {
+			view.undoList[view.undoPos] = state;
+		}
+	};
 
 	$scope.getCurrentUndoState = function () {
 		if ($scope.view.undoList.length == 0) return "{}";
