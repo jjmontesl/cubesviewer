@@ -284,9 +284,10 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div ng-if=\"view._resultLimitHit\" class=\"alert alert-dismissable alert-warning\" style=\"margin-bottom: 5px;\">\n" +
     "        <button type=\"button\" class=\"close\" ng-click=\"view._resultLimitHit = false;\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>\n" +
-    "        <div style=\"display: inline-block;\"><i class=\"fa fa-exclamation\"></i></div>\n" +
+    "        <div style=\"display: inline-block; vertical-align: top;\"><i class=\"fa fa-exclamation\"></i></div>\n" +
     "        <div style=\"display: inline-block; margin-left: 20px;\">\n" +
     "            Limit of {{ cubesService.cubesserver.info.json_record_limit }} items has been hit. <b>Results are incomplete.</b><br />\n" +
+    "            <i>Tip</i>: reduce level of drilldown or filter your selection to reduce the number of items in the result.\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +

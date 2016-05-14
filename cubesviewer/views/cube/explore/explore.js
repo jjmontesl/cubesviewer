@@ -45,7 +45,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
         gridApi.selection.on.rowSelectionChangedBatch($scope, function(rows){
           //console.debug(rows);
         });
-        gridApi.core.on.columnVisibilityChanged( $scope, function (column) {
+        gridApi.core.on.columnVisibilityChanged($scope, function (column) {
         	if (column.visible) {
         		delete ($scope.view.params.columnHide[column.field]);
         	} else {
@@ -53,12 +53,18 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
         		delete ($scope.view.params.columnWidths[column.field]);
         	}
         });
+        gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
+            // do something
+        	$scope.view.params.columnSort[$scope.view.params.mode] = {};
+        	$(sortColumns).each(function (idx, col) {
+        		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };
+        	});
+        });
         gridApi.colResizable.on.columnSizeChanged($scope, function(colDef, deltaChange) {
         	var colIndex = -1;
         	$(gridApi.grid.columns).each(function(idx, e) {
         		if (e.field == colDef.field) colIndex = idx;
         	});
-
         	if (colIndex >= 0) {
         		$scope.view.params.columnWidths[colDef.field] = gridApi.grid.columns[colIndex].width;
         	}
@@ -148,7 +154,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				visible: ! view.params.columnHide[ag.ref],
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				formatter: $scope.columnFormatFunction(ag),
-				footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
+				footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col),
+				sort: $scope.defineColumnSort(ag.ref)
 				//formatoptions: {},
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 			};
@@ -195,6 +202,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				width : $scope.defineColumnWidth("key" + i, 190),
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><a href="" ng-click="grid.appScope.selectCut(col.colDef.cutDimension, COL_FIELD.cutValue, false)">{{ COL_FIELD.title }}</a></div>',
 				footerCellTemplate: '<div class="ui-grid-cell-contents">' + footer + '</div>',
+				sort: $scope.defineColumnSort("key" + i)
 			});
 		}
 
@@ -205,7 +213,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				index: "key" + 0,
 				enableHiding: false,
 				align: "left",
-				width : $scope.defineColumnWidth("key" + 0, 190)
+				width : $scope.defineColumnWidth("key" + 0, 190),
+				sort: $scope.defineColumnSort("key" + 0)
 			});
 		}
 

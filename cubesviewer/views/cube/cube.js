@@ -321,6 +321,18 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		}
 	};
 
+	$scope.defineColumnSort = function(column) {
+		var columnSort = null;
+		if ($scope.view.params.columnSort[$scope.view.params.mode] && $scope.view.params.columnSort[$scope.view.params.mode][column]) {
+			columnSort = {
+				"direction": $scope.view.params.columnSort[$scope.view.params.mode][column].direction,
+				"priority": $scope.view.params.columnSort[$scope.view.params.mode][column].priority
+			};
+		}
+		return columnSort;
+	}
+
+
 }]).directive("cvViewCube", function() {
 	return {
 		restrict: 'A',

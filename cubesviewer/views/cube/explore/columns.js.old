@@ -40,41 +40,4 @@ cubesviewer.views.cube.explore.defineColumnSort = function(view, vdefault) {
 	}
 };
 
-cubesviewer.views.cube.explore.onTableLoaded = function (view, width, index) {
-
-	if (view.params.mode == "explore") {
-		var grid = $('#summaryTable-' + view.id);
-	} else if (view.params.mode == "series") {
-		var grid = $('#seriesTable-' + view.id);
-	} else if (view.params.mode == "facts") {
-		var grid = $('#factsTable-' + view.id);
-	} else {
-		return;
-	}
-
-	// Hide columns as needed
-	if (view.params.mode == "explore") {
-		for (var i = ((view.params.mode == "explore") ? 1 : 0); i < grid.jqGrid('getGridParam','colNames').length; i++) {
-
-			// Hide if necessary
-			var colname = grid.jqGrid('getGridParam','colModel')[i].name;
-
-			if (view.params.columnHide[colname] == true) {
-				grid.jqGrid('hideCol', colname);
-			}
-		}
-	}
-
-};
-
-/*
- * Create object.
- */
-cubesviewer.views.cube.columns = new cubesviewerViewCubeColumns();
-
-/*
- * Bind events.
- */
-$(document).bind("cubesviewerViewCreate", { }, cubesviewer.views.cube.columns.onViewCreate);
-$(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.cube.columns.onViewDraw);
 

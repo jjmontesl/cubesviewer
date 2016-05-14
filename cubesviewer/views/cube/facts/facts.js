@@ -42,6 +42,30 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
         });
         gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
         });
+        gridApi.core.on.columnVisibilityChanged($scope, function (column) {
+        	if (column.visible) {
+        		delete ($scope.view.params.columnHide[column.field]);
+        	} else {
+        		$scope.view.params.columnHide[column.field] = true;
+        		delete ($scope.view.params.columnWidths[column.field]);
+        	}
+        });
+        gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
+            // do something
+        	$scope.view.params.columnSort[$scope.view.params.mode] = {};
+        	$(sortColumns).each(function (idx, col) {
+        		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };
+        	});
+        });
+        gridApi.colResizable.on.columnSizeChanged($scope, function(colDef, deltaChange) {
+        	var colIndex = -1;
+        	$(gridApi.grid.columns).each(function(idx, e) {
+        		if (e.field == colDef.field) colIndex = idx;
+        	});
+        	if (colIndex >= 0) {
+        		$scope.view.params.columnWidths[colDef.field] = gridApi.grid.columns[colIndex].width;
+        	}
+        });
     };
 	$scope.$parent.gridApi = null;
 	$scope.$parent.gridOptions = {
@@ -127,7 +151,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 		});
 
 		for (var dimensionIndex in dimensions) {
-			// Get dimension
+
 			var dimension = dimensions[dimensionIndex];
 
 			for (var i = 0; i < dimension.levels.length; i++) {
@@ -139,13 +163,16 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 					headerCellClass: "cv-grid-header-dimension",
 					//cellClass : "text-right",
 					//sorttype : "number",
-					width : 95, //cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
 					cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ row.entity[col.colDef.field] }}</div>',
 					//formatter: $scope.columnFormatFunction(ag),
 					//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
 					//formatoptions: {},
 					//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>'
+					visible: ! view.params.columnHide[level.key().ref],
+					width : $scope.defineColumnWidth(level.key().ref, 95),
+					sort: $scope.defineColumnSort(level.key().ref)
+
 				};
 				$scope.gridOptions.columnDefs.push(col);
 			}
@@ -161,13 +188,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				cellClass : "text-right",
 				headerCellClass: "cv-grid-header-measure",
 				sorttype : "number",
-				width : 75, //cubesviewer.views.cube.explore.defineColumnWidth(view, measure.ref, 75),
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				formatter: $scope.columnFormatFunction(measure),
 				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
 				//formatoptions: {},
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+				visible: ! view.params.columnHide[measure.ref],
+				width : $scope.defineColumnWidth(measure.ref, 75),
+				sort: $scope.defineColumnSort(measure.ref)
 			};
 			$scope.gridOptions.columnDefs.push(col);
 		}
@@ -181,13 +210,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				index : detail.ref,
 				//cellClass : "text-right",
 				//sorttype : "number",
-				width : 95, //cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
 				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				//formatter: $scope.columnFormatFunction(ag),
 				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
 				//formatoptions: {},
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>'
+				visible: ! view.params.columnHide[detail.ref],
+				width: $scope.defineColumnWidth(detail.ref, 95),
+				sort: $scope.defineColumnSort(detail.ref)
 			};
 			$scope.gridOptions.columnDefs.push(col);
         }
@@ -195,53 +226,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 		// If there are cells, show them
 		$scope._addRows(data);
 
-
-
 	};
 
-
-	/*
-	 * Draws facts table.
-	 */
-	this.drawTable = function(view, data) {
-
-		$('#factsTable-' + view.id).jqGrid({
-			data: dataRows,
-			//userData: dataTotals,
-			datatype: "local",
-			height: 'auto',
-			rowNum: cubesviewer.options.pagingOptions[0],
-			rowList: cubesviewer.options.pagingOptions,
-			colNames: colNames,
-			colModel: colModel,
-	        pager: "#factsPager-" + view.id,
-	        sortname: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[0],
-	        viewrecords: true,
-	        sortorder: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[1],
-	        //footerrow: true,
-	        userDataOnFooter: true,
-	        forceFit: false,
-	        shrinkToFit: false,
-	        width: cubesviewer.options.tableResizeHackMinWidth,
-	        //multiselect: true,
-	        //multiboxonly: true,
-
-	        //caption: "Current selection data" ,
-	        beforeSelectRow : function () { return false; },
-
-			loadComplete : function() {
-				// Call hook
-				view.cubesviewer.views.cube.explore.onTableLoaded(view);
-			},
-
-	        resizeStop: view.cubesviewer.views.cube.explore._onTableResize (view),
-			onSortCol: view.cubesviewer.views.cube.explore._onTableSort (view),
-
-	    } );
-
-		this.cubesviewer.views.cube._adjustGridSize();
-
-	};
 
 	/*
 	 * Adds rows.

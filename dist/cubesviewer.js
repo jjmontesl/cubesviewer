@@ -2075,6 +2075,18 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		}
 	};
 
+	$scope.defineColumnSort = function(column) {
+		var columnSort = null;
+		if ($scope.view.params.columnSort[$scope.view.params.mode] && $scope.view.params.columnSort[$scope.view.params.mode][column]) {
+			columnSort = {
+				"direction": $scope.view.params.columnSort[$scope.view.params.mode][column].direction,
+				"priority": $scope.view.params.columnSort[$scope.view.params.mode][column].priority
+			};
+		}
+		return columnSort;
+	}
+
+
 }]).directive("cvViewCube", function() {
 	return {
 		restrict: 'A',
@@ -2166,7 +2178,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
         gridApi.selection.on.rowSelectionChangedBatch($scope, function(rows){
           //console.debug(rows);
         });
-        gridApi.core.on.columnVisibilityChanged( $scope, function (column) {
+        gridApi.core.on.columnVisibilityChanged($scope, function (column) {
         	if (column.visible) {
         		delete ($scope.view.params.columnHide[column.field]);
         	} else {
@@ -2174,12 +2186,18 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
         		delete ($scope.view.params.columnWidths[column.field]);
         	}
         });
+        gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
+            // do something
+        	$scope.view.params.columnSort[$scope.view.params.mode] = {};
+        	$(sortColumns).each(function (idx, col) {
+        		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };
+        	});
+        });
         gridApi.colResizable.on.columnSizeChanged($scope, function(colDef, deltaChange) {
         	var colIndex = -1;
         	$(gridApi.grid.columns).each(function(idx, e) {
         		if (e.field == colDef.field) colIndex = idx;
         	});
-
         	if (colIndex >= 0) {
         		$scope.view.params.columnWidths[colDef.field] = gridApi.grid.columns[colIndex].width;
         	}
@@ -2269,7 +2287,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				visible: ! view.params.columnHide[ag.ref],
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				formatter: $scope.columnFormatFunction(ag),
-				footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
+				footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col),
+				sort: $scope.defineColumnSort(ag.ref)
 				//formatoptions: {},
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 			};
@@ -2316,6 +2335,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				width : $scope.defineColumnWidth("key" + i, 190),
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><a href="" ng-click="grid.appScope.selectCut(col.colDef.cutDimension, COL_FIELD.cutValue, false)">{{ COL_FIELD.title }}</a></div>',
 				footerCellTemplate: '<div class="ui-grid-cell-contents">' + footer + '</div>',
+				sort: $scope.defineColumnSort("key" + i)
 			});
 		}
 
@@ -2326,7 +2346,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				index: "key" + 0,
 				enableHiding: false,
 				align: "left",
-				width : $scope.defineColumnWidth("key" + 0, 190)
+				width : $scope.defineColumnWidth("key" + 0, 190),
+				sort: $scope.defineColumnSort("key" + 0)
 			});
 		}
 
@@ -3019,6 +3040,30 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
         });
         gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
         });
+        gridApi.core.on.columnVisibilityChanged($scope, function (column) {
+        	if (column.visible) {
+        		delete ($scope.view.params.columnHide[column.field]);
+        	} else {
+        		$scope.view.params.columnHide[column.field] = true;
+        		delete ($scope.view.params.columnWidths[column.field]);
+        	}
+        });
+        gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
+            // do something
+        	$scope.view.params.columnSort[$scope.view.params.mode] = {};
+        	$(sortColumns).each(function (idx, col) {
+        		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };
+        	});
+        });
+        gridApi.colResizable.on.columnSizeChanged($scope, function(colDef, deltaChange) {
+        	var colIndex = -1;
+        	$(gridApi.grid.columns).each(function(idx, e) {
+        		if (e.field == colDef.field) colIndex = idx;
+        	});
+        	if (colIndex >= 0) {
+        		$scope.view.params.columnWidths[colDef.field] = gridApi.grid.columns[colIndex].width;
+        	}
+        });
     };
 	$scope.$parent.gridApi = null;
 	$scope.$parent.gridOptions = {
@@ -3104,7 +3149,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 		});
 
 		for (var dimensionIndex in dimensions) {
-			// Get dimension
+
 			var dimension = dimensions[dimensionIndex];
 
 			for (var i = 0; i < dimension.levels.length; i++) {
@@ -3116,13 +3161,16 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 					headerCellClass: "cv-grid-header-dimension",
 					//cellClass : "text-right",
 					//sorttype : "number",
-					width : 95, //cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
 					cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ row.entity[col.colDef.field] }}</div>',
 					//formatter: $scope.columnFormatFunction(ag),
 					//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
 					//formatoptions: {},
 					//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>'
+					visible: ! view.params.columnHide[level.key().ref],
+					width : $scope.defineColumnWidth(level.key().ref, 95),
+					sort: $scope.defineColumnSort(level.key().ref)
+
 				};
 				$scope.gridOptions.columnDefs.push(col);
 			}
@@ -3138,13 +3186,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				cellClass : "text-right",
 				headerCellClass: "cv-grid-header-measure",
 				sorttype : "number",
-				width : 75, //cubesviewer.views.cube.explore.defineColumnWidth(view, measure.ref, 75),
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				formatter: $scope.columnFormatFunction(measure),
 				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
 				//formatoptions: {},
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+				visible: ! view.params.columnHide[measure.ref],
+				width : $scope.defineColumnWidth(measure.ref, 75),
+				sort: $scope.defineColumnSort(measure.ref)
 			};
 			$scope.gridOptions.columnDefs.push(col);
 		}
@@ -3158,13 +3208,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				index : detail.ref,
 				//cellClass : "text-right",
 				//sorttype : "number",
-				width : 95, //cubesviewer.views.cube.explore.defineColumnWidth(view, level.key().ref, 85),
 				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				//formatter: $scope.columnFormatFunction(ag),
 				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
 				//formatoptions: {},
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>'
+				visible: ! view.params.columnHide[detail.ref],
+				width: $scope.defineColumnWidth(detail.ref, 95),
+				sort: $scope.defineColumnSort(detail.ref)
 			};
 			$scope.gridOptions.columnDefs.push(col);
         }
@@ -3172,53 +3224,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 		// If there are cells, show them
 		$scope._addRows(data);
 
-
-
 	};
 
-
-	/*
-	 * Draws facts table.
-	 */
-	this.drawTable = function(view, data) {
-
-		$('#factsTable-' + view.id).jqGrid({
-			data: dataRows,
-			//userData: dataTotals,
-			datatype: "local",
-			height: 'auto',
-			rowNum: cubesviewer.options.pagingOptions[0],
-			rowList: cubesviewer.options.pagingOptions,
-			colNames: colNames,
-			colModel: colModel,
-	        pager: "#factsPager-" + view.id,
-	        sortname: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[0],
-	        viewrecords: true,
-	        sortorder: cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[1],
-	        //footerrow: true,
-	        userDataOnFooter: true,
-	        forceFit: false,
-	        shrinkToFit: false,
-	        width: cubesviewer.options.tableResizeHackMinWidth,
-	        //multiselect: true,
-	        //multiboxonly: true,
-
-	        //caption: "Current selection data" ,
-	        beforeSelectRow : function () { return false; },
-
-			loadComplete : function() {
-				// Call hook
-				view.cubesviewer.views.cube.explore.onTableLoaded(view);
-			},
-
-	        resizeStop: view.cubesviewer.views.cube.explore._onTableResize (view),
-			onSortCol: view.cubesviewer.views.cube.explore._onTableSort (view),
-
-	    } );
-
-		this.cubesviewer.views.cube._adjustGridSize();
-
-	};
 
 	/*
 	 * Adds rows.
@@ -3396,7 +3403,30 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
         });
         gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
         });
-
+        gridApi.core.on.columnVisibilityChanged($scope, function (column) {
+        	if (column.visible) {
+        		delete ($scope.view.params.columnHide[column.field]);
+        	} else {
+        		$scope.view.params.columnHide[column.field] = true;
+        		delete ($scope.view.params.columnWidths[column.field]);
+        	}
+        });
+        gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
+            // do something
+        	$scope.view.params.columnSort[$scope.view.params.mode] = {};
+        	$(sortColumns).each(function (idx, col) {
+        		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };
+        	});
+        });
+        gridApi.colResizable.on.columnSizeChanged($scope, function(colDef, deltaChange) {
+        	var colIndex = -1;
+        	$(gridApi.grid.columns).each(function(idx, e) {
+        		if (e.field == colDef.field) colIndex = idx;
+        	});
+        	if (colIndex >= 0) {
+        		$scope.view.params.columnWidths[colDef.field] = gridApi.grid.columns[colIndex].width;
+        	}
+        });
     };
 	$scope.$parent.gridApi = null;
 	$scope.$parent.gridOptions = {
@@ -3593,13 +3623,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 					index : colKey,
 					cellClass : "text-right",
 					sorttype : "number",
-					width : 90, //cubesviewer.views.cube.explore.defineColumnWidth(view, colKey, 75),
 					cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 					formatter: $scope.columnFormatFunction(ag),
 					//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
 					//formatoptions: {},
 					//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+					enableHiding: false,
+					width : $scope.defineColumnWidth(colKey, 90),
+					sort: $scope.defineColumnSort(colKey)
 				};
 				$scope.gridOptions.columnDefs.push(col);
 			}
@@ -3612,15 +3644,17 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 				field: "key" + idx,
 				index : "key" + idx,
 				headerCellClass: "cv-grid-header-dimension",
+				enableHiding: false,
 				//cellClass : "text-right",
 				//sorttype : "number",
-				width : 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + idx, 190)
 				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				//formatter: $scope.columnFormatFunction(ag),
 				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
 				//formatoptions: {},
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+				width : $scope.defineColumnWidth("key" + idx, 190),
+				sort: $scope.defineColumnSort("key" + idx)
 			};
 			$scope.gridOptions.columnDefs.splice(idx, 0, col);
 		});
@@ -3633,15 +3667,17 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 				field: "key0",
 				index : "key0",
 				headerCellClass: "cv-grid-header-measure",
+				enableHiding: false,
 				//cellClass : "text-right",
 				//sorttype : "number",
-				width : 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "key0", 190)
 				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				//formatter: $scope.columnFormatFunction(ag),
 				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
 				//formatoptions: {},
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+				width : $scope.defineColumnWidth("key0", 190),
+				sort: $scope.defineColumnSort("key0")
 			};
 			$scope.gridOptions.columnDefs.splice(0, 0, col);
 		}
@@ -5673,9 +5709,10 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "    <div ng-if=\"view._resultLimitHit\" class=\"alert alert-dismissable alert-warning\" style=\"margin-bottom: 5px;\">\n" +
     "        <button type=\"button\" class=\"close\" ng-click=\"view._resultLimitHit = false;\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>\n" +
-    "        <div style=\"display: inline-block;\"><i class=\"fa fa-exclamation\"></i></div>\n" +
+    "        <div style=\"display: inline-block; vertical-align: top;\"><i class=\"fa fa-exclamation\"></i></div>\n" +
     "        <div style=\"display: inline-block; margin-left: 20px;\">\n" +
     "            Limit of {{ cubesService.cubesserver.info.json_record_limit }} items has been hit. <b>Results are incomplete.</b><br />\n" +
+    "            <i>Tip</i>: reduce level of drilldown or filter your selection to reduce the number of items in the result.\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
