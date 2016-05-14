@@ -55,7 +55,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		}
 	});
 
-
 	$scope.refreshView = function() {
 		if ($scope.view && $scope.view.cube) {
 			$scope.view.grid = null;
@@ -82,7 +81,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			"drilldown" : [],
 			"cuts" : [],
 
-			"datefilters": []
+			"datefilters": [],
+
+			"columnHide": {},
+			"columnWidths": {},
+			"columnSort": {},
 		};
 
 		var jqxhr = cubesService.cubesserver.get_cube($scope.view.params.cubename, function(cube) {
@@ -308,6 +311,14 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 		$scope.refreshView();
 
+	};
+
+	$scope.defineColumnWidth = function(column, vdefault) {
+		if (column in $scope.view.params.columnWidths) {
+			return $scope.view.params.columnWidths[column];
+		} else {
+			return vdefault;
+		}
 	};
 
 }]).directive("cvViewCube", function() {

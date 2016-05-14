@@ -79,29 +79,29 @@
 
     * Commit refactor branch, fork repository, commit refactor branch to cubesviewer-js
       and bring server changes to cubesviewer project. Rename repositories accordingly.
+    * Test / QA.
     * Uncomment studio.html code that asks for the server url to connect to.
     * Test CORS issue from server (localhost:8000 -> localhost:5000), test JSONP.
     * Create site, update readme, and site screenshots.
-    * Keep existing screenshots (or names) as they are referenced from 3rd party sites.
+    * Update screenshots.
+    * Reviewed and improved doc
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
 
-    * Review flow: if cube or menu loading is happening before initialization if views are created eagerly (views.html), etc.
-    * Cleaning nvtooltips seems is causing problems: tooltips not shown for previously drawn figures: clean only self figures.
 
     * Cleanup code.
-    * Reviewed and improved doc
-    * Move doc to site. Use Sphynx?. Add more samples of code. (keep doc sources along with the  project).
-    * Link from viewer to online doc.
     * Site without styling, copy from Studio/GUI, use current background but make it fluid (sample views
       extending outside centered content). Show a couple of charts view, a table, and a enabled-controls view.
       SAME views to be automatically opened in the explorer sample.
-    * Columns config "hooks" (hide / size)
     * Radar chart doesn't resize
 
     * Only draw results for the requested view, otherwise discard result (is causing issues and confusion).
     * Default cube settings is incorrect: it should only be applied if the view is not otherwise configured (ie loaded or json)
     * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative), move "invert 2nd serie" as a calculation?
 
+    * Review flow: if cube or menu loading is happening before initialization if views are created eagerly (views.html), etc.
+    * Cleaning nvtooltips seems is causing problems: tooltips not shown for previously drawn figures: clean only self figures.
     * Analytics plugin, and fix it to ignore first N seconds of events as for bounce rate calculation.
-    * Export.
     * Server side.
+    * Update undo/redo after column resize or other non-undo changes (do not change undo step, but keep it up to date)
+    * Columns config "hooks" (hide / size)
+
