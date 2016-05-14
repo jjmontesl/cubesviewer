@@ -266,6 +266,14 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 		*/
 	};
 
+	$scope.$watch('cvOptions.studioTwoColumn', function() {
+		if ($scope.chart) {
+			$timeout(function() {
+				$scope.chart.update();
+			}, 500);
+		}
+	});
+
 	$scope.resizeChart = function(size) {
 		var view = $scope.view;
 		$($element).find('svg').height(size);

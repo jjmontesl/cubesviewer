@@ -59,11 +59,15 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    <div class=\"panel panel-primary\">\n" +
     "        <div ng-if=\"! cvOptions.studioHideControls\" class=\"panel-heading\">\n" +
     "\n" +
-    "            <button type=\"button\" ng-click=\"studioViewsService.closeView(view)\" class=\"btn btn-danger btn-xs pull-right\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
-    "            <button type=\"button\" ng-click=\"studioViewsService.toggleCollapseView(view)\" class=\"btn btn-primary btn-xs pull-right\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw\" ng-class=\"{'fa-caret-up': !view.collapsed, 'fa-caret-down': view.collapsed }\"></i></button>\n" +
+    "            <button type=\"button\" ng-click=\"studioViewsService.closeView(view)\" class=\"btn btn-danger btn-xs pull-right hidden-print\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
+    "            <button type=\"button\" ng-click=\"studioViewsService.toggleCollapseView(view)\" class=\"btn btn-primary btn-xs pull-right hidden-print\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw\" ng-class=\"{'fa-caret-up': !view.collapsed, 'fa-caret-down': view.collapsed }\"></i></button>\n" +
     "\n" +
-    "            <i class=\"fa fa-fw fa-file\"></i> <span class=\"cv-gui-title\" ng-dblclick=\"studioViewsService.studioScope.showRenameView(view)\">{{ view.params.name }}</span>\n" +
-    "            <span class=\"badge badge-primary cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Test</span>\n" +
+    "            <i class=\"fa fa-fw fa-file\"></i> <span class=\"cv-gui-title\" style=\"cursor: pointer;\" ng-dblclick=\"studioViewsService.studioScope.showRenameView(view)\">{{ view.params.name }}</span>\n" +
+    "\n" +
+    "            <span ng-if=\"view.savedId > 0 && view.isViewChanged()\" class=\"badge badge-warning cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Modified</span>\n" +
+    "            <span ng-if=\"view.savedId > 0 && !view.isViewChanged()\" class=\"badge badge-secondary cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Saved</span>\n" +
+    "            <span ng-if=\"view.shared\" class=\"badge badge-success cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Shared</span>\n" +
+    "\n" +
     "            <button type=\"button\" class=\"btn btn-danger btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "\n" +
     "        </div>\n" +
@@ -184,7 +188,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
   $templateCache.put('studio/studio.html',
     "<div class=\"cv-bootstrap\" ng-controller=\"CubesViewerStudioController\">\n" +
     "\n" +
-    "    <div class=\"cv-gui-panel hidden-print\">\n" +
+    "    <div class=\"cv-gui-panel hidden-print\" style=\"white-space: nowrap;\">\n" +
     "\n" +
     "        <div class=\"dropdown m-b\" style=\"display: inline-block;\">\n" +
     "          <button class=\"btn btn-primary dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
@@ -203,7 +207,27 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </div>\n" +
     "\n" +
     "\n" +
-    "        <div class=\"dropdown m-b\" style=\"display: inline-block;\">\n" +
+    "        <div class=\"dropdown m-b\" style=\"display: inline-block; \">\n" +
+    "          <button class=\"btn btn-primary dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
+    "            <i class=\"fa fa-fw fa-file\"></i> Saved views <span class=\"caret\"></span>\n" +
+    "          </button>\n" +
+    "\n" +
+    "          <ul class=\"dropdown-menu cv-gui-catalog-menu\">\n" +
+    "\n" +
+    "            <li class=\"dropdown-header\">Personal views</li>\n" +
+    "\n" +
+    "            <li ng-show=\"cubesService.state === 1\" class=\"disabled\"><a>Loading...</a></li>\n" +
+    "            <li ng-show=\"cubesService.state === 2 && cubesService.cubesserver._cube_list.length === 0\" class=\"disabled\"><a>No cubes found</a></li>\n" +
+    "            <li ng-show=\"cubesService.state === 3\" class=\"disabled\"><a>Server error</a></li>\n" +
+    "            <li ng-repeat=\"cube in cubesService.cubesserver._cube_list | orderBy:'label'\" ng-click=\"studioViewsService.addViewCube(cube.name)\"><a>{{ cube.label }}</a></li>\n" +
+    "\n" +
+    "            <li class=\"dropdown-header\">Shared by others</li>\n" +
+    "\n" +
+    "          </ul>\n" +
+    "        </div>\n" +
+    "\n" +
+    "\n" +
+    "        <div class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\">\n" +
     "          <button class=\"btn btn-primary dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
     "            <i class=\"fa fa-fw fa-wrench\"></i> Tools <span class=\"caret\"></span>\n" +
     "          </button>\n" +
@@ -233,6 +257,17 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                <li class=\"\"><a data-toggle=\"modal\" data-target=\"#cvAboutModal\"><i class=\"fa fa-fw fa-info\"></i> About CubesViewer...</a></li>\n" +
     "\n" +
     "            </ul>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div style=\"display: inline-block; margin-left: 10px; margin-bottom: 0px;\">\n" +
+    "\n" +
+    "             <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0px;\">\n" +
+    "                <button class=\"btn\" type=\"button\" title=\"2 column\" ng-class=\"cvOptions.studioTwoColumn ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleTwoColumn()\"><i class=\"fa fa-fw fa-columns\"></i></button>\n" +
+    "             </div>\n" +
+    "             <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0px;\">\n" +
+    "                <button class=\"btn\" type=\"button\" title=\"Hide controls\" ng-class=\"cvOptions.studioHideControls ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleHideControls()\"><i class=\"fa fa-fw fa-arrows-alt\"></i></button>\n" +
+    "             </div>\n" +
+    "\n" +
     "        </div>\n" +
     "\n" +
     "        <div class=\"cv-gui-modals\">\n" +
@@ -410,7 +445,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('views/cube/cube-menu-drilldown.html',
     "  <button class=\"btn btn-primary btn-sm dropdown-toggle drilldownbutton\" ng-disabled=\"view.params.mode == 'facts'\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "    <i class=\"fa fa-fw fa-arrow-down\"></i> <span class=\"hidden-xs\" ng-class=\"{ 'hidden-sm': cvOptions.studioTwoColumn }\">Drilldown</span> <span class=\"caret\"></span>\n" +
+    "    <i class=\"fa fa-fw fa-arrow-down\"></i> <span class=\"hidden-xs\" ng-class=\"{ 'hidden-sm hidden-md': cvOptions.studioTwoColumn }\">Drilldown</span> <span class=\"caret\"></span>\n" +
     "  </button>\n" +
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu-drilldown\">\n" +
@@ -448,7 +483,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('views/cube/cube-menu-filter.html',
     "  <button class=\"btn btn-primary btn-sm dropdown-toggle cutbutton\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "    <i class=\"fa fa-fw fa-filter\"></i> <span class=\"hidden-xs\" ng-class=\"{ 'hidden-sm': cvOptions.studioTwoColumn }\">Filter</span> <span class=\"caret\"></span>\n" +
+    "    <i class=\"fa fa-fw fa-filter\"></i> <span class=\"hidden-xs\" ng-class=\"{ 'hidden-sm hidden-md': cvOptions.studioTwoColumn }\">Filter</span> <span class=\"caret\"></span>\n" +
     "  </button>\n" +
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut\">\n" +
@@ -548,7 +583,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('views/cube/cube-menu-panel.html',
     "  <button class=\"btn btn-primary btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "    <i class=\"fa fa-fw fa-file\"></i> <span class=\"hidden-xs\" ng-class=\"{ 'hidden-sm': cvOptions.studioTwoColumn }\">Panel</span> <span class=\"caret\"></span>\n" +
+    "    <i class=\"fa fa-fw fa-file\"></i> <span class=\"hidden-xs\" ng-class=\"{ 'hidden-sm hidden-md': cvOptions.studioTwoColumn }\">Panel</span> <span class=\"caret\"></span>\n" +
     "  </button>\n" +
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
@@ -557,7 +592,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    <li ng-click=\"viewsService.studioViewsService.studioScope.cloneView(view)\"><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
     "    <li><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +
-    "    <li><a><i class=\"fa fa-fw fa-share\"></i> Share...</a></li>\n" +
+    "    <li><a><i class=\"fa fa-fw fa-share\"></i>{{ view.params.shared ? \"Unshare\" : \"Share\" }}</a></li>\n" +
     "    <li><a><i class=\"fa fa-fw fa-trash-o\"></i> Delete...</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
     "    <li ng-click=\"viewsService.studioViewsService.studioScope.showSerializeView(view)\"><a><i class=\"fa fa-fw fa-code\"></i> Serialize...</a></li>\n" +
@@ -569,7 +604,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('views/cube/cube-menu-view.html',
     "  <button class=\"btn btn-primary btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "    <i class=\"fa fa-fw fa-cogs\"></i> <span class=\"hidden-xs\" ng-class=\"{ 'hidden-sm': cvOptions.studioTwoColumn }\">View</span> <span class=\"caret\"></span>\n" +
+    "    <i class=\"fa fa-fw fa-cogs\"></i> <span class=\"hidden-xs\" ng-class=\"{ 'hidden-sm hidden-md': cvOptions.studioTwoColumn }\">View</span> <span class=\"caret\"></span>\n" +
     "  </button>\n" +
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-view\">\n" +
@@ -586,8 +621,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "          <div class=\"divider\"></div>\n" +
     "\n" +
-    "          <li><a href=\"\"><i class=\"fa fa-fw fa-sun-o\"></i> Sunburst</a></li>\n" +
     "          <li><a href=\"\"><i class=\"fa fa-fw fa-dot-circle-o\"></i> Bubbles</a></li>\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-square\"></i> Treemap</a></li>\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-sun-o\"></i> Sunburst</a></li>\n" +
     "\n" +
     "          <div class=\"divider\"></div>\n" +
     "\n" +
@@ -754,8 +790,8 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                    <div ng-repeat=\"drilldown in view.params.drilldown\" ng-if=\"view.params.mode != 'facts'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-drill\" style=\"color: black; background-color: #ccffcc;\">\n" +
     "                        <span><i class=\"fa fa-fw fa-arrow-down\"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>\n" +
     "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
-    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(drilldown)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
-    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectDrill(drilldown, '')\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(drilldown)\" class=\"btn btn-secondary btn-xs hidden-print\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
+    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectDrill(drilldown, '')\" class=\"btn btn-danger btn-xs hidden-print\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
     "                    </div>\n" +
     "\n" +
     "                </div>\n" +
@@ -769,8 +805,8 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                    <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
     "                        <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.label }} <span ng-class=\"{ 'text-danger': cut.invert }\">{{ equality }}</span> <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
     "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
-    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(cut.dimension)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
-    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectCut(cut.dimension, '', cut.invert)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(cut.dimension)\" class=\"btn btn-secondary btn-xs hidden-print\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
+    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectCut(cut.dimension, '', cut.invert)\" class=\"btn btn-danger btn-xs hidden-print\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
     "                    </div>\n" +
     "                </div>\n" +
     "\n" +

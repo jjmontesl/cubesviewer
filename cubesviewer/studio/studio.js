@@ -121,8 +121,8 @@ angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$roo
 
 
 
-angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', '$uibModal', '$element', 'cvOptions', 'cubesService', 'studioViewsService', 'viewsService',
-                                                                       function ($rootScope, $scope, $uibModal, $element, cvOptions, cubesService, studioViewsService, viewsService) {
+angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', '$uibModal', '$element', '$timeout', 'cvOptions', 'cubesService', 'studioViewsService', 'viewsService',
+                                                                       function ($rootScope, $scope, $uibModal, $element, $timeout, cvOptions, cubesService, studioViewsService, viewsService) {
 
 	$scope.cvVersion = cubesviewer.version;
 	$scope.cvOptions = cvOptions;

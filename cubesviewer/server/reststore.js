@@ -23,108 +23,54 @@
 
 "use strict";
 
-/*
+/**
  * View storage for GUI. This is an optional component.
  * Provides methods to access CubesViewer backend operations like saving and loading user views.
- * The Cubesviewer project includes a Django backend that supports the basic saving/loading capabilities
+ * The cubesviewer-server project includes a Django backend that supports the basic saving/loading capabilities
  * used by this plugin.
  */
+angular.module('cv.studio').controller("CubesViewerSerializeViewController", ['$rootScope', '$scope', '$timeout', '$uibModalInstance', 'element', 'cvOptions', 'cubesService', 'studioViewsService', 'viewsService', 'view',
+                                                                              function ($rootScope, $scope, $timeout, $uibModalInstance, element, cvOptions, cubesService, studioViewsService, viewsService, view) {
+
+	$scope.savedViews = [];
+
+	$scope.view.isViewChanged = function() {
+
+		var view = this;
+
+        if (view.savedId == 0) return false;
+
+        // Find saved copy
+        var sview = $scope.getSavedView(view.savedId);
+
+        // Find differences
+        if (sview != null) {
+            if (view.params.name != sview.name) return true;
+            if (view.shared != sview.shared) return true;
+            if (view.cubesviewer.views.serialize(view) != sview.data) return true;
+        }
+
+        return false;
+
+	};
+
+    /*
+     * Returns a stored view from memory.
+     */
+    $scope.getSavedView = function(savedId) {
+        var view = $.grep($scope.savedViews, function(ed) { return ed.id == savedId; });
+        if (view.length > 0) {
+            return view[0];
+        } else {
+            return null;
+        }
+    };
+
+
+}]);
+
 function cubesviewerGuiRestStore() {
 
-    this.cubesviewer = cubesviewer;
-
-    this.savedViews = [];
-
-    //this.urlLoaded = false;
-
-    /*
-     * Adds necessary attributes to view.
-     */
-    this.onViewCreate = function(event, view) {
-
-        view.savedId = 0;
-        view.owner = view.cubesviewer.gui.options.user;
-        view.shared = false;
-
-    };
-
-    this.onGuiDraw = function(event, gui) {
-
-        gui.drawSection (gui, "Saved Views", "cv-gui-savedviews");
-        gui.drawSection (gui, "Shared Views", "cv-gui-sharedviews");
-
-        gui.reststore.viewList();
-
-    }
-
-    /*
-     * Draw export options.
-     */
-    this.onViewDraw = function(event, view) {
-
-        //if (view.params.mode != "explore") return;
-        view.cubesviewer.gui.reststore.drawMenu(view);
-
-        // Show viewstate
-        var viewstate = "";
-        if (view.savedId > 0) {
-
-            if (view.owner == view.cubesviewer.gui.options.user) {
-                viewstate += ('<span style="color: white; font-size: 10px; border: 1px solid white; padding: 1px;">Owner</span> ');
-            }
-
-            var changed = view.cubesviewer.gui.reststore.isViewChanged(view);
-
-            if (changed)
-                viewstate += ('<span style="color: lightgray; font-size: 10px; border: 1px solid lightgray; padding: 1px;">Modified</span> ');
-            if (!changed)
-                viewstate += ('<span style="color: white; font-size: 10px; border: 1px solid white; padding: 1px;">Saved</span> ');
-        }
-
-        if (view.shared) {
-            viewstate += ('<span style="color: yellow; margin-left: 10px; font-size: 10px; border: 1px solid yellow; padding: 1px;">Shared</span> ');
-        }
-
-        var container = $(view.container).parents('.cv-gui-cubesview');
-        $('.cv-gui-container-state', container).empty().html(viewstate);
-
-    };
-
-    /*
-     * Draw export menu options.
-     */
-    this.drawMenu = function(view) {
-
-        var menu = $(".cv-view-menu-panel", $(view.container));
-        var cube = view.cube;
-
-        // Draw menu options (depending on mode)
-        menu.find (".cv-gui-renameview").parent().after(
-            '<div></div>' +
-            '<li><a class="cv-gui-shareview" data-sharedstate="' + (view.shared ? "0" : "1") + '" href="#"><span class="ui-icon ui-icon-rss"></span>' + (view.params.shared ? "Unshare" : "Share") + '</a></li>' +
-            '<div></div>' +
-            '<li><a class="cv-gui-saveview" href="#"><span class="ui-icon ui-icon-disk"></span>Save</a></li>' +
-            '<li><a class="cv-gui-deleteview" href="#"><span class="ui-icon ui-icon-disk"></span>Delete</a></li>'
-        );
-
-        $(menu).menu( "refresh" );
-        $(menu).addClass("ui-menu-icons");
-
-        // Events
-        $(view.container).find('.cv-gui-saveview').click(function() {
-            view.cubesviewer.gui.reststore.saveView(view);
-            return false;
-        });
-        $(view.container).find('.cv-gui-deleteview').click(function() {
-            view.cubesviewer.gui.reststore.deleteView(view);
-            return false;
-        });
-        $(view.container).find('.cv-gui-shareview').click(function() {
-            view.cubesviewer.gui.reststore.shareView(view, $(this).attr('data-sharedstate'));
-            return false;
-        });
-
-    };
 
     /*
      * Save a view.
@@ -289,17 +235,6 @@ function cubesviewerGuiRestStore() {
 
     };
 
-    /*
-     * Returns a stored view from memory.
-     */
-    this.getSavedView = function(savedId) {
-        var view = $.grep(cubesviewer.gui.savedViews, function(ed) { return ed.id == savedId; });
-        if (view.length > 0) {
-            return view[0];
-        } else {
-            return null;
-        }
-    };
 
     /*
      * Change shared mode
@@ -334,26 +269,6 @@ function cubesviewerGuiRestStore() {
         view.shared = savedview.shared;
 
         this.cubesviewer.views.redrawView (view);
-    };
-
-    // Calculate if there are unsaved changes
-    this.isViewChanged = function(view) {
-
-        if (view.savedId == 0) return false;
-
-        // Find saved copy
-        var sview = view.cubesviewer.gui.reststore.getSavedView	(view.savedId);
-
-        // Find differences
-        if (sview != null) {
-            if (view.params.name != sview.name) return true;
-            if (view.shared != sview.shared) return true;
-
-            if (view.cubesviewer.views.serialize(view) != sview.data) return true;
-        }
-
-        return false;
-
     };
 
 

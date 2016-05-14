@@ -41,6 +41,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
 			$scope.drawChartRadar();
 		}, 2000);
 	});
+	$scope.$watch('cvOptions.studioTwoColumn', function() {
+		$timeout(function() {
+			$scope.drawChartRadar();
+		}, 2000);
+	});
 
 
 	/**

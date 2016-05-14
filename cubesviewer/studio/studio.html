@@ -1,6 +1,6 @@
 <div class="cv-bootstrap" ng-controller="CubesViewerStudioController">
 
-    <div class="cv-gui-panel hidden-print">
+    <div class="cv-gui-panel hidden-print" style="white-space: nowrap;">
 
         <div class="dropdown m-b" style="display: inline-block;">
           <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" data-submenu>
@@ -19,7 +19,27 @@
         </div>
 
 
-        <div class="dropdown m-b" style="display: inline-block;">
+        <div class="dropdown m-b" style="display: inline-block; ">
+          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" data-submenu>
+            <i class="fa fa-fw fa-file"></i> Saved views <span class="caret"></span>
+          </button>
+
+          <ul class="dropdown-menu cv-gui-catalog-menu">
+
+            <li class="dropdown-header">Personal views</li>
+
+            <li ng-show="cubesService.state === 1" class="disabled"><a>Loading...</a></li>
+            <li ng-show="cubesService.state === 2 && cubesService.cubesserver._cube_list.length === 0" class="disabled"><a>No cubes found</a></li>
+            <li ng-show="cubesService.state === 3" class="disabled"><a>Server error</a></li>
+            <li ng-repeat="cube in cubesService.cubesserver._cube_list | orderBy:'label'" ng-click="studioViewsService.addViewCube(cube.name)"><a>{{ cube.label }}</a></li>
+
+            <li class="dropdown-header">Shared by others</li>
+
+          </ul>
+        </div>
+
+
+        <div class="dropdown m-b" style="display: inline-block; margin-left: 5px;">
           <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" data-submenu>
             <i class="fa fa-fw fa-wrench"></i> Tools <span class="caret"></span>
           </button>
@@ -49,6 +69,17 @@
                 <li class=""><a data-toggle="modal" data-target="#cvAboutModal"><i class="fa fa-fw fa-info"></i> About CubesViewer...</a></li>
 
             </ul>
+        </div>
+
+        <div style="display: inline-block; margin-left: 10px; margin-bottom: 0px;">
+
+             <div class="form-group" style="display: inline-block; margin-bottom: 0px;">
+                <button class="btn" type="button" title="2 column" ng-class="cvOptions.studioTwoColumn ? 'btn-active btn-success' : 'btn-primary'" ng-click="toggleTwoColumn()"><i class="fa fa-fw fa-columns"></i></button>
+             </div>
+             <div class="form-group" style="display: inline-block; margin-bottom: 0px;">
+                <button class="btn" type="button" title="Hide controls" ng-class="cvOptions.studioHideControls ? 'btn-active btn-success' : 'btn-primary'" ng-click="toggleHideControls()"><i class="fa fa-fw fa-arrows-alt"></i></button>
+             </div>
+
         </div>
 
         <div class="cv-gui-modals">

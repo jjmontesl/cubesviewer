@@ -72,6 +72,10 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 			"state": cubesviewer.STATE_INITIALIZING,
 			"params": {},
 
+	        "savedId": 0,
+	        "owner": cvOptions.user,
+	        "shared": false,
+
 			controlsHidden: function() {
 				return !!this.params.controlsHidden || !!cvOptions.studioHideControls;
 			},
