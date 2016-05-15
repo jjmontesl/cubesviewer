@@ -188,7 +188,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
   $templateCache.put('studio/studio.html',
     "<div class=\"cv-bootstrap\" ng-controller=\"CubesViewerStudioController\">\n" +
     "\n" +
-    "    <div class=\"cv-gui-panel hidden-print\" style=\"white-space: nowrap;\">\n" +
+    "    <div class=\"cv-gui-panel hidden-print\">\n" +
     "\n" +
     "        <div class=\"dropdown m-b\" style=\"display: inline-block;\">\n" +
     "          <button class=\"btn btn-primary dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
