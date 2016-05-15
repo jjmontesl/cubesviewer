@@ -34,8 +34,8 @@ angular.module('cv.views.cube', []);
  *
  * FIXME: Some of this code shall be on a parent generic "view" directive.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService',
-                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, exportService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService', 'reststoreService',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, exportService, reststoreService) {
 
 	// TODO: Functions shall be here?
 	$scope.viewController = {};
@@ -45,6 +45,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	$scope.cvOptions = cvOptions;
 	$scope.cubesService = cubesService;
 	$scope.exportService = exportService;
+	$scope.reststoreService = reststoreService;
 
 	$scope.dimensionFilter = null;
 

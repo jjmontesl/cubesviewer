@@ -101,12 +101,13 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 /**
  * cvStudioView directive. Shows a Studio panel containing the corresponding view.
  */
-angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'studioViewsService',
-                                                     function ($rootScope, $scope, cvOptions, cubesService, studioViewsService) {
+angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'studioViewsService', 'reststoreService',
+                                                     function ($rootScope, $scope, cvOptions, cubesService, studioViewsService, reststoreService) {
 
 	$scope.cubesService = cubesService;
 	$scope.studioViewsService = studioViewsService;
 	$scope.cvOptions = cvOptions;
+	$scope.reststoreService = reststoreService;
 
 }]).directive("cvStudioView", function() {
 	return {
@@ -121,13 +122,14 @@ angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$roo
 
 
 
-angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', '$uibModal', '$element', '$timeout', 'cvOptions', 'cubesService', 'studioViewsService', 'viewsService',
-                                                                       function ($rootScope, $scope, $uibModal, $element, $timeout, cvOptions, cubesService, studioViewsService, viewsService) {
+angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', '$uibModal', '$element', '$timeout', 'cvOptions', 'cubesService', 'studioViewsService', 'viewsService', 'reststoreService',
+                                                                       function ($rootScope, $scope, $uibModal, $element, $timeout, cvOptions, cubesService, studioViewsService, viewsService, reststoreService) {
 
 	$scope.cvVersion = cubesviewer.version;
 	$scope.cvOptions = cvOptions;
 	$scope.cubesService = cubesService;
 	$scope.studioViewsService = studioViewsService;
+	$scope.reststoreService = reststoreService;
 
 	$scope.studioViewsService.studioScope = $scope;
 

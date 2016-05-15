@@ -23,42 +23,22 @@
 
 "use strict";
 
-/**
- * View storage for GUI. This is an optional component.
- * Provides methods to access CubesViewer backend operations like saving and loading user views.
- * The cubesviewer-server project includes a Django backend that supports the basic saving/loading capabilities
- * used by this plugin.
- */
-angular.module('cv.studio').controller("CubesViewerSerializeViewController", ['$rootScope', '$scope', '$timeout', '$uibModalInstance', 'element', 'cvOptions', 'cubesService', 'studioViewsService', 'viewsService', 'view',
-                                                                              function ($rootScope, $scope, $timeout, $uibModalInstance, element, cvOptions, cubesService, studioViewsService, viewsService, view) {
+angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', '$cookies', 'cvOptions', 'cubesService', 'viewsService', 'dialogService', 'studioViewsService',
+                                                           function ($rootScope, $http, $cookies, cvOptions, cubesService, viewsService, dialogService, studioViewsService) {
 
-	$scope.savedViews = [];
+	var reststoreService = this;
 
-	$scope.view.isViewChanged = function() {
+	reststoreService.savedViews = [];
 
-		var view = this;
-
-        if (view.savedId == 0) return false;
-
-        // Find saved copy
-        var sview = $scope.getSavedView(view.savedId);
-
-        // Find differences
-        if (sview != null) {
-            if (view.params.name != sview.name) return true;
-            if (view.shared != sview.shared) return true;
-            if (view.cubesviewer.views.serialize(view) != sview.data) return true;
-        }
-
-        return false;
-
+	reststoreService.initialize = function() {
+		reststoreService.viewList();
 	};
 
-    /*
+    /**
      * Returns a stored view from memory.
      */
-    $scope.getSavedView = function(savedId) {
-        var view = $.grep($scope.savedViews, function(ed) { return ed.id == savedId; });
+	reststoreService.getSavedView = function(savedId) {
+        var view = $.grep(reststoreService.savedViews, function(ed) { return ed.id == savedId; });
         if (view.length > 0) {
             return view[0];
         } else {
@@ -66,19 +46,13 @@ angular.module('cv.studio').controller("CubesViewerSerializeViewController", ['$
         }
     };
 
-
-}]);
-
-function cubesviewerGuiRestStore() {
-
-
-    /*
+    /**
      * Save a view.
      */
-    this.saveView = function (view) {
+    reststoreService.saveView = function (view) {
 
-        if (view.owner != view.cubesviewer.gui.options.user) {
-            view.cubesviewer.alert ('Cannot save a view that belongs to other user (try cloning the view).');
+        if (view.owner != cvOptions.user) {
+            dialogService.show('Cannot save a view that belongs to other user (try cloning the view).');
             return;
         }
 
@@ -86,32 +60,56 @@ function cubesviewerGuiRestStore() {
             "id": view.savedId,
             "name": view.params.name,
             "shared": view.shared,
-            "data":  view.cubesviewer.views.serialize(view)
+            "data":  viewsService.serializeView(view)
         };
 
-        $.ajax({
-        	"type": "POST",
-        	"url": view.cubesviewer.gui.options.backendUrl + "/view/save/",
-        	"data": data,
-        	"success": view.cubesviewer.gui.reststore._viewSaveCallback(view),
-        	"dataType": "json",
-        	"headers": {"X-CSRFToken": $.cookie('csrftoken')},
-        })
-        .fail(cubesviewer.defaultRequestErrorHandler);
+        $http({
+        	"method": "POST",
+        	"url": cvOptions.backendUrl + "/view/save/",
+        	"data": JSON.stringify(data),
+        	"headers": {"X-CSRFToken": $cookies.get('csrftoken')},
+        }).then(reststoreService._viewSaveCallback(view), cubesService.defaultRequestErrorHandler);
 
     };
 
-    /*
+    /**
+     * Save callback
+     */
+    reststoreService._viewSaveCallback = function(view) {
+
+        var view = view;
+
+        return function(data, status) {
+            data = data.data;
+        	if (view != null) {
+                view.savedId = data.id;
+
+                // Manually update saved list to avoid detecting differences as the list hasn't been reloaded
+                var sview = reststoreService.getSavedView(view.savedId);
+                if (sview != null) {
+                    sview.name = view.params.name;
+                    sview.shared = view.shared;
+                    sview.data = viewsService.serializeView(view)
+                }
+            }
+            reststoreService.viewList();
+
+            dialogService.show("View saved.");
+        }
+
+    };
+
+    /**
      * Delete a view.
      */
-    this.deleteView = function (view) {
+    reststoreService.deleteView = function (view) {
 
         if (view.savedId == 0) {
-            view.cubesviewer.alert ("Cannot delete this view as it hasn't been saved.");
+        	dialogService.show("Cannot delete this view as it hasn't been saved.");
             return;
         }
-        if (view.owner != view.cubesviewer.gui.options.user) {
-            view.cubesviewer.alert ('Cannot delete a view that belongs to other user.');
+        if (view.owner != cvOptions.user) {
+            dialogService.show('Cannot delete a view that belongs to other user.');
             return;
         }
 
@@ -124,164 +122,96 @@ function cubesviewerGuiRestStore() {
             "data": ""
         };
 
-        view.cubesviewer.gui.closeView(view);
+        studioViewsService.closeView(view);
 
-        $.ajax({
-        	"type": "POST",
-        	"url": view.cubesviewer.gui.options.backendUrl + "/view/save/",
-        	"data": data,
-        	"success": view.cubesviewer.gui.reststore._viewDeleteCallback(view.cubesviewer.gui),
-        	"dataType": "json",
-        	"headers": {"X-CSRFToken": $.cookie('csrftoken')},
-         })
-         .fail(cubesviewer.defaultRequestErrorHandler);
-
-    };
-
-    /*
-     * Save callback
-     */
-    this._viewSaveCallback = function(view) {
-
-        var view = view;
-
-        return function(data, status) {
-            if (view != null) {
-                view.savedId = data.id;
-
-                // Manually update saved list to avoid detecting differences as the list hasn't been reloaded
-                var sview = view.cubesviewer.gui.reststore.getSavedView	(view.savedId);
-                if (sview != null) {
-                    sview.name = view.params.name;
-                    sview.shared = view.shared;
-                    sview.data = view.cubesviewer.views.serialize(view)
-                }
-
-                view.cubesviewer.views.redrawView(view);
-            }
-            view.cubesviewer.gui.reststore.viewList();
-
-            cubesviewer.showInfoMessage("View saved.", 3000);
-        }
+        $http({
+        	"method": "POST",
+        	"url": cvOptions.backendUrl + "/view/save/",
+        	"data": JSON.stringify(data),
+        	"headers": {"X-CSRFToken": $cookies.get('csrftoken')}
+         }).then(reststoreService._viewDeleteCallback, cubesviewer.defaultRequestErrorHandler);
 
     };
 
     /*
      * Delete callback
      */
-    this._viewDeleteCallback = function(gui) {
-
-        var gui = gui;
-
-        return function(data, status) {
-            gui.reststore.viewList();
-        }
-
+    reststoreService._viewDeleteCallback = function() {
+    	reststoreService.viewList();
     };
 
     /*
      * Get view list.
      */
-    this.viewList = function () {
-        $.get(this.cubesviewer.gui.options.backendUrl + "/view/list/", null, this.cubesviewer.gui.reststore._viewListCallback, "json")
-         .fail(cubesviewer.defaultRequestErrorHandler);
+    reststoreService.viewList = function () {
+        $http.get(cvOptions.backendUrl + "/view/list/").then(
+        		reststoreService._viewListCallback, cubesService.defaultRequestErrorHandler);
     };
 
-    this._viewListCallback = function(data, status) {
-
-        cubesviewer.gui.savedViews = data;
-
-        $(cubesviewer.gui.options.container).find(".cv-gui-savedviews-menu").empty();
-        $(cubesviewer.gui.options.container).find(".cv-gui-sharedviews-menu").empty();
-
-        $( data ).each (function(idx, e) {
-            var link = '<li><a style="margin-left: 10px; white-space: nowrap; overflow: hidden;" class="backend-loadview" data-view="' + e.id + '" href="#" title="' + e.name + '">' + e.name + '</a></li>';
-            if (e.owner == cubesviewer.gui.options.user) {
-                $(cubesviewer.gui.options.container).find('.cv-gui-savedviews-menu').append (link);
-            }
-            if (e.shared) {
-                $(cubesviewer.gui.options.container).find('.cv-gui-sharedviews-menu').append (link);
-            }
-        });
-
-        $(cubesviewer.gui.options.container).find('.cv-gui-savedviews-menu').menu('refresh');
-        $(cubesviewer.gui.options.container).find('.cv-gui-sharedviews-menu').menu('refresh');
-
-        $(cubesviewer.gui.options.container).find('.backend-loadview').click(function () {
-            cubesviewer.gui.reststore.addViewSaved($(this).attr('data-view'));
-            return false;
-        });
-
-
-        function getURLParameter(name) {
-            return decodeURI(
-                (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
-            );
-        }
-
-        // Preload views
-        /*
-        if (!this.urlLoaded) {
-            backend.urlLoaded = true;
-            views = getURLParameter("views");
-            if (views != "null") {
-                $(views.split(',')).each(function (idx,e) {
-                    backend.viewLoad(e);
-                });
-            }
-        }
-        */
-
-
+    reststoreService._viewListCallback = function(data, status) {
+    	reststoreService.savedViews = data.data;
     };
 
+    reststoreService.isViewChanged = function(view) {
 
-    /*
+        if (view.savedId == 0) return false;
+
+        // Find saved copy
+        var sview = reststoreService.getSavedView(view.savedId);
+
+        // Find differences
+        if (sview != null) {
+            if (view.params.name != sview.name) return true;
+            if (view.shared != sview.shared) return true;
+            if (viewsService.serializeView(view) != sview.data) return true;
+        }
+
+        return false;
+
+	};
+
+    /**
      * Change shared mode
      */
-    this.shareView = function(view, sharedstate) {
+	reststoreService.shareView = function(view, sharedstate) {
 
-        if (view.owner != view.cubesviewer.gui.options.user) {
-            view.cubesviewer.alert ('Cannot share/unshare a view that belongs to other user (try cloning the view).');
+        if (view.owner != cvOptions.user) {
+            dialogService.show('Cannot share/unshare a view that belongs to other user (try cloning the view).');
             return;
         }
 
         view.shared = ( sharedstate == 1 ? true : false );
-        this.saveView(view);
+        reststoreService.saveView(view);
 
     };
 
-    /*
+    /**
      * Loads a view from the backend.
      * This is equivalent to other view adding methods in the cubesviewer.gui namespace,
      * like "addViewCube" or "addViewObject", but thisloads the view definition from
      * the storage backend.
      */
-    this.addViewSaved = function(savedViewId) {
+    reststoreService.addSavedView = function(savedViewId) {
 
     	// TODO: Check whether the server model is loaded, etc
 
-        var savedview = this.getSavedView(savedViewId);
+        var savedview = reststoreService.getSavedView(savedViewId);
         var viewobject = $.parseJSON(savedview.data);
-        var view = cubesviewer.gui.addViewObject(viewobject);
-        view.savedId = savedview.id
-        view.owner = savedview.owner;
-        view.shared = savedview.shared;
+        var view = studioViewsService.addViewObject(viewobject);
 
-        this.cubesviewer.views.redrawView (view);
+        if (savedview.owner == cvOptions.user) {
+        	view.savedId = savedview.id;
+        	view.owner = savedview.owner;
+        	view.shared = savedview.shared;
+        } else {
+        	view.savedId = 0;
+        	view.owner = cvOptions.user;
+        	view.shared = false;
+        }
+
     };
 
+    reststoreService.initialize();
 
-};
+}]);
 
-/*
- * Create object.
- */
-cubesviewer.gui.reststore = new cubesviewerGuiRestStore();
-
-/*
- * Bind events.
- */
-$(document).bind("cubesviewerViewCreate", { }, cubesviewer.gui.reststore.onViewCreate);
-$(document).bind("cubesviewerViewDraw", { }, cubesviewer.gui.reststore.onViewDraw);
-$(document).bind("cubesviewerGuiDraw", { }, cubesviewer.gui.reststore.onGuiDraw);

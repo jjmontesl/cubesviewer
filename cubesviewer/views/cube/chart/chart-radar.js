@@ -88,11 +88,13 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
 	    	shadowSize: 2,
 	    	height: 350,
 	        radar: {
-	            show: true
+	            show: true,
+	            fill: numRows < 4,
+	            fillOpacity: 0.2
 	        },
 	        mouse: {
-	            //track: true,
-	            //relative: true
+	            track: false,
+	            relative: true
 	        },
 	        grid: {
 	            circular: true,

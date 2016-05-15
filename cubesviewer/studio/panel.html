@@ -8,9 +8,9 @@
 
             <i class="fa fa-fw fa-file"></i> <span class="cv-gui-title" style="cursor: pointer;" ng-dblclick="studioViewsService.studioScope.showRenameView(view)">{{ view.params.name }}</span>
 
-            <span ng-if="view.savedId > 0 && view.isViewChanged()" class="badge badge-warning cv-gui-container-state" style="margin-left: 15px; font-size: 80%;">Modified</span>
-            <span ng-if="view.savedId > 0 && !view.isViewChanged()" class="badge badge-secondary cv-gui-container-state" style="margin-left: 15px; font-size: 80%;">Saved</span>
-            <span ng-if="view.shared" class="badge badge-success cv-gui-container-state" style="margin-left: 15px; font-size: 80%;">Shared</span>
+            <span ng-if="view.savedId > 0 && reststoreService.isViewChanged(view)" class="badge cv-gui-container-state" style="margin-left: 15px; font-size: 80%;">Modified</span>
+            <span ng-if="view.savedId > 0 && !reststoreService.isViewChanged(view)" class="badge cv-gui-container-state" style="margin-left: 15px; font-size: 80%;">Saved</span>
+            <span ng-if="view.shared" class="badge cv-gui-container-state" style="margin-left: 5px; font-size: 80%;">Shared</span>
 
             <button type="button" class="btn btn-danger btn-xs" style="visibility: hidden;"><i class="fa fa-fw fa-info"></i></button>
 

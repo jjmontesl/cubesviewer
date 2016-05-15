@@ -28,12 +28,13 @@
 
             <li class="dropdown-header">Personal views</li>
 
-            <li ng-show="cubesService.state === 1" class="disabled"><a>Loading...</a></li>
-            <li ng-show="cubesService.state === 2 && cubesService.cubesserver._cube_list.length === 0" class="disabled"><a>No cubes found</a></li>
-            <li ng-show="cubesService.state === 3" class="disabled"><a>Server error</a></li>
-            <li ng-repeat="cube in cubesService.cubesserver._cube_list | orderBy:'label'" ng-click="studioViewsService.addViewCube(cube.name)"><a>{{ cube.label }}</a></li>
+            <!-- <li ng-show="true" class="disabled"><a>Loading...</a></li>  -->
+            <li ng-repeat="sv in reststoreService.savedViews | orderBy:'sv.name'" ng-if="sv.owner == cvOptions.user" ng-click="reststoreService.addSavedView(sv.id)"><a style="max-width: 360px; overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;"><i class="fa fa-fw"></i> {{ sv.name }}</a></li>
 
             <li class="dropdown-header">Shared by others</li>
+
+            <!-- <li ng-show="true" class="disabled"><a>Loading...</a></li>  -->
+            <li ng-repeat="sv in reststoreService.savedViews | orderBy:'sv.name'" ng-if="sv.shared && sv.owner != cvOptions.user" ng-click="reststoreService.addSavedView(sv.id)"><a style="max-width: 360px; overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;"><i class="fa fa-fw"></i> {{ sv.name }}</a></li>
 
           </ul>
         </div>

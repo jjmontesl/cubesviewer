@@ -1437,6 +1437,7 @@ angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOption
 angular.module('cv', ['ui.bootstrap', 'bootstrapSubmenu',
                       'ui.grid', 'ui.grid.resizeColumns', 'ui.grid.selection', 'ui.grid.autoResize',
                       'ui.grid.pagination', 'ui.grid.pinning', /*'ui.grid.exporter',*/
+                      'ngCookies',
                       'cv.cubes', 'cv.views']);
 
 // Configure moment.js
@@ -1792,8 +1793,8 @@ angular.module('cv.views.cube', []);
  *
  * FIXME: Some of this code shall be on a parent generic "view" directive.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService',
-                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, exportService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService', 'reststoreService',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, exportService, reststoreService) {
 
 	// TODO: Functions shall be here?
 	$scope.viewController = {};
@@ -1803,6 +1804,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	$scope.cvOptions = cvOptions;
 	$scope.cubesService = cubesService;
 	$scope.exportService = exportService;
+	$scope.reststoreService = reststoreService;
 
 	$scope.dimensionFilter = null;
 
@@ -4804,11 +4806,13 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
 	    	shadowSize: 2,
 	    	height: 350,
 	        radar: {
-	            show: true
+	            show: true,
+	            fill: numRows < 4,
+	            fillOpacity: 0.2
 	        },
 	        mouse: {
-	            //track: true,
-	            //relative: true
+	            track: false,
+	            relative: true
 	        },
 	        grid: {
 	            circular: true,
@@ -5145,12 +5149,13 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 /**
  * cvStudioView directive. Shows a Studio panel containing the corresponding view.
  */
-angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'studioViewsService',
-                                                     function ($rootScope, $scope, cvOptions, cubesService, studioViewsService) {
+angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'studioViewsService', 'reststoreService',
+                                                     function ($rootScope, $scope, cvOptions, cubesService, studioViewsService, reststoreService) {
 
 	$scope.cubesService = cubesService;
 	$scope.studioViewsService = studioViewsService;
 	$scope.cvOptions = cvOptions;
+	$scope.reststoreService = reststoreService;
 
 }]).directive("cvStudioView", function() {
 	return {
@@ -5165,13 +5170,14 @@ angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$roo
 
 
 
-angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', '$uibModal', '$element', '$timeout', 'cvOptions', 'cubesService', 'studioViewsService', 'viewsService',
-                                                                       function ($rootScope, $scope, $uibModal, $element, $timeout, cvOptions, cubesService, studioViewsService, viewsService) {
+angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', '$uibModal', '$element', '$timeout', 'cvOptions', 'cubesService', 'studioViewsService', 'viewsService', 'reststoreService',
+                                                                       function ($rootScope, $scope, $uibModal, $element, $timeout, cvOptions, cubesService, studioViewsService, viewsService, reststoreService) {
 
 	$scope.cvVersion = cubesviewer.version;
 	$scope.cvOptions = cvOptions;
 	$scope.cubesService = cubesService;
 	$scope.studioViewsService = studioViewsService;
+	$scope.reststoreService = reststoreService;
 
 	$scope.studioViewsService.studioScope = $scope;
 
@@ -5458,6 +5464,223 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
 
 
 
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+"use strict";
+
+angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', '$cookies', 'cvOptions', 'cubesService', 'viewsService', 'dialogService', 'studioViewsService',
+                                                           function ($rootScope, $http, $cookies, cvOptions, cubesService, viewsService, dialogService, studioViewsService) {
+
+	var reststoreService = this;
+
+	reststoreService.savedViews = [];
+
+	reststoreService.initialize = function() {
+		reststoreService.viewList();
+	};
+
+    /**
+     * Returns a stored view from memory.
+     */
+	reststoreService.getSavedView = function(savedId) {
+        var view = $.grep(reststoreService.savedViews, function(ed) { return ed.id == savedId; });
+        if (view.length > 0) {
+            return view[0];
+        } else {
+            return null;
+        }
+    };
+
+    /**
+     * Save a view.
+     */
+    reststoreService.saveView = function (view) {
+
+        if (view.owner != cvOptions.user) {
+            dialogService.show('Cannot save a view that belongs to other user (try cloning the view).');
+            return;
+        }
+
+        var data = {
+            "id": view.savedId,
+            "name": view.params.name,
+            "shared": view.shared,
+            "data":  viewsService.serializeView(view)
+        };
+
+        $http({
+        	"method": "POST",
+        	"url": cvOptions.backendUrl + "/view/save/",
+        	"data": JSON.stringify(data),
+        	"headers": {"X-CSRFToken": $cookies.get('csrftoken')},
+        }).then(reststoreService._viewSaveCallback(view), cubesService.defaultRequestErrorHandler);
+
+    };
+
+    /**
+     * Save callback
+     */
+    reststoreService._viewSaveCallback = function(view) {
+
+        var view = view;
+
+        return function(data, status) {
+            data = data.data;
+        	if (view != null) {
+                view.savedId = data.id;
+
+                // Manually update saved list to avoid detecting differences as the list hasn't been reloaded
+                var sview = reststoreService.getSavedView(view.savedId);
+                if (sview != null) {
+                    sview.name = view.params.name;
+                    sview.shared = view.shared;
+                    sview.data = viewsService.serializeView(view)
+                }
+            }
+            reststoreService.viewList();
+
+            dialogService.show("View saved.");
+        }
+
+    };
+
+    /**
+     * Delete a view.
+     */
+    reststoreService.deleteView = function (view) {
+
+        if (view.savedId == 0) {
+        	dialogService.show("Cannot delete this view as it hasn't been saved.");
+            return;
+        }
+        if (view.owner != cvOptions.user) {
+            dialogService.show('Cannot delete a view that belongs to other user.');
+            return;
+        }
+
+        if (! confirm('Are you sure you want to delete and close this view?')) {
+            return;
+        }
+
+        var data = {
+            "id": view.savedId,
+            "data": ""
+        };
+
+        studioViewsService.closeView(view);
+
+        $http({
+        	"method": "POST",
+        	"url": cvOptions.backendUrl + "/view/save/",
+        	"data": JSON.stringify(data),
+        	"headers": {"X-CSRFToken": $cookies.get('csrftoken')}
+         }).then(reststoreService._viewDeleteCallback, cubesviewer.defaultRequestErrorHandler);
+
+    };
+
+    /*
+     * Delete callback
+     */
+    reststoreService._viewDeleteCallback = function() {
+    	reststoreService.viewList();
+    };
+
+    /*
+     * Get view list.
+     */
+    reststoreService.viewList = function () {
+        $http.get(cvOptions.backendUrl + "/view/list/").then(
+        		reststoreService._viewListCallback, cubesService.defaultRequestErrorHandler);
+    };
+
+    reststoreService._viewListCallback = function(data, status) {
+    	reststoreService.savedViews = data.data;
+    };
+
+    reststoreService.isViewChanged = function(view) {
+
+        if (view.savedId == 0) return false;
+
+        // Find saved copy
+        var sview = reststoreService.getSavedView(view.savedId);
+
+        // Find differences
+        if (sview != null) {
+            if (view.params.name != sview.name) return true;
+            if (view.shared != sview.shared) return true;
+            if (viewsService.serializeView(view) != sview.data) return true;
+        }
+
+        return false;
+
+	};
+
+    /**
+     * Change shared mode
+     */
+	reststoreService.shareView = function(view, sharedstate) {
+
+        if (view.owner != cvOptions.user) {
+            dialogService.show('Cannot share/unshare a view that belongs to other user (try cloning the view).');
+            return;
+        }
+
+        view.shared = ( sharedstate == 1 ? true : false );
+        reststoreService.saveView(view);
+
+    };
+
+    /**
+     * Loads a view from the backend.
+     * This is equivalent to other view adding methods in the cubesviewer.gui namespace,
+     * like "addViewCube" or "addViewObject", but thisloads the view definition from
+     * the storage backend.
+     */
+    reststoreService.addSavedView = function(savedViewId) {
+
+    	// TODO: Check whether the server model is loaded, etc
+
+        var savedview = reststoreService.getSavedView(savedViewId);
+        var viewobject = $.parseJSON(savedview.data);
+        var view = studioViewsService.addViewObject(viewobject);
+
+        if (savedview.owner == cvOptions.user) {
+        	view.savedId = savedview.id;
+        	view.owner = savedview.owner;
+        	view.shared = savedview.shared;
+        } else {
+        	view.savedId = 0;
+        	view.owner = cvOptions.user;
+        	view.shared = false;
+        }
+
+    };
+
+    reststoreService.initialize();
+
+}]);
+
 ;angular.module('cv').run(['$templateCache', function($templateCache) {
   'use strict';
 
@@ -5524,9 +5747,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "            <i class=\"fa fa-fw fa-file\"></i> <span class=\"cv-gui-title\" style=\"cursor: pointer;\" ng-dblclick=\"studioViewsService.studioScope.showRenameView(view)\">{{ view.params.name }}</span>\n" +
     "\n" +
-    "            <span ng-if=\"view.savedId > 0 && view.isViewChanged()\" class=\"badge badge-warning cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Modified</span>\n" +
-    "            <span ng-if=\"view.savedId > 0 && !view.isViewChanged()\" class=\"badge badge-secondary cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Saved</span>\n" +
-    "            <span ng-if=\"view.shared\" class=\"badge badge-success cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Shared</span>\n" +
+    "            <span ng-if=\"view.savedId > 0 && reststoreService.isViewChanged(view)\" class=\"badge cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Modified</span>\n" +
+    "            <span ng-if=\"view.savedId > 0 && !reststoreService.isViewChanged(view)\" class=\"badge cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Saved</span>\n" +
+    "            <span ng-if=\"view.shared\" class=\"badge cv-gui-container-state\" style=\"margin-left: 5px; font-size: 80%;\">Shared</span>\n" +
     "\n" +
     "            <button type=\"button\" class=\"btn btn-danger btn-xs\" style=\"visibility: hidden;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "\n" +
@@ -5676,12 +5899,13 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "\n" +
     "            <li class=\"dropdown-header\">Personal views</li>\n" +
     "\n" +
-    "            <li ng-show=\"cubesService.state === 1\" class=\"disabled\"><a>Loading...</a></li>\n" +
-    "            <li ng-show=\"cubesService.state === 2 && cubesService.cubesserver._cube_list.length === 0\" class=\"disabled\"><a>No cubes found</a></li>\n" +
-    "            <li ng-show=\"cubesService.state === 3\" class=\"disabled\"><a>Server error</a></li>\n" +
-    "            <li ng-repeat=\"cube in cubesService.cubesserver._cube_list | orderBy:'label'\" ng-click=\"studioViewsService.addViewCube(cube.name)\"><a>{{ cube.label }}</a></li>\n" +
+    "            <!-- <li ng-show=\"true\" class=\"disabled\"><a>Loading...</a></li>  -->\n" +
+    "            <li ng-repeat=\"sv in reststoreService.savedViews | orderBy:'sv.name'\" ng-if=\"sv.owner == cvOptions.user\" ng-click=\"reststoreService.addSavedView(sv.id)\"><a style=\"max-width: 360px; overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\"><i class=\"fa fa-fw\"></i> {{ sv.name }}</a></li>\n" +
     "\n" +
     "            <li class=\"dropdown-header\">Shared by others</li>\n" +
+    "\n" +
+    "            <!-- <li ng-show=\"true\" class=\"disabled\"><a>Loading...</a></li>  -->\n" +
+    "            <li ng-repeat=\"sv in reststoreService.savedViews | orderBy:'sv.name'\" ng-if=\"sv.shared && sv.owner != cvOptions.user\" ng-click=\"reststoreService.addSavedView(sv.id)\"><a style=\"max-width: 360px; overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\"><i class=\"fa fa-fw\"></i> {{ sv.name }}</a></li>\n" +
     "\n" +
     "          </ul>\n" +
     "        </div>\n" +
@@ -6051,9 +6275,9 @@ angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$r
     "    <li ng-click=\"viewsService.studioViewsService.studioScope.showRenameView(view)\"><a><i class=\"fa fa-fw fa-pencil\"></i> Rename...</a></li>\n" +
     "    <li ng-click=\"viewsService.studioViewsService.studioScope.cloneView(view)\"><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
-    "    <li><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +
-    "    <li><a><i class=\"fa fa-fw fa-share\"></i>{{ view.params.shared ? \"Unshare\" : \"Share\" }}</a></li>\n" +
-    "    <li><a><i class=\"fa fa-fw fa-trash-o\"></i> Delete...</a></li>\n" +
+    "    <li ng-click=\"reststoreService.saveView(view)\"><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +
+    "    <li ng-click=\"reststoreService.shareView(view, ! view.shared)\"><a><i class=\"fa fa-fw fa-share\"></i> {{ view.shared ? \"Unshare\" : \"Share\" }}</a></li>\n" +
+    "    <li ng-click=\"reststoreService.deleteView(view)\"><a><i class=\"fa fa-fw fa-trash-o\"></i> Delete...</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +
     "    <li ng-click=\"viewsService.studioViewsService.studioScope.showSerializeView(view)\"><a><i class=\"fa fa-fw fa-code\"></i> Serialize...</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +

@@ -107,5 +107,4 @@
 
     * Cleaning nvtooltips seems is causing problems: tooltips not shown for previously drawn figures: clean only own figures.
     * Analytics plugin, and fix it to ignore first N seconds of events as for bounce rate calculation.
-    * Server side.
 
