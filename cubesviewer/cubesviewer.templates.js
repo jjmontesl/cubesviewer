@@ -57,7 +57,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "<div class=\"cv-bootstrap cv-gui-viewcontainer\" ng-controller=\"CubesViewerStudioViewController\">\n" +
     "\n" +
     "    <div class=\"panel panel-primary\">\n" +
-    "        <div ng-if=\"! cvOptions.studioHideControls\" class=\"panel-heading\">\n" +
+    "        <div ng-if=\"! cvOptions.hideControls\" class=\"panel-heading\">\n" +
     "\n" +
     "            <button type=\"button\" ng-click=\"studioViewsService.closeView(view)\" class=\"btn btn-danger btn-xs pull-right hidden-print\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "            <button type=\"button\" ng-click=\"studioViewsService.toggleCollapseView(view)\" class=\"btn btn-primary btn-xs pull-right hidden-print\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw\" ng-class=\"{'fa-caret-up': !view.collapsed, 'fa-caret-down': view.collapsed }\"></i></button>\n" +
@@ -243,7 +243,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                    <span class=\"label label-default pull-right\" ng-class=\"{ 'label-success': cvOptions.studioTwoColumn }\">{{ cvOptions.studioTwoColumn ? \"ON\" : \"OFF\" }}</span></a>\n" +
     "                </li>\n" +
     "                <li ng-click=\"toggleHideControls()\" ng-class=\"{ 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-arrows-alt\"></i> Hide controls\n" +
-    "                    <span class=\"label label-default pull-right\" ng-class=\"{ 'label-success': cvOptions.studioHideControls }\">{{ cvOptions.studioHideControls ? \"ON\" : \"OFF\" }}</span></a>\n" +
+    "                    <span class=\"label label-default pull-right\" ng-class=\"{ 'label-success': cvOptions.hideControls }\">{{ cvOptions.hideControls ? \"ON\" : \"OFF\" }}</span></a>\n" +
     "                </li>\n" +
     "\n" +
     "                <div class=\"divider\"></div>\n" +
@@ -266,7 +266,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                <button class=\"btn\" type=\"button\" title=\"2 column\" ng-disabled=\"studioViewsService.views.length == 0\" ng-class=\"cvOptions.studioTwoColumn ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleTwoColumn()\"><i class=\"fa fa-fw fa-columns\"></i></button>\n" +
     "             </div>\n" +
     "             <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0px;\">\n" +
-    "                <button class=\"btn\" type=\"button\" title=\"Hide controls\" ng-disabled=\"studioViewsService.views.length == 0\" ng-class=\"cvOptions.studioHideControls ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleHideControls()\"><i class=\"fa fa-fw fa-arrows-alt\"></i></button>\n" +
+    "                <button class=\"btn\" type=\"button\" title=\"Hide controls\" ng-disabled=\"studioViewsService.views.length == 0\" ng-class=\"cvOptions.hideControls ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleHideControls()\"><i class=\"fa fa-fw fa-arrows-alt\"></i></button>\n" +
     "             </div>\n" +
     "\n" +
     "        </div>\n" +
@@ -770,7 +770,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "                <div ng-include=\"'views/cube/cube-menu-view.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
     "\n" +
-    "                <div ng-include=\"'views/cube/cube-menu-panel.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
+    "                <div ng-if=\"cvOptions.container\" ng-include=\"'views/cube/cube-menu-panel.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
     "\n" +
     "            </div>\n" +
     "\n" +

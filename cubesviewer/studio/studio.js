@@ -228,7 +228,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 	 * Toggles two column mode.
 	 */
 	$scope.toggleHideControls = function() {
-		cvOptions.studioHideControls = ! cvOptions.studioHideControls;
+		cvOptions.hideControls = ! cvOptions.hideControls;
 	};
 
 }]);
@@ -284,7 +284,7 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
         container: null,
         user: null,
         studioTwoColumn: false,
-        studioHideControls: false,
+        hideControls: false,
 
         backendUrl: null
     };
@@ -292,7 +292,7 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
 	$.extend(cvOptions, defaultOptions);;
 
     // Get main template from template cache and compile it
-	$http.get( "studio/studio.html", { cache: $templateCache } ).then(function(response) {
+	$http.get("studio/studio.html", { cache: $templateCache } ).then(function(response) {
 
 		var scope = angular.element(cvOptions.container).scope();
 

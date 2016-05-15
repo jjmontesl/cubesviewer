@@ -30,7 +30,7 @@ angular.module('cv', ['ui.bootstrap', 'bootstrapSubmenu',
                       'ui.grid', 'ui.grid.resizeColumns', 'ui.grid.selection', 'ui.grid.autoResize',
                       'ui.grid.pagination', 'ui.grid.pinning', /*'ui.grid.exporter',*/
                       'ngCookies',
-                      'cv.cubes', 'cv.views']);
+                      'cv.cubes', 'cv.views', 'cv.studio']);
 
 // Configure moment.js
 /*
@@ -63,6 +63,8 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheS
 
             undoEnabled: true,
             undoSize: 32,
+
+            hideControls: false,
 
             gaTrackEvents: false
     };

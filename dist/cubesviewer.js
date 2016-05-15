@@ -1442,7 +1442,7 @@ angular.module('cv', ['ui.bootstrap', 'bootstrapSubmenu',
                       'ui.grid', 'ui.grid.resizeColumns', 'ui.grid.selection', 'ui.grid.autoResize',
                       'ui.grid.pagination', 'ui.grid.pinning', /*'ui.grid.exporter',*/
                       'ngCookies',
-                      'cv.cubes', 'cv.views']);
+                      'cv.cubes', 'cv.views', 'cv.studio']);
 
 // Configure moment.js
 /*
@@ -1475,6 +1475,8 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheS
 
             undoEnabled: true,
             undoSize: 32,
+
+            hideControls: false,
 
             gaTrackEvents: false
     };
@@ -1652,7 +1654,7 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 	        "shared": false,
 
 			controlsHidden: function() {
-				return !!this.params.controlsHidden || !!cvOptions.studioHideControls;
+				return !!this.params.controlsHidden || !!cvOptions.hideControls;
 			},
 
 			setControlsHidden: function(controlsHidden) {
@@ -1874,7 +1876,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		});
 		jqxhr.fail(function() {
 			$scope.view.state = cubesviewer.VIEW_STATE_ERROR;
-			console.debug(cubesviewer.VIEW_STATE_ERROR);
 			$rootScope.$apply();
 		});
 	};
@@ -5282,7 +5283,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 	 * Toggles two column mode.
 	 */
 	$scope.toggleHideControls = function() {
-		cvOptions.studioHideControls = ! cvOptions.studioHideControls;
+		cvOptions.hideControls = ! cvOptions.hideControls;
 	};
 
 }]);
@@ -5338,7 +5339,7 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
         container: null,
         user: null,
         studioTwoColumn: false,
-        studioHideControls: false,
+        hideControls: false,
 
         backendUrl: null
     };
@@ -5346,7 +5347,7 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
 	$.extend(cvOptions, defaultOptions);;
 
     // Get main template from template cache and compile it
-	$http.get( "studio/studio.html", { cache: $templateCache } ).then(function(response) {
+	$http.get("studio/studio.html", { cache: $templateCache } ).then(function(response) {
 
 		var scope = angular.element(cvOptions.container).scope();
 
@@ -5843,7 +5844,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "<div class=\"cv-bootstrap cv-gui-viewcontainer\" ng-controller=\"CubesViewerStudioViewController\">\n" +
     "\n" +
     "    <div class=\"panel panel-primary\">\n" +
-    "        <div ng-if=\"! cvOptions.studioHideControls\" class=\"panel-heading\">\n" +
+    "        <div ng-if=\"! cvOptions.hideControls\" class=\"panel-heading\">\n" +
     "\n" +
     "            <button type=\"button\" ng-click=\"studioViewsService.closeView(view)\" class=\"btn btn-danger btn-xs pull-right hidden-print\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "            <button type=\"button\" ng-click=\"studioViewsService.toggleCollapseView(view)\" class=\"btn btn-primary btn-xs pull-right hidden-print\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw\" ng-class=\"{'fa-caret-up': !view.collapsed, 'fa-caret-down': view.collapsed }\"></i></button>\n" +
@@ -6029,7 +6030,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "                    <span class=\"label label-default pull-right\" ng-class=\"{ 'label-success': cvOptions.studioTwoColumn }\">{{ cvOptions.studioTwoColumn ? \"ON\" : \"OFF\" }}</span></a>\n" +
     "                </li>\n" +
     "                <li ng-click=\"toggleHideControls()\" ng-class=\"{ 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-arrows-alt\"></i> Hide controls\n" +
-    "                    <span class=\"label label-default pull-right\" ng-class=\"{ 'label-success': cvOptions.studioHideControls }\">{{ cvOptions.studioHideControls ? \"ON\" : \"OFF\" }}</span></a>\n" +
+    "                    <span class=\"label label-default pull-right\" ng-class=\"{ 'label-success': cvOptions.hideControls }\">{{ cvOptions.hideControls ? \"ON\" : \"OFF\" }}</span></a>\n" +
     "                </li>\n" +
     "\n" +
     "                <div class=\"divider\"></div>\n" +
@@ -6052,7 +6053,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "                <button class=\"btn\" type=\"button\" title=\"2 column\" ng-disabled=\"studioViewsService.views.length == 0\" ng-class=\"cvOptions.studioTwoColumn ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleTwoColumn()\"><i class=\"fa fa-fw fa-columns\"></i></button>\n" +
     "             </div>\n" +
     "             <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0px;\">\n" +
-    "                <button class=\"btn\" type=\"button\" title=\"Hide controls\" ng-disabled=\"studioViewsService.views.length == 0\" ng-class=\"cvOptions.studioHideControls ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleHideControls()\"><i class=\"fa fa-fw fa-arrows-alt\"></i></button>\n" +
+    "                <button class=\"btn\" type=\"button\" title=\"Hide controls\" ng-disabled=\"studioViewsService.views.length == 0\" ng-class=\"cvOptions.hideControls ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleHideControls()\"><i class=\"fa fa-fw fa-arrows-alt\"></i></button>\n" +
     "             </div>\n" +
     "\n" +
     "        </div>\n" +
@@ -6556,7 +6557,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "                <div ng-include=\"'views/cube/cube-menu-view.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
     "\n" +
-    "                <div ng-include=\"'views/cube/cube-menu-panel.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
+    "                <div ng-if=\"cvOptions.container\" ng-include=\"'views/cube/cube-menu-panel.html'\" class=\"dropdown m-b\" style=\"display: inline-block; margin-left: 5px;\"></div>\n" +
     "\n" +
     "            </div>\n" +
     "\n" +

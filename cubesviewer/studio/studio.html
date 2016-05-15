@@ -55,7 +55,7 @@
                     <span class="label label-default pull-right" ng-class="{ 'label-success': cvOptions.studioTwoColumn }">{{ cvOptions.studioTwoColumn ? "ON" : "OFF" }}</span></a>
                 </li>
                 <li ng-click="toggleHideControls()" ng-class="{ 'disabled': studioViewsService.views.length == 0 }"><a tabindex="0"><i class="fa fa-fw fa-arrows-alt"></i> Hide controls
-                    <span class="label label-default pull-right" ng-class="{ 'label-success': cvOptions.studioHideControls }">{{ cvOptions.studioHideControls ? "ON" : "OFF" }}</span></a>
+                    <span class="label label-default pull-right" ng-class="{ 'label-success': cvOptions.hideControls }">{{ cvOptions.hideControls ? "ON" : "OFF" }}</span></a>
                 </li>
 
                 <div class="divider"></div>
@@ -78,7 +78,7 @@
                 <button class="btn" type="button" title="2 column" ng-disabled="studioViewsService.views.length == 0" ng-class="cvOptions.studioTwoColumn ? 'btn-active btn-success' : 'btn-primary'" ng-click="toggleTwoColumn()"><i class="fa fa-fw fa-columns"></i></button>
              </div>
              <div class="form-group" style="display: inline-block; margin-bottom: 0px;">
-                <button class="btn" type="button" title="Hide controls" ng-disabled="studioViewsService.views.length == 0" ng-class="cvOptions.studioHideControls ? 'btn-active btn-success' : 'btn-primary'" ng-click="toggleHideControls()"><i class="fa fa-fw fa-arrows-alt"></i></button>
+                <button class="btn" type="button" title="Hide controls" ng-disabled="studioViewsService.views.length == 0" ng-class="cvOptions.hideControls ? 'btn-active btn-success' : 'btn-primary'" ng-click="toggleHideControls()"><i class="fa fa-fw fa-arrows-alt"></i></button>
              </div>
 
         </div>

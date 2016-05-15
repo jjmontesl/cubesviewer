@@ -71,13 +71,14 @@
 
 [2.1]
 
+    * Restore cached content notice (is missing, commented out).
     * Map charts.
     * Issue #55 (chart shows measure name, not measure label).
     * Fix submenu timer hack: is causing issues already. Watch contents and perhaps debounce menu activation?
     * Add "accumulated", "difference" and other calculations to series and charts.
-    * Issue #39, "strings with hyphen cause dimension filter to work inexpectedly".
+    * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative), move "invert 2nd serie" as a calculation?
     * Range filter.
-    * Restore cached content notice (is missing, commented out).
+    * Close issue #39, "strings with hyphen cause dimension filter to work inexpectedly" as shall be fixed.
 
 [2.0]
 
@@ -90,7 +91,6 @@
     * Reviewed and improved doc
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
 
-
     * Cleanup code.
     * Site without styling, copy from Studio/GUI, use current background but make it fluid (sample views
       extending outside centered content). Show a couple of charts view, a table, and a enabled-controls view.
@@ -99,10 +99,9 @@
 
     * Only draw results for the requested view, otherwise discard result (is causing issues and confusion).
     * Default cube settings is incorrect: it should only be applied if the view is not otherwise configured (ie loaded or json)
-    * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative), move "invert 2nd serie" as a calculation?
 
     ! Review flow/events: if cube or menu loading is happening before initialization if views are created eagerly (views.html), etc.
+    * Simple views are bootstraping CV studio :(
 
     * Cleaning nvtooltips seems is causing problems: tooltips not shown for previously drawn figures: clean only own figures.
-    * Analytics plugin, and fix it to ignore first N seconds of events as for bounce rate calculation.
 

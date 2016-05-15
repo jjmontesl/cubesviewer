@@ -109,7 +109,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		});
 		jqxhr.fail(function() {
 			$scope.view.state = cubesviewer.VIEW_STATE_ERROR;
-			console.debug(cubesviewer.VIEW_STATE_ERROR);
 			$rootScope.$apply();
 		});
 	};

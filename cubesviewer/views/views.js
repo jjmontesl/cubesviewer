@@ -77,7 +77,7 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 	        "shared": false,
 
 			controlsHidden: function() {
-				return !!this.params.controlsHidden || !!cvOptions.studioHideControls;
+				return !!this.params.controlsHidden || !!cvOptions.hideControls;
 			},
 
 			setControlsHidden: function(controlsHidden) {
