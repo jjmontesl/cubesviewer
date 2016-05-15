@@ -49,6 +49,9 @@
     "font-awesome": {
       "css": "css/*.*",
       "fonts": "fonts/*.*"
+    },
+    "flotr2": {
+        "/": "*.*"
     }
   }
 }
