@@ -440,6 +440,18 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
+    "    <div ng-if=\"view.params.charttype == 'sunburst'\">\n" +
+    "        <h3><i class=\"fa fa-fw fa-sun-o\"></i> Chart\n" +
+    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        </h3>\n" +
+    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "            <span class=\"loadingbar-expand\"></span>\n" +
+    "        </div>\n" +
+    "        <div ng-controller=\"CubesViewerViewsCubeChartSunburstController\">\n" +
+    "            <div ng-include=\"'views/cube/chart/chart-common.html'\"></div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "\n" +
     "</div>\n"
   );
 
@@ -624,13 +636,16 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "          <div class=\"divider\"></div>\n" +
     "\n" +
-    "          <li><a href=\"\"><i class=\"fa fa-fw fa-dot-circle-o\"></i> Bubbles</a></li>\n" +
+    "          <!-- <li><a href=\"\"><i class=\"fa fa-fw fa-dot-circle-o\"></i> Bubbles</a></li>  -->\n" +
     "          <li><a href=\"\"><i class=\"fa fa-fw fa-square\"></i> Treemap</a></li>\n" +
-    "          <li><a href=\"\"><i class=\"fa fa-fw fa-sun-o\"></i> Sunburst</a></li>\n" +
+    "          <li ng-click=\"selectChartType('sunburst')\"><a href=\"\"><i class=\"fa fa-fw fa-sun-o\"></i> Sunburst</a></li>\n" +
     "\n" +
+    "          <!--\n" +
     "          <div class=\"divider\"></div>\n" +
     "\n" +
     "          <li><a href=\"\"><i class=\"fa fa-fw fa-globe\"></i> Map</a></li>\n" +
+    "           -->\n" +
+    "\n" +
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +

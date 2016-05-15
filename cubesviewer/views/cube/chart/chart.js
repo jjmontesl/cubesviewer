@@ -81,6 +81,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 	$scope.processData = function(data) {
 
+		$scope.rawData = data;
+
 		$scope.gridData = [];
 		$scope.gridOptions.data = $scope.gridData;
 		$scope.gridOptions.columnDefs = [];

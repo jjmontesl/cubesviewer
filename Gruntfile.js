@@ -29,6 +29,7 @@ module.exports = function(grunt) {
               'cubesviewer/views/cube/chart/chart-lines.js',
               'cubesviewer/views/cube/chart/chart-pie.js',
               'cubesviewer/views/cube/chart/chart-radar.js',
+              'cubesviewer/views/cube/chart/chart-sunburst.js',
               //'cubesviewer/cubesviewer.views.cube.rangefilter.js',
               'cubesviewer/views/cube/export.js',
               'cubesviewer/views/undo.js',

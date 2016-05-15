@@ -60,7 +60,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
 		var modelPos = pathParts.indexOf("cube");
 
 		if (modelPos >= 0) {
-			pathParts = pathParts.splice(modelPos + 1);
+			pathParts = pathParts.slice(modelPos + 1);
 
 			if (pathParts[1] == "model") {
 				event = ['_trackEvent', 'CubesViewer', 'Model', pathParts[0], , true];
@@ -73,6 +73,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
 			}
 		}
 
+		console.debug(event);
 		if (event) {
 			if (typeof _gaq !== 'undefined') {
 				_gaq.push(event);

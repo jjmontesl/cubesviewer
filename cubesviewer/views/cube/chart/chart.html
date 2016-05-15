@@ -72,4 +72,16 @@
         </div>
     </div>
 
+    <div ng-if="view.params.charttype == 'sunburst'">
+        <h3><i class="fa fa-fw fa-sun-o"></i> Chart
+            <i ng-show="pendingRequests > 0" class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right"></i>
+        </h3>
+        <div ng-if="pendingRequests > 0" class="loadingbar-content">
+            <span class="loadingbar-expand"></span>
+        </div>
+        <div ng-controller="CubesViewerViewsCubeChartSunburstController">
+            <div ng-include="'views/cube/chart/chart-common.html'"></div>
+        </div>
+    </div>
+
 </div>

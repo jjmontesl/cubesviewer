@@ -39,11 +39,7 @@
     * Make charts more interactive (allow cut from chart, etc).
 
     * Series annotation system: markers for annotations in time or other dimension.
-
-    * Restore pluggability, publish API for views and GUI. Needed before adding stuff that
-      needs to be optional in viewer, like loading bars to Studio, and to restore optional
-      components (server-side stuff, etc). Provide good API. Use object for views,
-      dimension, drilldown, etc...
+    * Abstract backend. Create CV objects for dimensions, levels, etc... Plug cubes as adaptor.
 
 [2.4]
 
@@ -68,6 +64,13 @@
     * Datepicker to show only to correct level (year, month, day)
     * Try reoder columns + pin columns again
     * Add fullscreen mode for a view (in this case, stretch grid and chart as appropriate?)
+
+    * Restore pluggability, publish API for views and GUI. Needed before adding stuff that
+      needs to be optional in viewer, like loading bars to Studio, and to restore optional
+      components (server-side stuff, etc). Provide good API. Use object for views,
+      dimension, drilldown, etc...
+    * Divide in reusable angular directives (ie. start with fact viewer). JS doc. Make views
+      proper objects.
 
 [2.1]
 
