@@ -63,6 +63,8 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheS
 
             undoEnabled: true,
             undoSize: 32,
+
+            gaTrackEvents: false
     };
 
 	$.extend(defaultOptions, cvOptions);

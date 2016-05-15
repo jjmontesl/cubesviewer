@@ -23,8 +23,8 @@
 
 "use strict";
 
-angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOptions', 'cubesService',
-                                                         function ($rootScope, cvOptions, cubesService) {
+angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOptions', 'cubesService', 'gaService',
+                                                         function ($rootScope, cvOptions, cubesService, gaService) {
 
 	var cubesCacheService = this;
 
@@ -68,6 +68,8 @@ angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOption
 				successCallback(cubesCacheService.cache[requestHash].data);
 				jqxhr.resolve(); //.promise();
 			}, 0);
+
+			gaService.trackRequest(path);
 
 		} else {
 			// Do request

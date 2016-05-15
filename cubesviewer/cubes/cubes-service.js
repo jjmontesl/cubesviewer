@@ -25,8 +25,8 @@
 
 angular.module('cv.cubes', []);
 
-angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
-                                                    function ($rootScope, cvOptions) {
+angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions', 'gaService',
+                                                    function ($rootScope, cvOptions, gaService) {
 
 	var cubesService = this;
 
@@ -91,6 +91,8 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 		var jqxhr = $.get(path, params, cubesService._cubesRequestCallback(successCallback), cvOptions.jsonRequestType);
 
 		jqxhr.fail(errCallback || cubesService.defaultRequestErrorHandler);
+
+		gaService.trackRequest(path);
 
 		return jqxhr;
 

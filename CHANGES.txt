@@ -1,5 +1,7 @@
 [2.0.1]
 
+    * Scroll to created views.
+    * Google Analytics events tracking restored.
     * Added warning if server result limit has been hit.
     * Added "server info" dialog.
     * Added horizontal columns chart.

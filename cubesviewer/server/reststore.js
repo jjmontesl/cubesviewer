@@ -31,6 +31,7 @@ angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', 
 	reststoreService.savedViews = [];
 
 	reststoreService.initialize = function() {
+		if (! cvOptions.backendUrl) return;
 		reststoreService.viewList();
 	};
 

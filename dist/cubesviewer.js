@@ -1027,8 +1027,8 @@ cubes.Hierarchy.prototype.readCell = function(cell, level_limit) {
 
 angular.module('cv.cubes', []);
 
-angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
-                                                    function ($rootScope, cvOptions) {
+angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions', 'gaService',
+                                                    function ($rootScope, cvOptions, gaService) {
 
 	var cubesService = this;
 
@@ -1093,6 +1093,8 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 		var jqxhr = $.get(path, params, cubesService._cubesRequestCallback(successCallback), cvOptions.jsonRequestType);
 
 		jqxhr.fail(errCallback || cubesService.defaultRequestErrorHandler);
+
+		gaService.trackRequest(path);
 
 		return jqxhr;
 
@@ -1307,8 +1309,8 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions',
 
 "use strict";
 
-angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOptions', 'cubesService',
-                                                         function ($rootScope, cvOptions, cubesService) {
+angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOptions', 'cubesService', 'gaService',
+                                                         function ($rootScope, cvOptions, cubesService, gaService) {
 
 	var cubesCacheService = this;
 
@@ -1352,6 +1354,8 @@ angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOption
 				successCallback(cubesCacheService.cache[requestHash].data);
 				jqxhr.resolve(); //.promise();
 			}, 0);
+
+			gaService.trackRequest(path);
 
 		} else {
 			// Do request
@@ -1471,6 +1475,8 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheS
 
             undoEnabled: true,
             undoSize: 32,
+
+            gaTrackEvents: false
     };
 
 	$.extend(defaultOptions, cvOptions);
@@ -5075,8 +5081,8 @@ angular.module('cv.studio', ['cv' /*'ui.bootstrap-slider', 'ui.validate', 'ngAni
                              /*'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',
                              'nvd3' */ ]);
 
-angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
-                                                            function ($rootScope, cvOptions, cubesService, viewsService, dialogService) {
+angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$anchorScroll', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
+                                                            function ($rootScope, $anchorScroll, $timeout, cvOptions, cubesService, viewsService, dialogService) {
 
 	this.views = [];
 
@@ -5099,6 +5105,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 		var view = viewsService.createView("cube", { "cubename": cubename, "name": name });
 		this.views.push(view);
 
+		$timeout(function() { $anchorScroll('cvView' + view.id); }, 100);
 		return view;
 	};
 
@@ -5119,6 +5126,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 
 		var view = viewsService.createView("cube", data);
 		this.views.push(view);
+		$timeout(function() { $anchorScroll('cvView' + view.id); }, 250);
 
 		return view;
 	};
@@ -5330,7 +5338,9 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
         container: null,
         user: null,
         studioTwoColumn: false,
-        studioHideControls: false
+        studioHideControls: false,
+
+        backendUrl: null
     };
 	$.extend(defaultOptions, cvOptions);
 	$.extend(cvOptions, defaultOptions);;
@@ -5497,6 +5507,7 @@ angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', 
 	reststoreService.savedViews = [];
 
 	reststoreService.initialize = function() {
+		if (! cvOptions.backendUrl) return;
 		reststoreService.viewList();
 	};
 
@@ -5681,6 +5692,98 @@ angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', 
 
 }]);
 
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+
+/*
+ * Google Analytics events tracking service.
+ *
+ * When enabled, it uses Google Analytics event system to
+ * log CubesViewer operations. Model loading, Aggregations, Facts and Dimension queries
+ * are registered as non-interactive events (and don't affect bounce rate). Each
+ * view refresh is registered as an interactive event.
+ *
+ */
+
+
+"use strict";
+
+angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookies', 'cvOptions',
+                                                  function ($rootScope, $http, $cookies, cvOptions) {
+
+	var gaService = this;
+
+	this.ignorePeriod = 5; // 35
+
+	this.initTime = new Date();
+
+	this.initialize = function() {};
+
+	this.enabled = cvOptions.gaTrackEvents;
+
+	this.trackRequest = function(path) {
+
+		if (! gaService.enabled) return;
+		if ((((new Date()) - this.initTime) / 1000) < this.ignorePeriod) return;
+
+		// Track request, through Google Analytics events API
+		var event = null;
+		var pathParts = path.split("/");
+		var modelPos = pathParts.indexOf("cube");
+
+		if (modelPos >= 0) {
+			pathParts = pathParts.splice(modelPos + 1);
+
+			if (pathParts[1] == "model") {
+				event = ['_trackEvent', 'CubesViewer', 'Model', pathParts[0], , true];
+			} else if (pathParts[1] == "aggregate") {
+				event = ['_trackEvent', 'CubesViewer', 'Aggregate', pathParts[0], , true];
+			} else if (pathParts[1] == "facts") {
+				event = ['_trackEvent', 'CubesViewer', 'Facts', cubeOperation[0], , true];
+			} else if (pathParts[1] == "members") {
+				event = ['_trackEvent', 'CubesViewer', 'Dimension', cubeOperation[2], , true];
+			}
+		}
+
+		if (event) {
+			if (typeof _gaq !== 'undefined') {
+				_gaq.push(event);
+			} else {
+				console.debug("Cannot track CubesViewer events: GA object '_gaq' not available.")
+			}
+		} else {
+			console.debug("Unknown cubes operation, cannot be tracked by GA service: " + path)
+		}
+
+	};
+
+	this.initialize();
+
+}]);
+
+
 ;angular.module('cv').run(['$templateCache', function($templateCache) {
   'use strict';
 
@@ -5745,7 +5848,7 @@ angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', 
     "            <button type=\"button\" ng-click=\"studioViewsService.closeView(view)\" class=\"btn btn-danger btn-xs pull-right hidden-print\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "            <button type=\"button\" ng-click=\"studioViewsService.toggleCollapseView(view)\" class=\"btn btn-primary btn-xs pull-right hidden-print\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw\" ng-class=\"{'fa-caret-up': !view.collapsed, 'fa-caret-down': view.collapsed }\"></i></button>\n" +
     "\n" +
-    "            <i class=\"fa fa-fw fa-file\"></i> <span class=\"cv-gui-title\" style=\"cursor: pointer;\" ng-dblclick=\"studioViewsService.studioScope.showRenameView(view)\">{{ view.params.name }}</span>\n" +
+    "            <i class=\"fa fa-fw fa-file\"></i> <span class=\"cv-gui-title\" style=\"cursor: pointer;\" ng-dblclick=\"studioViewsService.studioScope.showRenameView(view)\"><a name=\"cvView{{ view.id }}\"></a>{{ view.params.name }}</span>\n" +
     "\n" +
     "            <span ng-if=\"view.savedId > 0 && reststoreService.isViewChanged(view)\" class=\"badge cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Modified</span>\n" +
     "            <span ng-if=\"view.savedId > 0 && !reststoreService.isViewChanged(view)\" class=\"badge cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Saved</span>\n" +
@@ -5797,7 +5900,7 @@ angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', 
     "  </div>\n" +
     "  <div class=\"modal-body\">\n" +
     "\n" +
-    "        <div class=\"form-inline\">\n" +
+    "        <div class=\"form\">\n" +
     "            <label for=\"serializedView\">Code:</label>\n" +
     "            <textarea class=\"form-control\" ng-model=\"serializedView\" style=\"width: 100%; height: 12em;\" />\n" +
     "        </div>\n" +
@@ -5818,7 +5921,7 @@ angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', 
     "  </div>\n" +
     "  <div class=\"modal-body\">\n" +
     "\n" +
-    "        <div class=\"form-inline\">\n" +
+    "        <div class=\"form\">\n" +
     "            <label for=\"serializedView\">View definition JSON:</label>\n" +
     "            <textarea class=\"form-control cv-serialized-view\" ng-bind=\"serializedView\" style=\"width: 100%; height: 12em;\" readonly></textarea>\n" +
     "        </div>\n" +
@@ -5853,7 +5956,7 @@ angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', 
     "                <b>Week start:</b> {{ cubesService.cubesserver.info.first_weekday }} <br />\n" +
     "            </p>\n" +
     "            <p>\n" +
-    "                <b>Result limit:</b> {{ cubesService.cubesserver.info.json_record_limit }} items<br />\n" +
+    "                <b>Result limit:</b> <strong class=\"text-warning\">{{ cubesService.cubesserver.info.json_record_limit }}</strong> items<br />\n" +
     "            </p>\n" +
     "\n" +
     "      </div>\n" +
@@ -5890,7 +5993,7 @@ angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', 
     "        </div>\n" +
     "\n" +
     "\n" +
-    "        <div class=\"dropdown m-b\" style=\"display: inline-block; \">\n" +
+    "        <div ng-if=\"cvOptions.backendUrl\" class=\"dropdown m-b\" style=\"display: inline-block; \">\n" +
     "          <button class=\"btn btn-primary dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
     "            <i class=\"fa fa-fw fa-file\"></i> Saved views <span class=\"caret\"></span>\n" +
     "          </button>\n" +
@@ -5945,11 +6048,11 @@ angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', 
     "\n" +
     "        <div style=\"display: inline-block; margin-left: 10px; margin-bottom: 0px;\">\n" +
     "\n" +
-    "             <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0px;\">\n" +
-    "                <button class=\"btn\" type=\"button\" title=\"2 column\" ng-class=\"cvOptions.studioTwoColumn ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleTwoColumn()\"><i class=\"fa fa-fw fa-columns\"></i></button>\n" +
+    "             <div class=\"form-group hidden-xs\" style=\"display: inline-block; margin-bottom: 0px;\">\n" +
+    "                <button class=\"btn\" type=\"button\" title=\"2 column\" ng-disabled=\"studioViewsService.views.length == 0\" ng-class=\"cvOptions.studioTwoColumn ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleTwoColumn()\"><i class=\"fa fa-fw fa-columns\"></i></button>\n" +
     "             </div>\n" +
     "             <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0px;\">\n" +
-    "                <button class=\"btn\" type=\"button\" title=\"Hide controls\" ng-class=\"cvOptions.studioHideControls ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleHideControls()\"><i class=\"fa fa-fw fa-arrows-alt\"></i></button>\n" +
+    "                <button class=\"btn\" type=\"button\" title=\"Hide controls\" ng-disabled=\"studioViewsService.views.length == 0\" ng-class=\"cvOptions.studioHideControls ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleHideControls()\"><i class=\"fa fa-fw fa-arrows-alt\"></i></button>\n" +
     "             </div>\n" +
     "\n" +
     "        </div>\n" +
@@ -6274,10 +6377,12 @@ angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', 
     "\n" +
     "    <li ng-click=\"viewsService.studioViewsService.studioScope.showRenameView(view)\"><a><i class=\"fa fa-fw fa-pencil\"></i> Rename...</a></li>\n" +
     "    <li ng-click=\"viewsService.studioViewsService.studioScope.cloneView(view)\"><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
-    "    <div class=\"divider\"></div>\n" +
-    "    <li ng-click=\"reststoreService.saveView(view)\"><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +
-    "    <li ng-click=\"reststoreService.shareView(view, ! view.shared)\"><a><i class=\"fa fa-fw fa-share\"></i> {{ view.shared ? \"Unshare\" : \"Share\" }}</a></li>\n" +
-    "    <li ng-click=\"reststoreService.deleteView(view)\"><a><i class=\"fa fa-fw fa-trash-o\"></i> Delete...</a></li>\n" +
+    "\n" +
+    "    <div ng-if=\"cvOptions.backendUrl\" class=\"divider\"></div>\n" +
+    "    <li ng-if=\"cvOptions.backendUrl\" ng-click=\"reststoreService.saveView(view)\"><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +
+    "    <li ng-if=\"cvOptions.backendUrl\" ng-click=\"reststoreService.shareView(view, ! view.shared)\"><a><i class=\"fa fa-fw fa-share\"></i> {{ view.shared ? \"Unshare\" : \"Share\" }}</a></li>\n" +
+    "    <li ng-if=\"cvOptions.backendUrl\" ng-click=\"reststoreService.deleteView(view)\"><a><i class=\"fa fa-fw fa-trash-o\"></i> Delete...</a></li>\n" +
+    "\n" +
     "    <div class=\"divider\"></div>\n" +
     "    <li ng-click=\"viewsService.studioViewsService.studioScope.showSerializeView(view)\"><a><i class=\"fa fa-fw fa-code\"></i> Serialize...</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +

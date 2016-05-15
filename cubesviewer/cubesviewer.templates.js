@@ -62,7 +62,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "            <button type=\"button\" ng-click=\"studioViewsService.closeView(view)\" class=\"btn btn-danger btn-xs pull-right hidden-print\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "            <button type=\"button\" ng-click=\"studioViewsService.toggleCollapseView(view)\" class=\"btn btn-primary btn-xs pull-right hidden-print\" style=\"margin-left: 5px;\"><i class=\"fa fa-fw\" ng-class=\"{'fa-caret-up': !view.collapsed, 'fa-caret-down': view.collapsed }\"></i></button>\n" +
     "\n" +
-    "            <i class=\"fa fa-fw fa-file\"></i> <span class=\"cv-gui-title\" style=\"cursor: pointer;\" ng-dblclick=\"studioViewsService.studioScope.showRenameView(view)\">{{ view.params.name }}</span>\n" +
+    "            <i class=\"fa fa-fw fa-file\"></i> <span class=\"cv-gui-title\" style=\"cursor: pointer;\" ng-dblclick=\"studioViewsService.studioScope.showRenameView(view)\"><a name=\"cvView{{ view.id }}\"></a>{{ view.params.name }}</span>\n" +
     "\n" +
     "            <span ng-if=\"view.savedId > 0 && reststoreService.isViewChanged(view)\" class=\"badge cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Modified</span>\n" +
     "            <span ng-if=\"view.savedId > 0 && !reststoreService.isViewChanged(view)\" class=\"badge cv-gui-container-state\" style=\"margin-left: 15px; font-size: 80%;\">Saved</span>\n" +
@@ -114,7 +114,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "  </div>\n" +
     "  <div class=\"modal-body\">\n" +
     "\n" +
-    "        <div class=\"form-inline\">\n" +
+    "        <div class=\"form\">\n" +
     "            <label for=\"serializedView\">Code:</label>\n" +
     "            <textarea class=\"form-control\" ng-model=\"serializedView\" style=\"width: 100%; height: 12em;\" />\n" +
     "        </div>\n" +
@@ -135,7 +135,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "  </div>\n" +
     "  <div class=\"modal-body\">\n" +
     "\n" +
-    "        <div class=\"form-inline\">\n" +
+    "        <div class=\"form\">\n" +
     "            <label for=\"serializedView\">View definition JSON:</label>\n" +
     "            <textarea class=\"form-control cv-serialized-view\" ng-bind=\"serializedView\" style=\"width: 100%; height: 12em;\" readonly></textarea>\n" +
     "        </div>\n" +
@@ -170,7 +170,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                <b>Week start:</b> {{ cubesService.cubesserver.info.first_weekday }} <br />\n" +
     "            </p>\n" +
     "            <p>\n" +
-    "                <b>Result limit:</b> {{ cubesService.cubesserver.info.json_record_limit }} items<br />\n" +
+    "                <b>Result limit:</b> <strong class=\"text-warning\">{{ cubesService.cubesserver.info.json_record_limit }}</strong> items<br />\n" +
     "            </p>\n" +
     "\n" +
     "      </div>\n" +
@@ -207,7 +207,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </div>\n" +
     "\n" +
     "\n" +
-    "        <div class=\"dropdown m-b\" style=\"display: inline-block; \">\n" +
+    "        <div ng-if=\"cvOptions.backendUrl\" class=\"dropdown m-b\" style=\"display: inline-block; \">\n" +
     "          <button class=\"btn btn-primary dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
     "            <i class=\"fa fa-fw fa-file\"></i> Saved views <span class=\"caret\"></span>\n" +
     "          </button>\n" +
@@ -262,11 +262,11 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "        <div style=\"display: inline-block; margin-left: 10px; margin-bottom: 0px;\">\n" +
     "\n" +
-    "             <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0px;\">\n" +
-    "                <button class=\"btn\" type=\"button\" title=\"2 column\" ng-class=\"cvOptions.studioTwoColumn ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleTwoColumn()\"><i class=\"fa fa-fw fa-columns\"></i></button>\n" +
+    "             <div class=\"form-group hidden-xs\" style=\"display: inline-block; margin-bottom: 0px;\">\n" +
+    "                <button class=\"btn\" type=\"button\" title=\"2 column\" ng-disabled=\"studioViewsService.views.length == 0\" ng-class=\"cvOptions.studioTwoColumn ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleTwoColumn()\"><i class=\"fa fa-fw fa-columns\"></i></button>\n" +
     "             </div>\n" +
     "             <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0px;\">\n" +
-    "                <button class=\"btn\" type=\"button\" title=\"Hide controls\" ng-class=\"cvOptions.studioHideControls ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleHideControls()\"><i class=\"fa fa-fw fa-arrows-alt\"></i></button>\n" +
+    "                <button class=\"btn\" type=\"button\" title=\"Hide controls\" ng-disabled=\"studioViewsService.views.length == 0\" ng-class=\"cvOptions.studioHideControls ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleHideControls()\"><i class=\"fa fa-fw fa-arrows-alt\"></i></button>\n" +
     "             </div>\n" +
     "\n" +
     "        </div>\n" +
@@ -591,10 +591,12 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <li ng-click=\"viewsService.studioViewsService.studioScope.showRenameView(view)\"><a><i class=\"fa fa-fw fa-pencil\"></i> Rename...</a></li>\n" +
     "    <li ng-click=\"viewsService.studioViewsService.studioScope.cloneView(view)\"><a><i class=\"fa fa-fw fa-clone\"></i> Clone</a></li>\n" +
-    "    <div class=\"divider\"></div>\n" +
-    "    <li ng-click=\"reststoreService.saveView(view)\"><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +
-    "    <li ng-click=\"reststoreService.shareView(view, ! view.shared)\"><a><i class=\"fa fa-fw fa-share\"></i> {{ view.shared ? \"Unshare\" : \"Share\" }}</a></li>\n" +
-    "    <li ng-click=\"reststoreService.deleteView(view)\"><a><i class=\"fa fa-fw fa-trash-o\"></i> Delete...</a></li>\n" +
+    "\n" +
+    "    <div ng-if=\"cvOptions.backendUrl\" class=\"divider\"></div>\n" +
+    "    <li ng-if=\"cvOptions.backendUrl\" ng-click=\"reststoreService.saveView(view)\"><a><i class=\"fa fa-fw fa-save\"></i> Save</a></li>\n" +
+    "    <li ng-if=\"cvOptions.backendUrl\" ng-click=\"reststoreService.shareView(view, ! view.shared)\"><a><i class=\"fa fa-fw fa-share\"></i> {{ view.shared ? \"Unshare\" : \"Share\" }}</a></li>\n" +
+    "    <li ng-if=\"cvOptions.backendUrl\" ng-click=\"reststoreService.deleteView(view)\"><a><i class=\"fa fa-fw fa-trash-o\"></i> Delete...</a></li>\n" +
+    "\n" +
     "    <div class=\"divider\"></div>\n" +
     "    <li ng-click=\"viewsService.studioViewsService.studioScope.showSerializeView(view)\"><a><i class=\"fa fa-fw fa-code\"></i> Serialize...</a></li>\n" +
     "    <div class=\"divider\"></div>\n" +

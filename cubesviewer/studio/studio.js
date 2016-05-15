@@ -27,8 +27,8 @@ angular.module('cv.studio', ['cv' /*'ui.bootstrap-slider', 'ui.validate', 'ngAni
                              /*'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',
                              'nvd3' */ ]);
 
-angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
-                                                            function ($rootScope, cvOptions, cubesService, viewsService, dialogService) {
+angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$anchorScroll', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
+                                                            function ($rootScope, $anchorScroll, $timeout, cvOptions, cubesService, viewsService, dialogService) {
 
 	this.views = [];
 
@@ -51,6 +51,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 		var view = viewsService.createView("cube", { "cubename": cubename, "name": name });
 		this.views.push(view);
 
+		$timeout(function() { $anchorScroll('cvView' + view.id); }, 100);
 		return view;
 	};
 
@@ -71,6 +72,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', 'cvOpti
 
 		var view = viewsService.createView("cube", data);
 		this.views.push(view);
+		$timeout(function() { $anchorScroll('cvView' + view.id); }, 250);
 
 		return view;
 	};
@@ -282,7 +284,9 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
         container: null,
         user: null,
         studioTwoColumn: false,
-        studioHideControls: false
+        studioHideControls: false,
+
+        backendUrl: null
     };
 	$.extend(defaultOptions, cvOptions);
 	$.extend(cvOptions, defaultOptions);;

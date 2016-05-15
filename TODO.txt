@@ -81,8 +81,7 @@
 
 [2.0]
 
-    * Commit refactor branch, fork repository, commit refactor branch to cubesviewer-js
-      and bring server changes to cubesviewer project. Rename repositories accordingly.
+    * Commit refactor branch, update repositories, remove -devel from version name.
     * Test / QA.
     * Uncomment studio.html code that asks for the server url to connect to.
     * Test CORS issue from server (localhost:8000 -> localhost:5000), test JSONP.
@@ -97,7 +96,6 @@
       extending outside centered content). Show a couple of charts view, a table, and a enabled-controls view.
       SAME views to be automatically opened in the explorer sample.
     * Hide all unavailable options and not implemented options.
-    * Radar chart doesn't resize
 
     * Only draw results for the requested view, otherwise discard result (is causing issues and confusion).
     * Default cube settings is incorrect: it should only be applied if the view is not otherwise configured (ie loaded or json)
