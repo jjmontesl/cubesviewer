@@ -107,8 +107,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			}, 0);
 
 		});
-		jqxhr.fail(function() {
+		jqxhr.fail(function(req) {
+			var data = req.responseJSON;
 			$scope.view.state = cubesviewer.VIEW_STATE_ERROR;
+			$scope.view.error = "Error loading model: " + data.message + " (" + data.error + ")";
+			console.debug(data);
 			$rootScope.$apply();
 		});
 	};

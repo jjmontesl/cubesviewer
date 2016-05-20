@@ -281,7 +281,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    <div class=\"cv-gui-workspace\">\n" +
     "\n" +
     "        <div class=\"row\">\n" +
-    "            <div ng-if=\"cubesService.state == 3\" class=\"col-xs-12\">\n" +
+    "            <div ng-if=\"cubesService.state == 3\" class=\"col-xs-12\" style=\"margin-bottom: 10px;\">\n" +
     "                <div class=\"alert alert-danger\" style=\"margin: 0px;\">\n" +
     "                    <p>Could not connect to server: {{ cubesService.stateText }}</p>\n" +
     "                    <p>Please try again and contact your administrator if the problem persists.</p>\n" +
@@ -747,7 +747,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div ng-if=\"view.state == 3\">\n" +
     "        <div class=\"alert alert-danger\" style=\"margin: 0px;\">\n" +
-    "            <p>An error has occurred. Cannot present view.</p>\n" +
+    "            <p>An error occurred. Cannot present view.</p>\n" +
+    "            <p ng-if=\"cubesService.state != 3\">{{ view.error }}</p>\n" +
+    "            <p ng-if=\"cubesService.state == 3\">Could not connect to data server: {{ cubesService.stateText }}</p>\n" +
     "            <p>Please try again and contact your administrator if the problem persists.</p>\n" +
     "            <p class=\"text-right\">\n" +
     "                <a class=\"alert-link\" href=\"http://jjmontesl.github.io/cubesviewer/\" target=\"_blank\">CubesViewer Data Visualizer</a>\n" +

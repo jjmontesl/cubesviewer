@@ -2,7 +2,9 @@
 
     <div ng-if="view.state == 3">
         <div class="alert alert-danger" style="margin: 0px;">
-            <p>An error has occurred. Cannot present view.</p>
+            <p>An error occurred. Cannot present view.</p>
+            <p ng-if="cubesService.state != 3">{{ view.error }}</p>
+            <p ng-if="cubesService.state == 3">Could not connect to data server: {{ cubesService.stateText }}</p>
             <p>Please try again and contact your administrator if the problem persists.</p>
             <p class="text-right">
                 <a class="alert-link" href="http://jjmontesl.github.io/cubesviewer/" target="_blank">CubesViewer Data Visualizer</a>

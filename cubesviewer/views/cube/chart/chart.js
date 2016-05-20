@@ -81,6 +81,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 	$scope.processData = function(data) {
 
+		if ($scope.pendingRequests == 0) {
+			$($element).find("svg").empty();
+			$($element).find("svg").parent().children().not("svg").remove();
+		}
+
 		$scope.rawData = data;
 
 		$scope.gridData = [];
@@ -251,11 +256,14 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 	$scope.cleanupNvd3 = function() {
 
-		$($element).find("svg").empty();
+		//$($element).find("svg").empty();
 		$($element).find("svg").parent().children().not("svg").remove();
-		$("div.nvtooltip").remove();
-		$scope.chart = null;
-		console.debug("FIXME: Cleanup function: destroy nvd3 events?");
+
+		if ($scope.chart) {
+			$("#" + $scope.chart.tooltip.id()).remove(); // div.nvtooltip
+		}
+
+		//$scope.chart = null;
 
 		/*
 		var len = nv.graphs.length;
@@ -272,7 +280,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 		if ($scope.chart) {
 			$timeout(function() {
 				$scope.chart.update();
-			}, 500);
+			}, 100);
 		}
 	});
 

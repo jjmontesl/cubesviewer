@@ -70,6 +70,7 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 			"id": "view-" + this.lastViewId,
 			"type": type,
 			"state": cubesviewer.STATE_INITIALIZING,
+			"error": "",
 			"params": {},
 
 	        "savedId": 0,

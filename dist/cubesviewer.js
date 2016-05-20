@@ -1647,6 +1647,7 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 			"id": "view-" + this.lastViewId,
 			"type": type,
 			"state": cubesviewer.STATE_INITIALIZING,
+			"error": "",
 			"params": {},
 
 	        "savedId": 0,
@@ -1874,8 +1875,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			}, 0);
 
 		});
-		jqxhr.fail(function() {
+		jqxhr.fail(function(req) {
+			var data = req.responseJSON;
 			$scope.view.state = cubesviewer.VIEW_STATE_ERROR;
+			$scope.view.error = "Error loading model: " + data.message + " (" + data.error + ")";
+			console.debug(data);
 			$rootScope.$apply();
 		});
 	};
@@ -3793,6 +3797,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 	$scope.processData = function(data) {
 
+		if ($scope.pendingRequests == 0) {
+			$($element).find("svg").empty();
+			$($element).find("svg").parent().children().not("svg").remove();
+		}
+
 		$scope.rawData = data;
 
 		$scope.gridData = [];
@@ -3963,11 +3972,14 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 	$scope.cleanupNvd3 = function() {
 
-		$($element).find("svg").empty();
+		//$($element).find("svg").empty();
 		$($element).find("svg").parent().children().not("svg").remove();
-		$("div.nvtooltip").remove();
-		$scope.chart = null;
-		console.debug("FIXME: Cleanup function: destroy nvd3 events?");
+
+		if ($scope.chart) {
+			$("#" + $scope.chart.tooltip.id()).remove(); // div.nvtooltip
+		}
+
+		//$scope.chart = null;
 
 		/*
 		var len = nv.graphs.length;
@@ -3984,7 +3996,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 		if ($scope.chart) {
 			$timeout(function() {
 				$scope.chart.update();
-			}, 500);
+			}, 100);
 		}
 	});
 
@@ -6536,7 +6548,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "    <div class=\"cv-gui-workspace\">\n" +
     "\n" +
     "        <div class=\"row\">\n" +
-    "            <div ng-if=\"cubesService.state == 3\" class=\"col-xs-12\">\n" +
+    "            <div ng-if=\"cubesService.state == 3\" class=\"col-xs-12\" style=\"margin-bottom: 10px;\">\n" +
     "                <div class=\"alert alert-danger\" style=\"margin: 0px;\">\n" +
     "                    <p>Could not connect to server: {{ cubesService.stateText }}</p>\n" +
     "                    <p>Please try again and contact your administrator if the problem persists.</p>\n" +
@@ -7002,7 +7014,9 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "    <div ng-if=\"view.state == 3\">\n" +
     "        <div class=\"alert alert-danger\" style=\"margin: 0px;\">\n" +
-    "            <p>An error has occurred. Cannot present view.</p>\n" +
+    "            <p>An error occurred. Cannot present view.</p>\n" +
+    "            <p ng-if=\"cubesService.state != 3\">{{ view.error }}</p>\n" +
+    "            <p ng-if=\"cubesService.state == 3\">Could not connect to data server: {{ cubesService.stateText }}</p>\n" +
     "            <p>Please try again and contact your administrator if the problem persists.</p>\n" +
     "            <p class=\"text-right\">\n" +
     "                <a class=\"alert-link\" href=\"http://jjmontesl.github.io/cubesviewer/\" target=\"_blank\">CubesViewer Data Visualizer</a>\n" +

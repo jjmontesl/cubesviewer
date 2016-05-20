@@ -23,10 +23,6 @@
     * Fix too many series in legend issue (limit? alternate legend?).
     * Avoid leaving the page inadvertedely (also make back/forward/url_links work?)
     * Jump to added view when creating a view (also make back/forward/url_links work?)
-    * Short list cubes.js status for the list (fixes I had to do, not easy to add caching or get jQuery promise,
-      not easy to get the path to be reused, missing facts I had to add, support for export/format,
-      support for several servers desirable, inconsistent use of Cell/Browser interface or missing
-      methods to transform drilldown_string<->drilldown object, same for cuts, documentation!!!!)
 
     * Separate in directives appropriately, restore "puggability", move cube "globals" to directive scopes.
 
@@ -39,7 +35,11 @@
     * Make charts more interactive (allow cut from chart, etc).
 
     * Series annotation system: markers for annotations in time or other dimension.
-    * Abstract backend. Create CV objects for dimensions, levels, etc... Plug cubes as adaptor.
+
+    * Abstract backend?? Create CV objects for dimensions, levels, etc... Plug cubes as adaptor???
+    * Move to a more object oriented API, directives for widgets for model and cubeview.
+      Keep drilldown and cuts as objects, serialize only as
+      needed (and so introduce the ability optionally include column widths, etc).
 
 [2.4]
 
@@ -99,12 +99,12 @@
       extending outside centered content). Show a couple of charts view, a table, and a enabled-controls view.
       SAME views to be automatically opened in the explorer sample.
     * Hide all unavailable options and not implemented options.
+    * Default cube settings is incorrect? it should only be applied if the view is not otherwise configured (ie loaded or json)
 
     * Only draw results for the requested view, otherwise discard result (is causing issues and confusion).
-    * Default cube settings is incorrect: it should only be applied if the view is not otherwise configured (ie loaded or json)
-
     ! Review flow/events: if cube or menu loading is happening before initialization if views are created eagerly (views.html), etc.
     * Simple views are bootstraping CV studio :(
 
-    * Cleaning nvtooltips seems is causing problems: tooltips not shown for previously drawn figures: clean only own figures.
+    * Update examples (at least up to date, but add facts, add public data).
+
 
