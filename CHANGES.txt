@@ -1,28 +1,26 @@
 [2.0.1]
 
-    * Scroll to created views.
-    * Google Analytics events tracking restored.
+    * Google Analytics plugin restored (events tracking).
     * Added warning if server result limit has been hit.
-    * Added "server info" dialog.
-    * Added horizontal columns chart.
+    * Added server information dialog.
+    * Added new horizontal columns chart.
     * Added two columns mode and hide controls mode.
     * New icon library and revamped UI.
-    * Fixed incorrect column resize slider bug.
     * Added automatic content-based column resize feature.
     * Added support for negated cuts (inverse filters).
     * Added support for custom column formatting functions.
     * Added cube metadata option to set view default params.
-    * Option to show/hide chart labels.
+    * Option to show/hide chart legend.
     * Pie charts are now sorted by size of slice.
     * Serializing now shows JSON in a modal dialog and is easier to copy.
 
     * Responsive design.
-    * More print-friendly CSS.
+    * More printer-friendly CSS.
     * UI is now refreshed in-place instead of blocking whole UI.
-    * Using templating for HTML views (removed HTML spaguetti code).
+    * Using templating for HTML views (no more HTML/JavaScript spaguetti code).
     * Moved from jQGrid to more versatile Angular ui-grid.
     * Refactored to Angular. Dropped jQueryUI.
-    * Now using embedded Bootstrap (no global CSS selectors) for styles, without
+    * Now using Bootstrap embedded (no global CSS selectors) for styling, without
       impacting page styles and better avoiding being impacted by container page styling.
     * Introduced Grunt and Bower build toolchain.
     * Separated cubesviewer server and client into two projects.

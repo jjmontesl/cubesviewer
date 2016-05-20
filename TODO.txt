@@ -100,11 +100,8 @@
       SAME views to be automatically opened in the explorer sample.
     * Hide all unavailable options and not implemented options.
     * Default cube settings is incorrect? it should only be applied if the view is not otherwise configured (ie loaded or json)
+    * Update examples (at least up to date, but add facts, add public data).
 
     * Only draw results for the requested view, otherwise discard result (is causing issues and confusion).
     ! Review flow/events: if cube or menu loading is happening before initialization if views are created eagerly (views.html), etc.
-    * Simple views are bootstraping CV studio :(
-
-    * Update examples (at least up to date, but add facts, add public data).
-
 

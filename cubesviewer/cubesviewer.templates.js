@@ -337,7 +337,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        <div class=\"cv-chart-container\">\n" +
     "            <svg style=\"height: 400px;\" />\n" +
     "        </div>\n" +
-    "        <div ng-show=\"view.params.charttype != 'radar'\" style=\"font-size: 8px; float: right;\">\n" +
+    "        <div ng-hide=\"view.controlsHidden() || view.params.charttype == 'radar'\" style=\"font-size: 8px; float: right;\">\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(400);\">Small</a>\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(550);\">Medium</a>\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(700);\">Tall</a>\n" +

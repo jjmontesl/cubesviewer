@@ -1442,7 +1442,7 @@ angular.module('cv', ['ui.bootstrap', 'bootstrapSubmenu',
                       'ui.grid', 'ui.grid.resizeColumns', 'ui.grid.selection', 'ui.grid.autoResize',
                       'ui.grid.pagination', 'ui.grid.pinning', /*'ui.grid.exporter',*/
                       'ngCookies',
-                      'cv.cubes', 'cv.views', 'cv.studio']);
+                      'cv.cubes', 'cv.views']);
 
 // Configure moment.js
 /*
@@ -1802,8 +1802,8 @@ angular.module('cv.views.cube', []);
  *
  * FIXME: Some of this code shall be on a parent generic "view" directive.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService', 'reststoreService',
-                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, exportService, reststoreService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$injector', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService',
+                                                     function ($rootScope, $injector, $scope, $timeout, cvOptions, cubesService, viewsService, exportService) {
 
 	// TODO: Functions shall be here?
 	$scope.viewController = {};
@@ -1813,7 +1813,13 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	$scope.cvOptions = cvOptions;
 	$scope.cubesService = cubesService;
 	$scope.exportService = exportService;
-	$scope.reststoreService = reststoreService;
+
+	$scope.reststoreService = null;
+
+    if ($injector.has('reststoreService')) {
+        $scope.reststoreService = $injector.get('reststoreService');
+    }
+
 
 	$scope.dimensionFilter = null;
 
@@ -6604,7 +6610,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "        <div class=\"cv-chart-container\">\n" +
     "            <svg style=\"height: 400px;\" />\n" +
     "        </div>\n" +
-    "        <div ng-show=\"view.params.charttype != 'radar'\" style=\"font-size: 8px; float: right;\">\n" +
+    "        <div ng-hide=\"view.controlsHidden() || view.params.charttype == 'radar'\" style=\"font-size: 8px; float: right;\">\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(400);\">Small</a>\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(550);\">Medium</a>\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(700);\">Tall</a>\n" +

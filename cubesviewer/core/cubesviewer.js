@@ -30,7 +30,7 @@ angular.module('cv', ['ui.bootstrap', 'bootstrapSubmenu',
                       'ui.grid', 'ui.grid.resizeColumns', 'ui.grid.selection', 'ui.grid.autoResize',
                       'ui.grid.pagination', 'ui.grid.pinning', /*'ui.grid.exporter',*/
                       'ngCookies',
-                      'cv.cubes', 'cv.views', 'cv.studio']);
+                      'cv.cubes', 'cv.views']);
 
 // Configure moment.js
 /*
