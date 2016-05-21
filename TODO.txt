@@ -16,7 +16,6 @@ Consider contributing to CubesViewer. This is a possible roadmap.
 
     * Support dimension attributes, and fact details in fact view etc..
     * Support better exploration of facts
-    * Drop notes system 2: use metadata for info and add a comments system
 
     * Filter from chart filter / synchronize filter and chart filter (?).
     * GUI options (and all other plugin options) now as cubesviewer options
@@ -39,11 +38,15 @@ Consider contributing to CubesViewer. This is a possible roadmap.
     * Series annotation system: markers for annotations in time or other dimension.
 
     * Abstract backend?? Create CV objects for dimensions, levels, etc... Plug cubes as one more adaptor???
+    * Divide in reusable angular directives (ie. start with fact viewer). JS doc. Make views
+      proper objects.
     * Move to a more object oriented API, directives for widgets for model and cubeview.
       Keep drilldown and cuts as objects in API, serialize only as
       needed (and so introduce the ability optionally include column widths, etc).
     * Abstract data/grid in cubeview?
     * Use controllerAs.
+    * Better loading bar (account for pending requests, etc).
+
 
 
 [2.4]
@@ -69,14 +72,8 @@ Consider contributing to CubesViewer. This is a possible roadmap.
     * Datepicker to show only to correct level (year, month, day)
     * Try reoder columns + pin columns again
     * Add fullscreen mode for a view (in this case, stretch grid and chart as appropriate?)
-
-    * Restore pluggability, publish API for views and GUI. Needed before adding stuff that
-      needs to be optional in viewer, like loading bars to Studio, and to restore optional
-      components (server-side stuff, etc). Provide good API. Use object for views,
-      dimension, drilldown, etc...
-    * Divide in reusable angular directives (ie. start with fact viewer). JS doc. Make views
-      proper objects.
-    * Better loading bar (account for pending requests, etc).
+    * Drop notes system 2: use metadata for info and add a comments system
+    * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
 
 [2.1]
 
@@ -87,24 +84,26 @@ Consider contributing to CubesViewer. This is a possible roadmap.
     * Add "accumulated", "difference" and other calculations to series and charts.
     * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative), move "invert 2nd serie" as a calculation?
     * Range filter.
-    * Close issue #39, "strings with hyphen cause dimension filter to work inexpectedly" as shall be fixed.
+    * Test and close issue #39, "strings with hyphen cause dimension filter to work inexpectedly" as shall be fixed.
+    * Export image (https://github.com/gabelerner/canvg works with nvd3).
+    * Export SVG (svg crowbar).
 
 [2.0]
 
     * Commit refactor branch, update repositories, remove -devel from version name.
     * Test / QA.
     * Uncomment studio.html code that asks for the server url to connect to.
-    * Test CORS issue from server (localhost:8000 -> localhost:5000), test JSONP.
     * Create site, update readme, and site screenshots.
     * Update screenshots.
     * Reviewed and improved doc
-    * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
-    * Menu loading issue
+    * Submenu loading issue
+    * Pie chart/radar: do not draw if wrong column number message is being shown
 
     * Cleanup code.
-    * Site without styling, copy from Studio/GUI, use current background but make it fluid (sample views
-      extending outside centered content). Show a couple of charts view, a table, and a enabled-controls view.
+    * Test CORS issue from server (localhost:8000 -> localhost:5000), test JSONP.
+    * Site (page). Show a couple of charts view, a table, and an enabled-controls view.
       SAME views to be automatically opened in the explorer sample.
+      Add angular integration doc and example page.
     * Hide all unavailable options and not implemented options.
     * Default cube settings is incorrect? it should only be applied if the view is not otherwise configured (ie loaded or json)
     * Update examples (at least up to date, but add facts, add public data).

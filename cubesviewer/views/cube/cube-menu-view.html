@@ -35,8 +35,8 @@
         </a>
     </li>
 
-    <li ng-show="view.params.mode == 'chart' && view.params.charttype == 'bars-horizontal'" ng-click="view.params.chartoptions.mirrorSerie2 = !view.params.chartoptions.mirrorSerie2; refreshView();">
-        <a><i class="fa fa-fw fa-arrows-h"></i> Invert 2nd serie
+    <li ng-disabled="view.grid.data.length != 2" ng-show="view.params.mode == 'chart' && view.params.charttype == 'bars-horizontal'" ng-click="view.params.chartoptions.mirrorSerie2 = !view.params.chartoptions.mirrorSerie2; refreshView();">
+        <a><i class="fa fa-fw fa-arrows-h"></i> Invert 2nd series
             <span style="margin-left: 5px;" class="label label-default" ng-class="{ 'label-success': view.params.chartoptions.mirrorSerie2 }">{{ view.params.chartoptions.mirrorSerie2 ? "ON" : "OFF" }}</span>
         </a>
     </li>
@@ -118,6 +118,10 @@
     <li ng-show="view.params.mode != 'chart'" ng-click="exportService.exportGridAsCsv(view)"><a><i class="fa fa-fw fa-table"></i> Export table</a></li>
     <li ng-click="exportService.exportFacts(view)"><a><i class="fa fa-fw fa-th"></i> Export facts</a></li>
 
+    <!--
+    <div ng-show="view.params.mode == 'chart'" class="divider"></div>
+    <li ng-show="view.params.mode == 'chart'" ng-click="chartCtrl.exportChartSvg(view)"><a><i class="fa fa-fw fa-table"></i> Export chart as SVG</a></li>
+    -->
 
   </ul>
 

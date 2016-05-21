@@ -131,6 +131,9 @@ var cubesviewer = {
 		});
 	},
 
+	/**
+	 *
+	 */
 	createView: function(container, type, viewData) {
 
 		//console.debug("Creating view: " + viewData);

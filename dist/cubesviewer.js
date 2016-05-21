@@ -1548,6 +1548,9 @@ var cubesviewer = {
 		});
 	},
 
+	/**
+	 *
+	 */
 	createView: function(container, type, viewData) {
 
 		//console.debug("Creating view: " + viewData);
@@ -6886,6 +6889,9 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "    <li ng-show=\"view.params.mode != 'chart'\" ng-click=\"exportService.exportGridAsCsv(view)\"><a><i class=\"fa fa-fw fa-table\"></i> Export table</a></li>\n" +
     "    <li ng-click=\"exportService.exportFacts(view)\"><a><i class=\"fa fa-fw fa-th\"></i> Export facts</a></li>\n" +
     "\n" +
+    "    <div ng-show=\"view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
+    "\n" +
+    "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"chartCtrl.exportChartSvg(view)\"><a><i class=\"fa fa-fw fa-table\"></i> Export chart as SVG</a></li>\n" +
     "\n" +
     "  </ul>\n" +
     "\n"

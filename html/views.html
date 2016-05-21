@@ -50,22 +50,18 @@
             cubesUrl: cubesUrl
         });
 
-        // Sample serialized view (Based on cubes-examples project data)
-        var serializedView =
-            '{"cubename":"webshop_sales","name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+        // Create views
 
-        //serializedView = {"charttype":"bars-vertical","chartoptions":{"showLegend":true},"mode":"chart","drilldown":[],"cuts":[],"cubename":"boe_article","name":"BOE / Artículos (undefined)","xaxis":"date_published@daily:quarter","yaxis":"page_count_sum"};
+        // Sample serialized view (based on cubes-examples project data)
+        var serializedView = '{"cubename":"webshop_sales","name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
 
-        // Add views
-
-        // You can use a Javascript object with view arguments (ie. "cubename")
-        //view1 = cubesviewer.views.createView($('#cv-view1'), "cube", { "cubename": "webshop_visits" });
-
-        // You can use a serialized JSON string of the object with view arguments
+        // Using a JSON string for view parameters:
         setTimeout(function() {
-            view1 = cubesviewer.createView('#cv-view-1', "cube", serializedView);
+            view1 = cubesviewer.createView("#cv-view-1", "cube", serializedView);
         }, 1500);
 
+        // Using a Javascript object for view parameters:
+        //view2 = cubesviewer.createView('#cv-view-1', "cube", { "cubename": "webshop_visits" });
 
     });
 
