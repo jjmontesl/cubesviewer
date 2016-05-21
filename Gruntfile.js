@@ -108,7 +108,8 @@ module.exports = function(grunt) {
         dist : {
             src: ['cubesviewer/**/*.js'], // 'test/*.js'
             options: {
-                destination: 'build/doc'
+                destination: 'build/doc',
+                configure : 'jsdoc.conf.json'
             }
         }
     },

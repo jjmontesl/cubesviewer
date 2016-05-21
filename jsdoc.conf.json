@@ -1,0 +1,12 @@
+{
+  "templates": {
+    "default": {
+      "outputSourceFiles": false,
+      "includeDate": false,
+      "layoutFile": "doc/jsdoc/layout.tmpl",
+      "staticFiles": {
+        "include": [ ]
+      }
+    }
+  }
+}
