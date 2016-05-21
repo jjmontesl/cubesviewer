@@ -36,10 +36,13 @@
 
     * Series annotation system: markers for annotations in time or other dimension.
 
-    * Abstract backend?? Create CV objects for dimensions, levels, etc... Plug cubes as adaptor???
+    * Abstract backend?? Create CV objects for dimensions, levels, etc... Plug cubes as one more adaptor???
     * Move to a more object oriented API, directives for widgets for model and cubeview.
-      Keep drilldown and cuts as objects, serialize only as
+      Keep drilldown and cuts as objects in API, serialize only as
       needed (and so introduce the ability optionally include column widths, etc).
+    * Abstract data/grid in cubeview?
+    * Use controllerAs.
+
 
 [2.4]
 
@@ -102,6 +105,7 @@
     * Default cube settings is incorrect? it should only be applied if the view is not otherwise configured (ie loaded or json)
     * Update examples (at least up to date, but add facts, add public data).
 
+    * Menu loading issue
     * Only draw results for the requested view, otherwise discard result (is causing issues and confusion).
     ! Review flow/events: if cube or menu loading is happening before initialization if views are created eagerly (views.html), etc.
 

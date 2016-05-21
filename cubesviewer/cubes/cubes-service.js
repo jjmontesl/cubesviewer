@@ -25,8 +25,8 @@
 
 angular.module('cv.cubes', []);
 
-angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions', 'gaService',
-                                                    function ($rootScope, cvOptions, gaService) {
+angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOptions', 'gaService',
+                                                    function ($rootScope, $log, cvOptions, gaService) {
 
 	var cubesService = this;
 
@@ -85,8 +85,13 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions', '
 	 */
 	this.cubesRequest = function(path, params, successCallback, errCallback) {
 
+
 		// TODO: normalize how URLs are used (full URL shall come from client code)
 		if (path.charAt(0) == '/') path = cvOptions.cubesUrl + path;
+
+		if (cvOptions.debug) {
+			$log.debug("Cubes request: " + path + " (" + params + ")");
+		}
 
 		var jqxhr = $.get(path, params, cubesService._cubesRequestCallback(successCallback), cvOptions.jsonRequestType);
 
@@ -109,7 +114,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions', '
 	 * Default XHR error handler for CubesRequests
 	 */
 	this.defaultRequestErrorHandler = function(xhr, textStatus, errorThrown) {
-		console.debug("Cubes request error: " + xhr)
+		$log.error("Cubes request error: " + xhr)
 	};
 
 	/*
@@ -134,7 +139,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions', '
 
 			// Preprocess
 			for (var i = 0; i < drilldowns.length; i++) {
-				drilldowns[i] = cubes.drilldown_from_string(view.cube, view.cube.cvdim_parts(drilldowns[i]).fullDrilldownValue);
+				drilldowns[i] = cubes.drilldown_from_string(view.cube, view.cube.dimensionParts(drilldowns[i]).fullDrilldownValue);
 			}
 
 			// Include drilldown array
@@ -237,7 +242,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions', '
 
 		var values = [];
 
-		var dimensionparts = view.cube.cvdim_parts(datefilter.dimension);
+		var dimensionparts = view.cube.dimensionParts(datefilter.dimension);
 		for (var i = 0; i < dimensionparts.hierarchy.levels.length; i++) {
 			var level = dimensionparts.hierarchy.levels[i];
 

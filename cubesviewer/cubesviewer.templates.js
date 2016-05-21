@@ -332,15 +332,15 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('views/cube/chart/chart-common.html',
-    "<div ng-show=\"gridOptions.data.length > 0 && view.params.yaxis != null\" style=\"width: 99%;\">\n" +
+    "<div ng-show=\"view.grid.data.length > 0 && view.params.yaxis != null\" style=\"width: 99%;\">\n" +
     "    <div>\n" +
     "        <div class=\"cv-chart-container\">\n" +
     "            <svg style=\"height: 400px;\" />\n" +
     "        </div>\n" +
     "        <div ng-hide=\"view.controlsHidden() || view.params.charttype == 'radar'\" style=\"font-size: 8px; float: right;\">\n" +
-    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(400);\">Small</a>\n" +
-    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(550);\">Medium</a>\n" +
-    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(700);\">Tall</a>\n" +
+    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"chartCtrl.resizeChart(400);\">Small</a>\n" +
+    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"chartCtrl.resizeChart(550);\">Medium</a>\n" +
+    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"chartCtrl.resizeChart(700);\">Tall</a>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "</div>\n" +
@@ -349,16 +349,16 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    Cannot present chart: no <b>measure</b> has been selected.\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-if=\"pendingRequests == 0 && view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "<div ng-if=\"view.pendingRequests == 0 && view.params.yaxis != null && view.grid.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "    Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-if=\"pendingRequests == 0 && view.params.charttype == 'pie' && gridOptions.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "<div ng-if=\"view.pendingRequests == 0 && view.params.charttype == 'pie' && view.grid.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.<br />\n" +
     "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>.\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-if=\"pendingRequests == 0 && view.params.yaxis != null && view.params.charttype == 'radar' && gridOptions.columnDefs.length < 4\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "<div ng-if=\"view.pendingRequests == 0 && view.params.yaxis != null && view.params.charttype == 'radar' && view.grid.columnDefs.length < 4\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "    Cannot present a <b>radar chart</b> when <b>less than 3 columns</b> are present.<br />\n" +
     "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>.\n" +
     "</div>\n"
@@ -366,13 +366,13 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('views/cube/chart/chart.html',
-    "<div ng-controller=\"CubesViewerViewsCubeChartController\">\n" +
+    "<div ng-controller=\"CubesViewerViewsCubeChartController as chartCtrl\">\n" +
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'pie'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-pie-chart\"></i> Chart\n" +
-    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
-    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartPieController\">\n" +
@@ -382,9 +382,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'bars-vertical'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-bar-chart\"></i> Chart\n" +
-    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
-    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartBarsVerticalController\">\n" +
@@ -394,9 +394,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'bars-horizontal'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-bar-chart fa-rotate-270\"></i> Chart\n" +
-    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
-    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartBarsHorizontalController\">\n" +
@@ -406,9 +406,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'lines'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-line-chart\"></i> Chart\n" +
-    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
-    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartLinesController\">\n" +
@@ -418,9 +418,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'lines-stacked'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-area-chart\"></i> Chart\n" +
-    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
-    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartLinesController\">\n" +
@@ -430,9 +430,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'radar'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-bullseye\"></i> Chart\n" +
-    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
-    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartRadarController\">\n" +
@@ -442,9 +442,9 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'sunburst'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-sun-o\"></i> Chart\n" +
-    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
-    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartSunburstController\">\n" +
@@ -721,13 +721,15 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    <div ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
     "\n" +
     "    <li ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"dropdown-submenu\">\n" +
-    "        <a tabindex=\"0\" ><i class=\"fa fa-fw fa-calculator\"></i> Series calculations</a>\n" +
+    "        <a tabindex=\"0\" ><i class=\"fa fa-fw fa-calculator\"></i> Series operations</a>\n" +
     "        <ul class=\"dropdown-menu\">\n" +
-    "          <li ng-click=\"selectCalculation('difference')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Difference</a></li>\n" +
-    "          <li ng-click=\"selectCalculation('percentage')\"><a href=\"\"><i class=\"fa fa-fw fa-percent\"></i> Change rate</a></li>\n" +
-    "          <li ng-click=\"selectCalculation('accum')\"><a href=\"\"><i class=\"fa fa-fw\">&sum;</i> Accumulated</a></li>\n" +
+    "          <li ng-click=\"selectOperation('difference')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Difference</a></li>\n" +
+    "          <li ng-click=\"selectOperation('percentage')\"><a href=\"\"><i class=\"fa fa-fw fa-percent\"></i> Change rate</a></li>\n" +
+    "          <li ng-click=\"selectOperation('accum')\"><a href=\"\"><i class=\"fa fa-fw\">&sum;</i> Accumulated</a></li>\n" +
     "          <div class=\"divider\"></div>\n" +
-    "          <li ng-click=\"selectCalculation(null)\"><a href=\"\"><i class=\"fa fa-fw fa-times\"></i> None</a></li>\n" +
+    "          <li ng-click=\"selectOperation('fill-zeros')\"><a href=\"\"><i class=\"fa fa-fw\">0</i> Replace blanks with zeroes</a></li>\n" +
+    "          <div class=\"divider\"></div>\n" +
+    "          <li ng-click=\"selectOperation(null)\"><a href=\"\"><i class=\"fa fa-fw fa-times\"></i> Clear operations</a></li>\n" +
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +
@@ -743,7 +745,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('views/cube/cube.html',
-    "<div class=\"cv-view-panel\" ng-controller=\"CubesViewerViewsCubeController\" >\n" +
+    "<div class=\"cv-view-panel\" ng-controller=\"CubesViewerViewsCubeController as cubeView\" >\n" +
     "\n" +
     "    <div ng-if=\"view.state == 3\">\n" +
     "        <div class=\"alert alert-danger\" style=\"margin: 0px;\">\n" +
@@ -757,13 +759,15 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ng-if=\"view.state != 3\" style=\"min-height: 80px;\">\n" +
-    "\n" +
+    "    <div>\n" +
     "        <h2 ng-show=\"view.controlsHidden()\" style=\"margin-top: 5px;\">\n" +
     "            <i class=\"fa fa-fw fa-file-o\"></i> {{ view.params.name }}\n" +
     "        </h2>\n" +
     "\n" +
     "        <div ng-include=\"'views/cube/alerts.html'\"></div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ng-if=\"view.state == 2\" style=\"min-height: 80px;\">\n" +
     "\n" +
     "        <div class=\"cv-view-viewmenu hidden-print\" ng-hide=\"view.controlsHidden()\">\n" +
     "\n" +
@@ -808,7 +812,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "\n" +
     "                    <div ng-repeat=\"drilldown in view.params.drilldown\" ng-if=\"view.params.mode != 'facts'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-drill\" style=\"color: black; background-color: #ccffcc;\">\n" +
-    "                        <span><i class=\"fa fa-fw fa-arrow-down\"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>\n" +
+    "                        <span><i class=\"fa fa-fw fa-arrow-down\"></i> <b>Drilldown:</b> {{ view.cube.dimensionParts(drilldown).label }}</span>\n" +
     "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(drilldown)\" class=\"btn btn-secondary btn-xs hidden-print\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
     "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectDrill(drilldown, '')\" class=\"btn btn-danger btn-xs hidden-print\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
@@ -818,11 +822,11 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                <div class=\"cv-view-viewinfo-cut\">\n" +
     "                    <!--\n" +
     "                        var dimensionString = $(this).parents('.cv-view-infopiece-cut').first().attr('data-dimension');\n" +
-    "                        var parts = view.cube.cvdim_parts(dimensionString);\n" +
+    "                        var parts = view.cube.dimensionParts(dimensionString);\n" +
     "                        var depth = $(this).parents('.cv-view-infopiece-cut').first().attr('data-value').split(';')[0].split(\",\").length;\n" +
     "                        cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, dimensionString + \":\" + parts.hierarchy.levels[depth - 1] );\n" +
     "                     -->\n" +
-    "                    <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
+    "                    <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.dimensionParts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
     "                        <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.label }} <span ng-class=\"{ 'text-danger': cut.invert }\">{{ equality }}</span> <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
     "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(cut.dimension)\" class=\"btn btn-secondary btn-xs hidden-print\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
@@ -840,7 +844,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                    </div>\n" +
     "\n" +
     "                    <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccddff;\">\n" +
-    "                        <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-long-arrow-right\"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : \"None\" }}</span>\n" +
+    "                        <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-long-arrow-right\"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : \"None\" }}</span>\n" +
     "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                        <!-- <button type=\"button\" ng-click=\"showDimensionFilter(view.params.xaxis)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>  -->\n" +
     "                        <!-- <button type=\"button\" ng-click=\"selectXAxis(null)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>  -->\n" +
@@ -878,17 +882,17 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
     "    <h3><i class=\"fa fa-fw fa-arrow-circle-down\"></i> Aggregated data\n" +
-    "        <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "    </h3>\n" +
     "\n" +
-    "    <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "    <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "        <span class=\"loadingbar-expand\"></span>\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ui-grid=\"gridOptions\"\n" +
+    "    <div ui-grid=\"view.grid\"\n" +
     "         ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize\n" +
     "         ui-grid-pagination ui-grid-pinning\n" +
-    "         style=\"width: 100%;\" ng-style=\"{height: ((gridOptions.data.length < 15 ? gridOptions.data.length : 15) * 24) + 44 + 30 + 'px'}\">\n" +
+    "         style=\"width: 100%;\" ng-style=\"{height: ((view.grid.data.length < 15 ? view.grid.data.length : 15) * 24) + 44 + 30 + 'px'}\">\n" +
     "    </div>\n" +
     "    <div style=\"height: 30px;\">&nbsp;</div>\n" +
     "\n" +
@@ -901,22 +905,22 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
     "    <h3><i class=\"fa fa-fw fa-th\"></i> Facts data\n" +
-    "        <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "    </h3>\n" +
     "\n" +
-    "    <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "    <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "        <span class=\"loadingbar-expand\"></span>\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ng-if=\"gridOptions.data.length > 0\"\n" +
-    "         ui-grid=\"gridOptions\"\n" +
+    "    <div ng-if=\"view.grid.data.length > 0\"\n" +
+    "         ui-grid=\"view.grid\"\n" +
     "         ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize\n" +
     "         ui-grid-pagination ui-grid-pinning\n" +
-    "         style=\"width: 100%;\" ng-style=\"{height: ((gridOptions.data.length < 15 ? gridOptions.data.length : 15) * 24) + 44 + 30 + 'px'}\">\n" +
+    "         style=\"width: 100%;\" ng-style=\"{height: ((view.grid.data.length < 15 ? view.grid.data.length : 15) * 24) + 44 + 30 + 'px'}\">\n" +
     "    </div>\n" +
-    "    <div ng-if=\"gridOptions.data.length > 0\" style=\"height: 30px;\">&nbsp;</div>\n" +
+    "    <div ng-if=\"view.grid.data.length > 0\" style=\"height: 30px;\">&nbsp;</div>\n" +
     "\n" +
-    "    <div ng-if=\"pendingRequests == 0 && gridOptions.data.length == 0\">No facts are returned by the current filtering combination.</div>\n" +
+    "    <div ng-if=\"viewController.view.pendingRequests == 0 && view.grid.data.length == 0\">No facts are returned by the current filtering combination.</div>\n" +
     "\n" +
     "</div>\n"
   );
@@ -924,7 +928,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('views/cube/filter/datefilter.html',
     "<div class=\"cv-view-viewinfo-date\">\n" +
-    "    <div ng-repeat=\"datefilter in view.params.datefilters\" ng-controller=\"CubesViewerViewsCubeFilterDateController\" ng-init=\"dimparts = view.cube.cvdim_parts(datefilter.dimension);\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut text-left\" style=\"color: black; background-color: #ffdddd; text-align: left;\">\n" +
+    "    <div ng-repeat=\"datefilter in view.params.datefilters\" ng-controller=\"CubesViewerViewsCubeFilterDateController\" ng-init=\"dimparts = view.cube.dimensionParts(datefilter.dimension);\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut text-left\" style=\"color: black; background-color: #ffdddd; text-align: left;\">\n" +
     "        <span style=\"max-width: 280px; white-space: nowrap;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.labelNoLevel }}:</span>\n" +
     "\n" +
     "        <!--\n" +
@@ -1092,26 +1096,26 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
     "    <h3><i class=\"fa fa-fw fa-clock-o\"></i> Series table\n" +
-    "        <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "    </h3>\n" +
     "\n" +
-    "    <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "    <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "        <span class=\"loadingbar-expand\"></span>\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ng-if=\"gridOptions.data.length > 0\"\n" +
-    "         ui-grid=\"gridOptions\"\n" +
+    "    <div ng-if=\"view.grid.data.length > 0\"\n" +
+    "         ui-grid=\"view.grid\"\n" +
     "         ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize\n" +
     "         ui-grid-pagination ui-grid-pinning\n" +
-    "         style=\"width: 100%;\" ng-style=\"{height: ((gridOptions.data.length < 15 ? gridOptions.data.length : 15) * 24) + 44 + 30 + 'px'}\">\n" +
+    "         style=\"width: 100%;\" ng-style=\"{height: ((view.grid.data.length < 15 ? view.grid.data.length : 15) * 24) + 44 + 30 + 'px'}\">\n" +
     "    </div>\n" +
-    "    <div ng-if=\"gridOptions.data.length > 0\" style=\"height: 30px;\">&nbsp;</div>\n" +
+    "    <div ng-if=\"view.grid.data.length > 0\" style=\"height: 30px;\">&nbsp;</div>\n" +
     "\n" +
-    "    <div ng-if=\"pendingRequests == 0 && view.params.yaxis == null\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "    <div ng-if=\"view.pendingRequests == 0 && view.params.yaxis == null\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "        Cannot present series table: no <b>measure</b> has been selected.\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ng-if=\"pendingRequests == 0 && view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "    <div ng-if=\"view.pendingRequests == 0 && view.params.yaxis != null && view.grid.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "        Cannot present series table: no rows are returned by the current filtering, horizontal dimension, and drilldown combination.\n" +
     "    </div>\n" +
     "\n" +

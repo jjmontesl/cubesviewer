@@ -67,15 +67,26 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 		// TODO: Define a view object
 		var view = {
 
-			"id": "view-" + this.lastViewId,
-			"type": type,
-			"state": cubesviewer.STATE_INITIALIZING,
-			"error": "",
-			"params": {},
+			id: "view-" + this.lastViewId,
+			type: type,
+			state: cubesviewer.STATE_INITIALIZING,
+			error: "",
+			params: {},
 
-	        "savedId": 0,
-	        "owner": cvOptions.user,
-	        "shared": false,
+	        savedId: 0,
+	        owner: cvOptions.user,
+	        shared: false,
+
+			resultLimitHit: false,
+			requestFailed: false,
+			pendingRequests: 0,
+			dimensionFilter: null,
+
+	    	grid: {
+	    		api: null,
+	    		data: [],
+	    		columnDefs: []
+			},
 
 			controlsHidden: function() {
 				return !!this.params.controlsHidden || !!cvOptions.hideControls;
@@ -93,8 +104,6 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 		};
 
 		$.extend(view.params, params);
-
-		if (view.state == cubesviewer.STATE_INITIALIZING) view.state = cubesviewer.STATE_INITIALIZED;
 
 		return view;
 	};

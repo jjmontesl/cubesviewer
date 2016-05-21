@@ -2,26 +2,26 @@
 
     <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->
     <h3><i class="fa fa-fw fa-clock-o"></i> Series table
-        <i ng-show="pendingRequests > 0" class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right"></i>
+        <i ng-show="view.pendingRequests > 0" class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right"></i>
     </h3>
 
-    <div ng-if="pendingRequests > 0" class="loadingbar-content">
+    <div ng-if="view.pendingRequests > 0" class="loadingbar-content">
         <span class="loadingbar-expand"></span>
     </div>
 
-    <div ng-if="gridOptions.data.length > 0"
-         ui-grid="gridOptions"
+    <div ng-if="view.grid.data.length > 0"
+         ui-grid="view.grid"
          ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize
          ui-grid-pagination ui-grid-pinning
-         style="width: 100%;" ng-style="{height: ((gridOptions.data.length < 15 ? gridOptions.data.length : 15) * 24) + 44 + 30 + 'px'}">
+         style="width: 100%;" ng-style="{height: ((view.grid.data.length < 15 ? view.grid.data.length : 15) * 24) + 44 + 30 + 'px'}">
     </div>
-    <div ng-if="gridOptions.data.length > 0" style="height: 30px;">&nbsp;</div>
+    <div ng-if="view.grid.data.length > 0" style="height: 30px;">&nbsp;</div>
 
-    <div ng-if="pendingRequests == 0 && view.params.yaxis == null" class="alert alert-info" style="margin-bottom: 0px;">
+    <div ng-if="view.pendingRequests == 0 && view.params.yaxis == null" class="alert alert-info" style="margin-bottom: 0px;">
         Cannot present series table: no <b>measure</b> has been selected.
     </div>
 
-    <div ng-if="pendingRequests == 0 && view.params.yaxis != null && gridOptions.data.length == 0" class="alert alert-info" style="margin-bottom: 0px;">
+    <div ng-if="view.pendingRequests == 0 && view.params.yaxis != null && view.grid.data.length == 0" class="alert alert-info" style="margin-bottom: 0px;">
         Cannot present series table: no rows are returned by the current filtering, horizontal dimension, and drilldown combination.
     </div>
 

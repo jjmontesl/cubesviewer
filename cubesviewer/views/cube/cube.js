@@ -34,8 +34,8 @@ angular.module('cv.views.cube', []);
  *
  * FIXME: Some of this code shall be on a parent generic "view" directive.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$injector', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService',
-                                                     function ($rootScope, $injector, $scope, $timeout, cvOptions, cubesService, viewsService, exportService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$log', '$injector', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService',
+                                                     function ($rootScope, $log, $injector, $scope, $timeout, cvOptions, cubesService, viewsService, exportService) {
 
 	// TODO: Functions shall be here?
 	$scope.viewController = {};
@@ -52,19 +52,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
         $scope.reststoreService = $injector.get('reststoreService');
     }
 
-
-	$scope.dimensionFilter = null;
-
-	$scope.$watch("view", function(view) {
-		if (view) {
-			view._resultLimitHit = false;
-			view._requestFailed = false;
-		}
-	});
-
 	$scope.refreshView = function() {
 		if ($scope.view && $scope.view.cube) {
-			$scope.view.grid = null;
+			$scope.view.grid.data = [];
+			$scope.view.grid.columnDefs = [];
 			$scope.$broadcast("ViewRefresh", $scope.view);
 		}
 	};
@@ -74,7 +65,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.setViewMode = function(mode) {
 		$scope.view.setViewMode(mode);
-		//$scope.refreshView();
 	};
 
 
@@ -98,7 +88,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		var jqxhr = cubesService.cubesserver.get_cube($scope.view.params.cubename, function(cube) {
 
 			$scope.view.cube = cube;
-			console.debug($scope.view.cube);
+
+			$log.debug($scope.view.cube);
 
 			// Apply parameters if cube metadata contains specific cv-view-params
 			// TODO: Don't do this if this was a saved or pre-initialized view, only for new views
@@ -107,6 +98,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			} else {
 				$scope.view.params = $.extend({}, cubeViewDefaultParams, $scope.view.params);
 			}
+
+			$scope.view.state = cubesviewer.VIEW_STATE_INITIALIZED;
+			$scope.view.error = "";
 
 			$timeout(function() {
 				//$scope.refreshView();
@@ -126,6 +120,49 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		$scope.view._requestFailed = true;
 	};
 
+
+
+	// TODO: Move to explore view or grid component as cube view shall be split into directives
+    $scope.onGridRegisterApi = function(gridApi) {
+    	//console.debug("Grid Register Api: Explore");
+        $scope.view.grid.api = gridApi;
+        gridApi.selection.on.rowSelectionChanged($scope, function(row){
+          //console.debug(row.entity);
+        });
+        gridApi.selection.on.rowSelectionChangedBatch($scope, function(rows){
+          //console.debug(rows);
+        });
+        gridApi.core.on.columnVisibilityChanged($scope, function (column) {
+        	if (column.visible) {
+        		delete ($scope.view.params.columnHide[column.field]);
+        	} else {
+        		$scope.view.params.columnHide[column.field] = true;
+        		delete ($scope.view.params.columnWidths[column.field]);
+        	}
+        	$scope.view.updateUndo();
+        });
+        gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
+            // do something
+        	$scope.view.params.columnSort[$scope.view.params.mode] = {};
+        	$(sortColumns).each(function (idx, col) {
+        		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };
+        	});
+        	$scope.view.updateUndo();
+        });
+        gridApi.colResizable.on.columnSizeChanged($scope, function(colDef, deltaChange) {
+        	var colIndex = -1;
+        	$(gridApi.grid.columns).each(function(idx, e) {
+        		if (e.field == colDef.field) colIndex = idx;
+        	});
+        	if (colIndex >= 0) {
+        		$scope.view.params.columnWidths[colDef.field] = gridApi.grid.columns[colIndex].width;
+        	}
+        	$scope.view.updateUndo();
+        });
+    };
+
+	$scope.view.grid.onRegisterApi = $scope.onGridRegisterApi;
+
 	$scope.validateData = function(data, status) {
 		//console.debug(data);
 		$scope.view._requestFailed = false;
@@ -135,6 +172,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			$scope.view._resultLimitHit = true;
 		}
 	};
+
 
 	/**
 	 * Adds a drilldown level.

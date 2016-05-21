@@ -30,56 +30,8 @@
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
                                                      function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, dialogService) {
 
-	$scope.$parent.gridData = [];
-
-	$scope.pendingRequests = 0;
-
-
-	// TODO: Move to explore view or grid component as cube view shall be split into directives
-    $scope.$parent.onGridRegisterApi = function(gridApi) {
-    	//console.debug("Grid Register Api: Explore");
-        $scope.gridApi = gridApi;
-        gridApi.selection.on.rowSelectionChanged($scope, function(row){
-          //console.debug(row.entity);
-        });
-        gridApi.selection.on.rowSelectionChangedBatch($scope, function(rows){
-          //console.debug(rows);
-        });
-        gridApi.core.on.columnVisibilityChanged($scope, function (column) {
-        	if (column.visible) {
-        		delete ($scope.view.params.columnHide[column.field]);
-        	} else {
-        		$scope.view.params.columnHide[column.field] = true;
-        		delete ($scope.view.params.columnWidths[column.field]);
-        	}
-        	$scope.view.updateUndo();
-        });
-        gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
-            // do something
-        	$scope.view.params.columnSort[$scope.view.params.mode] = {};
-        	$(sortColumns).each(function (idx, col) {
-        		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };
-        	});
-        	$scope.view.updateUndo();
-        });
-        gridApi.colResizable.on.columnSizeChanged($scope, function(colDef, deltaChange) {
-        	var colIndex = -1;
-        	$(gridApi.grid.columns).each(function(idx, e) {
-        		if (e.field == colDef.field) colIndex = idx;
-        	});
-        	if (colIndex >= 0) {
-        		$scope.view.params.columnWidths[colDef.field] = gridApi.grid.columns[colIndex].width;
-        	}
-        	$scope.view.updateUndo();
-        });
-    };
-
-	$scope.$parent.gridApi = null;
-	$scope.$parent.gridOptions = {
-		onRegisterApi: $scope.onGridRegisterApi,
-		selectionRowHeaderWidth: 24,
-		//enableRowHeaderSelection: false,
-	};
+	$scope.view.grid.enableRowSelection = true;
+	$scope.view.grid.enableRowHeaderSelection = true;
 
 	$scope.initialize = function() {
 		$scope.refreshView();
@@ -96,9 +48,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
 		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
 
-		$scope.pendingRequests++;
+		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
-			$scope.pendingRequests--;
+			$scope.view.pendingRequests--;
 		});
 		jqxhr.error($scope.requestErrorHandler);
 
@@ -108,22 +60,19 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		$scope.validateData(data, status);
 		$scope.processData(data);
 		$rootScope.$apply();
-		$scope.gridApi.core.refresh();
+		/*
+		$scope.view.grid.api.core.refresh();
 		$rootScope.$apply();
+		*/
 	};
 
 	$scope.processData = function(data) {
 
 		var view = $scope.view;
 
-		$scope.gridData = [];
-		$scope.gridFormatters = {};
-
-		$scope.view.grid = $scope.$parent.gridOptions;
-
 	    // Configure grid
-	    angular.extend($scope.$parent.gridOptions, {
-    		data: $scope.gridData,
+	    angular.extend(view.grid, {
+    		//data: $scope.view.grid.data,
     		//minRowsToShow: 3,
     		rowHeight: 24,
     		onRegisterApi: $scope.onGridRegisterApi,
@@ -163,7 +112,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 			};
 			col.footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
-			$scope.gridOptions.columnDefs.push(col);
+			view.grid.columnDefs.push(col);
 
 			//if (data.summary) dataTotals[ag.ref] = data.summary[ag.ref];
 		});
@@ -187,15 +136,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 
 			// Get dimension
 			var dim = view.cube.cvdim_dim(view.params.drilldown[i]);
-			var parts = view.cube.cvdim_parts(view.params.drilldown[i]);
+			var parts = view.cube.dimensionParts(view.params.drilldown[i]);
 			var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
 
-			//nid.push(drilldown_level_values.join("-"));
+			//nid.push(drilldownLevelValues.join("-"));
 
 			var footer = "";
 			if (i == 0) footer = (cubesService.buildQueryCuts(view).length == 0) ? "<b>Summary</b>" : "<b>Summary <i>(Filtered)</i></b>";
 
-			$scope.gridOptions.columnDefs.splice(i, 0, {
+			view.grid.columnDefs.splice(i, 0, {
 				name: label[i],
 				field: "key" + i,
 				index: "key" + i,
@@ -210,7 +159,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		}
 
 		if (view.params.drilldown.length == 0) {
-			$scope.gridOptions.columnDefs.splice(0, 0, {
+			view.grid.columnDefs.splice(0, 0, {
 				name: view.cube.label,
 				field: "key" + 0,
 				index: "key" + 0,
@@ -224,91 +173,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 
 	};
 
-	/*
-	 * Show received summary
-	 */
-	this.drawSummary = function(view, data) {
-
-		$('#summaryTable-' + view.id).get(0).updateIdsOfSelectedRows = function(
-				id, isSelected) {
-			var index = $.inArray(id,
-					$('#summaryTable-' + view.id).get(0).idsOfSelectedRows);
-			if (!isSelected && index >= 0) {
-				$('#summaryTable-' + view.id).get(0).idsOfSelectedRows.splice(
-						index, 1); // remove id from the list
-			} else if (index < 0) {
-				$('#summaryTable-' + view.id).get(0).idsOfSelectedRows.push(id);
-			}
-		};
-
-		$('#summaryTable-' + view.id).get(0).idsOfSelectedRows = [];
-		$('#summaryTable-' + view.id)
-				.jqGrid(
-						{
-							data : dataRows,
-							userData : (data.summary ? dataTotals : null),
-							datatype : "local",
-							height : 'auto',
-							rowNum : cubesviewer.options.pagingOptions[0],
-							rowList : cubesviewer.options.pagingOptions,
-							colNames : colNames,
-							colModel : colModel,
-							pager : "#summaryPager-" + view.id,
-							sortname : cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[0],
-							viewrecords : true,
-							sortorder : cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[1],
-							footerrow : true,
-							userDataOnFooter : true,
-							forceFit : false,
-							shrinkToFit : false,
-							width: cubesviewer.options.tableResizeHackMinWidth,
-							// autowidth: true,
-							multiselect : true,
-							multiboxonly : true,
-
-							// caption: "Current selection data" ,
-							// beforeSelectRow : function () { return false; }
-
-							onSelectRow : $('#summaryTable-' + view.id).get(0).updateIdsOfSelectedRows,
-							onSelectAll : function(aRowids, isSelected) {
-								var i, count, id;
-								for (i = 0, count = aRowids.length; i < count; i++) {
-									id = aRowids[i];
-									$('#summaryTable-' + view.id).get(0)
-											.updateIdsOfSelectedRows(id,
-													isSelected);
-								}
-							},
-							loadComplete : function() {
-								var i, count;
-								for (
-										i = 0,
-										count = $('#summaryTable-' + view.id)
-												.get(0).idsOfSelectedRows.length; i < count; i++) {
-									$(this)
-											.jqGrid(
-													'setSelection',
-													$('#summaryTable-' + view.id)
-															.get(0).idsOfSelectedRows[i],
-													false);
-								}
-								// Call hook
-								view.cubesviewer.views.cube.explore.onTableLoaded (view);
-							},
-							resizeStop: view.cubesviewer.views.cube.explore._onTableResize (view),
-							onSortCol: view.cubesviewer.views.cube.explore._onTableSort (view),
-
-						});
-
-		this.cubesviewer.views.cube._adjustGridSize(); // remember to copy also the window.bind-resize init
-
-
-	};
 
 	$scope._addRows = function(data) {
 
 		var view = $scope.view;
-		var rows = $scope.gridData;
+		var rows = view.grid.data;
 
 		$(data.cells).each( function(idx, e) {
 
@@ -322,22 +191,22 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				// Get dimension
 				var dim = view.cube.cvdim_dim(view.params.drilldown[i]);
 
-				var parts = view.cube.cvdim_parts(view.params.drilldown[i]);
+				var parts = view.cube.dimensionParts(view.params.drilldown[i]);
 				var infos = parts.hierarchy.readCell(e, parts.level);
 
 				// Values and Labels
-				var drilldown_level_values = [];
-				var drilldown_level_labels = [];
+				var drilldownLevelValues = [];
+				var drilldownLevelLabels = [];
 
 				$(infos).each(function(idx, info) {
-					drilldown_level_values.push (info.key);
-					drilldown_level_labels.push (info.label);
+					drilldownLevelValues.push (info.key);
+					drilldownLevelLabels.push (info.label);
 				});
 
-				nid.push(drilldown_level_values.join("-"));
+				nid.push(drilldownLevelValues.join("-"));
 
 				var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
-				key.push({ cutValue: drilldown_level_values.join(","), title: drilldown_level_labels.join(" / ")});
+				key.push({ cutValue: drilldownLevelValues.join(","), title: drilldownLevelLabels.join(" / ")});
 			}
 
 			// Set key
@@ -389,19 +258,19 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 			return;
 		}
 
-		if ($scope.gridApi.selection.getSelectedCount() <= 0) {
+		if (view.grid.api.selection.getSelectedCount() <= 0) {
 			dialogService.show('Cannot filter. No rows are selected.');
 			return;
 		}
 
 		var filterValues = [];
-		var selectedRows = $scope.gridApi.selection.getSelectedRows();
+		var selectedRows = view.grid.api.selection.getSelectedRows();
 		$(selectedRows).each( function(idx, gd) {
 			filterValues.push(gd["key0"].cutValue);
 		});
 
 		var invert = false;
-		$scope.selectCut($scope.gridOptions.columnDefs[0].cutDimension, filterValues.join(";"), invert);
+		$scope.selectCut(view.grid.columnDefs[0].cutDimension, filterValues.join(";"), invert);
 
 	};
 

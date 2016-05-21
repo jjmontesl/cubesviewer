@@ -31,52 +31,8 @@
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
 
-	$scope.$parent.gridData = [];
-
-	$scope.pendingRequests = 0;
-
-	// TODO: Move to explore view or grid component as cube view shall be split into directives
-    $scope.$parent.onGridRegisterApi = function(gridApi) {
-        $scope.gridApi = gridApi;
-        gridApi.selection.on.rowSelectionChanged($scope,function(row){
-        });
-        gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-        });
-        gridApi.core.on.columnVisibilityChanged($scope, function (column) {
-        	if (column.visible) {
-        		delete ($scope.view.params.columnHide[column.field]);
-        	} else {
-        		$scope.view.params.columnHide[column.field] = true;
-        		delete ($scope.view.params.columnWidths[column.field]);
-        	}
-        	$scope.view.updateUndo();
-        });
-        gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
-            // do something
-        	$scope.view.params.columnSort[$scope.view.params.mode] = {};
-        	$(sortColumns).each(function (idx, col) {
-        		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };
-        	});
-        	$scope.view.updateUndo();
-        });
-        gridApi.colResizable.on.columnSizeChanged($scope, function(colDef, deltaChange) {
-        	var colIndex = -1;
-        	$(gridApi.grid.columns).each(function(idx, e) {
-        		if (e.field == colDef.field) colIndex = idx;
-        	});
-        	if (colIndex >= 0) {
-        		$scope.view.params.columnWidths[colDef.field] = gridApi.grid.columns[colIndex].width;
-        	}
-        	$scope.view.updateUndo();
-        });
-    };
-	$scope.$parent.gridApi = null;
-	$scope.$parent.gridOptions = {
-		onRegisterApi: $scope.onGridRegisterApi,
-		enableRowSelection: false,
-		enableRowHeaderSelection: false,
-	};
-
+	$scope.view.grid.enableRowSelection = false;
+	$scope.view.grid.enableRowHeaderSelection = false;
 
 	$scope.initialize = function() {
 		$scope.refreshView();
@@ -92,9 +48,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
 		var jqxhr = browser.facts(browser_args, $scope._loadDataCallback);
 
-		$scope.pendingRequests++;
+		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
-			$scope.pendingRequests--;
+			$scope.view.pendingRequests--;
 		});
 		jqxhr.error($scope.requestErrorHandler);
 
@@ -104,33 +60,30 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 		$scope.validateData(data, status);
 		$scope.processData(data);
 		$rootScope.$apply();
-		$scope.gridApi.core.refresh();
+		/*
+		$scope.view.grid.api.core.refresh();
 		$rootScope.$apply();
+		*/
 	};
 
 	$scope.processData = function(data) {
 
 		var view = $scope.view;
 
-		$scope.gridData = [];
-		$scope.gridFormatters = {};
-
 		var dimensions = view.cube.dimensions;
 		var measures = view.cube.measures;
         var details = view.cube.details;
 
-        $scope.view.grid = $scope.$parent.gridOptions;
-
 	    // Configure grid
-	    angular.extend($scope.$parent.gridOptions, {
-    		data: $scope.gridData,
+	    angular.extend($scope.view.grid, {
+    		//data: $scope.view.grid.data,
     		//minRowsToShow: 3,
     		rowHeight: 24,
     		onRegisterApi: $scope.onGridRegisterApi,
     		enableColumnResizing: true,
-    		//showColumnFooter: true,
+    		showColumnFooter: false,
     		enableGridMenu: true,
-    		//showGridFooter: true,
+    		//showGridFooter: false,
     	    paginationPageSizes: cvOptions.pagingOptions,
     	    paginationPageSize: cvOptions.pagingOptions[0],
     		//enableHorizontalScrollbar: 0,
@@ -145,7 +98,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
     		columnDefs: []
 	    });
 
-		$scope.gridOptions.columnDefs.push({
+		view.grid.columnDefs.push({
 			name: "id",
 			field: "id",
 			index: "id",
@@ -177,7 +130,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 					sort: $scope.defineColumnSort(level.key().ref)
 
 				};
-				$scope.gridOptions.columnDefs.push(col);
+				view.grid.columnDefs.push(col);
 			}
 		}
 
@@ -201,7 +154,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				width : $scope.defineColumnWidth(measure.ref, 75),
 				sort: $scope.defineColumnSort(measure.ref)
 			};
-			$scope.gridOptions.columnDefs.push(col);
+			view.grid.columnDefs.push(col);
 		}
 
         for (var detailIndex in details) {
@@ -223,7 +176,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				width: $scope.defineColumnWidth(detail.ref, 95),
 				sort: $scope.defineColumnSort(detail.ref)
 			};
-			$scope.gridOptions.columnDefs.push(col);
+            view.grid.columnDefs.push(col);
         }
 
 		// If there are cells, show them
@@ -238,7 +191,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 	$scope._addRows = function(data) {
 
 		var view = $scope.view;
-		var rows = $scope.gridData;
+		var rows = view.grid.data;
 
 		var counter = 0;
 		var dimensions = view.cube.dimensions;

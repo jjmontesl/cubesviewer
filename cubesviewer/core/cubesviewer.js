@@ -40,8 +40,8 @@ angular.module('cv').constant('angularMomentConfig', {
 });
 */
 
-angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheService', /* 'editableOptions', 'editableThemes', */
-                           function($timeout, cvOptions, cubesService, cubesCacheService /*, editableOptions, editableThemes */) {
+angular.module('cv').config([ '$logProvider', 'cvOptions', /* 'editableOptions', 'editableThemes', */
+                           function($logProvider, cvOptions /*, editableOptions, editableThemes */) {
 
 	//console.debug("Bootstrapping CubesViewer.");
 
@@ -66,11 +66,15 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheS
 
             hideControls: false,
 
-            gaTrackEvents: false
+            gaTrackEvents: false,
+
+            debug: true
     };
 
 	$.extend(defaultOptions, cvOptions);
 	$.extend(cvOptions, defaultOptions);
+
+	$logProvider.debugEnabled(cvOptions.debug);
 
 	// Avoid square brackets in serialized array params
 	// TODO: Shall be done for $http instead?
@@ -86,6 +90,13 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheS
 	editableThemes.bs3.buttonsClass = 'btn-sm';
 	editableOptions.theme = 'bs3';
 	*/
+
+}]);
+
+angular.module('cv').run([ '$timeout', '$log', 'cvOptions', 'cubesService', 'cubesCacheService', /* 'editableOptions', 'editableThemes', */
+	                           function($timeout, $log, cvOptions, cubesService, cubesCacheService /*, editableOptions, editableThemes */) {
+
+	$log.debug("CubesViewer debug mode is enabled.");
 
 	// Initialize cache service
 	cubesCacheService.initialize();
@@ -122,7 +133,7 @@ var cubesviewer = {
 
 	createView: function(container, type, viewData) {
 
-		console.debug("Creating view: " + viewData);
+		//console.debug("Creating view: " + viewData);
 
 		var $compile = angular.element(document).injector().get('$compile');
 		var viewsService = angular.element(document).injector().get('viewsService');

@@ -28,19 +28,14 @@
  * This is an optional component, part of the cube view.
  */
 
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController", ['$rootScope', '$scope', '$timeout', '$element', 'cvOptions', 'cubesService', 'viewsService', 'seriesService',
-                                                     function ($rootScope, $scope, $timeout, $element, cvOptions, cubesService, viewsService, seriesService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController", ['$rootScope', '$scope', '$timeout', '$element', 'cvOptions', 'cubesService', 'viewsService', 'seriesOperationsService',
+                                                     function ($rootScope, $scope, $timeout, $element, cvOptions, cubesService, viewsService, seriesOperationsService) {
 
-	$scope.$parent.gridData = [];
-	$scope.$parent.gridApi = null;
-	$scope.$parent.gridOptions = { data: $scope.$parent.gridData, columnDefs: [] };
+	var chartCtrl = this;
 
-	$scope.pendingRequests = 0;
+	this.chart = null;
 
-	$scope.chart = null;
-
-
-	$scope.initialize = function() {
+	this.initialize = function() {
 		// Add chart view parameters to view definition
 		$scope.view.params = $.extend(
 			{},
@@ -51,10 +46,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 	};
 
 	$scope.$on("ViewRefresh", function(view) {
-		$scope.loadData();
+		chartCtrl.loadData();
 	});
 
-	$scope.loadData = function() {
+	this.loadData = function() {
 
 		var view = $scope.view;
 
@@ -63,43 +58,42 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 		var browser_args = cubesService.buildBrowserArgs($scope.view, $scope.view.params.xaxis != null ? true : false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
-		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
+		var jqxhr = browser.aggregate(browser_args, this._loadDataCallback);
 
-		$scope.pendingRequests++;
+		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
-			$scope.pendingRequests--;
+			$scope.view.pendingRequests--;
 		});
 		jqxhr.error($scope.requestErrorHandler);
 
 	};
 
-	$scope._loadDataCallback = function(data, status) {
+	this._loadDataCallback = function(data, status) {
 		$scope.validateData(data, status);
-		$scope.processData(data);
+		chartCtrl.processData(data);
 		$rootScope.$apply();
 	};
 
-	$scope.processData = function(data) {
+	this.processData = function(data) {
 
-		if ($scope.pendingRequests == 0) {
+		if ($scope.view.pendingRequests == 0) {
 			$($element).find("svg").empty();
 			$($element).find("svg").parent().children().not("svg").remove();
 		}
 
 		$scope.rawData = data;
 
-		$scope.gridData = [];
-		$scope.gridOptions.data = $scope.gridData;
-		$scope.gridOptions.columnDefs = [];
+		$scope.view.grid.data = [];
+		$scope.view.grid.columnDefs = [];
 
 		var view = $scope.view;
-		var rows = $scope.gridData;
-		var columnDefs = $scope.gridOptions.columnDefs;
+		var rows = $scope.view.grid.data;
+		var columnDefs = view.grid.columnDefs;
 
 		// Process data
 		//$scope._sortData (data.cells, view.params.xaxis != null ? true : false);
-	    $scope._addRows(data);
-	    seriesService.applyCalculations($scope.view, $scope.gridData, $scope.gridOptions.columnDefs);
+	    this._addRows(data);
+	    seriesOperationsService.applyCalculations($scope.view, $scope.view.grid.data, view.grid.columnDefs);
 
 		// Join keys
 		if (view.params.drilldown.length > 0) {
@@ -121,12 +115,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 	/*
 	 * Adds rows.
 	 */
-	$scope._addRows = function(data) {
+	this._addRows = function(data) {
 
 		console.debug("FIXME: addRows method in charts controller is duplicated (from series controller)!")
 
 		var view = $scope.view;
-		var rows = $scope.gridData;
+		var rows = $scope.view.grid.data;
 
 		var counter = 0;
 		var dimensions = view.cube.dimensions;
@@ -152,19 +146,19 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 			for (var i = 0; i < drilldown.length; i++) {
 
 				// Get dimension
-				var parts = view.cube.cvdim_parts(drilldown[i]);
+				var parts = view.cube.dimensionParts(drilldown[i]);
 				var infos = parts.hierarchy.readCell(e, parts.level);
 
 				// Values and Labels
-				var drilldown_level_values = [];
-				var drilldown_level_labels = [];
+				var drilldownLevelValues = [];
+				var drilldownLevelLabels = [];
 
 				$(infos).each(function(idx, info) {
-					drilldown_level_values.push (info.key);
-					drilldown_level_labels.push (info.label);
+					drilldownLevelValues.push (info.key);
+					drilldownLevelLabels.push (info.label);
 				});
 
-				key.push (drilldown_level_labels.join(" / "));
+				key.push (drilldownLevelLabels.join(" / "));
 
 			}
 
@@ -209,7 +203,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 					//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 				};
-				$scope.gridOptions.columnDefs.push(col);
+				view.grid.columnDefs.push(col);
 			}
 		});
 
@@ -229,7 +223,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 			};
-			$scope.gridOptions.columnDefs.splice(idx, 0, col);
+			view.grid.columnDefs.splice(idx, 0, col);
 		});
 
 		if (view.params.drilldown.length == 0 && rows.length > 0) {
@@ -249,18 +243,18 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 			};
-			$scope.gridOptions.columnDefs.splice(0, 0, col);
+			view.grid.columnDefs.splice(0, 0, col);
 		}
 
 	};
 
-	$scope.cleanupNvd3 = function() {
+	this.cleanupNvd3 = function() {
 
 		//$($element).find("svg").empty();
 		$($element).find("svg").parent().children().not("svg").remove();
 
-		if ($scope.chart) {
-			$("#" + $scope.chart.tooltip.id()).remove(); // div.nvtooltip
+		if (chartCtrl.chart) {
+			$("#" + chartCtrl.chart.tooltip.id()).remove(); // div.nvtooltip
 		}
 
 		//$scope.chart = null;
@@ -277,26 +271,26 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 	};
 
 	$scope.$watch('cvOptions.studioTwoColumn', function() {
-		if ($scope.chart) {
+		if (chartCtrl.chart) {
 			$timeout(function() {
-				$scope.chart.update();
+				chartCtrl.chart.update();
 			}, 100);
 		}
 	});
 
-	$scope.resizeChart = function(size) {
+	this.resizeChart = function(size) {
 		var view = $scope.view;
 		$($element).find('svg').height(size);
 		$($element).find('svg').resize();
 
-		if ($scope.chart) $scope.chart.update();
+		if (chartCtrl.chart) chartCtrl.chart.update();
 	};
 
 	$scope.$on("$destroy", function() {
-		$scope.cleanupNvd3();
+		chartCtrl.cleanupNvd3();
 	});
 
-	$scope.initialize();
+	this.initialize();
 
 }]);
 

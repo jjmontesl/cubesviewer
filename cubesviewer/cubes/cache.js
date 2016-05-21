@@ -23,8 +23,8 @@
 
 "use strict";
 
-angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOptions', 'cubesService', 'gaService',
-                                                         function ($rootScope, cvOptions, cubesService, gaService) {
+angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', '$log', 'cvOptions', 'cubesService', 'gaService',
+                                                         function ($rootScope, $log, cvOptions, cubesService, gaService) {
 
 	var cubesCacheService = this;
 
@@ -34,12 +34,12 @@ angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOption
 
 	this.initialize = function() {
 		if (this._cacheOverridedCubesRequest) {
-			console.debug("Error: tried to initialize CubesCacheService but it was already initialized.")
+			$log.warn("Error: tried to initialize CubesCacheService but it was already initialized.")
 			return;
 		}
 		if (cvOptions.cacheEnabled) {
 			// Replace request function
-			console.debug("Replacing Cubes request method with caching version.")
+			$log.debug("Replacing Cubes request method with caching version.")
 			cubesCacheService._cacheOverridedCubesRequest = cubesService.cubesRequest;
 			cubesService.cubesRequest = cubesCacheService.cachedCubesRequest;
 		}

@@ -76,7 +76,7 @@ cubes.Cube.prototype.cvdim_dim = function(dimensionString) {
 	return this.dimension(dimname);
 };
 
-cubes.Cube.prototype.cvdim_parts = function(dimensionString) {
+cubes.Cube.prototype.dimensionParts = function(dimensionString) {
 	// Get a dimension info by name. Accepts dimension hierarchy and level in the input string.
 
 	var dim = this.cvdim_dim(dimensionString);

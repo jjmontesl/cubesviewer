@@ -53,8 +53,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
 	$scope.drawChartRadar = function () {
 
 		var view = $scope.view;
-		var dataRows = $scope.gridData;
-		var columnDefs = $scope.gridOptions.columnDefs;
+		var dataRows = $scope.view.grid.data;
+		var columnDefs = view.grid.columnDefs;
 
 		var container = $($element).find(".cv-chart-container")[0];
 		$(container).empty();

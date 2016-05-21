@@ -43,7 +43,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 		// Check if current filter is inverted
 		var view = $scope.view;
-		var parts = view.cube.cvdim_parts($scope.view.dimensionFilter);
+		var parts = view.cube.dimensionParts($scope.view.dimensionFilter);
 		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
 		for (var i = 0; i < view.params.cuts.length ; i++) {
 			if (view.params.cuts[i].dimension == cutDimension) {
@@ -54,7 +54,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 	};
 
 	$scope.$watch("view.dimensionFilter", function() {
-		$scope.parts = $scope.view.cube.cvdim_parts($scope.view.dimensionFilter);
+		$scope.parts = $scope.view.cube.dimensionParts($scope.view.dimensionFilter);
 		$scope.loadDimensionValues();
 	});
 
@@ -127,7 +127,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		var dimension = $scope.view.cube.cvdim_dim($scope.view.dimensionFilter);
 		var dimensionValues = [];
 
-		var parts = view.cube.cvdim_parts($scope.view.dimensionFilter);
+		var parts = view.cube.dimensionParts($scope.view.dimensionFilter);
 		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
 		var filterValues = [];
 		for (var i = 0; i < view.params.cuts.length ; i++) {
@@ -141,22 +141,22 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		$(data.data).each( function(idx, e) {
 
 			// Get dimension
-			var parts = $scope.view.cube.cvdim_parts($scope.view.dimensionFilter);
+			var parts = $scope.view.cube.dimensionParts($scope.view.dimensionFilter);
 			var infos = parts.hierarchy.readCell(e, parts.level);
 
 			// Values and Labels
-			var drilldown_level_values = [];
-			var drilldown_level_labels = [];
+			var drilldownLevelValues = [];
+			var drilldownLevelLabels = [];
 
 			$(infos).each(function(idx, info) {
-				drilldown_level_values.push (info.key);
-				drilldown_level_labels.push (info.label);
+				drilldownLevelValues.push (info.key);
+				drilldownLevelLabels.push (info.label);
 			});
 
 			dimensionValues.push({
-				'label': drilldown_level_labels.join(' / '),
-				'value': drilldown_level_values.join (','),
-				'selected': filterValues.indexOf(drilldown_level_values.join (',')) >= 0
+				'label': drilldownLevelLabels.join(' / '),
+				'value': drilldownLevelValues.join (','),
+				'selected': filterValues.indexOf(drilldownLevelValues.join (',')) >= 0
 			});
 
 		});
@@ -209,7 +209,7 @@ function cubesviewerViewCubeDimensionFilter () {
 	 */
 	this.drawDimensionFilter = function (view, dimension) {
 
-		var parts = view.cube.cvdim_parts(dimension);
+		var parts = view.cube.dimensionParts(dimension);
 
 		// Draw value container
 

@@ -101,13 +101,15 @@
     <div ng-show="view.params.mode == 'series' || view.params.mode == 'chart'" class="divider"></div>
 
     <li ng-show="view.params.mode == 'series' || view.params.mode == 'chart'" class="dropdown-submenu">
-        <a tabindex="0" ><i class="fa fa-fw fa-calculator"></i> Series calculations</a>
+        <a tabindex="0" ><i class="fa fa-fw fa-calculator"></i> Series operations</a>
         <ul class="dropdown-menu">
-          <li ng-click="selectCalculation('difference')"><a href=""><i class="fa fa-fw fa-line-chart"></i> Difference</a></li>
-          <li ng-click="selectCalculation('percentage')"><a href=""><i class="fa fa-fw fa-percent"></i> Change rate</a></li>
-          <li ng-click="selectCalculation('accum')"><a href=""><i class="fa fa-fw">&sum;</i> Accumulated</a></li>
+          <li ng-click="selectOperation('difference')"><a href=""><i class="fa fa-fw fa-line-chart"></i> Difference</a></li>
+          <li ng-click="selectOperation('percentage')"><a href=""><i class="fa fa-fw fa-percent"></i> Change rate</a></li>
+          <li ng-click="selectOperation('accum')"><a href=""><i class="fa fa-fw">&sum;</i> Accumulated</a></li>
           <div class="divider"></div>
-          <li ng-click="selectCalculation(null)"><a href=""><i class="fa fa-fw fa-times"></i> None</a></li>
+          <li ng-click="selectOperation('fill-zeros')"><a href=""><i class="fa fa-fw">0</i> Replace blanks with zeroes</a></li>
+          <div class="divider"></div>
+          <li ng-click="selectOperation(null)"><a href=""><i class="fa fa-fw fa-times"></i> Clear operations</a></li>
         </ul>
     </li>
 

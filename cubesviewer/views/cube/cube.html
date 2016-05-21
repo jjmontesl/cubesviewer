@@ -1,4 +1,4 @@
-<div class="cv-view-panel" ng-controller="CubesViewerViewsCubeController" >
+<div class="cv-view-panel" ng-controller="CubesViewerViewsCubeController as cubeView" >
 
     <div ng-if="view.state == 3">
         <div class="alert alert-danger" style="margin: 0px;">
@@ -12,13 +12,15 @@
         </div>
     </div>
 
-    <div ng-if="view.state != 3" style="min-height: 80px;">
-
+    <div>
         <h2 ng-show="view.controlsHidden()" style="margin-top: 5px;">
             <i class="fa fa-fw fa-file-o"></i> {{ view.params.name }}
         </h2>
 
         <div ng-include="'views/cube/alerts.html'"></div>
+    </div>
+
+    <div ng-if="view.state == 2" style="min-height: 80px;">
 
         <div class="cv-view-viewmenu hidden-print" ng-hide="view.controlsHidden()">
 
@@ -63,7 +65,7 @@
 
 
                     <div ng-repeat="drilldown in view.params.drilldown" ng-if="view.params.mode != 'facts'" class="label label-secondary cv-infopiece cv-view-viewinfo-drill" style="color: black; background-color: #ccffcc;">
-                        <span><i class="fa fa-fw fa-arrow-down"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>
+                        <span><i class="fa fa-fw fa-arrow-down"></i> <b>Drilldown:</b> {{ view.cube.dimensionParts(drilldown).label }}</span>
                         <button type="button" class="btn btn-info btn-xs" style="visibility: hidden; margin-left: -20px;"><i class="fa fa-fw fa-info"></i></button>
                         <button ng-hide="view.controlsHidden()" type="button" ng-click="showDimensionFilter(drilldown)" class="btn btn-secondary btn-xs hidden-print" style="margin-left: 3px;"><i class="fa fa-fw fa-search"></i></button>
                         <button ng-hide="view.controlsHidden()" type="button" ng-click="selectDrill(drilldown, '')" class="btn btn-danger btn-xs hidden-print" style="margin-left: 1px;"><i class="fa fa-fw fa-trash"></i></button>
@@ -73,11 +75,11 @@
                 <div class="cv-view-viewinfo-cut">
                     <!--
                         var dimensionString = $(this).parents('.cv-view-infopiece-cut').first().attr('data-dimension');
-                        var parts = view.cube.cvdim_parts(dimensionString);
+                        var parts = view.cube.dimensionParts(dimensionString);
                         var depth = $(this).parents('.cv-view-infopiece-cut').first().attr('data-value').split(';')[0].split(",").length;
                         cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, dimensionString + ":" + parts.hierarchy.levels[depth - 1] );
                      -->
-                    <div ng-repeat="cut in view.params.cuts" ng-init="dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';" class="label label-secondary cv-infopiece cv-view-viewinfo-cut" style="color: black; background-color: #ffcccc;">
+                    <div ng-repeat="cut in view.params.cuts" ng-init="dimparts = view.cube.dimensionParts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';" class="label label-secondary cv-infopiece cv-view-viewinfo-cut" style="color: black; background-color: #ffcccc;">
                         <span style="max-width: 480px;"><i class="fa fa-fw fa-filter"></i> <b>Filter:</b> {{ dimparts.label }} <span ng-class="{ 'text-danger': cut.invert }">{{ equality }}</span> <span title="{{ cut.value }}">{{ cut.value }}</span></span>
                         <button type="button" class="btn btn-info btn-xs" style="visibility: hidden; margin-left: -20px;"><i class="fa fa-fw fa-info"></i></button>
                         <button ng-hide="view.controlsHidden()" type="button" ng-click="showDimensionFilter(cut.dimension)" class="btn btn-secondary btn-xs hidden-print" style="margin-left: 3px;"><i class="fa fa-fw fa-search"></i></button>
@@ -95,7 +97,7 @@
                     </div>
 
                     <div ng-if="view.params.mode == 'series' || view.params.mode == 'chart'" class="label label-secondary cv-infopiece cv-view-viewinfo-extra" style="color: black; background-color: #ccddff;">
-                        <span style="max-width: 350px;"><i class="fa fa-fw fa-long-arrow-right"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None" }}</span>
+                        <span style="max-width: 350px;"><i class="fa fa-fw fa-long-arrow-right"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None" }}</span>
                         <button type="button" class="btn btn-info btn-xs" style="visibility: hidden; margin-left: -20px;"><i class="fa fa-fw fa-info"></i></button>
                         <!-- <button type="button" ng-click="showDimensionFilter(view.params.xaxis)" class="btn btn-secondary btn-xs" style="margin-left: 3px;"><i class="fa fa-fw fa-search"></i></button>  -->
                         <!-- <button type="button" ng-click="selectXAxis(null)" class="btn btn-danger btn-xs" style="margin-left: 1px;"><i class="fa fa-fw fa-trash"></i></button>  -->

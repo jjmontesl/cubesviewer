@@ -29,126 +29,17 @@
 
 "use strict";
 
-angular.module('cv.views').service("seriesService", ['$rootScope', 'cvOptions', 'cubesService',
-                                                    function ($rootScope, cvOptions, cubesService) {
-
-	this.calculateDifferentials = function(view, rows, columnDefs) {
-
-		console.debug("FIXME: Differentials are ignoring drilldown.length columns, but fails in some cases.");
-
-		$(rows).each(function(idx, e) {
-			var lastValue = null;
-			for (var i = view.params.drilldown.length; i < columnDefs.length; i++) {
-	    		var value = e[columnDefs[i].field];
-	    		var diff = null;
-	    		if ((lastValue != null) && (value != null)) {
-	    			var diff = value - lastValue;
-	    			e[columnDefs[i].field] = diff;
-	    		} else {
-	    			delete e[columnDefs[i].field];
-	    			//e[columnDefs[i].field] = null;
-	    		}
-	    		lastValue = value;
-	    	}
-		});
-
-	};
-
-	this.calculateDifferentialsPercent = function(view, rows, columnDefs) {
-
-		console.debug("FIXME: Differentials are ignoring drilldown.length columns, but fails in some cases.");
-
-		$(rows).each(function(idx, e) {
-			var lastValue = null;
-			for (var i = view.params.drilldown.length; i < columnDefs.length; i++) {
-	    		var value = e[columnDefs[i].field];
-	    		var diff = null;
-	    		if ((lastValue != null) && (value != null)) {
-	    			var diff = (value - lastValue) / lastValue;
-	    			e[columnDefs[i].field] = diff;
-	    		} else {
-	    			delete e[columnDefs[i].field];
-	    			//e[columnDefs[i].field] = null;
-	    		}
-	    		lastValue = value;
-	    	}
-		});
-
-	};
-
-	this.calculateAccum = function(view, rows, columnDefs) {
-
-	};
-
-	this.applyCalculations = function(view, rows, columnDefs) {
-		if (view.params.calculation == "difference") {
-			this.calculateDifferentials(view, rows, columnDefs);
-		}
-		if (view.params.calculation == "percentage") {
-			this.calculateDifferentialsPercent(view, rows, columnDefs);
-		}
-	};
-
-
-}]);
-
-
 
 /**
  * SeriesTable object. This is part of the "cube" view. Allows the user to select
  * a dimension to use as horizontal axis of a table. This is later used to generate
  * charts.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesService',
-                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, seriesService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesOperationsService',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, seriesOperationsService) {
 
-	$scope.$parent.gridData = [];
-
-	$scope.pendingRequests = 0;
-
-	// TODO: Move to explore view or grid component as cube view shall be split into directives
-    $scope.$parent.onGridRegisterApi = function(gridApi) {
-    	//console.debug("Grid Register Api: Series");
-        $scope.gridApi = gridApi;
-        gridApi.selection.on.rowSelectionChanged($scope,function(row){
-        });
-        gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-        });
-        gridApi.core.on.columnVisibilityChanged($scope, function (column) {
-        	if (column.visible) {
-        		delete ($scope.view.params.columnHide[column.field]);
-        	} else {
-        		$scope.view.params.columnHide[column.field] = true;
-        		delete ($scope.view.params.columnWidths[column.field]);
-        	}
-        	$scope.view.updateUndo();
-        });
-        gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
-            // do something
-        	$scope.view.params.columnSort[$scope.view.params.mode] = {};
-        	$(sortColumns).each(function (idx, col) {
-        		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };
-        	});
-        	$scope.view.updateUndo();
-        });
-        gridApi.colResizable.on.columnSizeChanged($scope, function(colDef, deltaChange) {
-        	var colIndex = -1;
-        	$(gridApi.grid.columns).each(function(idx, e) {
-        		if (e.field == colDef.field) colIndex = idx;
-        	});
-        	if (colIndex >= 0) {
-        		$scope.view.params.columnWidths[colDef.field] = gridApi.grid.columns[colIndex].width;
-        	}
-        	$scope.view.updateUndo();
-        });
-    };
-	$scope.$parent.gridApi = null;
-	$scope.$parent.gridOptions = {
-		onRegisterApi: $scope.onGridRegisterApi,
-		enableRowSelection: false,
-		enableRowHeaderSelection: false,
-	};
-
+	$scope.view.grid.enableRowSelection = false;
+	$scope.view.grid.enableRowHeaderSelection = false;
 
 	$scope.initialize = function() {
 		$scope.view.params = $.extend(
@@ -173,9 +64,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 		var browser_args = cubesService.buildBrowserArgs($scope.view, $scope.view.params.xaxis != null ? true : false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
 		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
-		$scope.pendingRequests++;
+		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
-			$scope.pendingRequests--;
+			$scope.view.pendingRequests--;
 		});
 		jqxhr.error($scope.requestErrorHandler);
 
@@ -185,30 +76,22 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 		$scope.validateData(data, status);
 		$scope.processData(data);
 		$rootScope.$apply();
-		if ($scope.gridApi) {
-			$scope.gridApi.core.refresh();
-			$rootScope.$apply();
-		}
 	};
 
 	$scope.processData = function(data) {
 
 		var view = $scope.view;
 
-		$scope.gridData = [];
-
-		$scope.view.grid = $scope.$parent.gridOptions;
-
 		// Configure grid
-	    angular.extend($scope.$parent.gridOptions, {
-    		data: $scope.gridData,
+		angular.extend($scope.view.grid, {
+    		//data: $scope.view.grid.data,
     		//minRowsToShow: 3,
     		rowHeight: 24,
     		onRegisterApi: $scope.onGridRegisterApi,
     		enableColumnResizing: true,
     		showColumnFooter: false,
     		enableGridMenu: true,
-    		showGridFooter: false,
+    		//showGridFooter: false,
     	    paginationPageSizes: cvOptions.pagingOptions,
     	    paginationPageSize: cvOptions.pagingOptions[0],
     		//enableHorizontalScrollbar: 0,
@@ -227,7 +110,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 		// Process data
 		//$scope._sortData (data.cells, view.params.xaxis != null ? true : false);
 	    $scope._addRows(data);
-	    seriesService.applyCalculations($scope.view, $scope.gridData, $scope.gridOptions.columnDefs);
+	    seriesOperationsService.applyCalculations($scope.view, $scope.view.grid.data, view.grid.columnDefs);
 
 	    /*
 	    // TODO: Is this needed?
@@ -262,7 +145,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 	$scope._addRows = function(data) {
 
 		var view = $scope.view;
-		var rows = $scope.gridData;
+		var rows = view.grid.data;
 
 		var counter = 0;
 		var dimensions = view.cube.dimensions;
@@ -288,19 +171,19 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 			for (var i = 0; i < drilldown.length; i++) {
 
 				// Get dimension
-				var parts = view.cube.cvdim_parts(drilldown[i]);
+				var parts = view.cube.dimensionParts(drilldown[i]);
 				var infos = parts.hierarchy.readCell(e, parts.level);
 
 				// Values and Labels
-				var drilldown_level_values = [];
-				var drilldown_level_labels = [];
+				var drilldownLevelValues = [];
+				var drilldownLevelLabels = [];
 
 				$(infos).each(function(idx, info) {
-					drilldown_level_values.push (info.key);
-					drilldown_level_labels.push (info.label);
+					drilldownLevelValues.push(info.key);
+					drilldownLevelLabels.push(info.label);
 				});
 
-				key.push (drilldown_level_labels.join(" / "));
+				key.push (drilldownLevelLabels.join(" / "));
 
 			}
 
@@ -347,7 +230,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 					width : $scope.defineColumnWidth(colKey, 90),
 					sort: $scope.defineColumnSort(colKey)
 				};
-				$scope.gridOptions.columnDefs.push(col);
+				view.grid.columnDefs.push(col);
 			}
 		});
 
@@ -370,7 +253,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 				width : $scope.defineColumnWidth("key" + idx, 190),
 				sort: $scope.defineColumnSort("key" + idx)
 			};
-			$scope.gridOptions.columnDefs.splice(idx, 0, col);
+			view.grid.columnDefs.splice(idx, 0, col);
 		});
 
 		if (view.params.drilldown.length == 0 && rows.length > 0) {
@@ -393,7 +276,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 				width : $scope.defineColumnWidth("key0", 190),
 				sort: $scope.defineColumnSort("key0")
 			};
-			$scope.gridOptions.columnDefs.splice(0, 0, col);
+			view.grid.columnDefs.splice(0, 0, col);
 		}
 
 	};

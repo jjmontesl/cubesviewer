@@ -115,7 +115,7 @@ function cubesviewerViewCubeRangeFilter () {
 		);
 
 		$(view.params.rangefilters).each( function(idx, e) {
-			var dimparts = view.cube.cvdim_parts(e.dimension);
+			var dimparts = view.cube.dimensionParts(e.dimension);
 			var piece = cubesviewer.views.cube.explore.drawInfoPiece(
 					$(view.container).find('.cv-view-viewinfo-range'), "#ffe8dd", null, readonly,
 					'<span class="ui-icon ui-icon-zoomin"></span> <span><b>Filter: </b> ' +
@@ -139,7 +139,7 @@ function cubesviewerViewCubeRangeFilter () {
 
 	this.drawRangeFilter = function(view, rangefilter, container) {
 
-		var dimparts = view.cube.cvdim_parts(rangefilter.dimension);
+		var dimparts = view.cube.dimensionParts(rangefilter.dimension);
 
 		$(container).append(
 			'<input name="range_start" /> - '

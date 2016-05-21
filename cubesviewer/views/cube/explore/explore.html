@@ -2,17 +2,17 @@
 
     <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->
     <h3><i class="fa fa-fw fa-arrow-circle-down"></i> Aggregated data
-        <i ng-show="pendingRequests > 0" class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right"></i>
+        <i ng-show="view.pendingRequests > 0" class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right"></i>
     </h3>
 
-    <div ng-if="pendingRequests > 0" class="loadingbar-content">
+    <div ng-if="view.pendingRequests > 0" class="loadingbar-content">
         <span class="loadingbar-expand"></span>
     </div>
 
-    <div ui-grid="gridOptions"
+    <div ui-grid="view.grid"
          ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize
          ui-grid-pagination ui-grid-pinning
-         style="width: 100%;" ng-style="{height: ((gridOptions.data.length < 15 ? gridOptions.data.length : 15) * 24) + 44 + 30 + 'px'}">
+         style="width: 100%;" ng-style="{height: ((view.grid.data.length < 15 ? view.grid.data.length : 15) * 24) + 44 + 30 + 'px'}">
     </div>
     <div style="height: 30px;">&nbsp;</div>
 

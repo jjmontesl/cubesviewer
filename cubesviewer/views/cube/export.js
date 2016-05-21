@@ -29,8 +29,8 @@
 
 "use strict";
 
-angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesService',
-                                                              function ($rootScope, $timeout, cvOptions, cubesService, viewsService, seriesService) {
+angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesOperationsService',
+                                                              function ($rootScope, $timeout, cvOptions, cubesService, viewsService, seriesOperationsService) {
 
 	/**
 	 * Download facts in CSV format from Cubes Server
@@ -68,14 +68,14 @@ angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeou
 		var content = "";
 		var values = [];
 
-		$(gridOptions.columnDefs).each(function(idx, e) {
+		$(view.grid.columnDefs).each(function(idx, e) {
 			values.push ('"' + e.name + '"');
 		});
 		content = content + (values.join(",")) + "\n";
 
 		$(dataRows).each(function(idxr, r) {
 			values = [];
-			$(gridOptions.columnDefs).each(function(idx, e) {
+			$(view.grid.columnDefs).each(function(idx, e) {
 				values.push ('"' + r[e.field] + '"');
 			});
 			content = content + (values.join(",")) + "\n";

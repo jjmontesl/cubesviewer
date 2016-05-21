@@ -913,7 +913,7 @@ cubes.Cube.prototype.cvdim_dim = function(dimensionString) {
 	return this.dimension(dimname);
 };
 
-cubes.Cube.prototype.cvdim_parts = function(dimensionString) {
+cubes.Cube.prototype.dimensionParts = function(dimensionString) {
 	// Get a dimension info by name. Accepts dimension hierarchy and level in the input string.
 
 	var dim = this.cvdim_dim(dimensionString);
@@ -1027,8 +1027,8 @@ cubes.Hierarchy.prototype.readCell = function(cell, level_limit) {
 
 angular.module('cv.cubes', []);
 
-angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions', 'gaService',
-                                                    function ($rootScope, cvOptions, gaService) {
+angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOptions', 'gaService',
+                                                    function ($rootScope, $log, cvOptions, gaService) {
 
 	var cubesService = this;
 
@@ -1087,8 +1087,13 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions', '
 	 */
 	this.cubesRequest = function(path, params, successCallback, errCallback) {
 
+
 		// TODO: normalize how URLs are used (full URL shall come from client code)
 		if (path.charAt(0) == '/') path = cvOptions.cubesUrl + path;
+
+		if (cvOptions.debug) {
+			$log.debug("Cubes request: " + path + " (" + params + ")");
+		}
 
 		var jqxhr = $.get(path, params, cubesService._cubesRequestCallback(successCallback), cvOptions.jsonRequestType);
 
@@ -1111,7 +1116,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions', '
 	 * Default XHR error handler for CubesRequests
 	 */
 	this.defaultRequestErrorHandler = function(xhr, textStatus, errorThrown) {
-		console.debug("Cubes request error: " + xhr)
+		$log.error("Cubes request error: " + xhr)
 	};
 
 	/*
@@ -1136,7 +1141,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions', '
 
 			// Preprocess
 			for (var i = 0; i < drilldowns.length; i++) {
-				drilldowns[i] = cubes.drilldown_from_string(view.cube, view.cube.cvdim_parts(drilldowns[i]).fullDrilldownValue);
+				drilldowns[i] = cubes.drilldown_from_string(view.cube, view.cube.dimensionParts(drilldowns[i]).fullDrilldownValue);
 			}
 
 			// Include drilldown array
@@ -1239,7 +1244,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions', '
 
 		var values = [];
 
-		var dimensionparts = view.cube.cvdim_parts(datefilter.dimension);
+		var dimensionparts = view.cube.dimensionParts(datefilter.dimension);
 		for (var i = 0; i < dimensionparts.hierarchy.levels.length; i++) {
 			var level = dimensionparts.hierarchy.levels[i];
 
@@ -1309,8 +1314,8 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', 'cvOptions', '
 
 "use strict";
 
-angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOptions', 'cubesService', 'gaService',
-                                                         function ($rootScope, cvOptions, cubesService, gaService) {
+angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', '$log', 'cvOptions', 'cubesService', 'gaService',
+                                                         function ($rootScope, $log, cvOptions, cubesService, gaService) {
 
 	var cubesCacheService = this;
 
@@ -1320,12 +1325,12 @@ angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', 'cvOption
 
 	this.initialize = function() {
 		if (this._cacheOverridedCubesRequest) {
-			console.debug("Error: tried to initialize CubesCacheService but it was already initialized.")
+			$log.warn("Error: tried to initialize CubesCacheService but it was already initialized.")
 			return;
 		}
 		if (cvOptions.cacheEnabled) {
 			// Replace request function
-			console.debug("Replacing Cubes request method with caching version.")
+			$log.debug("Replacing Cubes request method with caching version.")
 			cubesCacheService._cacheOverridedCubesRequest = cubesService.cubesRequest;
 			cubesService.cubesRequest = cubesCacheService.cachedCubesRequest;
 		}
@@ -1452,8 +1457,8 @@ angular.module('cv').constant('angularMomentConfig', {
 });
 */
 
-angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheService', /* 'editableOptions', 'editableThemes', */
-                           function($timeout, cvOptions, cubesService, cubesCacheService /*, editableOptions, editableThemes */) {
+angular.module('cv').config([ '$logProvider', 'cvOptions', /* 'editableOptions', 'editableThemes', */
+                           function($logProvider, cvOptions /*, editableOptions, editableThemes */) {
 
 	//console.debug("Bootstrapping CubesViewer.");
 
@@ -1478,11 +1483,15 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheS
 
             hideControls: false,
 
-            gaTrackEvents: false
+            gaTrackEvents: false,
+
+            debug: true
     };
 
 	$.extend(defaultOptions, cvOptions);
 	$.extend(cvOptions, defaultOptions);
+
+	$logProvider.debugEnabled(cvOptions.debug);
 
 	// Avoid square brackets in serialized array params
 	// TODO: Shall be done for $http instead?
@@ -1498,6 +1507,13 @@ angular.module('cv').run([ '$timeout', 'cvOptions', 'cubesService', 'cubesCacheS
 	editableThemes.bs3.buttonsClass = 'btn-sm';
 	editableOptions.theme = 'bs3';
 	*/
+
+}]);
+
+angular.module('cv').run([ '$timeout', '$log', 'cvOptions', 'cubesService', 'cubesCacheService', /* 'editableOptions', 'editableThemes', */
+	                           function($timeout, $log, cvOptions, cubesService, cubesCacheService /*, editableOptions, editableThemes */) {
+
+	$log.debug("CubesViewer debug mode is enabled.");
 
 	// Initialize cache service
 	cubesCacheService.initialize();
@@ -1534,7 +1550,7 @@ var cubesviewer = {
 
 	createView: function(container, type, viewData) {
 
-		console.debug("Creating view: " + viewData);
+		//console.debug("Creating view: " + viewData);
 
 		var $compile = angular.element(document).injector().get('$compile');
 		var viewsService = angular.element(document).injector().get('viewsService');
@@ -1644,15 +1660,26 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 		// TODO: Define a view object
 		var view = {
 
-			"id": "view-" + this.lastViewId,
-			"type": type,
-			"state": cubesviewer.STATE_INITIALIZING,
-			"error": "",
-			"params": {},
+			id: "view-" + this.lastViewId,
+			type: type,
+			state: cubesviewer.STATE_INITIALIZING,
+			error: "",
+			params: {},
 
-	        "savedId": 0,
-	        "owner": cvOptions.user,
-	        "shared": false,
+	        savedId: 0,
+	        owner: cvOptions.user,
+	        shared: false,
+
+			resultLimitHit: false,
+			requestFailed: false,
+			pendingRequests: 0,
+			dimensionFilter: null,
+
+	    	grid: {
+	    		api: null,
+	    		data: [],
+	    		columnDefs: []
+			},
 
 			controlsHidden: function() {
 				return !!this.params.controlsHidden || !!cvOptions.hideControls;
@@ -1670,8 +1697,6 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 		};
 
 		$.extend(view.params, params);
-
-		if (view.state == cubesviewer.STATE_INITIALIZING) view.state = cubesviewer.STATE_INITIALIZED;
 
 		return view;
 	};
@@ -1802,8 +1827,8 @@ angular.module('cv.views.cube', []);
  *
  * FIXME: Some of this code shall be on a parent generic "view" directive.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$injector', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService',
-                                                     function ($rootScope, $injector, $scope, $timeout, cvOptions, cubesService, viewsService, exportService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$log', '$injector', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService',
+                                                     function ($rootScope, $log, $injector, $scope, $timeout, cvOptions, cubesService, viewsService, exportService) {
 
 	// TODO: Functions shall be here?
 	$scope.viewController = {};
@@ -1820,19 +1845,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
         $scope.reststoreService = $injector.get('reststoreService');
     }
 
-
-	$scope.dimensionFilter = null;
-
-	$scope.$watch("view", function(view) {
-		if (view) {
-			view._resultLimitHit = false;
-			view._requestFailed = false;
-		}
-	});
-
 	$scope.refreshView = function() {
 		if ($scope.view && $scope.view.cube) {
-			$scope.view.grid = null;
+			$scope.view.grid.data = [];
+			$scope.view.grid.columnDefs = [];
 			$scope.$broadcast("ViewRefresh", $scope.view);
 		}
 	};
@@ -1842,7 +1858,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.setViewMode = function(mode) {
 		$scope.view.setViewMode(mode);
-		//$scope.refreshView();
 	};
 
 
@@ -1866,7 +1881,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		var jqxhr = cubesService.cubesserver.get_cube($scope.view.params.cubename, function(cube) {
 
 			$scope.view.cube = cube;
-			console.debug($scope.view.cube);
+
+			$log.debug($scope.view.cube);
 
 			// Apply parameters if cube metadata contains specific cv-view-params
 			// TODO: Don't do this if this was a saved or pre-initialized view, only for new views
@@ -1875,6 +1891,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			} else {
 				$scope.view.params = $.extend({}, cubeViewDefaultParams, $scope.view.params);
 			}
+
+			$scope.view.state = cubesviewer.VIEW_STATE_INITIALIZED;
+			$scope.view.error = "";
 
 			$timeout(function() {
 				//$scope.refreshView();
@@ -1894,6 +1913,49 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		$scope.view._requestFailed = true;
 	};
 
+
+
+	// TODO: Move to explore view or grid component as cube view shall be split into directives
+    $scope.onGridRegisterApi = function(gridApi) {
+    	//console.debug("Grid Register Api: Explore");
+        $scope.view.grid.api = gridApi;
+        gridApi.selection.on.rowSelectionChanged($scope, function(row){
+          //console.debug(row.entity);
+        });
+        gridApi.selection.on.rowSelectionChangedBatch($scope, function(rows){
+          //console.debug(rows);
+        });
+        gridApi.core.on.columnVisibilityChanged($scope, function (column) {
+        	if (column.visible) {
+        		delete ($scope.view.params.columnHide[column.field]);
+        	} else {
+        		$scope.view.params.columnHide[column.field] = true;
+        		delete ($scope.view.params.columnWidths[column.field]);
+        	}
+        	$scope.view.updateUndo();
+        });
+        gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
+            // do something
+        	$scope.view.params.columnSort[$scope.view.params.mode] = {};
+        	$(sortColumns).each(function (idx, col) {
+        		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };
+        	});
+        	$scope.view.updateUndo();
+        });
+        gridApi.colResizable.on.columnSizeChanged($scope, function(colDef, deltaChange) {
+        	var colIndex = -1;
+        	$(gridApi.grid.columns).each(function(idx, e) {
+        		if (e.field == colDef.field) colIndex = idx;
+        	});
+        	if (colIndex >= 0) {
+        		$scope.view.params.columnWidths[colDef.field] = gridApi.grid.columns[colIndex].width;
+        	}
+        	$scope.view.updateUndo();
+        });
+    };
+
+	$scope.view.grid.onRegisterApi = $scope.onGridRegisterApi;
+
 	$scope.validateData = function(data, status) {
 		//console.debug(data);
 		$scope.view._requestFailed = false;
@@ -1903,6 +1965,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			$scope.view._resultLimitHit = true;
 		}
 	};
+
 
 	/**
 	 * Adds a drilldown level.
@@ -2186,56 +2249,8 @@ Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSe
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
                                                      function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, dialogService) {
 
-	$scope.$parent.gridData = [];
-
-	$scope.pendingRequests = 0;
-
-
-	// TODO: Move to explore view or grid component as cube view shall be split into directives
-    $scope.$parent.onGridRegisterApi = function(gridApi) {
-    	//console.debug("Grid Register Api: Explore");
-        $scope.gridApi = gridApi;
-        gridApi.selection.on.rowSelectionChanged($scope, function(row){
-          //console.debug(row.entity);
-        });
-        gridApi.selection.on.rowSelectionChangedBatch($scope, function(rows){
-          //console.debug(rows);
-        });
-        gridApi.core.on.columnVisibilityChanged($scope, function (column) {
-        	if (column.visible) {
-        		delete ($scope.view.params.columnHide[column.field]);
-        	} else {
-        		$scope.view.params.columnHide[column.field] = true;
-        		delete ($scope.view.params.columnWidths[column.field]);
-        	}
-        	$scope.view.updateUndo();
-        });
-        gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
-            // do something
-        	$scope.view.params.columnSort[$scope.view.params.mode] = {};
-        	$(sortColumns).each(function (idx, col) {
-        		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };
-        	});
-        	$scope.view.updateUndo();
-        });
-        gridApi.colResizable.on.columnSizeChanged($scope, function(colDef, deltaChange) {
-        	var colIndex = -1;
-        	$(gridApi.grid.columns).each(function(idx, e) {
-        		if (e.field == colDef.field) colIndex = idx;
-        	});
-        	if (colIndex >= 0) {
-        		$scope.view.params.columnWidths[colDef.field] = gridApi.grid.columns[colIndex].width;
-        	}
-        	$scope.view.updateUndo();
-        });
-    };
-
-	$scope.$parent.gridApi = null;
-	$scope.$parent.gridOptions = {
-		onRegisterApi: $scope.onGridRegisterApi,
-		selectionRowHeaderWidth: 24,
-		//enableRowHeaderSelection: false,
-	};
+	$scope.view.grid.enableRowSelection = true;
+	$scope.view.grid.enableRowHeaderSelection = true;
 
 	$scope.initialize = function() {
 		$scope.refreshView();
@@ -2252,9 +2267,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
 		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
 
-		$scope.pendingRequests++;
+		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
-			$scope.pendingRequests--;
+			$scope.view.pendingRequests--;
 		});
 		jqxhr.error($scope.requestErrorHandler);
 
@@ -2264,22 +2279,19 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		$scope.validateData(data, status);
 		$scope.processData(data);
 		$rootScope.$apply();
-		$scope.gridApi.core.refresh();
+		/*
+		$scope.view.grid.api.core.refresh();
 		$rootScope.$apply();
+		*/
 	};
 
 	$scope.processData = function(data) {
 
 		var view = $scope.view;
 
-		$scope.gridData = [];
-		$scope.gridFormatters = {};
-
-		$scope.view.grid = $scope.$parent.gridOptions;
-
 	    // Configure grid
-	    angular.extend($scope.$parent.gridOptions, {
-    		data: $scope.gridData,
+	    angular.extend(view.grid, {
+    		//data: $scope.view.grid.data,
     		//minRowsToShow: 3,
     		rowHeight: 24,
     		onRegisterApi: $scope.onGridRegisterApi,
@@ -2319,7 +2331,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 			};
 			col.footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
-			$scope.gridOptions.columnDefs.push(col);
+			view.grid.columnDefs.push(col);
 
 			//if (data.summary) dataTotals[ag.ref] = data.summary[ag.ref];
 		});
@@ -2343,15 +2355,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 
 			// Get dimension
 			var dim = view.cube.cvdim_dim(view.params.drilldown[i]);
-			var parts = view.cube.cvdim_parts(view.params.drilldown[i]);
+			var parts = view.cube.dimensionParts(view.params.drilldown[i]);
 			var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
 
-			//nid.push(drilldown_level_values.join("-"));
+			//nid.push(drilldownLevelValues.join("-"));
 
 			var footer = "";
 			if (i == 0) footer = (cubesService.buildQueryCuts(view).length == 0) ? "<b>Summary</b>" : "<b>Summary <i>(Filtered)</i></b>";
 
-			$scope.gridOptions.columnDefs.splice(i, 0, {
+			view.grid.columnDefs.splice(i, 0, {
 				name: label[i],
 				field: "key" + i,
 				index: "key" + i,
@@ -2366,7 +2378,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		}
 
 		if (view.params.drilldown.length == 0) {
-			$scope.gridOptions.columnDefs.splice(0, 0, {
+			view.grid.columnDefs.splice(0, 0, {
 				name: view.cube.label,
 				field: "key" + 0,
 				index: "key" + 0,
@@ -2380,91 +2392,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 
 	};
 
-	/*
-	 * Show received summary
-	 */
-	this.drawSummary = function(view, data) {
-
-		$('#summaryTable-' + view.id).get(0).updateIdsOfSelectedRows = function(
-				id, isSelected) {
-			var index = $.inArray(id,
-					$('#summaryTable-' + view.id).get(0).idsOfSelectedRows);
-			if (!isSelected && index >= 0) {
-				$('#summaryTable-' + view.id).get(0).idsOfSelectedRows.splice(
-						index, 1); // remove id from the list
-			} else if (index < 0) {
-				$('#summaryTable-' + view.id).get(0).idsOfSelectedRows.push(id);
-			}
-		};
-
-		$('#summaryTable-' + view.id).get(0).idsOfSelectedRows = [];
-		$('#summaryTable-' + view.id)
-				.jqGrid(
-						{
-							data : dataRows,
-							userData : (data.summary ? dataTotals : null),
-							datatype : "local",
-							height : 'auto',
-							rowNum : cubesviewer.options.pagingOptions[0],
-							rowList : cubesviewer.options.pagingOptions,
-							colNames : colNames,
-							colModel : colModel,
-							pager : "#summaryPager-" + view.id,
-							sortname : cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[0],
-							viewrecords : true,
-							sortorder : cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[1],
-							footerrow : true,
-							userDataOnFooter : true,
-							forceFit : false,
-							shrinkToFit : false,
-							width: cubesviewer.options.tableResizeHackMinWidth,
-							// autowidth: true,
-							multiselect : true,
-							multiboxonly : true,
-
-							// caption: "Current selection data" ,
-							// beforeSelectRow : function () { return false; }
-
-							onSelectRow : $('#summaryTable-' + view.id).get(0).updateIdsOfSelectedRows,
-							onSelectAll : function(aRowids, isSelected) {
-								var i, count, id;
-								for (i = 0, count = aRowids.length; i < count; i++) {
-									id = aRowids[i];
-									$('#summaryTable-' + view.id).get(0)
-											.updateIdsOfSelectedRows(id,
-													isSelected);
-								}
-							},
-							loadComplete : function() {
-								var i, count;
-								for (
-										i = 0,
-										count = $('#summaryTable-' + view.id)
-												.get(0).idsOfSelectedRows.length; i < count; i++) {
-									$(this)
-											.jqGrid(
-													'setSelection',
-													$('#summaryTable-' + view.id)
-															.get(0).idsOfSelectedRows[i],
-													false);
-								}
-								// Call hook
-								view.cubesviewer.views.cube.explore.onTableLoaded (view);
-							},
-							resizeStop: view.cubesviewer.views.cube.explore._onTableResize (view),
-							onSortCol: view.cubesviewer.views.cube.explore._onTableSort (view),
-
-						});
-
-		this.cubesviewer.views.cube._adjustGridSize(); // remember to copy also the window.bind-resize init
-
-
-	};
 
 	$scope._addRows = function(data) {
 
 		var view = $scope.view;
-		var rows = $scope.gridData;
+		var rows = view.grid.data;
 
 		$(data.cells).each( function(idx, e) {
 
@@ -2478,22 +2410,22 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				// Get dimension
 				var dim = view.cube.cvdim_dim(view.params.drilldown[i]);
 
-				var parts = view.cube.cvdim_parts(view.params.drilldown[i]);
+				var parts = view.cube.dimensionParts(view.params.drilldown[i]);
 				var infos = parts.hierarchy.readCell(e, parts.level);
 
 				// Values and Labels
-				var drilldown_level_values = [];
-				var drilldown_level_labels = [];
+				var drilldownLevelValues = [];
+				var drilldownLevelLabels = [];
 
 				$(infos).each(function(idx, info) {
-					drilldown_level_values.push (info.key);
-					drilldown_level_labels.push (info.label);
+					drilldownLevelValues.push (info.key);
+					drilldownLevelLabels.push (info.label);
 				});
 
-				nid.push(drilldown_level_values.join("-"));
+				nid.push(drilldownLevelValues.join("-"));
 
 				var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
-				key.push({ cutValue: drilldown_level_values.join(","), title: drilldown_level_labels.join(" / ")});
+				key.push({ cutValue: drilldownLevelValues.join(","), title: drilldownLevelLabels.join(" / ")});
 			}
 
 			// Set key
@@ -2545,19 +2477,19 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 			return;
 		}
 
-		if ($scope.gridApi.selection.getSelectedCount() <= 0) {
+		if (view.grid.api.selection.getSelectedCount() <= 0) {
 			dialogService.show('Cannot filter. No rows are selected.');
 			return;
 		}
 
 		var filterValues = [];
-		var selectedRows = $scope.gridApi.selection.getSelectedRows();
+		var selectedRows = view.grid.api.selection.getSelectedRows();
 		$(selectedRows).each( function(idx, gd) {
 			filterValues.push(gd["key0"].cutValue);
 		});
 
 		var invert = false;
-		$scope.selectCut($scope.gridOptions.columnDefs[0].cutDimension, filterValues.join(";"), invert);
+		$scope.selectCut(view.grid.columnDefs[0].cutDimension, filterValues.join(";"), invert);
 
 	};
 
@@ -2712,7 +2644,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 		// Check if current filter is inverted
 		var view = $scope.view;
-		var parts = view.cube.cvdim_parts($scope.view.dimensionFilter);
+		var parts = view.cube.dimensionParts($scope.view.dimensionFilter);
 		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
 		for (var i = 0; i < view.params.cuts.length ; i++) {
 			if (view.params.cuts[i].dimension == cutDimension) {
@@ -2723,7 +2655,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 	};
 
 	$scope.$watch("view.dimensionFilter", function() {
-		$scope.parts = $scope.view.cube.cvdim_parts($scope.view.dimensionFilter);
+		$scope.parts = $scope.view.cube.dimensionParts($scope.view.dimensionFilter);
 		$scope.loadDimensionValues();
 	});
 
@@ -2796,7 +2728,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		var dimension = $scope.view.cube.cvdim_dim($scope.view.dimensionFilter);
 		var dimensionValues = [];
 
-		var parts = view.cube.cvdim_parts($scope.view.dimensionFilter);
+		var parts = view.cube.dimensionParts($scope.view.dimensionFilter);
 		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
 		var filterValues = [];
 		for (var i = 0; i < view.params.cuts.length ; i++) {
@@ -2810,22 +2742,22 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		$(data.data).each( function(idx, e) {
 
 			// Get dimension
-			var parts = $scope.view.cube.cvdim_parts($scope.view.dimensionFilter);
+			var parts = $scope.view.cube.dimensionParts($scope.view.dimensionFilter);
 			var infos = parts.hierarchy.readCell(e, parts.level);
 
 			// Values and Labels
-			var drilldown_level_values = [];
-			var drilldown_level_labels = [];
+			var drilldownLevelValues = [];
+			var drilldownLevelLabels = [];
 
 			$(infos).each(function(idx, info) {
-				drilldown_level_values.push (info.key);
-				drilldown_level_labels.push (info.label);
+				drilldownLevelValues.push (info.key);
+				drilldownLevelLabels.push (info.label);
 			});
 
 			dimensionValues.push({
-				'label': drilldown_level_labels.join(' / '),
-				'value': drilldown_level_values.join (','),
-				'selected': filterValues.indexOf(drilldown_level_values.join (',')) >= 0
+				'label': drilldownLevelLabels.join(' / '),
+				'value': drilldownLevelValues.join (','),
+				'selected': filterValues.indexOf(drilldownLevelValues.join (',')) >= 0
 			});
 
 		});
@@ -2878,7 +2810,7 @@ function cubesviewerViewCubeDimensionFilter () {
 	 */
 	this.drawDimensionFilter = function (view, dimension) {
 
-		var parts = view.cube.cvdim_parts(dimension);
+		var parts = view.cube.dimensionParts(dimension);
 
 		// Draw value container
 
@@ -3055,52 +2987,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDateContro
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService) {
 
-	$scope.$parent.gridData = [];
-
-	$scope.pendingRequests = 0;
-
-	// TODO: Move to explore view or grid component as cube view shall be split into directives
-    $scope.$parent.onGridRegisterApi = function(gridApi) {
-        $scope.gridApi = gridApi;
-        gridApi.selection.on.rowSelectionChanged($scope,function(row){
-        });
-        gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-        });
-        gridApi.core.on.columnVisibilityChanged($scope, function (column) {
-        	if (column.visible) {
-        		delete ($scope.view.params.columnHide[column.field]);
-        	} else {
-        		$scope.view.params.columnHide[column.field] = true;
-        		delete ($scope.view.params.columnWidths[column.field]);
-        	}
-        	$scope.view.updateUndo();
-        });
-        gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
-            // do something
-        	$scope.view.params.columnSort[$scope.view.params.mode] = {};
-        	$(sortColumns).each(function (idx, col) {
-        		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };
-        	});
-        	$scope.view.updateUndo();
-        });
-        gridApi.colResizable.on.columnSizeChanged($scope, function(colDef, deltaChange) {
-        	var colIndex = -1;
-        	$(gridApi.grid.columns).each(function(idx, e) {
-        		if (e.field == colDef.field) colIndex = idx;
-        	});
-        	if (colIndex >= 0) {
-        		$scope.view.params.columnWidths[colDef.field] = gridApi.grid.columns[colIndex].width;
-        	}
-        	$scope.view.updateUndo();
-        });
-    };
-	$scope.$parent.gridApi = null;
-	$scope.$parent.gridOptions = {
-		onRegisterApi: $scope.onGridRegisterApi,
-		enableRowSelection: false,
-		enableRowHeaderSelection: false,
-	};
-
+	$scope.view.grid.enableRowSelection = false;
+	$scope.view.grid.enableRowHeaderSelection = false;
 
 	$scope.initialize = function() {
 		$scope.refreshView();
@@ -3116,9 +3004,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
 		var jqxhr = browser.facts(browser_args, $scope._loadDataCallback);
 
-		$scope.pendingRequests++;
+		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
-			$scope.pendingRequests--;
+			$scope.view.pendingRequests--;
 		});
 		jqxhr.error($scope.requestErrorHandler);
 
@@ -3128,33 +3016,30 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 		$scope.validateData(data, status);
 		$scope.processData(data);
 		$rootScope.$apply();
-		$scope.gridApi.core.refresh();
+		/*
+		$scope.view.grid.api.core.refresh();
 		$rootScope.$apply();
+		*/
 	};
 
 	$scope.processData = function(data) {
 
 		var view = $scope.view;
 
-		$scope.gridData = [];
-		$scope.gridFormatters = {};
-
 		var dimensions = view.cube.dimensions;
 		var measures = view.cube.measures;
         var details = view.cube.details;
 
-        $scope.view.grid = $scope.$parent.gridOptions;
-
 	    // Configure grid
-	    angular.extend($scope.$parent.gridOptions, {
-    		data: $scope.gridData,
+	    angular.extend($scope.view.grid, {
+    		//data: $scope.view.grid.data,
     		//minRowsToShow: 3,
     		rowHeight: 24,
     		onRegisterApi: $scope.onGridRegisterApi,
     		enableColumnResizing: true,
-    		//showColumnFooter: true,
+    		showColumnFooter: false,
     		enableGridMenu: true,
-    		//showGridFooter: true,
+    		//showGridFooter: false,
     	    paginationPageSizes: cvOptions.pagingOptions,
     	    paginationPageSize: cvOptions.pagingOptions[0],
     		//enableHorizontalScrollbar: 0,
@@ -3169,7 +3054,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
     		columnDefs: []
 	    });
 
-		$scope.gridOptions.columnDefs.push({
+		view.grid.columnDefs.push({
 			name: "id",
 			field: "id",
 			index: "id",
@@ -3201,7 +3086,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 					sort: $scope.defineColumnSort(level.key().ref)
 
 				};
-				$scope.gridOptions.columnDefs.push(col);
+				view.grid.columnDefs.push(col);
 			}
 		}
 
@@ -3225,7 +3110,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				width : $scope.defineColumnWidth(measure.ref, 75),
 				sort: $scope.defineColumnSort(measure.ref)
 			};
-			$scope.gridOptions.columnDefs.push(col);
+			view.grid.columnDefs.push(col);
 		}
 
         for (var detailIndex in details) {
@@ -3247,7 +3132,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				width: $scope.defineColumnWidth(detail.ref, 95),
 				sort: $scope.defineColumnSort(detail.ref)
 			};
-			$scope.gridOptions.columnDefs.push(col);
+            view.grid.columnDefs.push(col);
         }
 
 		// If there are cells, show them
@@ -3262,7 +3147,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 	$scope._addRows = function(data) {
 
 		var view = $scope.view;
-		var rows = $scope.gridData;
+		var rows = view.grid.data;
 
 		var counter = 0;
 		var dimensions = view.cube.dimensions;
@@ -3347,8 +3232,295 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 "use strict";
 
-angular.module('cv.views').service("seriesService", ['$rootScope', 'cvOptions', 'cubesService',
-                                                    function ($rootScope, cvOptions, cubesService) {
+
+/**
+ * SeriesTable object. This is part of the "cube" view. Allows the user to select
+ * a dimension to use as horizontal axis of a table. This is later used to generate
+ * charts.
+ */
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesOperationsService',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, seriesOperationsService) {
+
+	$scope.view.grid.enableRowSelection = false;
+	$scope.view.grid.enableRowHeaderSelection = false;
+
+	$scope.initialize = function() {
+		$scope.view.params = $.extend(
+			{},
+			{ "xaxis" : null, "yaxis" : null },
+			$scope.view.params
+		);
+		$scope.refreshView();
+	};
+
+	$scope.$on("ViewRefresh", function(view) {
+		$scope.loadData();
+	});
+
+	$scope.loadData = function() {
+
+		var view = $scope.view;
+
+		// Check if we can produce a table
+		if (view.params.yaxis == null) return;
+
+		var browser_args = cubesService.buildBrowserArgs($scope.view, $scope.view.params.xaxis != null ? true : false, false);
+		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
+		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
+		$scope.view.pendingRequests++;
+		jqxhr.always(function() {
+			$scope.view.pendingRequests--;
+		});
+		jqxhr.error($scope.requestErrorHandler);
+
+	};
+
+	$scope._loadDataCallback = function(data, status) {
+		$scope.validateData(data, status);
+		$scope.processData(data);
+		$rootScope.$apply();
+	};
+
+	$scope.processData = function(data) {
+
+		var view = $scope.view;
+
+		// Configure grid
+		angular.extend($scope.view.grid, {
+    		//data: $scope.view.grid.data,
+    		//minRowsToShow: 3,
+    		rowHeight: 24,
+    		onRegisterApi: $scope.onGridRegisterApi,
+    		enableColumnResizing: true,
+    		showColumnFooter: false,
+    		enableGridMenu: true,
+    		//showGridFooter: false,
+    	    paginationPageSizes: cvOptions.pagingOptions,
+    	    paginationPageSize: cvOptions.pagingOptions[0],
+    		//enableHorizontalScrollbar: 0,
+    		//enableVerticalScrollbar: 0,
+    		enableRowSelection: false,
+    		enableRowHeaderSelection: false,
+    		//enableSelectAll: false,
+    		enablePinning: false,
+    		multiSelect: false,
+    		selectionRowHeaderWidth: 20,
+    		//rowHeight: 50,
+    		columnDefs: []
+	    });
+
+
+		// Process data
+		//$scope._sortData (data.cells, view.params.xaxis != null ? true : false);
+	    $scope._addRows(data);
+	    seriesOperationsService.applyCalculations($scope.view, $scope.view.grid.data, view.grid.columnDefs);
+
+	    /*
+	    // TODO: Is this needed?
+
+		colNames.forEach(function (e) {
+			var colLabel = null;
+			$(view.cube.aggregates).each(function (idx, ag) {
+				if (ag.name == e) {
+					colLabel = ag.label||ag.name;
+					return false;
+				}
+			});
+			if (!colLabel) {
+				$(view.cube.measures).each(function (idx, me) {
+					if (me.name == e) {
+						colLabel = me.label||ag.name;
+						return false;
+					}
+				});
+			}
+			//colLabel = view.cube.getDimension(e).label
+			colLabels.push(colLabel||e);
+		});
+		*/
+
+	};
+
+
+	/*
+	 * Adds rows.
+	 */
+	$scope._addRows = function(data) {
+
+		var view = $scope.view;
+		var rows = view.grid.data;
+
+		var counter = 0;
+		var dimensions = view.cube.dimensions;
+		var measures = view.cube.measures;
+        var details = view.cube.details;
+
+		// Copy drilldown as we'll modify it
+		var drilldown = view.params.drilldown.slice(0);
+
+		// Include X Axis if necessary
+		if (view.params.xaxis != null) {
+			drilldown.splice(0,0, view.params.xaxis);
+		}
+		var baseidx = ((view.params.xaxis == null) ? 0 : 1);
+
+		var addedCols = [];
+		$(data.cells).each(function (idx, e) {
+
+			var row = [];
+			var key = [];
+
+			// For the drilldown level, if present
+			for (var i = 0; i < drilldown.length; i++) {
+
+				// Get dimension
+				var parts = view.cube.dimensionParts(drilldown[i]);
+				var infos = parts.hierarchy.readCell(e, parts.level);
+
+				// Values and Labels
+				var drilldownLevelValues = [];
+				var drilldownLevelLabels = [];
+
+				$(infos).each(function(idx, info) {
+					drilldownLevelValues.push(info.key);
+					drilldownLevelLabels.push(info.label);
+				});
+
+				key.push (drilldownLevelLabels.join(" / "));
+
+			}
+
+			// Set key
+			var colKey = (view.params.xaxis == null) ? view.params.yaxis : key[0];
+			var value = (e[view.params.yaxis]);
+			var rowKey = (view.params.xaxis == null) ? key.join (' / ') : key.slice(1).join (' / ');
+
+			// Search or introduce
+			var row = $.grep(rows, function(ed) { return ed["key"] == rowKey; });
+			if (row.length > 0) {
+				row[0][colKey] = value;
+			} else {
+				var newrow = {};
+				newrow["key"] = rowKey;
+				newrow[colKey] = value;
+
+				for (var i = baseidx ; i < key.length; i++) {
+					newrow["key" + (i - baseidx)] = key[i];
+				}
+				rows.push ( newrow );
+			}
+
+
+			// Add column definition if the column hasn't been added yet
+			if (addedCols.indexOf(colKey) < 0) {
+				addedCols.push(colKey);
+
+				var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+
+				var col = {
+					name: colKey,
+					field: colKey,
+					index : colKey,
+					cellClass : "text-right",
+					sorttype : "number",
+					cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
+					formatter: $scope.columnFormatFunction(ag),
+					//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
+					//formatoptions: {},
+					//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+					enableHiding: false,
+					width : $scope.defineColumnWidth(colKey, 90),
+					sort: $scope.defineColumnSort(colKey)
+				};
+				view.grid.columnDefs.push(col);
+			}
+		});
+
+		//var label = [];
+		$(view.params.drilldown).each (function (idx, e) {
+			var col = {
+				name: view.cube.cvdim_dim(e).label,
+				field: "key" + idx,
+				index : "key" + idx,
+				headerCellClass: "cv-grid-header-dimension",
+				enableHiding: false,
+				//cellClass : "text-right",
+				//sorttype : "number",
+				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
+				//formatter: $scope.columnFormatFunction(ag),
+				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
+				//formatoptions: {},
+				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+				width : $scope.defineColumnWidth("key" + idx, 190),
+				sort: $scope.defineColumnSort("key" + idx)
+			};
+			view.grid.columnDefs.splice(idx, 0, col);
+		});
+
+		if (view.params.drilldown.length == 0 && rows.length > 0) {
+			rows[0]["key0"] = view.params.yaxis;
+
+			var col = {
+				name: "Measure",
+				field: "key0",
+				index : "key0",
+				headerCellClass: "cv-grid-header-measure",
+				enableHiding: false,
+				//cellClass : "text-right",
+				//sorttype : "number",
+				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
+				//formatter: $scope.columnFormatFunction(ag),
+				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
+				//formatoptions: {},
+				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
+				width : $scope.defineColumnWidth("key0", 190),
+				sort: $scope.defineColumnSort("key0")
+			};
+			view.grid.columnDefs.splice(0, 0, col);
+		}
+
+	};
+
+	$scope.initialize();
+
+}]);
+
+;/*
+ * CubesViewer
+ * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Sof	tware, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+
+
+/**
+ * Manipulates series.
+ */
+
+"use strict";
+
+angular.module('cv.views').service("seriesOperationsService", ['$rootScope', 'cvOptions', 'cubesService',
+                                                               function ($rootScope, cvOptions, cubesService) {
 
 	this.calculateDifferentials = function(view, rows, columnDefs) {
 
@@ -3411,315 +3583,6 @@ angular.module('cv.views').service("seriesService", ['$rootScope', 'cvOptions', 
 }]);
 
 
-
-/**
- * SeriesTable object. This is part of the "cube" view. Allows the user to select
- * a dimension to use as horizontal axis of a table. This is later used to generate
- * charts.
- */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesService',
-                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, seriesService) {
-
-	$scope.$parent.gridData = [];
-
-	$scope.pendingRequests = 0;
-
-	// TODO: Move to explore view or grid component as cube view shall be split into directives
-    $scope.$parent.onGridRegisterApi = function(gridApi) {
-    	//console.debug("Grid Register Api: Series");
-        $scope.gridApi = gridApi;
-        gridApi.selection.on.rowSelectionChanged($scope,function(row){
-        });
-        gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-        });
-        gridApi.core.on.columnVisibilityChanged($scope, function (column) {
-        	if (column.visible) {
-        		delete ($scope.view.params.columnHide[column.field]);
-        	} else {
-        		$scope.view.params.columnHide[column.field] = true;
-        		delete ($scope.view.params.columnWidths[column.field]);
-        	}
-        	$scope.view.updateUndo();
-        });
-        gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
-            // do something
-        	$scope.view.params.columnSort[$scope.view.params.mode] = {};
-        	$(sortColumns).each(function (idx, col) {
-        		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };
-        	});
-        	$scope.view.updateUndo();
-        });
-        gridApi.colResizable.on.columnSizeChanged($scope, function(colDef, deltaChange) {
-        	var colIndex = -1;
-        	$(gridApi.grid.columns).each(function(idx, e) {
-        		if (e.field == colDef.field) colIndex = idx;
-        	});
-        	if (colIndex >= 0) {
-        		$scope.view.params.columnWidths[colDef.field] = gridApi.grid.columns[colIndex].width;
-        	}
-        	$scope.view.updateUndo();
-        });
-    };
-	$scope.$parent.gridApi = null;
-	$scope.$parent.gridOptions = {
-		onRegisterApi: $scope.onGridRegisterApi,
-		enableRowSelection: false,
-		enableRowHeaderSelection: false,
-	};
-
-
-	$scope.initialize = function() {
-		$scope.view.params = $.extend(
-			{},
-			{ "xaxis" : null, "yaxis" : null },
-			$scope.view.params
-		);
-		$scope.refreshView();
-	};
-
-	$scope.$on("ViewRefresh", function(view) {
-		$scope.loadData();
-	});
-
-	$scope.loadData = function() {
-
-		var view = $scope.view;
-
-		// Check if we can produce a table
-		if (view.params.yaxis == null) return;
-
-		var browser_args = cubesService.buildBrowserArgs($scope.view, $scope.view.params.xaxis != null ? true : false, false);
-		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
-		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
-		$scope.pendingRequests++;
-		jqxhr.always(function() {
-			$scope.pendingRequests--;
-		});
-		jqxhr.error($scope.requestErrorHandler);
-
-	};
-
-	$scope._loadDataCallback = function(data, status) {
-		$scope.validateData(data, status);
-		$scope.processData(data);
-		$rootScope.$apply();
-		if ($scope.gridApi) {
-			$scope.gridApi.core.refresh();
-			$rootScope.$apply();
-		}
-	};
-
-	$scope.processData = function(data) {
-
-		var view = $scope.view;
-
-		$scope.gridData = [];
-
-		$scope.view.grid = $scope.$parent.gridOptions;
-
-		// Configure grid
-	    angular.extend($scope.$parent.gridOptions, {
-    		data: $scope.gridData,
-    		//minRowsToShow: 3,
-    		rowHeight: 24,
-    		onRegisterApi: $scope.onGridRegisterApi,
-    		enableColumnResizing: true,
-    		showColumnFooter: false,
-    		enableGridMenu: true,
-    		showGridFooter: false,
-    	    paginationPageSizes: cvOptions.pagingOptions,
-    	    paginationPageSize: cvOptions.pagingOptions[0],
-    		//enableHorizontalScrollbar: 0,
-    		//enableVerticalScrollbar: 0,
-    		enableRowSelection: false,
-    		enableRowHeaderSelection: false,
-    		//enableSelectAll: false,
-    		enablePinning: false,
-    		multiSelect: false,
-    		selectionRowHeaderWidth: 20,
-    		//rowHeight: 50,
-    		columnDefs: []
-	    });
-
-
-		// Process data
-		//$scope._sortData (data.cells, view.params.xaxis != null ? true : false);
-	    $scope._addRows(data);
-	    seriesService.applyCalculations($scope.view, $scope.gridData, $scope.gridOptions.columnDefs);
-
-	    /*
-	    // TODO: Is this needed?
-
-		colNames.forEach(function (e) {
-			var colLabel = null;
-			$(view.cube.aggregates).each(function (idx, ag) {
-				if (ag.name == e) {
-					colLabel = ag.label||ag.name;
-					return false;
-				}
-			});
-			if (!colLabel) {
-				$(view.cube.measures).each(function (idx, me) {
-					if (me.name == e) {
-						colLabel = me.label||ag.name;
-						return false;
-					}
-				});
-			}
-			//colLabel = view.cube.getDimension(e).label
-			colLabels.push(colLabel||e);
-		});
-		*/
-
-	};
-
-
-	/*
-	 * Adds rows.
-	 */
-	$scope._addRows = function(data) {
-
-		var view = $scope.view;
-		var rows = $scope.gridData;
-
-		var counter = 0;
-		var dimensions = view.cube.dimensions;
-		var measures = view.cube.measures;
-        var details = view.cube.details;
-
-		// Copy drilldown as we'll modify it
-		var drilldown = view.params.drilldown.slice(0);
-
-		// Include X Axis if necessary
-		if (view.params.xaxis != null) {
-			drilldown.splice(0,0, view.params.xaxis);
-		}
-		var baseidx = ((view.params.xaxis == null) ? 0 : 1);
-
-		var addedCols = [];
-		$(data.cells).each(function (idx, e) {
-
-			var row = [];
-			var key = [];
-
-			// For the drilldown level, if present
-			for (var i = 0; i < drilldown.length; i++) {
-
-				// Get dimension
-				var parts = view.cube.cvdim_parts(drilldown[i]);
-				var infos = parts.hierarchy.readCell(e, parts.level);
-
-				// Values and Labels
-				var drilldown_level_values = [];
-				var drilldown_level_labels = [];
-
-				$(infos).each(function(idx, info) {
-					drilldown_level_values.push (info.key);
-					drilldown_level_labels.push (info.label);
-				});
-
-				key.push (drilldown_level_labels.join(" / "));
-
-			}
-
-			// Set key
-			var colKey = (view.params.xaxis == null) ? view.params.yaxis : key[0];
-			var value = (e[view.params.yaxis]);
-			var rowKey = (view.params.xaxis == null) ? key.join (' / ') : key.slice(1).join (' / ');
-
-			// Search or introduce
-			var row = $.grep(rows, function(ed) { return ed["key"] == rowKey; });
-			if (row.length > 0) {
-				row[0][colKey] = value;
-			} else {
-				var newrow = {};
-				newrow["key"] = rowKey;
-				newrow[colKey] = value;
-
-				for (var i = baseidx ; i < key.length; i++) {
-					newrow["key" + (i - baseidx)] = key[i];
-				}
-				rows.push ( newrow );
-			}
-
-
-			// Add column definition if the column hasn't been added yet
-			if (addedCols.indexOf(colKey) < 0) {
-				addedCols.push(colKey);
-
-				var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
-
-				var col = {
-					name: colKey,
-					field: colKey,
-					index : colKey,
-					cellClass : "text-right",
-					sorttype : "number",
-					cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
-					formatter: $scope.columnFormatFunction(ag),
-					//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
-					//formatoptions: {},
-					//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
-					enableHiding: false,
-					width : $scope.defineColumnWidth(colKey, 90),
-					sort: $scope.defineColumnSort(colKey)
-				};
-				$scope.gridOptions.columnDefs.push(col);
-			}
-		});
-
-		//var label = [];
-		$(view.params.drilldown).each (function (idx, e) {
-			var col = {
-				name: view.cube.cvdim_dim(e).label,
-				field: "key" + idx,
-				index : "key" + idx,
-				headerCellClass: "cv-grid-header-dimension",
-				enableHiding: false,
-				//cellClass : "text-right",
-				//sorttype : "number",
-				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
-				//formatter: $scope.columnFormatFunction(ag),
-				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
-				//formatoptions: {},
-				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
-				width : $scope.defineColumnWidth("key" + idx, 190),
-				sort: $scope.defineColumnSort("key" + idx)
-			};
-			$scope.gridOptions.columnDefs.splice(idx, 0, col);
-		});
-
-		if (view.params.drilldown.length == 0 && rows.length > 0) {
-			rows[0]["key0"] = view.params.yaxis;
-
-			var col = {
-				name: "Measure",
-				field: "key0",
-				index : "key0",
-				headerCellClass: "cv-grid-header-measure",
-				enableHiding: false,
-				//cellClass : "text-right",
-				//sorttype : "number",
-				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
-				//formatter: $scope.columnFormatFunction(ag),
-				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
-				//formatoptions: {},
-				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
-				width : $scope.defineColumnWidth("key0", 190),
-				sort: $scope.defineColumnSort("key0")
-			};
-			$scope.gridOptions.columnDefs.splice(0, 0, col);
-		}
-
-	};
-
-	$scope.initialize();
-
-}]);
-
 ;/*
  * CubesViewer
  * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
@@ -3750,19 +3613,14 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
  * This is an optional component, part of the cube view.
  */
 
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController", ['$rootScope', '$scope', '$timeout', '$element', 'cvOptions', 'cubesService', 'viewsService', 'seriesService',
-                                                     function ($rootScope, $scope, $timeout, $element, cvOptions, cubesService, viewsService, seriesService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController", ['$rootScope', '$scope', '$timeout', '$element', 'cvOptions', 'cubesService', 'viewsService', 'seriesOperationsService',
+                                                     function ($rootScope, $scope, $timeout, $element, cvOptions, cubesService, viewsService, seriesOperationsService) {
 
-	$scope.$parent.gridData = [];
-	$scope.$parent.gridApi = null;
-	$scope.$parent.gridOptions = { data: $scope.$parent.gridData, columnDefs: [] };
+	var chartCtrl = this;
 
-	$scope.pendingRequests = 0;
+	this.chart = null;
 
-	$scope.chart = null;
-
-
-	$scope.initialize = function() {
+	this.initialize = function() {
 		// Add chart view parameters to view definition
 		$scope.view.params = $.extend(
 			{},
@@ -3773,10 +3631,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 	};
 
 	$scope.$on("ViewRefresh", function(view) {
-		$scope.loadData();
+		chartCtrl.loadData();
 	});
 
-	$scope.loadData = function() {
+	this.loadData = function() {
 
 		var view = $scope.view;
 
@@ -3785,43 +3643,42 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 		var browser_args = cubesService.buildBrowserArgs($scope.view, $scope.view.params.xaxis != null ? true : false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
-		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
+		var jqxhr = browser.aggregate(browser_args, this._loadDataCallback);
 
-		$scope.pendingRequests++;
+		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
-			$scope.pendingRequests--;
+			$scope.view.pendingRequests--;
 		});
 		jqxhr.error($scope.requestErrorHandler);
 
 	};
 
-	$scope._loadDataCallback = function(data, status) {
+	this._loadDataCallback = function(data, status) {
 		$scope.validateData(data, status);
-		$scope.processData(data);
+		chartCtrl.processData(data);
 		$rootScope.$apply();
 	};
 
-	$scope.processData = function(data) {
+	this.processData = function(data) {
 
-		if ($scope.pendingRequests == 0) {
+		if ($scope.view.pendingRequests == 0) {
 			$($element).find("svg").empty();
 			$($element).find("svg").parent().children().not("svg").remove();
 		}
 
 		$scope.rawData = data;
 
-		$scope.gridData = [];
-		$scope.gridOptions.data = $scope.gridData;
-		$scope.gridOptions.columnDefs = [];
+		$scope.view.grid.data = [];
+		$scope.view.grid.columnDefs = [];
 
 		var view = $scope.view;
-		var rows = $scope.gridData;
-		var columnDefs = $scope.gridOptions.columnDefs;
+		var rows = $scope.view.grid.data;
+		var columnDefs = view.grid.columnDefs;
 
 		// Process data
 		//$scope._sortData (data.cells, view.params.xaxis != null ? true : false);
-	    $scope._addRows(data);
-	    seriesService.applyCalculations($scope.view, $scope.gridData, $scope.gridOptions.columnDefs);
+	    this._addRows(data);
+	    seriesOperationsService.applyCalculations($scope.view, $scope.view.grid.data, view.grid.columnDefs);
 
 		// Join keys
 		if (view.params.drilldown.length > 0) {
@@ -3843,12 +3700,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 	/*
 	 * Adds rows.
 	 */
-	$scope._addRows = function(data) {
+	this._addRows = function(data) {
 
 		console.debug("FIXME: addRows method in charts controller is duplicated (from series controller)!")
 
 		var view = $scope.view;
-		var rows = $scope.gridData;
+		var rows = $scope.view.grid.data;
 
 		var counter = 0;
 		var dimensions = view.cube.dimensions;
@@ -3874,19 +3731,19 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 			for (var i = 0; i < drilldown.length; i++) {
 
 				// Get dimension
-				var parts = view.cube.cvdim_parts(drilldown[i]);
+				var parts = view.cube.dimensionParts(drilldown[i]);
 				var infos = parts.hierarchy.readCell(e, parts.level);
 
 				// Values and Labels
-				var drilldown_level_values = [];
-				var drilldown_level_labels = [];
+				var drilldownLevelValues = [];
+				var drilldownLevelLabels = [];
 
 				$(infos).each(function(idx, info) {
-					drilldown_level_values.push (info.key);
-					drilldown_level_labels.push (info.label);
+					drilldownLevelValues.push (info.key);
+					drilldownLevelLabels.push (info.label);
 				});
 
-				key.push (drilldown_level_labels.join(" / "));
+				key.push (drilldownLevelLabels.join(" / "));
 
 			}
 
@@ -3931,7 +3788,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 					//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 				};
-				$scope.gridOptions.columnDefs.push(col);
+				view.grid.columnDefs.push(col);
 			}
 		});
 
@@ -3951,7 +3808,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 			};
-			$scope.gridOptions.columnDefs.splice(idx, 0, col);
+			view.grid.columnDefs.splice(idx, 0, col);
 		});
 
 		if (view.params.drilldown.length == 0 && rows.length > 0) {
@@ -3971,18 +3828,18 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 			};
-			$scope.gridOptions.columnDefs.splice(0, 0, col);
+			view.grid.columnDefs.splice(0, 0, col);
 		}
 
 	};
 
-	$scope.cleanupNvd3 = function() {
+	this.cleanupNvd3 = function() {
 
 		//$($element).find("svg").empty();
 		$($element).find("svg").parent().children().not("svg").remove();
 
-		if ($scope.chart) {
-			$("#" + $scope.chart.tooltip.id()).remove(); // div.nvtooltip
+		if (chartCtrl.chart) {
+			$("#" + chartCtrl.chart.tooltip.id()).remove(); // div.nvtooltip
 		}
 
 		//$scope.chart = null;
@@ -3999,26 +3856,26 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 	};
 
 	$scope.$watch('cvOptions.studioTwoColumn', function() {
-		if ($scope.chart) {
+		if (chartCtrl.chart) {
 			$timeout(function() {
-				$scope.chart.update();
+				chartCtrl.chart.update();
 			}, 100);
 		}
 	});
 
-	$scope.resizeChart = function(size) {
+	this.resizeChart = function(size) {
 		var view = $scope.view;
 		$($element).find('svg').height(size);
 		$($element).find('svg').resize();
 
-		if ($scope.chart) $scope.chart.update();
+		if (chartCtrl.chart) chartCtrl.chart.update();
 	};
 
 	$scope.$on("$destroy", function() {
-		$scope.cleanupNvd3();
+		chartCtrl.cleanupNvd3();
 	});
 
-	$scope.initialize();
+	this.initialize();
 
 }]);
 
@@ -4062,7 +3919,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	};
 
 	$scope.$on('gridDataUpdated', function() {
-		$scope.cleanupNvd3();
+		$scope.chartCtrl.cleanupNvd3();
 		$timeout(function() {
 			$scope.drawChartBarsVertical();
 		}, 0);
@@ -4074,11 +3931,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	$scope.drawChartBarsVertical = function () {
 
 		var view = $scope.view;
-		var dataRows = $scope.gridData;
-		var columnDefs = $scope.gridOptions.columnDefs;
+		var dataRows = $scope.view.grid.data;
+		var columnDefs = view.grid.columnDefs;
 
 		var container = $($element).find("svg").get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None")
 
 	    var d = [];
 
@@ -4160,7 +4017,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 
 	        //chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
 
-            $scope.$parent.$parent.chart = chart;
+            $scope.chartCtrl.chart = chart;
 
 	        return chart;
 
@@ -4211,7 +4068,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	};
 
 	$scope.$on('gridDataUpdated', function() {
-		$scope.cleanupNvd3();
+		$scope.chartCtrl.cleanupNvd3();
 		$timeout(function() {
 			$scope.drawChartBarsVertical();
 		}, 0);
@@ -4223,11 +4080,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	$scope.drawChartBarsVertical = function () {
 
 		var view = $scope.view;
-		var dataRows = $scope.gridData;
-		var columnDefs = $scope.gridOptions.columnDefs;
+		var dataRows = $scope.view.grid.data;
+		var columnDefs = view.grid.columnDefs;
 
 		var container = $($element).find("svg").get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None")
 
 	    var d = [];
 
@@ -4323,7 +4180,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 
 	        //chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
 
-            $scope.$parent.$parent.chart = chart;
+            $scope.chartCtrl.chart = chart;
 
 	        return chart;
 
@@ -4375,7 +4232,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	};
 
 	$scope.$on('gridDataUpdated', function() {
-		$scope.cleanupNvd3();
+		$scope.chartCtrl.cleanupNvd3();
 		$timeout(function() {
 			$scope.drawChartLines();
 		}, 0);
@@ -4388,12 +4245,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	$scope.drawChartLines = function () {
 
 		var view = $scope.view;
-		var dataRows = $scope.gridData;
-		var columnDefs = $scope.gridOptions.columnDefs;
+		var dataRows = $scope.view.grid.data;
+		var columnDefs = view.grid.columnDefs;
 
 		var container = $($element).find("svg").get(0);
 
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None")
 
 
 	    // TODO: Check there's only one value column
@@ -4469,7 +4326,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 		        	  }
 		          });
 
-		        $scope.$parent.$parent.chart = chart;
+		        $scope.chartCtrl.chart = chart;
 		    	return chart;
 		    });
 
@@ -4517,7 +4374,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	        	  }
 	          });
 
-	          $scope.$parent.$parent.chart = chart;
+	          $scope.chartCtrl.chart = chart;
 	    	  return chart;
 	    	});
 	    }
@@ -4640,7 +4497,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
 	};
 
 	$scope.$on('gridDataUpdated', function() {
-		$scope.cleanupNvd3();
+		$scope.chartCtrl.cleanupNvd3();
 		$timeout(function() {
 			$scope.drawChartPie();
 		}, 0);
@@ -4651,12 +4508,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
 	$scope.drawChartPie = function () {
 
 		var view = $scope.view;
-		var dataRows = $scope.gridData;
-		var columnDefs = $scope.gridOptions.columnDefs;
+		var dataRows = $scope.view.grid.data;
+		var columnDefs = view.grid.columnDefs;
 
 		var container = $($element).find("svg").get(0);
 
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None")
 
 	    var d = [];
 
@@ -4732,7 +4589,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
 	        	}
 	        });
 
-	        $scope.$parent.$parent.chart = chart;
+	        $scope.chartCtrl.chart = chart;
 	        return chart;
 	    });
 
@@ -4798,8 +4655,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
 	$scope.drawChartRadar = function () {
 
 		var view = $scope.view;
-		var dataRows = $scope.gridData;
-		var columnDefs = $scope.gridOptions.columnDefs;
+		var dataRows = $scope.view.grid.data;
+		var columnDefs = view.grid.columnDefs;
 
 		var container = $($element).find(".cv-chart-container")[0];
 		$(container).empty();
@@ -4916,8 +4773,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartSunburstCon
 
 		var view = $scope.view;
 		var data = $scope.rawData;
-		var dataRows = $scope.gridData;
-		var columnDefs = $scope.gridOptions.columnDefs;
+		var dataRows = $scope.view.grid.data;
+		var columnDefs = view.grid.columnDefs;
 
 		/*
 		$(view.container).find('.cv-view-viewdata').empty();
@@ -4970,7 +4827,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartSunburstCon
 			for (var i = 0; i < view.params.drilldown.length; i++) {
 
 				// Get dimension
-				var parts = view.cube.cvdim_parts(view.params.drilldown[i]);
+				var parts = view.cube.dimensionParts(view.params.drilldown[i]);
 				var infos = parts.hierarchy.readCell(e);
 
 				$(infos).each(function(idx, info) {
@@ -5019,10 +4876,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartSunburstCon
 		var json = json;
 
 		var data = $scope.rawData;
-		var columnDefs = $scope.gridOptions.columnDefs;
+		var columnDefs = view.grid.columnDefs;
 
 		var container = $($element).find("svg").parent().empty().get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None");
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None");
 
 
 		var width = 470;
@@ -5361,8 +5218,8 @@ function cubesviewerViewCubeDynamicChart() {
 
 "use strict";
 
-angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesService',
-                                                              function ($rootScope, $timeout, cvOptions, cubesService, viewsService, seriesService) {
+angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesOperationsService',
+                                                              function ($rootScope, $timeout, cvOptions, cubesService, viewsService, seriesOperationsService) {
 
 	/**
 	 * Download facts in CSV format from Cubes Server
@@ -5400,14 +5257,14 @@ angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeou
 		var content = "";
 		var values = [];
 
-		$(gridOptions.columnDefs).each(function(idx, e) {
+		$(view.grid.columnDefs).each(function(idx, e) {
 			values.push ('"' + e.name + '"');
 		});
 		content = content + (values.join(",")) + "\n";
 
 		$(dataRows).each(function(idxr, r) {
 			values = [];
-			$(gridOptions.columnDefs).each(function(idx, e) {
+			$(view.grid.columnDefs).each(function(idx, e) {
 				values.push ('"' + r[e.field] + '"');
 			});
 			content = content + (values.join(",")) + "\n";
@@ -6605,15 +6462,15 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
 
 
   $templateCache.put('views/cube/chart/chart-common.html',
-    "<div ng-show=\"gridOptions.data.length > 0 && view.params.yaxis != null\" style=\"width: 99%;\">\n" +
+    "<div ng-show=\"view.grid.data.length > 0 && view.params.yaxis != null\" style=\"width: 99%;\">\n" +
     "    <div>\n" +
     "        <div class=\"cv-chart-container\">\n" +
     "            <svg style=\"height: 400px;\" />\n" +
     "        </div>\n" +
     "        <div ng-hide=\"view.controlsHidden() || view.params.charttype == 'radar'\" style=\"font-size: 8px; float: right;\">\n" +
-    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(400);\">Small</a>\n" +
-    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(550);\">Medium</a>\n" +
-    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(700);\">Tall</a>\n" +
+    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"chartCtrl.resizeChart(400);\">Small</a>\n" +
+    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"chartCtrl.resizeChart(550);\">Medium</a>\n" +
+    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"chartCtrl.resizeChart(700);\">Tall</a>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "</div>\n" +
@@ -6622,16 +6479,16 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "    Cannot present chart: no <b>measure</b> has been selected.\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-if=\"pendingRequests == 0 && view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "<div ng-if=\"view.pendingRequests == 0 && view.params.yaxis != null && view.grid.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "    Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-if=\"pendingRequests == 0 && view.params.charttype == 'pie' && gridOptions.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "<div ng-if=\"view.pendingRequests == 0 && view.params.charttype == 'pie' && view.grid.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.<br />\n" +
     "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>.\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-if=\"pendingRequests == 0 && view.params.yaxis != null && view.params.charttype == 'radar' && gridOptions.columnDefs.length < 4\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "<div ng-if=\"view.pendingRequests == 0 && view.params.yaxis != null && view.params.charttype == 'radar' && view.grid.columnDefs.length < 4\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "    Cannot present a <b>radar chart</b> when <b>less than 3 columns</b> are present.<br />\n" +
     "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>.\n" +
     "</div>\n"
@@ -6639,13 +6496,13 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
 
 
   $templateCache.put('views/cube/chart/chart.html',
-    "<div ng-controller=\"CubesViewerViewsCubeChartController\">\n" +
+    "<div ng-controller=\"CubesViewerViewsCubeChartController as chartCtrl\">\n" +
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'pie'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-pie-chart\"></i> Chart\n" +
-    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
-    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartPieController\">\n" +
@@ -6655,9 +6512,9 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'bars-vertical'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-bar-chart\"></i> Chart\n" +
-    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
-    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartBarsVerticalController\">\n" +
@@ -6667,9 +6524,9 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'bars-horizontal'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-bar-chart fa-rotate-270\"></i> Chart\n" +
-    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
-    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartBarsHorizontalController\">\n" +
@@ -6679,9 +6536,9 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'lines'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-line-chart\"></i> Chart\n" +
-    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
-    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartLinesController\">\n" +
@@ -6691,9 +6548,9 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'lines-stacked'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-area-chart\"></i> Chart\n" +
-    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
-    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartLinesController\">\n" +
@@ -6703,9 +6560,9 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'radar'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-bullseye\"></i> Chart\n" +
-    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
-    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartRadarController\">\n" +
@@ -6715,9 +6572,9 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "    <div ng-if=\"view.params.charttype == 'sunburst'\">\n" +
     "        <h3><i class=\"fa fa-fw fa-sun-o\"></i> Chart\n" +
-    "            <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "        </h3>\n" +
-    "        <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "            <span class=\"loadingbar-expand\"></span>\n" +
     "        </div>\n" +
     "        <div ng-controller=\"CubesViewerViewsCubeChartSunburstController\">\n" +
@@ -6994,13 +6851,15 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "    <div ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
     "\n" +
     "    <li ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"dropdown-submenu\">\n" +
-    "        <a tabindex=\"0\" ><i class=\"fa fa-fw fa-calculator\"></i> Series calculations</a>\n" +
+    "        <a tabindex=\"0\" ><i class=\"fa fa-fw fa-calculator\"></i> Series operations</a>\n" +
     "        <ul class=\"dropdown-menu\">\n" +
-    "          <li ng-click=\"selectCalculation('difference')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Difference</a></li>\n" +
-    "          <li ng-click=\"selectCalculation('percentage')\"><a href=\"\"><i class=\"fa fa-fw fa-percent\"></i> Change rate</a></li>\n" +
-    "          <li ng-click=\"selectCalculation('accum')\"><a href=\"\"><i class=\"fa fa-fw\">&sum;</i> Accumulated</a></li>\n" +
+    "          <li ng-click=\"selectOperation('difference')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Difference</a></li>\n" +
+    "          <li ng-click=\"selectOperation('percentage')\"><a href=\"\"><i class=\"fa fa-fw fa-percent\"></i> Change rate</a></li>\n" +
+    "          <li ng-click=\"selectOperation('accum')\"><a href=\"\"><i class=\"fa fa-fw\">&sum;</i> Accumulated</a></li>\n" +
     "          <div class=\"divider\"></div>\n" +
-    "          <li ng-click=\"selectCalculation(null)\"><a href=\"\"><i class=\"fa fa-fw fa-times\"></i> None</a></li>\n" +
+    "          <li ng-click=\"selectOperation('fill-zeros')\"><a href=\"\"><i class=\"fa fa-fw\">0</i> Replace blanks with zeroes</a></li>\n" +
+    "          <div class=\"divider\"></div>\n" +
+    "          <li ng-click=\"selectOperation(null)\"><a href=\"\"><i class=\"fa fa-fw fa-times\"></i> Clear operations</a></li>\n" +
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +
@@ -7016,7 +6875,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
 
 
   $templateCache.put('views/cube/cube.html',
-    "<div class=\"cv-view-panel\" ng-controller=\"CubesViewerViewsCubeController\" >\n" +
+    "<div class=\"cv-view-panel\" ng-controller=\"CubesViewerViewsCubeController as cubeView\" >\n" +
     "\n" +
     "    <div ng-if=\"view.state == 3\">\n" +
     "        <div class=\"alert alert-danger\" style=\"margin: 0px;\">\n" +
@@ -7030,13 +6889,15 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ng-if=\"view.state != 3\" style=\"min-height: 80px;\">\n" +
-    "\n" +
+    "    <div>\n" +
     "        <h2 ng-show=\"view.controlsHidden()\" style=\"margin-top: 5px;\">\n" +
     "            <i class=\"fa fa-fw fa-file-o\"></i> {{ view.params.name }}\n" +
     "        </h2>\n" +
     "\n" +
     "        <div ng-include=\"'views/cube/alerts.html'\"></div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ng-if=\"view.state == 2\" style=\"min-height: 80px;\">\n" +
     "\n" +
     "        <div class=\"cv-view-viewmenu hidden-print\" ng-hide=\"view.controlsHidden()\">\n" +
     "\n" +
@@ -7081,7 +6942,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "\n" +
     "                    <div ng-repeat=\"drilldown in view.params.drilldown\" ng-if=\"view.params.mode != 'facts'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-drill\" style=\"color: black; background-color: #ccffcc;\">\n" +
-    "                        <span><i class=\"fa fa-fw fa-arrow-down\"></i> <b>Drilldown:</b> {{ view.cube.cvdim_parts(drilldown).label }}</span>\n" +
+    "                        <span><i class=\"fa fa-fw fa-arrow-down\"></i> <b>Drilldown:</b> {{ view.cube.dimensionParts(drilldown).label }}</span>\n" +
     "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(drilldown)\" class=\"btn btn-secondary btn-xs hidden-print\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
     "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectDrill(drilldown, '')\" class=\"btn btn-danger btn-xs hidden-print\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
@@ -7091,11 +6952,11 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "                <div class=\"cv-view-viewinfo-cut\">\n" +
     "                    <!--\n" +
     "                        var dimensionString = $(this).parents('.cv-view-infopiece-cut').first().attr('data-dimension');\n" +
-    "                        var parts = view.cube.cvdim_parts(dimensionString);\n" +
+    "                        var parts = view.cube.dimensionParts(dimensionString);\n" +
     "                        var depth = $(this).parents('.cv-view-infopiece-cut').first().attr('data-value').split(';')[0].split(\",\").length;\n" +
     "                        cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, dimensionString + \":\" + parts.hierarchy.levels[depth - 1] );\n" +
     "                     -->\n" +
-    "                    <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.cvdim_parts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
+    "                    <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.dimensionParts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
     "                        <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.label }} <span ng-class=\"{ 'text-danger': cut.invert }\">{{ equality }}</span> <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
     "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(cut.dimension)\" class=\"btn btn-secondary btn-xs hidden-print\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
@@ -7113,7 +6974,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "                    </div>\n" +
     "\n" +
     "                    <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccddff;\">\n" +
-    "                        <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-long-arrow-right\"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : \"None\" }}</span>\n" +
+    "                        <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-long-arrow-right\"></i> <b>Horizontal dimension:</b> {{ (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : \"None\" }}</span>\n" +
     "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                        <!-- <button type=\"button\" ng-click=\"showDimensionFilter(view.params.xaxis)\" class=\"btn btn-secondary btn-xs\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>  -->\n" +
     "                        <!-- <button type=\"button\" ng-click=\"selectXAxis(null)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>  -->\n" +
@@ -7151,17 +7012,17 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
     "    <h3><i class=\"fa fa-fw fa-arrow-circle-down\"></i> Aggregated data\n" +
-    "        <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "    </h3>\n" +
     "\n" +
-    "    <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "    <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "        <span class=\"loadingbar-expand\"></span>\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ui-grid=\"gridOptions\"\n" +
+    "    <div ui-grid=\"view.grid\"\n" +
     "         ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize\n" +
     "         ui-grid-pagination ui-grid-pinning\n" +
-    "         style=\"width: 100%;\" ng-style=\"{height: ((gridOptions.data.length < 15 ? gridOptions.data.length : 15) * 24) + 44 + 30 + 'px'}\">\n" +
+    "         style=\"width: 100%;\" ng-style=\"{height: ((view.grid.data.length < 15 ? view.grid.data.length : 15) * 24) + 44 + 30 + 'px'}\">\n" +
     "    </div>\n" +
     "    <div style=\"height: 30px;\">&nbsp;</div>\n" +
     "\n" +
@@ -7174,22 +7035,22 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
     "    <h3><i class=\"fa fa-fw fa-th\"></i> Facts data\n" +
-    "        <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "    </h3>\n" +
     "\n" +
-    "    <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "    <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "        <span class=\"loadingbar-expand\"></span>\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ng-if=\"gridOptions.data.length > 0\"\n" +
-    "         ui-grid=\"gridOptions\"\n" +
+    "    <div ng-if=\"view.grid.data.length > 0\"\n" +
+    "         ui-grid=\"view.grid\"\n" +
     "         ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize\n" +
     "         ui-grid-pagination ui-grid-pinning\n" +
-    "         style=\"width: 100%;\" ng-style=\"{height: ((gridOptions.data.length < 15 ? gridOptions.data.length : 15) * 24) + 44 + 30 + 'px'}\">\n" +
+    "         style=\"width: 100%;\" ng-style=\"{height: ((view.grid.data.length < 15 ? view.grid.data.length : 15) * 24) + 44 + 30 + 'px'}\">\n" +
     "    </div>\n" +
-    "    <div ng-if=\"gridOptions.data.length > 0\" style=\"height: 30px;\">&nbsp;</div>\n" +
+    "    <div ng-if=\"view.grid.data.length > 0\" style=\"height: 30px;\">&nbsp;</div>\n" +
     "\n" +
-    "    <div ng-if=\"pendingRequests == 0 && gridOptions.data.length == 0\">No facts are returned by the current filtering combination.</div>\n" +
+    "    <div ng-if=\"viewController.view.pendingRequests == 0 && view.grid.data.length == 0\">No facts are returned by the current filtering combination.</div>\n" +
     "\n" +
     "</div>\n"
   );
@@ -7197,7 +7058,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
 
   $templateCache.put('views/cube/filter/datefilter.html',
     "<div class=\"cv-view-viewinfo-date\">\n" +
-    "    <div ng-repeat=\"datefilter in view.params.datefilters\" ng-controller=\"CubesViewerViewsCubeFilterDateController\" ng-init=\"dimparts = view.cube.cvdim_parts(datefilter.dimension);\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut text-left\" style=\"color: black; background-color: #ffdddd; text-align: left;\">\n" +
+    "    <div ng-repeat=\"datefilter in view.params.datefilters\" ng-controller=\"CubesViewerViewsCubeFilterDateController\" ng-init=\"dimparts = view.cube.dimensionParts(datefilter.dimension);\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut text-left\" style=\"color: black; background-color: #ffdddd; text-align: left;\">\n" +
     "        <span style=\"max-width: 280px; white-space: nowrap;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.labelNoLevel }}:</span>\n" +
     "\n" +
     "        <!--\n" +
@@ -7365,26 +7226,26 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "    <!-- ($(view.container).find('.cv-view-viewdata').children().size() == 0)  -->\n" +
     "    <h3><i class=\"fa fa-fw fa-clock-o\"></i> Series table\n" +
-    "        <i ng-show=\"pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
     "    </h3>\n" +
     "\n" +
-    "    <div ng-if=\"pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "    <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
     "        <span class=\"loadingbar-expand\"></span>\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ng-if=\"gridOptions.data.length > 0\"\n" +
-    "         ui-grid=\"gridOptions\"\n" +
+    "    <div ng-if=\"view.grid.data.length > 0\"\n" +
+    "         ui-grid=\"view.grid\"\n" +
     "         ui-grid-resize-columns ui-grid-move-columns ui-grid-selection ui-grid-auto-resize\n" +
     "         ui-grid-pagination ui-grid-pinning\n" +
-    "         style=\"width: 100%;\" ng-style=\"{height: ((gridOptions.data.length < 15 ? gridOptions.data.length : 15) * 24) + 44 + 30 + 'px'}\">\n" +
+    "         style=\"width: 100%;\" ng-style=\"{height: ((view.grid.data.length < 15 ? view.grid.data.length : 15) * 24) + 44 + 30 + 'px'}\">\n" +
     "    </div>\n" +
-    "    <div ng-if=\"gridOptions.data.length > 0\" style=\"height: 30px;\">&nbsp;</div>\n" +
+    "    <div ng-if=\"view.grid.data.length > 0\" style=\"height: 30px;\">&nbsp;</div>\n" +
     "\n" +
-    "    <div ng-if=\"pendingRequests == 0 && view.params.yaxis == null\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "    <div ng-if=\"view.pendingRequests == 0 && view.params.yaxis == null\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "        Cannot present series table: no <b>measure</b> has been selected.\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ng-if=\"pendingRequests == 0 && view.params.yaxis != null && gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "    <div ng-if=\"view.pendingRequests == 0 && view.params.yaxis != null && view.grid.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "        Cannot present series table: no rows are returned by the current filtering, horizontal dimension, and drilldown combination.\n" +
     "    </div>\n" +
     "\n" +

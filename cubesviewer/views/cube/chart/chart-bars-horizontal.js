@@ -36,7 +36,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	};
 
 	$scope.$on('gridDataUpdated', function() {
-		$scope.cleanupNvd3();
+		$scope.chartCtrl.cleanupNvd3();
 		$timeout(function() {
 			$scope.drawChartBarsVertical();
 		}, 0);
@@ -48,11 +48,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	$scope.drawChartBarsVertical = function () {
 
 		var view = $scope.view;
-		var dataRows = $scope.gridData;
-		var columnDefs = $scope.gridOptions.columnDefs;
+		var dataRows = $scope.view.grid.data;
+		var columnDefs = view.grid.columnDefs;
 
 		var container = $($element).find("svg").get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None")
 
 	    var d = [];
 
@@ -148,7 +148,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 
 	        //chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
 
-            $scope.$parent.$parent.chart = chart;
+            $scope.chartCtrl.chart = chart;
 
 	        return chart;
 

@@ -49,8 +49,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartSunburstCon
 
 		var view = $scope.view;
 		var data = $scope.rawData;
-		var dataRows = $scope.gridData;
-		var columnDefs = $scope.gridOptions.columnDefs;
+		var dataRows = $scope.view.grid.data;
+		var columnDefs = view.grid.columnDefs;
 
 		/*
 		$(view.container).find('.cv-view-viewdata').empty();
@@ -103,7 +103,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartSunburstCon
 			for (var i = 0; i < view.params.drilldown.length; i++) {
 
 				// Get dimension
-				var parts = view.cube.cvdim_parts(view.params.drilldown[i]);
+				var parts = view.cube.dimensionParts(view.params.drilldown[i]);
 				var infos = parts.hierarchy.readCell(e);
 
 				$(infos).each(function(idx, info) {
@@ -152,10 +152,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartSunburstCon
 		var json = json;
 
 		var data = $scope.rawData;
-		var columnDefs = $scope.gridOptions.columnDefs;
+		var columnDefs = view.grid.columnDefs;
 
 		var container = $($element).find("svg").parent().empty().get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None");
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None");
 
 
 		var width = 470;
