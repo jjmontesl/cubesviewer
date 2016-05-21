@@ -58,7 +58,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 		var browser_args = cubesService.buildBrowserArgs($scope.view, $scope.view.params.xaxis != null ? true : false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
-		var jqxhr = browser.aggregate(browser_args, this._loadDataCallback);
+		var viewStateKey = $scope.newViewStateKey();
+		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback(viewStateKey));
 
 		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
@@ -68,10 +69,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 	};
 
-	this._loadDataCallback = function(data, status) {
-		$scope.validateData(data, status);
-		chartCtrl.processData(data);
-		$rootScope.$apply();
+	$scope._loadDataCallback = function(viewStateKey) {
+		return function(data, status) {
+			// Only update if view hasn't changed since data was requested.
+			if (viewStateKey == $scope._viewStateKey) {
+				$scope.validateData(data, status);
+				chartCtrl.processData(data);
+				$rootScope.$apply();
+			}
+		};
 	};
 
 	this.processData = function(data) {

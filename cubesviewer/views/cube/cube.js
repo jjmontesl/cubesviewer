@@ -54,8 +54,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	$scope.refreshView = function() {
 		if ($scope.view && $scope.view.cube) {
-			$scope.view.grid.data = [];
-			$scope.view.grid.columnDefs = [];
+			//$scope.view.grid.data = [];
+			//$scope.view.grid.columnDefs = [];
 			$scope.$broadcast("ViewRefresh", $scope.view);
 		}
 	};
@@ -165,14 +165,18 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	$scope.validateData = function(data, status) {
 		//console.debug(data);
-		$scope.view._requestFailed = false;
-		$scope.view._resultLimitHit = false;
+		$scope.view.requestFailed = false;
+		$scope.view.resultLimitHit = false;
 		if ( ("cells" in data && data.cells.length >= cubesService.cubesserver.info.json_record_limit) ||
 		     (data.length && data.length >= cubesService.cubesserver.info.json_record_limit) ) {
-			$scope.view._resultLimitHit = true;
+			$scope.view.resultLimitHit = true;
 		}
 	};
 
+	$scope.newViewStateKey = function() {
+		$scope._viewStateKey = Math.floor(Math.random() * 999999999999);
+		return $scope._viewStateKey;
+	};
 
 	/**
 	 * Adds a drilldown level.

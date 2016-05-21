@@ -131,6 +131,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
             	for (var i = 0; i < newState.disabled.length; i++) {
             		view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
             	}
+            	view.updateUndo();
             });
 
 	        //chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });

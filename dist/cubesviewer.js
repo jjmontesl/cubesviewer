@@ -1847,8 +1847,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	$scope.refreshView = function() {
 		if ($scope.view && $scope.view.cube) {
-			$scope.view.grid.data = [];
-			$scope.view.grid.columnDefs = [];
+			//$scope.view.grid.data = [];
+			//$scope.view.grid.columnDefs = [];
 			$scope.$broadcast("ViewRefresh", $scope.view);
 		}
 	};
@@ -1958,14 +1958,18 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	$scope.validateData = function(data, status) {
 		//console.debug(data);
-		$scope.view._requestFailed = false;
-		$scope.view._resultLimitHit = false;
+		$scope.view.requestFailed = false;
+		$scope.view.resultLimitHit = false;
 		if ( ("cells" in data && data.cells.length >= cubesService.cubesserver.info.json_record_limit) ||
 		     (data.length && data.length >= cubesService.cubesserver.info.json_record_limit) ) {
-			$scope.view._resultLimitHit = true;
+			$scope.view.resultLimitHit = true;
 		}
 	};
 
+	$scope.newViewStateKey = function() {
+		$scope._viewStateKey = Math.floor(Math.random() * 999999999999);
+		return $scope._viewStateKey;
+	};
 
 	/**
 	 * Adds a drilldown level.
@@ -2265,7 +2269,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		//$scope.view.cubesviewer.views.blockViewLoading(view);
 		var browser_args = cubesService.buildBrowserArgs($scope.view, false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
-		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
+		var viewStateKey = $scope.newViewStateKey();
+		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback(viewStateKey));
 
 		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
@@ -2275,14 +2280,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 
 	};
 
-	$scope._loadDataCallback = function(data, status) {
-		$scope.validateData(data, status);
-		$scope.processData(data);
-		$rootScope.$apply();
-		/*
-		$scope.view.grid.api.core.refresh();
-		$rootScope.$apply();
-		*/
+	$scope._loadDataCallback = function(viewStateKey) {
+		return function(data, status) {
+			// Only update if view hasn't changed since data was requested.
+			if (viewStateKey == $scope._viewStateKey) {
+				$scope.validateData(data, status);
+				$scope.processData(data);
+				$rootScope.$apply();
+			}
+		};
 	};
 
 	$scope.processData = function(data) {
@@ -3002,7 +3008,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 		var browser_args = cubesService.buildBrowserArgs($scope.view, false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
-		var jqxhr = browser.facts(browser_args, $scope._loadDataCallback);
+		var viewStateKey = $scope.newViewStateKey();
+		var jqxhr = browser.facts(browser_args, $scope._loadDataCallback(viewStateKey));
 
 		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
@@ -3012,14 +3019,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 	};
 
-	$scope._loadDataCallback = function(data, status) {
-		$scope.validateData(data, status);
-		$scope.processData(data);
-		$rootScope.$apply();
-		/*
-		$scope.view.grid.api.core.refresh();
-		$rootScope.$apply();
-		*/
+	$scope._loadDataCallback = function(viewStateKey) {
+		return function(data, status) {
+			// Only update if view hasn't changed since data was requested.
+			if (viewStateKey == $scope._viewStateKey) {
+				$scope.validateData(data, status);
+				$scope.processData(data);
+				$rootScope.$apply();
+			}
+		};
 	};
 
 	$scope.processData = function(data) {
@@ -3266,7 +3274,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 
 		var browser_args = cubesService.buildBrowserArgs($scope.view, $scope.view.params.xaxis != null ? true : false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
-		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
+		var viewStateKey = $scope.newViewStateKey();
+		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback(viewStateKey));
+
 		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
 			$scope.view.pendingRequests--;
@@ -3275,10 +3285,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 
 	};
 
-	$scope._loadDataCallback = function(data, status) {
-		$scope.validateData(data, status);
-		$scope.processData(data);
-		$rootScope.$apply();
+	$scope._loadDataCallback = function(viewStateKey) {
+		return function(data, status) {
+			// Only update if view hasn't changed since data was requested.
+			if (viewStateKey == $scope._viewStateKey) {
+				$scope.validateData(data, status);
+				$scope.processData(data);
+				$rootScope.$apply();
+			}
+		};
 	};
 
 	$scope.processData = function(data) {
@@ -3643,7 +3658,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 		var browser_args = cubesService.buildBrowserArgs($scope.view, $scope.view.params.xaxis != null ? true : false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
-		var jqxhr = browser.aggregate(browser_args, this._loadDataCallback);
+		var viewStateKey = $scope.newViewStateKey();
+		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback(viewStateKey));
 
 		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
@@ -3653,10 +3669,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 	};
 
-	this._loadDataCallback = function(data, status) {
-		$scope.validateData(data, status);
-		chartCtrl.processData(data);
-		$rootScope.$apply();
+	$scope._loadDataCallback = function(viewStateKey) {
+		return function(data, status) {
+			// Only update if view hasn't changed since data was requested.
+			if (viewStateKey == $scope._viewStateKey) {
+				$scope.validateData(data, status);
+				chartCtrl.processData(data);
+				$rootScope.$apply();
+			}
+		};
 	};
 
 	this.processData = function(data) {
@@ -4013,6 +4034,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
             	for (var i = 0; i < newState.disabled.length; i++) {
             		view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
             	}
+            	view.updateUndo();
             });
 
 	        //chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
@@ -4176,6 +4198,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
             	for (var i = 0; i < newState.disabled.length; i++) {
             		view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
             	}
+            	view.updateUndo();
             });
 
 	        //chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
@@ -4372,6 +4395,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	        	  for (var i = 0; i < newState.disabled.length; i++) {
 	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
 	        	  }
+	        	  view.updateUndo();
 	          });
 
 	          $scope.chartCtrl.chart = chart;
@@ -4587,6 +4611,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
 	        	for (var i = 0; i < newState.disabled.length; i++) {
 	        		view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
 	        	}
+	        	view.updateUndo();
 	        });
 
 	        $scope.chartCtrl.chart = chart;
@@ -6440,7 +6465,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
   $templateCache.put('views/cube/alerts.html',
     "<div>\n" +
     "\n" +
-    "    <div ng-if=\"view._requestFailed\" class=\"alert alert-dismissable alert-danger\" style=\"margin-bottom: 5px;\">\n" +
+    "    <div ng-if=\"view.requestFailed\" class=\"alert alert-dismissable alert-danger\" style=\"margin-bottom: 5px;\">\n" +
     "        <div style=\"display: inline-block;\"><i class=\"fa fa-exclamation\"></i></div>\n" +
     "        <div style=\"display: inline-block; margin-left: 20px;\">\n" +
     "            An error has occurred. Cannot present view.<br />\n" +
@@ -6448,7 +6473,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ng-if=\"view._resultLimitHit\" class=\"alert alert-dismissable alert-warning\" style=\"margin-bottom: 5px;\">\n" +
+    "    <div ng-if=\"view.resultLimitHit\" class=\"alert alert-dismissable alert-warning\" style=\"margin-bottom: 5px;\">\n" +
     "        <button type=\"button\" class=\"close\" ng-click=\"view._resultLimitHit = false;\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>\n" +
     "        <div style=\"display: inline-block; vertical-align: top;\"><i class=\"fa fa-exclamation\"></i></div>\n" +
     "        <div style=\"display: inline-block; margin-left: 20px;\">\n" +

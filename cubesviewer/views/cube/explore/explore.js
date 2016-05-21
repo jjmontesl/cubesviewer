@@ -46,7 +46,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		//$scope.view.cubesviewer.views.blockViewLoading(view);
 		var browser_args = cubesService.buildBrowserArgs($scope.view, false, false);
 		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
-		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback);
+		var viewStateKey = $scope.newViewStateKey();
+		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback(viewStateKey));
 
 		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
@@ -56,14 +57,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 
 	};
 
-	$scope._loadDataCallback = function(data, status) {
-		$scope.validateData(data, status);
-		$scope.processData(data);
-		$rootScope.$apply();
-		/*
-		$scope.view.grid.api.core.refresh();
-		$rootScope.$apply();
-		*/
+	$scope._loadDataCallback = function(viewStateKey) {
+		return function(data, status) {
+			// Only update if view hasn't changed since data was requested.
+			if (viewStateKey == $scope._viewStateKey) {
+				$scope.validateData(data, status);
+				$scope.processData(data);
+				$rootScope.$apply();
+			}
+		};
 	};
 
 	$scope.processData = function(data) {

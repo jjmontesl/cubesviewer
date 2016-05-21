@@ -1,3 +1,5 @@
+Consider contributing to CubesViewer. This is a possible roadmap.
+
 [ROADMAP]
 
     * Support multiple servers and multiple versions.
@@ -74,6 +76,7 @@
       dimension, drilldown, etc...
     * Divide in reusable angular directives (ie. start with fact viewer). JS doc. Make views
       proper objects.
+    * Better loading bar (account for pending requests, etc)
 
 [2.1]
 
@@ -106,6 +109,4 @@
     * Update examples (at least up to date, but add facts, add public data).
 
     * Menu loading issue
-    * Only draw results for the requested view, otherwise discard result (is causing issues and confusion).
-    ! Review flow/events: if cube or menu loading is happening before initialization if views are created eagerly (views.html), etc.
 
