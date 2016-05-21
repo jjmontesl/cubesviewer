@@ -91,6 +91,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 		$scope.view.grid.data = [];
 		$scope.view.grid.columnDefs = [];
+		$rootScope.$apply();
 
 		var view = $scope.view;
 		var rows = $scope.view.grid.data;
@@ -294,6 +295,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 	$scope.$on("$destroy", function() {
 		chartCtrl.cleanupNvd3();
+		$scope.view.grid.data = [];
+		$scope.view.grid.columnDefs = [];
 	});
 
 	this.initialize();

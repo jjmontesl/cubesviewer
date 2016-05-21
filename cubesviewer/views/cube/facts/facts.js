@@ -72,13 +72,17 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 		var view = $scope.view;
 
+		$scope.view.grid.data = [];
+		$scope.view.grid.columnDefs = [];
+		$rootScope.$apply();
+
 		var dimensions = view.cube.dimensions;
 		var measures = view.cube.measures;
         var details = view.cube.details;
 
 	    // Configure grid
 	    angular.extend($scope.view.grid, {
-    		//data: $scope.view.grid.data,
+    		data: [],
     		//minRowsToShow: 3,
     		rowHeight: 24,
     		onRegisterApi: $scope.onGridRegisterApi,

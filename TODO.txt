@@ -76,7 +76,7 @@ Consider contributing to CubesViewer. This is a possible roadmap.
       dimension, drilldown, etc...
     * Divide in reusable angular directives (ie. start with fact viewer). JS doc. Make views
       proper objects.
-    * Better loading bar (account for pending requests, etc)
+    * Better loading bar (account for pending requests, etc).
 
 [2.1]
 
@@ -99,6 +99,7 @@ Consider contributing to CubesViewer. This is a possible roadmap.
     * Update screenshots.
     * Reviewed and improved doc
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
+    * Menu loading issue
 
     * Cleanup code.
     * Site without styling, copy from Studio/GUI, use current background but make it fluid (sample views
@@ -108,5 +109,4 @@ Consider contributing to CubesViewer. This is a possible roadmap.
     * Default cube settings is incorrect? it should only be applied if the view is not otherwise configured (ie loaded or json)
     * Update examples (at least up to date, but add facts, add public data).
 
-    * Menu loading issue
 

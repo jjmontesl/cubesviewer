@@ -2295,9 +2295,13 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 
 		var view = $scope.view;
 
+		$scope.view.grid.data = [];
+		$scope.view.grid.columnDefs = [];
+		$rootScope.$apply();
+
 	    // Configure grid
 	    angular.extend(view.grid, {
-    		//data: $scope.view.grid.data,
+	    	data: [],
     		//minRowsToShow: 3,
     		rowHeight: 24,
     		onRegisterApi: $scope.onGridRegisterApi,
@@ -2503,6 +2507,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		$scope.filterSelected();
 	});
 
+	$scope.$on("$destroy", function() {
+		$scope.view.grid.data = [];
+		$scope.view.grid.columnDefs = [];
+	});
+
 	$scope.initialize();
 
 }]);
@@ -2568,39 +2577,11 @@ function cubesviewerViewCubeExplore() {
 	};
 
 
-
 	this._onTableSort = function (view) {
 		return function (index, iCol, sortorder) {
 			view.cubesviewer.views.cube.explore.onTableSort (view, index, iCol, sortorder);
 		}
 	}
-
-	this._onTableResize = function (view) {
-		return function(width, index) {
-			view.cubesviewer.views.cube.explore.onTableResize (view, width, index);
-		};
-	};
-
-	this.onTableResize = function (view, width, index) {
-		// Empty implementation, to be overrided
-		//alert("resize column " + index + " to " + width + " pixels");
-	};
-	this.onTableLoaded = function (view) {
-		// Empty implementation, to be overrided
-	};
-	this.onTableSort = function (view, key, index, iCol, sortorder) {
-		// Empty implementation, to be overrided
-	};
-
-	this.defineColumnWidth = function (view, column, vdefault) {
-		// Simple implementation. Overrided by the columns plugin.
-		return vdefault;
-	};
-	this.defineColumnSort = function (view, vdefault) {
-		// Simple implementation. Overrided by the columns plugin.
-		return vdefault;
-	};
-
 
 };
 
@@ -3034,13 +3015,17 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 		var view = $scope.view;
 
+		$scope.view.grid.data = [];
+		$scope.view.grid.columnDefs = [];
+		$rootScope.$apply();
+
 		var dimensions = view.cube.dimensions;
 		var measures = view.cube.measures;
         var details = view.cube.details;
 
 	    // Configure grid
 	    angular.extend($scope.view.grid, {
-    		//data: $scope.view.grid.data,
+    		data: [],
     		//minRowsToShow: 3,
     		rowHeight: 24,
     		onRegisterApi: $scope.onGridRegisterApi,
@@ -3302,7 +3287,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 
 		// Configure grid
 		angular.extend($scope.view.grid, {
-    		//data: $scope.view.grid.data,
+			data: [],
     		//minRowsToShow: 3,
     		rowHeight: 24,
     		onRegisterApi: $scope.onGridRegisterApi,
@@ -3499,6 +3484,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 
 	};
 
+	$scope.$on("$destroy", function() {
+		$scope.view.grid.data = [];
+		$scope.view.grid.columnDefs = [];
+	});
+
 	$scope.initialize();
 
 }]);
@@ -3691,6 +3681,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 		$scope.view.grid.data = [];
 		$scope.view.grid.columnDefs = [];
+		$rootScope.$apply();
 
 		var view = $scope.view;
 		var rows = $scope.view.grid.data;
@@ -3894,6 +3885,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 	$scope.$on("$destroy", function() {
 		chartCtrl.cleanupNvd3();
+		$scope.view.grid.data = [];
+		$scope.view.grid.columnDefs = [];
 	});
 
 	this.initialize();

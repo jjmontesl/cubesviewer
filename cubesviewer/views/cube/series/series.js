@@ -91,7 +91,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 
 		// Configure grid
 		angular.extend($scope.view.grid, {
-    		//data: $scope.view.grid.data,
+			data: [],
     		//minRowsToShow: 3,
     		rowHeight: 24,
     		onRegisterApi: $scope.onGridRegisterApi,
@@ -287,6 +287,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 		}
 
 	};
+
+	$scope.$on("$destroy", function() {
+		$scope.view.grid.data = [];
+		$scope.view.grid.columnDefs = [];
+	});
 
 	$scope.initialize();
 
