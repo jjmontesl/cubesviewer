@@ -104,6 +104,14 @@ module.exports = function(grunt) {
       }
 	},
 	*/
+    jsdoc : {
+        dist : {
+            src: ['cubesviewer/**/*.js'], // 'test/*.js'
+            options: {
+                destination: 'build/doc'
+            }
+        }
+    },
     jshint: {
       files: ['Gruntfile.js', 'bower,json', 'cubesviewer/**/*.js', 'cubesviewer/**/*.less', 'test/**/*.js'],
       options: {
@@ -142,10 +150,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-bower-task')
   //grunt.loadNpmTasks('grunt-wiredep');
   grunt.loadNpmTasks('grunt-angular-templates');
+  grunt.loadNpmTasks('grunt-jsdoc');
 
   grunt.registerTask('test', ['jshint', 'qunit']);
 
-  grunt.registerTask('default', ['less', 'ngtemplates', 'concat', 'uglify']); // 'bower',
+  grunt.registerTask('default', ['less', 'ngtemplates', 'concat', 'uglify', 'jsdoc']); // 'bower',
 
 };
 

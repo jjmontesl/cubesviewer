@@ -24,6 +24,11 @@
 
 "use strict";
 
+/**
+ * CubesViewer namespace.
+ *
+ * @namespace cv
+ */
 
 // Main CubesViewer angular module
 angular.module('cv', ['ui.bootstrap', 'bootstrapSubmenu',
@@ -40,6 +45,9 @@ angular.module('cv').constant('angularMomentConfig', {
 });
 */
 
+/*
+ * Configures cv application (cvOptions, log provider...).
+ */
 angular.module('cv').config([ '$logProvider', 'cvOptions', /* 'editableOptions', 'editableThemes', */
                            function($logProvider, cvOptions /*, editableOptions, editableThemes */) {
 
@@ -93,6 +101,9 @@ angular.module('cv').config([ '$logProvider', 'cvOptions', /* 'editableOptions',
 
 }]);
 
+/*
+ *
+ */
 angular.module('cv').run([ '$timeout', '$log', 'cvOptions', 'cubesService', 'cubesCacheService', /* 'editableOptions', 'editableThemes', */
 	                           function($timeout, $log, cvOptions, cubesService, cubesCacheService /*, editableOptions, editableThemes */) {
 
@@ -107,34 +118,75 @@ angular.module('cv').run([ '$timeout', '$log', 'cvOptions', 'cubesService', 'cub
 }]);
 
 
-// Cubesviewer Javascript entry point
-var cubesviewer = {
+/**
+ * CubesViewer class, used to initialize CubesViewer and
+ * create views. Note that the initialization method varies depending
+ * on whether your application uses Angular 1.x or not.
+ *
+ * This class is available through the global cubesviewer variable,
+ * and must not be instantiated.
+ *
+ * @class
+ */
+function CubesViewer() {
 
 	// CubesViewer version
-	version: "2.0.1-devel",
+	this.version = "2.0.1-devel";
 
-	// View states, also used for cubesserver service state.
-	VIEW_STATE_INITIALIZING: 1,
-	VIEW_STATE_INITIALIZED: 2,
-	VIEW_STATE_ERROR: 3,
+	/**
+	 * State of a view that has not yet been fully initialized, and cannot be interacted with.
+	 * @const
+	 */
+	this.VIEW_STATE_INITIALIZING = 1;
 
-	_configure: function(options) {
+	/**
+	 * State of a view that has been correctly initialized.
+	 * @const
+	 */
+	this.VIEW_STATE_INITIALIZED = 2;
+
+	/**
+	 * State of a view that has failed initialization, and cannot be used.
+	 * @const
+	 */
+	this.VIEW_STATE_ERROR = 3;
+
+
+	this._configure = function(options) {
 		$('.cv-version').html(cubesviewer.version);
 		angular.module('cv').constant('cvOptions', options);
-	},
+	};
 
-	init: function(options) {
+	/**
+	 * Initializes CubesViewer system.
+	 *
+	 * If you are using CubesViewer in an Angular application, you don't
+	 * need to call this method. Instead, use your application Angular `config`
+	 * block to initialize the cvOptions constant with your settings,
+	 * and add the 'cv' module as a dependency to your application.
+	 */
+	this.init = function(options) {
 
 		this._configure(options);
 		angular.element(document).ready(function() {
 			angular.bootstrap(document, ['cv']);
 		});
-	},
+	};
 
 	/**
+	 * Creates a CubesViewer view object and interface, and attaches it
+	 * to the specified DOM element.
 	 *
+	 * If you are embedding CubesViewer in an Angular application, you can
+	 * avoid this method and use the {@link viewsService} and the
+	 * {@link cvViewCube} directive instead.
+	 *
+	 * @param container A selector, jQuery object or DOM element where the view will be attached.
+	 * @param type View type (currently only "cube" is available).
+	 * @param viewData An object or JSON string with the view parameters.
+	 * @returns The created view object.
 	 */
-	createView: function(container, type, viewData) {
+	this.createView = function(container, type, viewData) {
 
 		//console.debug("Creating view: " + viewData);
 
@@ -157,23 +209,26 @@ var cubesviewer = {
 
 		return view;
 
-	},
+	};
 
-	apply: function(routine) {
+	/**
+	 * Performs changes within CubesViewer scope. If are not using CubesViewer from
+	 * Angular, you need to wrap all your CubesViewer client code within this
+	 * method in order for changes to be observed.
+	 *
+	 * @param routine Function that will be executed within CubesViewer Angular context.
+	 */
+	this.apply = function(routine) {
 		angular.element(document).scope().$apply(routine);
-	}
-
-	/*
-	this.getView = function(id) {
-	    var viewid = id.toString();
-	    viewid = viewid.indexOf('view') === 0 ? viewid : 'view' + viewid;
-	    viewid = viewid[0] === '#' ? viewid : '#' + viewid;
-
-	    return $(viewid + ' .cv-gui-viewcontent').data('cubesviewer-view');
-	  };
-	*/
+	};
 
 };
 
-
+/**
+ * This is Cubesviewer main entry point. Please see {@link CubesViewer}
+ * documentation for further information.
+ *
+ * @global
+ */
+var cubesviewer = new CubesViewer();
 

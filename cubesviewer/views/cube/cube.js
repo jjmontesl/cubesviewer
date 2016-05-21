@@ -25,6 +25,8 @@
 
 /**
  * CubesViewer view module.
+ *
+ * @namespace cv.views.cube
  */
 angular.module('cv.views.cube', []);
 

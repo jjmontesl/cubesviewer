@@ -25,11 +25,16 @@
 
 /**
  * The views module manages different views in CubesViewer.
+ *
+ * @namespace cv.views
  */
 angular.module('cv.views', ['cv.views.cube']);
 
 /**
+ * This service manages CubesViewer views in the application.
  *
+ * @class viewsService
+ * @memberof cv.views
  */
 angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', 'cubesService', 'dialogService',
                                                     function ($rootScope, cvOptions, cubesService, dialogService) {
@@ -42,7 +47,11 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 
 	/**
 	 * Adds a new clean view for a cube.
-	 * This accepts parameters as an object or as a serialized string.
+	 *
+	 * @param type Type of view to create. Currently only "cube" is available.
+	 * @param data View parameters, as an object or as a serialized JSON string.
+	 *
+	 * @memberOf cv.views.viewsService
 	 */
 	this.createView = function(type, data) {
 

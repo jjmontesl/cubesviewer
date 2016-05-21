@@ -29,11 +29,19 @@
 
 "use strict";
 
+/**
+ * Provides methods to export data from "cube" views.
+ *
+ * @class exportService
+ * @memberof cv.views.cube
+ */
 angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesOperationsService',
                                                               function ($rootScope, $timeout, cvOptions, cubesService, viewsService, seriesOperationsService) {
 
 	/**
 	 * Download facts in CSV format from Cubes Server
+	 *
+	 * @memberof cv.views.cube.exportService
 	 */
 	this.exportFacts = function(view) {
 
@@ -54,6 +62,8 @@ angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeou
 
 	/**
 	 * Export a view (either in "explore" or "series" mode) in CSV format.
+	 *
+	 * @memberof cv.views.cube.exportService
 	 */
 	this.exportGridAsCsv = function (view) {
 
@@ -86,6 +96,11 @@ angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeou
 		this.saveAs(uri, view.cube.name + "-summary.csv")
 	};
 
+	/**
+	 * Delivers a data URI to the client with a given filename.
+	 *
+	 * @memberof cv.views.cube.exportService
+	 */
 	this.saveAs = function(uri, filename) {
 	    var link = document.createElement('a');
 	    if (typeof link.download === 'string') {

@@ -62,7 +62,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		$scope.view.dimensionFilter = null;
 	};
 
-	/**
+	/*
 	 * Load dimension values.
 	 */
 	$scope.loadDimensionValues = function() {
@@ -89,7 +89,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 	};
 
-	/**
+	/*
 	 * Updates info after loading data.
 	 */
 	$scope._loadDimensionValuesCallback = function(dimension) {
@@ -191,53 +191,4 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 	$scope.initialize();
 
 }]);
-
-
-
-/**
- * Adds support for filter dialogs for dimensions. Note that
- * filtering support is available from other plugins. Default filtering
- * features are included in the normal explore view (user
- * can select values after drilling down). This plugin adds
- * more flexibility.
- */
-function cubesviewerViewCubeDimensionFilter () {
-
-
-	/*
-	 * Shows the dimension filter
-	 */
-	this.drawDimensionFilter = function (view, dimension) {
-
-		var parts = view.cube.dimensionParts(dimension);
-
-		// Draw value container
-
-		$(view.container).find(".cv-views-dimensionfilter-cancel").button().click(function() {
-			view.dimensionFilter = null;
-			$(view.container).find('.cv-view-dimensionfilter').remove();
-		});
-
-		$(view.container).find("#cv-views-dimensionfilter-cols-" + view.id).buttonset();
-		$(view.container).find("#cv-views-dimensionfilter-col1-" + view.id).click(function() {
-			view.cubesviewer.views.cube.dimensionfilter.drawDimensionValuesCols( view, 1 );
-		});
-		$(view.container).find("#cv-views-dimensionfilter-col2-" + view.id).click(function() {
-			view.cubesviewer.views.cube.dimensionfilter.drawDimensionValuesCols( view, 2 );
-		});
-
-		$(view.container).find(".cv-views-dimensionfilter-selectall").button().click(function() {
-			// Clear previous selected items before applying new clicks
-			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox").filter(":checked").trigger('click');
-			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox:visible").trigger('click');
-		});
-		$(view.container).find(".cv-views-dimensionfilter-selectnone").button().click(function() {
-			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox").filter(":checked").trigger('click');
-		});
-
-
-	};
-
-
-}
 

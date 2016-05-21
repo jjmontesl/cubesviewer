@@ -23,8 +23,20 @@
 
 "use strict";
 
+/**
+ * CubesViewer Cubes module. Provides an interface to the Cubes client.
+ *
+ * @namespace cv.cubes
+ */
 angular.module('cv.cubes', []);
 
+/**
+ * This service manages the Cubes client instance and provides methods to
+ * connect to and query the Cubes server.
+ *
+ * @class cubesService
+ * @memberof cv.cubes
+ */
 angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOptions', 'gaService',
                                                     function ($rootScope, $log, cvOptions, gaService) {
 
@@ -36,15 +48,19 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 
 	this.stateText = "";
 
+
 	this.initialize = function() {
 	};
 
 	/**
-	 * Connects this service to the Cubes server.
+	 * Connects this service to the Cubes server, using the parameters
+	 * defined by the configured {@link cvOptions}.
+	 *
+	 * @memberOf cv.cubes.cubesService
 	 */
 	this.connect = function() {
 		// Initialize Cubes client library
-		this.cubesserver = new cubes.Server(cubesService.cubesAjaxHandler);
+		this.cubesserver = new cubes.Server(cubesService._cubesAjaxHandler);
 		console.debug("Cubes client connecting to: " + cvOptions.cubesUrl);
 		this.cubesserver.connect (cvOptions.cubesUrl, function() {
 			console.debug('Cubes client initialized (server version: ' + cubesService.cubesserver.server_version + ')');
@@ -75,13 +91,15 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 	/*
 	 * Ajax handler for cubes library
 	 */
-	this.cubesAjaxHandler = function (settings) {
+	this._cubesAjaxHandler = function (settings) {
 		return cubesService.cubesRequest(settings.url, settings.data || [], settings.success, settings.error);
 	};
 
 
-	/*
-	 * Cubes centralized request
+	/**
+	 * Sends a request to the Cubes server.
+	 *
+	 * @memberOf cv.cubes.cubesService
 	 */
 	this.cubesRequest = function(path, params, successCallback, errCallback) {
 

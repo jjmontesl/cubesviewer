@@ -1025,8 +1025,20 @@ cubes.Hierarchy.prototype.readCell = function(cell, level_limit) {
 
 "use strict";
 
+/**
+ * CubesViewer Cubes module. Provides an interface to the Cubes client.
+ *
+ * @namespace cv.cubes
+ */
 angular.module('cv.cubes', []);
 
+/**
+ * This service manages the Cubes client instance and provides methods to
+ * connect to and query the Cubes server.
+ *
+ * @class cubesService
+ * @memberof cv.cubes
+ */
 angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOptions', 'gaService',
                                                     function ($rootScope, $log, cvOptions, gaService) {
 
@@ -1038,15 +1050,19 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 
 	this.stateText = "";
 
+
 	this.initialize = function() {
 	};
 
 	/**
-	 * Connects this service to the Cubes server.
+	 * Connects this service to the Cubes server, using the parameters
+	 * defined by the configured {@link cvOptions}.
+	 *
+	 * @memberOf cv.cubes.cubesService
 	 */
 	this.connect = function() {
 		// Initialize Cubes client library
-		this.cubesserver = new cubes.Server(cubesService.cubesAjaxHandler);
+		this.cubesserver = new cubes.Server(cubesService._cubesAjaxHandler);
 		console.debug("Cubes client connecting to: " + cvOptions.cubesUrl);
 		this.cubesserver.connect (cvOptions.cubesUrl, function() {
 			console.debug('Cubes client initialized (server version: ' + cubesService.cubesserver.server_version + ')');
@@ -1077,13 +1093,15 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 	/*
 	 * Ajax handler for cubes library
 	 */
-	this.cubesAjaxHandler = function (settings) {
+	this._cubesAjaxHandler = function (settings) {
 		return cubesService.cubesRequest(settings.url, settings.data || [], settings.success, settings.error);
 	};
 
 
-	/*
-	 * Cubes centralized request
+	/**
+	 * Sends a request to the Cubes server.
+	 *
+	 * @memberOf cv.cubes.cubesService
 	 */
 	this.cubesRequest = function(path, params, successCallback, errCallback) {
 
@@ -1441,6 +1459,11 @@ angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', '$log', '
 
 "use strict";
 
+/**
+ * CubesViewer namespace.
+ *
+ * @namespace cv
+ */
 
 // Main CubesViewer angular module
 angular.module('cv', ['ui.bootstrap', 'bootstrapSubmenu',
@@ -1457,6 +1480,9 @@ angular.module('cv').constant('angularMomentConfig', {
 });
 */
 
+/*
+ * Configures cv application (cvOptions, log provider...).
+ */
 angular.module('cv').config([ '$logProvider', 'cvOptions', /* 'editableOptions', 'editableThemes', */
                            function($logProvider, cvOptions /*, editableOptions, editableThemes */) {
 
@@ -1510,6 +1536,9 @@ angular.module('cv').config([ '$logProvider', 'cvOptions', /* 'editableOptions',
 
 }]);
 
+/*
+ *
+ */
 angular.module('cv').run([ '$timeout', '$log', 'cvOptions', 'cubesService', 'cubesCacheService', /* 'editableOptions', 'editableThemes', */
 	                           function($timeout, $log, cvOptions, cubesService, cubesCacheService /*, editableOptions, editableThemes */) {
 
@@ -1524,34 +1553,75 @@ angular.module('cv').run([ '$timeout', '$log', 'cvOptions', 'cubesService', 'cub
 }]);
 
 
-// Cubesviewer Javascript entry point
-var cubesviewer = {
+/**
+ * CubesViewer class, used to initialize CubesViewer and
+ * create views. Note that the initialization method varies depending
+ * on whether your application uses Angular 1.x or not.
+ *
+ * This class is available through the global cubesviewer variable,
+ * and must not be instantiated.
+ *
+ * @class
+ */
+function CubesViewer() {
 
 	// CubesViewer version
-	version: "2.0.1-devel",
+	this.version = "2.0.1-devel";
 
-	// View states, also used for cubesserver service state.
-	VIEW_STATE_INITIALIZING: 1,
-	VIEW_STATE_INITIALIZED: 2,
-	VIEW_STATE_ERROR: 3,
+	/**
+	 * State of a view that has not yet been fully initialized, and cannot be interacted with.
+	 * @const
+	 */
+	this.VIEW_STATE_INITIALIZING = 1;
 
-	_configure: function(options) {
+	/**
+	 * State of a view that has been correctly initialized.
+	 * @const
+	 */
+	this.VIEW_STATE_INITIALIZED = 2;
+
+	/**
+	 * State of a view that has failed initialization, and cannot be used.
+	 * @const
+	 */
+	this.VIEW_STATE_ERROR = 3;
+
+
+	this._configure = function(options) {
 		$('.cv-version').html(cubesviewer.version);
 		angular.module('cv').constant('cvOptions', options);
-	},
+	};
 
-	init: function(options) {
+	/**
+	 * Initializes CubesViewer system.
+	 *
+	 * If you are using CubesViewer in an Angular application, you don't
+	 * need to call this method. Instead, use your application Angular `config`
+	 * block to initialize the cvOptions constant with your settings,
+	 * and add the 'cv' module as a dependency to your application.
+	 */
+	this.init = function(options) {
 
 		this._configure(options);
 		angular.element(document).ready(function() {
 			angular.bootstrap(document, ['cv']);
 		});
-	},
+	};
 
 	/**
+	 * Creates a CubesViewer view object and interface, and attaches it
+	 * to the specified DOM element.
 	 *
+	 * If you are embedding CubesViewer in an Angular application, you can
+	 * avoid this method and use the {@link viewsService} and the
+	 * {@link cvViewCube} directive instead.
+	 *
+	 * @param container A selector, jQuery object or DOM element where the view will be attached.
+	 * @param type View type (currently only "cube" is available).
+	 * @param viewData An object or JSON string with the view parameters.
+	 * @returns The created view object.
 	 */
-	createView: function(container, type, viewData) {
+	this.createView = function(container, type, viewData) {
 
 		//console.debug("Creating view: " + viewData);
 
@@ -1574,25 +1644,28 @@ var cubesviewer = {
 
 		return view;
 
-	},
+	};
 
-	apply: function(routine) {
+	/**
+	 * Performs changes within CubesViewer scope. If are not using CubesViewer from
+	 * Angular, you need to wrap all your CubesViewer client code within this
+	 * method in order for changes to be observed.
+	 *
+	 * @param routine Function that will be executed within CubesViewer Angular context.
+	 */
+	this.apply = function(routine) {
 		angular.element(document).scope().$apply(routine);
-	}
-
-	/*
-	this.getView = function(id) {
-	    var viewid = id.toString();
-	    viewid = viewid.indexOf('view') === 0 ? viewid : 'view' + viewid;
-	    viewid = viewid[0] === '#' ? viewid : '#' + viewid;
-
-	    return $(viewid + ' .cv-gui-viewcontent').data('cubesviewer-view');
-	  };
-	*/
+	};
 
 };
 
-
+/**
+ * This is Cubesviewer main entry point. Please see {@link CubesViewer}
+ * documentation for further information.
+ *
+ * @global
+ */
+var cubesviewer = new CubesViewer();
 
 ;/*
  * CubesViewer
@@ -1621,11 +1694,16 @@ var cubesviewer = {
 
 /**
  * The views module manages different views in CubesViewer.
+ *
+ * @namespace cv.views
  */
 angular.module('cv.views', ['cv.views.cube']);
 
 /**
+ * This service manages CubesViewer views in the application.
  *
+ * @class viewsService
+ * @memberof cv.views
  */
 angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', 'cubesService', 'dialogService',
                                                     function ($rootScope, cvOptions, cubesService, dialogService) {
@@ -1638,7 +1716,11 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 
 	/**
 	 * Adds a new clean view for a cube.
-	 * This accepts parameters as an object or as a serialized string.
+	 *
+	 * @param type Type of view to create. Currently only "cube" is available.
+	 * @param data View parameters, as an object or as a serialized JSON string.
+	 *
+	 * @memberOf cv.views.viewsService
 	 */
 	this.createView = function(type, data) {
 
@@ -1821,6 +1903,8 @@ angular.module('cv.views').controller("CubesViewerViewsDialogController", ['$roo
 
 /**
  * CubesViewer view module.
+ *
+ * @namespace cv.views.cube
  */
 angular.module('cv.views.cube', []);
 
@@ -2653,7 +2737,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		$scope.view.dimensionFilter = null;
 	};
 
-	/**
+	/*
 	 * Load dimension values.
 	 */
 	$scope.loadDimensionValues = function() {
@@ -2680,7 +2764,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 	};
 
-	/**
+	/*
 	 * Updates info after loading data.
 	 */
 	$scope._loadDimensionValuesCallback = function(dimension) {
@@ -2782,55 +2866,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 	$scope.initialize();
 
 }]);
-
-
-
-/**
- * Adds support for filter dialogs for dimensions. Note that
- * filtering support is available from other plugins. Default filtering
- * features are included in the normal explore view (user
- * can select values after drilling down). This plugin adds
- * more flexibility.
- */
-function cubesviewerViewCubeDimensionFilter () {
-
-
-	/*
-	 * Shows the dimension filter
-	 */
-	this.drawDimensionFilter = function (view, dimension) {
-
-		var parts = view.cube.dimensionParts(dimension);
-
-		// Draw value container
-
-		$(view.container).find(".cv-views-dimensionfilter-cancel").button().click(function() {
-			view.dimensionFilter = null;
-			$(view.container).find('.cv-view-dimensionfilter').remove();
-		});
-
-		$(view.container).find("#cv-views-dimensionfilter-cols-" + view.id).buttonset();
-		$(view.container).find("#cv-views-dimensionfilter-col1-" + view.id).click(function() {
-			view.cubesviewer.views.cube.dimensionfilter.drawDimensionValuesCols( view, 1 );
-		});
-		$(view.container).find("#cv-views-dimensionfilter-col2-" + view.id).click(function() {
-			view.cubesviewer.views.cube.dimensionfilter.drawDimensionValuesCols( view, 2 );
-		});
-
-		$(view.container).find(".cv-views-dimensionfilter-selectall").button().click(function() {
-			// Clear previous selected items before applying new clicks
-			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox").filter(":checked").trigger('click');
-			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox:visible").trigger('click');
-		});
-		$(view.container).find(".cv-views-dimensionfilter-selectnone").button().click(function() {
-			$(view.container).find(".cv-view-dimensionfilter-list").find(":checkbox").filter(":checked").trigger('click');
-		});
-
-
-	};
-
-
-}
 
 ;/*
  * CubesViewer
@@ -5239,11 +5274,19 @@ function cubesviewerViewCubeDynamicChart() {
 
 "use strict";
 
+/**
+ * Provides methods to export data from "cube" views.
+ *
+ * @class exportService
+ * @memberof cv.views.cube
+ */
 angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesOperationsService',
                                                               function ($rootScope, $timeout, cvOptions, cubesService, viewsService, seriesOperationsService) {
 
 	/**
 	 * Download facts in CSV format from Cubes Server
+	 *
+	 * @memberof cv.views.cube.exportService
 	 */
 	this.exportFacts = function(view) {
 
@@ -5264,6 +5307,8 @@ angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeou
 
 	/**
 	 * Export a view (either in "explore" or "series" mode) in CSV format.
+	 *
+	 * @memberof cv.views.cube.exportService
 	 */
 	this.exportGridAsCsv = function (view) {
 
@@ -5296,6 +5341,11 @@ angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeou
 		this.saveAs(uri, view.cube.name + "-summary.csv")
 	};
 
+	/**
+	 * Delivers a data URI to the client with a given filename.
+	 *
+	 * @memberof cv.views.cube.exportService
+	 */
 	this.saveAs = function(uri, filename) {
 	    var link = document.createElement('a');
 	    if (typeof link.download === 'string') {
@@ -5441,10 +5491,27 @@ angular.module('cv.views.cube').controller("CubesViewerViewsUndoController", ['$
 
 "use strict";
 
+/**
+ * CubesViewer Studio module. CubesViewer Studio is the (optional) interface that
+ * provides a full visualization environment allowing users to create and
+ * interact with cubes and views.
+ *
+ * See the CubesViewer Studio demo at `html/studio.html` in the package.
+ *
+ * @namespace cv.studio
+ */
 angular.module('cv.studio', ['cv' /*'ui.bootstrap-slider', 'ui.validate', 'ngAnimate', */
                              /*'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',
                              'nvd3' */ ]);
 
+/**
+ * This service manages the panels and views of the CubesViewer Studio interface.
+ * Provides methods to create, remove and collapse view panels which are rendered
+ * within the CubesViewer Studio user interface.
+ *
+ * @class studioViewsService
+ * @memberof cv.studio
+ */
 angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$anchorScroll', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
                                                             function ($rootScope, $anchorScroll, $timeout, cvOptions, cubesService, viewsService, dialogService) {
 
@@ -5455,7 +5522,9 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 	viewsService.studioViewsService = this;
 
 	/**
-	 * Adds a new clean view for a cube
+	 * Adds a new clean view of type "cube" given a cube name.
+	 *
+	 * @memberof cv.studio.studioViewsService
 	 */
 	this.addViewCube = function(cubename) {
 
@@ -5473,8 +5542,11 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 		return view;
 	};
 
-	/*
-	 * Adds a view given its params descriptor.
+	/**
+	 * Adds a view given its parameters descriptor either as an object or as
+	 * a JSON string.
+	 *
+	 * @memberof cv.studio.studioViewsService
 	 */
 	this.addViewObject = function(data) {
 
@@ -5497,6 +5569,8 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 
 	/**
 	 * Closes the panel of the given view.
+	 *
+	 * @memberof cv.studio.studioViewsService
 	 */
 	this.closeView = function(view) {
 		var viewIndex = this.views.indexOf(view);
@@ -5509,6 +5583,8 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 
 	/**
 	 * Collapses the panel of the given view.
+	 *
+	 * @memberof cv.studio.studioViewsService
 	 */
 	this.toggleCollapseView = function(view) {
 		view.collapsed = !view.collapsed;
@@ -5727,22 +5803,51 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
 
 
 /**
- * CubesViewer Studio entry point.
+ * CubesViewer Studio global instance and entry point. Used to initialize
+ * CubesViewer Studio.
+ *
+ * This class is available through the global cubesviewerStudio variable,
+ * and must not be instantiated.
+ *
+ * If you are embedding views in a 3rd party site and you do not need
+ * Studio features, use {@link CubesViewer} initialization method instead.
+ *
+ * Note that the initialization method varies depending
+ * on whether your application uses Angular 1.x or not.
+ *
+ * @class
  */
-cubesviewer.studio = {
+function CubesViewerStudio() {
 
-	_configure: function(options) {
+	this._configure = function(options) {
 		cubesviewer._configure(options);
-	},
+	};
 
-	init: function(options) {
+	/**
+	 * Initializes CubesViewer Studio.
+	 *
+	 * If you wish to embed CubesViewer Studio within an Angular application, you don't
+	 * need to call this method. Instead, use your application Angular `config`
+	 * block to initialize the cvOptions constant with your settings,
+	 * and add the 'cv.studio' module as a dependency to your application.
+	 */
+	this.init = function(options) {
 		this._configure(options);
    		angular.element(document).ready(function() {
    			angular.bootstrap(options.container, ['cv.studio']);
    		});
-	}
+	};
 
-};
+}
+
+/**
+ * This is Cubesviewer Studio main entry point. Please see {@link CubesViewerStudio}
+ * documentation for further information.
+ *
+ * @global
+ */
+var cubesviewerStudio = new CubesViewerStudio();
+
 ;/*
  * CubesViewer
  * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
@@ -6806,8 +6911,8 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "        </a>\n" +
     "    </li>\n" +
     "\n" +
-    "    <li ng-show=\"view.params.mode == 'chart' && view.params.charttype == 'bars-horizontal'\" ng-click=\"view.params.chartoptions.mirrorSerie2 = !view.params.chartoptions.mirrorSerie2; refreshView();\">\n" +
-    "        <a><i class=\"fa fa-fw fa-arrows-h\"></i> Invert 2nd serie\n" +
+    "    <li ng-disabled=\"view.grid.data.length != 2\" ng-show=\"view.params.mode == 'chart' && view.params.charttype == 'bars-horizontal'\" ng-click=\"view.params.chartoptions.mirrorSerie2 = !view.params.chartoptions.mirrorSerie2; refreshView();\">\n" +
+    "        <a><i class=\"fa fa-fw fa-arrows-h\"></i> Invert 2nd series\n" +
     "            <span style=\"margin-left: 5px;\" class=\"label label-default\" ng-class=\"{ 'label-success': view.params.chartoptions.mirrorSerie2 }\">{{ view.params.chartoptions.mirrorSerie2 ? \"ON\" : \"OFF\" }}</span>\n" +
     "        </a>\n" +
     "    </li>\n" +
@@ -6889,9 +6994,10 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "    <li ng-show=\"view.params.mode != 'chart'\" ng-click=\"exportService.exportGridAsCsv(view)\"><a><i class=\"fa fa-fw fa-table\"></i> Export table</a></li>\n" +
     "    <li ng-click=\"exportService.exportFacts(view)\"><a><i class=\"fa fa-fw fa-th\"></i> Export facts</a></li>\n" +
     "\n" +
+    "    <!--\n" +
     "    <div ng-show=\"view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
-    "\n" +
     "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"chartCtrl.exportChartSvg(view)\"><a><i class=\"fa fa-fw fa-table\"></i> Export chart as SVG</a></li>\n" +
+    "    -->\n" +
     "\n" +
     "  </ul>\n" +
     "\n"

@@ -655,8 +655,8 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </a>\n" +
     "    </li>\n" +
     "\n" +
-    "    <li ng-show=\"view.params.mode == 'chart' && view.params.charttype == 'bars-horizontal'\" ng-click=\"view.params.chartoptions.mirrorSerie2 = !view.params.chartoptions.mirrorSerie2; refreshView();\">\n" +
-    "        <a><i class=\"fa fa-fw fa-arrows-h\"></i> Invert 2nd serie\n" +
+    "    <li ng-disabled=\"view.grid.data.length != 2\" ng-show=\"view.params.mode == 'chart' && view.params.charttype == 'bars-horizontal'\" ng-click=\"view.params.chartoptions.mirrorSerie2 = !view.params.chartoptions.mirrorSerie2; refreshView();\">\n" +
+    "        <a><i class=\"fa fa-fw fa-arrows-h\"></i> Invert 2nd series\n" +
     "            <span style=\"margin-left: 5px;\" class=\"label label-default\" ng-class=\"{ 'label-success': view.params.chartoptions.mirrorSerie2 }\">{{ view.params.chartoptions.mirrorSerie2 ? \"ON\" : \"OFF\" }}</span>\n" +
     "        </a>\n" +
     "    </li>\n" +
@@ -738,9 +738,10 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    <li ng-show=\"view.params.mode != 'chart'\" ng-click=\"exportService.exportGridAsCsv(view)\"><a><i class=\"fa fa-fw fa-table\"></i> Export table</a></li>\n" +
     "    <li ng-click=\"exportService.exportFacts(view)\"><a><i class=\"fa fa-fw fa-th\"></i> Export facts</a></li>\n" +
     "\n" +
+    "    <!--\n" +
     "    <div ng-show=\"view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
-    "\n" +
     "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"chartCtrl.exportChartSvg(view)\"><a><i class=\"fa fa-fw fa-table\"></i> Export chart as SVG</a></li>\n" +
+    "    -->\n" +
     "\n" +
     "  </ul>\n" +
     "\n"

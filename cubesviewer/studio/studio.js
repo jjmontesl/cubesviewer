@@ -23,10 +23,27 @@
 
 "use strict";
 
+/**
+ * CubesViewer Studio module. CubesViewer Studio is the (optional) interface that
+ * provides a full visualization environment allowing users to create and
+ * interact with cubes and views.
+ *
+ * See the CubesViewer Studio demo at `html/studio.html` in the package.
+ *
+ * @namespace cv.studio
+ */
 angular.module('cv.studio', ['cv' /*'ui.bootstrap-slider', 'ui.validate', 'ngAnimate', */
                              /*'angularMoment', 'smart-table', 'angular-confirm', 'debounce', 'xeditable',
                              'nvd3' */ ]);
 
+/**
+ * This service manages the panels and views of the CubesViewer Studio interface.
+ * Provides methods to create, remove and collapse view panels which are rendered
+ * within the CubesViewer Studio user interface.
+ *
+ * @class studioViewsService
+ * @memberof cv.studio
+ */
 angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$anchorScroll', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
                                                             function ($rootScope, $anchorScroll, $timeout, cvOptions, cubesService, viewsService, dialogService) {
 
@@ -37,7 +54,9 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 	viewsService.studioViewsService = this;
 
 	/**
-	 * Adds a new clean view for a cube
+	 * Adds a new clean view of type "cube" given a cube name.
+	 *
+	 * @memberof cv.studio.studioViewsService
 	 */
 	this.addViewCube = function(cubename) {
 
@@ -55,8 +74,11 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 		return view;
 	};
 
-	/*
-	 * Adds a view given its params descriptor.
+	/**
+	 * Adds a view given its parameters descriptor either as an object or as
+	 * a JSON string.
+	 *
+	 * @memberof cv.studio.studioViewsService
 	 */
 	this.addViewObject = function(data) {
 
@@ -79,6 +101,8 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 
 	/**
 	 * Closes the panel of the given view.
+	 *
+	 * @memberof cv.studio.studioViewsService
 	 */
 	this.closeView = function(view) {
 		var viewIndex = this.views.indexOf(view);
@@ -91,6 +115,8 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 
 	/**
 	 * Collapses the panel of the given view.
+	 *
+	 * @memberof cv.studio.studioViewsService
 	 */
 	this.toggleCollapseView = function(view) {
 		view.collapsed = !view.collapsed;
@@ -309,19 +335,48 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
 
 
 /**
- * CubesViewer Studio entry point.
+ * CubesViewer Studio global instance and entry point. Used to initialize
+ * CubesViewer Studio.
+ *
+ * This class is available through the global cubesviewerStudio variable,
+ * and must not be instantiated.
+ *
+ * If you are embedding views in a 3rd party site and you do not need
+ * Studio features, use {@link CubesViewer} initialization method instead.
+ *
+ * Note that the initialization method varies depending
+ * on whether your application uses Angular 1.x or not.
+ *
+ * @class
  */
-cubesviewer.studio = {
+function CubesViewerStudio() {
 
-	_configure: function(options) {
+	this._configure = function(options) {
 		cubesviewer._configure(options);
-	},
+	};
 
-	init: function(options) {
+	/**
+	 * Initializes CubesViewer Studio.
+	 *
+	 * If you wish to embed CubesViewer Studio within an Angular application, you don't
+	 * need to call this method. Instead, use your application Angular `config`
+	 * block to initialize the cvOptions constant with your settings,
+	 * and add the 'cv.studio' module as a dependency to your application.
+	 */
+	this.init = function(options) {
 		this._configure(options);
    		angular.element(document).ready(function() {
    			angular.bootstrap(options.container, ['cv.studio']);
    		});
-	}
+	};
 
-};
+}
+
+/**
+ * This is Cubesviewer Studio main entry point. Please see {@link CubesViewerStudio}
+ * documentation for further information.
+ *
+ * @global
+ */
+var cubesviewerStudio = new CubesViewerStudio();
+

@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-/**
+/*
  * Adds support for rangefilters.
  *
  * This plugin requires that the model is configured
