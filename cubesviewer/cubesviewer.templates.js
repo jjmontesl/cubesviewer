@@ -549,6 +549,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +
+    "    <!--\n" +
     "    <li class=\"dropdown-submenu\">\n" +
     "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-arrows-h\"></i> Range filter</a>\n" +
     "        <ul class=\"dropdown-menu\">\n" +
@@ -563,14 +564,12 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                <li ng-repeat=\"(hikey,hi) in dimension.hierarchies\" class=\"dropdown-submenu\">\n" +
     "                    <a tabindex=\"0\" href=\"\" onclick=\"return false;\">{{ hi.label }}</a>\n" +
     "                    <ul class=\"dropdown-menu\">\n" +
-    "                        <!-- ng-click=\"selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)\"  -->\n" +
     "                        <li ng-repeat=\"level in hi.levels\" ng-click=\"showDimensionFilter(dimension.name + '@' + hi.name + ':' + level.name )\"><a href=\"\">{{ level.label }}</a></li>\n" +
     "                    </ul>\n" +
     "                </li>\n" +
     "            </ul>\n" +
     "\n" +
     "            <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
-    "                <!--  selectDrill(dimension.name + ':' + level.name, true) -->\n" +
     "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"showDimensionFilter(level);\"><a href=\"\">{{ level.label }}</a></li>\n" +
     "            </ul>\n" +
     "\n" +
@@ -578,16 +577,10 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "        </ul>\n" +
     "    </li>\n" +
-    "\n" +
-    "    <!--\n" +
-    "    // Events\n" +
-    "    $(view.container).find('.cv-view-show-dimensionfilter').click( function() {\n" +
-    "        cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, $(this).attr('data-dimension'));\n" +
-    "        return false;\n" +
-    "    });\n" +
     "     -->\n" +
     "\n" +
     "    <div class=\"divider\"></div>\n" +
+    "\n" +
     "    <li ng-class=\"{ 'disabled': view.params.cuts.length == 0 }\"><a href=\"\"><i class=\"fa fa-fw fa-trash\"></i> Clear filters</a></li>\n" +
     "\n" +
     "  </ul>\n"
@@ -634,11 +627,13 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "          <li ng-click=\"selectChartType('lines-stacked')\"><a href=\"\"><i class=\"fa fa-fw fa-area-chart\"></i> Areas</a></li>\n" +
     "          <li ng-click=\"selectChartType('radar')\"><a href=\"\"><i class=\"fa fa-fw fa-bullseye\"></i> Radar</a></li>\n" +
     "\n" +
-    "          <div class=\"divider\"></div>\n" +
+    "          <!-- <div class=\"divider\"></div>  -->\n" +
     "\n" +
-    "          <!-- <li><a href=\"\"><i class=\"fa fa-fw fa-dot-circle-o\"></i> Bubbles</a></li>  -->\n" +
+    "          <!--\n" +
+    "          <li><a href=\"\"><i class=\"fa fa-fw fa-dot-circle-o\"></i> Bubbles</a></li>\n" +
     "          <li><a href=\"\"><i class=\"fa fa-fw fa-square\"></i> Treemap</a></li>\n" +
     "          <li ng-click=\"selectChartType('sunburst')\"><a href=\"\"><i class=\"fa fa-fw fa-sun-o\"></i> Sunburst</a></li>\n" +
+    "          -->\n" +
     "\n" +
     "          <!--\n" +
     "          <div class=\"divider\"></div>\n" +
@@ -718,16 +713,18 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +
-    "    <div ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
+    "    <div ng-show=\"cvOptions.seriesOperationsEnabled && (view.params.mode == 'series' || view.params.mode == 'chart')\" class=\"divider\"></div>\n" +
     "\n" +
-    "    <li ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"dropdown-submenu\">\n" +
+    "    <li ng-show=\"cvOptions.seriesOperationsEnabled && (view.params.mode == 'series' || view.params.mode == 'chart')\" class=\"dropdown-submenu\">\n" +
     "        <a tabindex=\"0\" ><i class=\"fa fa-fw fa-calculator\"></i> Series operations</a>\n" +
     "        <ul class=\"dropdown-menu\">\n" +
     "          <li ng-click=\"selectOperation('difference')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Difference</a></li>\n" +
     "          <li ng-click=\"selectOperation('percentage')\"><a href=\"\"><i class=\"fa fa-fw fa-percent\"></i> Change rate</a></li>\n" +
+    "          <!--\n" +
     "          <li ng-click=\"selectOperation('accum')\"><a href=\"\"><i class=\"fa fa-fw\">&sum;</i> Accumulated</a></li>\n" +
     "          <div class=\"divider\"></div>\n" +
     "          <li ng-click=\"selectOperation('fill-zeros')\"><a href=\"\"><i class=\"fa fa-fw\">0</i> Replace blanks with zeroes</a></li>\n" +
+    "           -->\n" +
     "          <div class=\"divider\"></div>\n" +
     "          <li ng-click=\"selectOperation(null)\"><a href=\"\"><i class=\"fa fa-fw fa-times\"></i> Clear operations</a></li>\n" +
     "        </ul>\n" +
@@ -843,7 +840,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                <div class=\"cv-view-viewinfo-extra\">\n" +
     "\n" +
     "                    <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccccff;\">\n" +
-    "                        <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-crosshairs\"></i> <b>Measure:</b> {{ (view.params.yaxis != null) ? view.params.yaxis : \"None\" }}</span>\n" +
+    "                        <span style=\"max-width: 350px;\"><i class=\"fa fa-fw fa-crosshairs\"></i> <b>Measure:</b> {{ (view.params.yaxis != null) ? view.cube.aggregateFromName(view.params.yaxis).label : \"None\" }}</span>\n" +
     "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                    </div>\n" +
     "\n" +

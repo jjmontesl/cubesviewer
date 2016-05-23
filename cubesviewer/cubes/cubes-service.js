@@ -108,7 +108,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 		if (path.charAt(0) == '/') path = cvOptions.cubesUrl + path;
 
 		if (cvOptions.debug) {
-			$log.debug("Cubes request: " + path + " (" + params + ")");
+			$log.debug("Cubes request: " + path + " (" + JSON.stringify(params) + ")");
 		}
 
 		var jqxhr = $.get(path, params, cubesService._cubesRequestCallback(successCallback), cvOptions.jsonRequestType);

@@ -14,11 +14,13 @@
           <li ng-click="selectChartType('lines-stacked')"><a href=""><i class="fa fa-fw fa-area-chart"></i> Areas</a></li>
           <li ng-click="selectChartType('radar')"><a href=""><i class="fa fa-fw fa-bullseye"></i> Radar</a></li>
 
-          <div class="divider"></div>
+          <!-- <div class="divider"></div>  -->
 
-          <!-- <li><a href=""><i class="fa fa-fw fa-dot-circle-o"></i> Bubbles</a></li>  -->
+          <!--
+          <li><a href=""><i class="fa fa-fw fa-dot-circle-o"></i> Bubbles</a></li>
           <li><a href=""><i class="fa fa-fw fa-square"></i> Treemap</a></li>
           <li ng-click="selectChartType('sunburst')"><a href=""><i class="fa fa-fw fa-sun-o"></i> Sunburst</a></li>
+          -->
 
           <!--
           <div class="divider"></div>
@@ -98,16 +100,18 @@
         </ul>
     </li>
 
-    <div ng-show="view.params.mode == 'series' || view.params.mode == 'chart'" class="divider"></div>
+    <div ng-show="cvOptions.seriesOperationsEnabled && (view.params.mode == 'series' || view.params.mode == 'chart')" class="divider"></div>
 
-    <li ng-show="view.params.mode == 'series' || view.params.mode == 'chart'" class="dropdown-submenu">
+    <li ng-show="cvOptions.seriesOperationsEnabled && (view.params.mode == 'series' || view.params.mode == 'chart')" class="dropdown-submenu">
         <a tabindex="0" ><i class="fa fa-fw fa-calculator"></i> Series operations</a>
         <ul class="dropdown-menu">
           <li ng-click="selectOperation('difference')"><a href=""><i class="fa fa-fw fa-line-chart"></i> Difference</a></li>
           <li ng-click="selectOperation('percentage')"><a href=""><i class="fa fa-fw fa-percent"></i> Change rate</a></li>
+          <!--
           <li ng-click="selectOperation('accum')"><a href=""><i class="fa fa-fw">&sum;</i> Accumulated</a></li>
           <div class="divider"></div>
           <li ng-click="selectOperation('fill-zeros')"><a href=""><i class="fa fa-fw">0</i> Replace blanks with zeroes</a></li>
+           -->
           <div class="divider"></div>
           <li ng-click="selectOperation(null)"><a href=""><i class="fa fa-fw fa-times"></i> Clear operations</a></li>
         </ul>

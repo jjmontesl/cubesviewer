@@ -57,8 +57,11 @@
 
         // Using a JSON string for view parameters:
         setTimeout(function() {
-            view1 = cubesviewer.createView("#cv-view-1", "cube", serializedView);
         }, 1500);
+        cubesviewer.apply(function() {
+        	view1 = cubesviewer.createView("#cv-view-1", "cube", serializedView);
+        });
+
 
         // Using a Javascript object for view parameters:
         //view2 = cubesviewer.createView('#cv-view-1', "cube", { "cubename": "webshop_visits" });

@@ -99,7 +99,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 		// Process data
 		//$scope._sortData (data.cells, view.params.xaxis != null ? true : false);
-	    this._addRows(data);
+	    this._addRows($scope, data);
 	    seriesOperationsService.applyCalculations($scope.view, $scope.view.grid.data, view.grid.columnDefs);
 
 		// Join keys
@@ -122,138 +122,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 	/*
 	 * Adds rows.
 	 */
-	this._addRows = function(data) {
-
-		console.debug("FIXME: addRows method in charts controller is duplicated (from series controller)!")
-
-		var view = $scope.view;
-		var rows = $scope.view.grid.data;
-
-		var counter = 0;
-		var dimensions = view.cube.dimensions;
-		var measures = view.cube.measures;
-        var details = view.cube.details;
-
-		// Copy drilldown as we'll modify it
-		var drilldown = view.params.drilldown.slice(0);
-
-		// Include X Axis if necessary
-		if (view.params.xaxis != null) {
-			drilldown.splice(0,0, view.params.xaxis);
-		}
-		var baseidx = ((view.params.xaxis == null) ? 0 : 1);
-
-		var addedCols = [];
-		$(data.cells).each(function (idx, e) {
-
-			var row = [];
-			var key = [];
-
-			// For the drilldown level, if present
-			for (var i = 0; i < drilldown.length; i++) {
-
-				// Get dimension
-				var parts = view.cube.dimensionParts(drilldown[i]);
-				var infos = parts.hierarchy.readCell(e, parts.level);
-
-				// Values and Labels
-				var drilldownLevelValues = [];
-				var drilldownLevelLabels = [];
-
-				$(infos).each(function(idx, info) {
-					drilldownLevelValues.push (info.key);
-					drilldownLevelLabels.push (info.label);
-				});
-
-				key.push (drilldownLevelLabels.join(" / "));
-
-			}
-
-			// Set key
-			var colKey = (view.params.xaxis == null) ? view.params.yaxis : key[0];
-			var value = (e[view.params.yaxis]);
-			var rowKey = (view.params.xaxis == null) ? key.join (' / ') : key.slice(1).join (' / ');
-
-			// Search or introduce
-			var row = $.grep(rows, function(ed) { return ed["key"] == rowKey; });
-			if (row.length > 0) {
-				row[0][colKey] = value;
-			} else {
-				var newrow = {};
-				newrow["key"] = rowKey;
-				newrow[colKey] = value;
-
-				for (var i = baseidx ; i < key.length; i++) {
-					newrow["key" + (i - baseidx)] = key[i];
-				}
-				rows.push ( newrow );
-			}
-
-
-			// Add column definition if the column hasn't been added yet
-			if (addedCols.indexOf(colKey) < 0) {
-				addedCols.push(colKey);
-
-				var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
-
-				var col = {
-					name: colKey,
-					field: colKey,
-					index : colKey,
-					cellClass : "text-right",
-					sorttype : "number",
-					width : 75, //cubesviewer.views.cube.explore.defineColumnWidth(view, colKey, 75),
-					cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
-					formatter: $scope.columnFormatFunction(ag),
-					//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
-					//formatoptions: {},
-					//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
-				};
-				view.grid.columnDefs.push(col);
-			}
-		});
-
-		//var label = [];data
-		$(view.params.drilldown).each (function (idx, e) {
-			var col = {
-				name: view.cube.cvdim_dim(e).label,
-				field: "key" + idx,
-				index : "key" + idx,
-				//cellClass : "text-right",
-				//sorttype : "number",
-				width : 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "key" + idx, 190)
-				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
-				//formatter: $scope.columnFormatFunction(ag),
-				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
-				//formatoptions: {},
-				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
-			};
-			view.grid.columnDefs.splice(idx, 0, col);
-		});
-
-		if (view.params.drilldown.length == 0 && rows.length > 0) {
-			rows[0]["key0"] = view.params.yaxis;
-
-			var col = {
-				name: "Measure",
-				field: "key0",
-				index : "key0",
-				//cellClass : "text-right",
-				//sorttype : "number",
-				width : 190, //cubesviewer.views.cube.explore.defineColumnWidth(view, "key0", 190)
-				//cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
-				//formatter: $scope.columnFormatFunction(ag),
-				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
-				//formatoptions: {},
-				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
-				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
-			};
-			view.grid.columnDefs.splice(0, 0, col);
-		}
-
-	};
+	this._addRows = cubesviewer._seriesAddRows;
 
 	this.cleanupNvd3 = function() {
 

@@ -72,7 +72,9 @@ angular.module('cv').config([ '$logProvider', 'cvOptions', /* 'editableOptions',
             undoEnabled: true,
             undoSize: 32,
 
-            hideControls: false,
+            seriesOperationsEnabled: false,
+
+        	hideControls: false,
 
             gaTrackEvents: false,
 
@@ -219,7 +221,11 @@ function CubesViewer() {
 	 * @param routine Function that will be executed within CubesViewer Angular context.
 	 */
 	this.apply = function(routine) {
-		angular.element(document).scope().$apply(routine);
+		if (! angular.element(document).scope()) {
+			setTimeout(function() { cubesviewer.apply(routine); }, 1000);
+		} else {
+			angular.element(document).scope().$apply(routine);
+		}
 	};
 
 };

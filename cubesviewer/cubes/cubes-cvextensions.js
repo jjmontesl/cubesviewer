@@ -124,6 +124,12 @@ cubes.Cube.prototype.measureAggregates = function(measureName) {
 	return aggregates;
 };
 
+cubes.Cube.prototype.aggregateFromName = function(aggregateName) {
+	var aggregates = $.grep(this.aggregates, function(ia) { return aggregateName ? ia.name == aggregateName : !ia.measure; } );
+	return aggregates.length == 1 ? aggregates[0] : null;
+};
+
+
 
 /*
  * Processes a cell and returns an object with consistent information:

@@ -109,7 +109,7 @@ module.exports = function(grunt) {
             src: ['cubesviewer/**/*.js'], // 'test/*.js'
             options: {
                 destination: 'build/doc',
-                configure : 'jsdoc.conf.json'
+                configure : 'doc/jsdoc/jsdoc.conf.json'
             }
         }
     },

@@ -52,6 +52,7 @@
         </ul>
     </li>
 
+    <!--
     <li class="dropdown-submenu">
         <a tabindex="0"><i class="fa fa-fw fa-arrows-h"></i> Range filter</a>
         <ul class="dropdown-menu">
@@ -66,14 +67,12 @@
                 <li ng-repeat="(hikey,hi) in dimension.hierarchies" class="dropdown-submenu">
                     <a tabindex="0" href="" onclick="return false;">{{ hi.label }}</a>
                     <ul class="dropdown-menu">
-                        <!-- ng-click="selectDrill(dimension.name + '@' + hi.name + ':' + level.name, true)"  -->
                         <li ng-repeat="level in hi.levels" ng-click="showDimensionFilter(dimension.name + '@' + hi.name + ':' + level.name )"><a href="">{{ level.label }}</a></li>
                     </ul>
                 </li>
             </ul>
 
             <ul ng-if="dimension.hierarchies_count() == 1" class="dropdown-menu">
-                <!--  selectDrill(dimension.name + ':' + level.name, true) -->
                 <li ng-repeat="level in dimension.default_hierarchy().levels" ng-click="showDimensionFilter(level);"><a href="">{{ level.label }}</a></li>
             </ul>
 
@@ -81,16 +80,10 @@
 
         </ul>
     </li>
-
-    <!--
-    // Events
-    $(view.container).find('.cv-view-show-dimensionfilter').click( function() {
-        cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, $(this).attr('data-dimension'));
-        return false;
-    });
      -->
 
     <div class="divider"></div>
+
     <li ng-class="{ 'disabled': view.params.cuts.length == 0 }"><a href=""><i class="fa fa-fw fa-trash"></i> Clear filters</a></li>
 
   </ul>

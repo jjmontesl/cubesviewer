@@ -36,6 +36,7 @@ Consider contributing to CubesViewer. This is a possible roadmap.
     * Make charts more interactive (allow cut from chart, etc).
 
     * Series annotation system: markers for annotations in time or other dimension.
+    * Default cube settings is incorrect? it should only be applied if the view is not otherwise configured (ie loaded or json)
 
     * Abstract backend?? Create CV objects for dimensions, levels, etc... Plug cubes as one more adaptor???
     * Divide in reusable angular directives (ie. start with fact viewer). JS doc. Make views
@@ -46,8 +47,6 @@ Consider contributing to CubesViewer. This is a possible roadmap.
     * Abstract data/grid in cubeview?
     * Use controllerAs.
     * Better loading bar (account for pending requests, etc).
-
-
 
 [2.4]
 
@@ -77,35 +76,40 @@ Consider contributing to CubesViewer. This is a possible roadmap.
 
 [2.1]
 
+    * Export image (https://github.com/gabelerner/canvg works with nvd3).
+    * Export SVG (svg crowbar).
     * Restore cached content notice (is missing, commented out).
-    * Map charts.
     * Issue #55 (chart shows measure name, not measure label).
     * Fix submenu timer hack: is causing issues already. Watch contents and perhaps debounce menu activation?
-    * Add "accumulated", "difference" and other calculations to series and charts.
+    * Add "accumulated", "difference" and other operations to series and charts.
+    * Add "grouping", allowing to group drilled down items (custom groups) using an aggregation of choice...
+      Ability to save groups.
+    * Add "reduce to N items" operation on series (allows to represent charts adding "Others" for the rest),
+      reducing using some criteria -> uses grouping.
+    * Automatically hide legend if too many results.
     * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative), move "invert 2nd serie" as a calculation?
     * Range filter.
     * Test and close issue #39, "strings with hyphen cause dimension filter to work inexpectedly" as shall be fixed.
-    * Export image (https://github.com/gabelerner/canvg works with nvd3).
-    * Export SVG (svg crowbar).
+    * Map charts.
 
 [2.0]
 
-    * Commit refactor branch, update repositories, remove -devel from version name.
+    * Publish / announce.
     * Test / QA.
     * Uncomment studio.html code that asks for the server url to connect to.
-    * Create site, update readme, and site screenshots.
+    * Create site, update readme.
     * Update screenshots.
-    * Reviewed and improved doc
-    * Submenu loading issue
-    * Pie chart/radar: do not draw if wrong column number message is being shown
+    * Add product subcategory to demo data.
 
     * Cleanup code.
     * Test CORS issue from server (localhost:8000 -> localhost:5000), test JSONP.
     * Site (page). Show a couple of charts view, a table, and an enabled-controls view.
       SAME views to be automatically opened in the explorer sample.
-      Add angular integration doc and example page.
-    * Hide all unavailable options and not implemented options.
-    * Default cube settings is incorrect? it should only be applied if the view is not otherwise configured (ie loaded or json)
-    * Update examples (at least up to date, but add facts, add public data).
 
+    * Reviewed and improved doc.
+    * Dimension filter hierarchy level issue + drill more, drill less minibuttons + horizontal more/less
+    * Submenu loading issue
+    * Commit to master (both projects).
+    * Pie chart/radar: do not draw if wrong column number message is being shown
+    * Update docs (repo first). Add angular integration doc and example page.
 

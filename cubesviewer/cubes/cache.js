@@ -57,7 +57,7 @@ angular.module('cv.cubes').service("cubesCacheService", ['$rootScope', '$log', '
 			var timediff = Math.round ((new Date().getTime() - cubesCacheService.cache[requestHash].time) / 1000);
 			if (timediff > cvOptions.cacheNotice) {
 				//cubesviewer.showInfoMessage("Data loaded from cache<br/>(" + timediff + " minutes old)", 1000);
-				console.debug("Data loaded from cache (" + timediff + " minutes old)");
+				$log.debug("Data loaded from cache (" + Math.floor(timediff / 60, 2) + " minutes old)");
 			}
 
 			jqxhr = $.Deferred();
