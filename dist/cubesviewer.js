@@ -6485,7 +6485,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
 
 
   $templateCache.put('views/cube/chart/chart-common.html',
-    "<div ng-show=\"view.grid.data.length > 0 && view.params.yaxis != null\" style=\"width: 99%;\">\n" +
+    "<div ng-show=\"(view.grid.data.length > 0 && view.params.yaxis != null) && (!(view.params.charttype == 'pie' && view.grid.columnDefs.length > 2)) && (!(view.params.charttype == 'radar' && view.grid.columnDefs.length < 4))\" style=\"width: 99%;\">\n" +
     "    <div>\n" +
     "        <div class=\"cv-chart-container\">\n" +
     "            <svg style=\"height: 400px;\" />\n" +
@@ -6508,7 +6508,8 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "<div ng-if=\"view.pendingRequests == 0 && view.params.charttype == 'pie' && view.grid.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
     "    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.<br />\n" +
-    "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>.\n" +
+    "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>,\n" +
+    "    or <a href=\"\" ng-click=\"selectXAxis(null);\" class=\"alert-link\">remove horizontal dimension</a>.\n" +
     "</div>\n" +
     "\n" +
     "<div ng-if=\"view.pendingRequests == 0 && view.params.yaxis != null && view.params.charttype == 'radar' && view.grid.columnDefs.length < 4\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +

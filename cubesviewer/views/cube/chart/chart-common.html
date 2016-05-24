@@ -1,4 +1,4 @@
-<div ng-show="view.grid.data.length > 0 && view.params.yaxis != null" style="width: 99%;">
+<div ng-show="(view.grid.data.length > 0 && view.params.yaxis != null) && (!(view.params.charttype == 'pie' && view.grid.columnDefs.length > 2)) && (!(view.params.charttype == 'radar' && view.grid.columnDefs.length < 4))" style="width: 99%;">
     <div>
         <div class="cv-chart-container">
             <svg style="height: 400px;" />
@@ -21,7 +21,8 @@
 
 <div ng-if="view.pendingRequests == 0 && view.params.charttype == 'pie' && view.grid.columnDefs.length > 2" class="alert alert-info" style="margin-bottom: 0px;">
     Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.<br />
-    Tip: review chart data and columns in <a href="" ng-click="setViewMode('series')" class="alert-link">series mode</a>.
+    Tip: review chart data and columns in <a href="" ng-click="setViewMode('series')" class="alert-link">series mode</a>,
+    or <a href="" ng-click="selectXAxis(null);" class="alert-link">remove horizontal dimension</a>.
 </div>
 
 <div ng-if="view.pendingRequests == 0 && view.params.yaxis != null && view.params.charttype == 'radar' && view.grid.columnDefs.length < 4" class="alert alert-info" style="margin-bottom: 0px;">
