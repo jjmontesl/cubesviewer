@@ -1,5 +1,6 @@
 [2.0.1]
 
+    * Line charts now allow various curve types.
     * Google Analytics plugin restored (events tracking).
     * Added warning if server result limit has been hit.
     * Added server information dialog.

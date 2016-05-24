@@ -31,15 +31,34 @@
         </ul>
     </li>
 
+    <!--
+    <li ng-show="view.params.mode == 'chart' && (view.params.charttype == 'lines-stacked' || view.params.charttype == 'lines' || view.params.charttype == 'bars-horizontal')" class="dropdown-submenu">
+        <a tabindex="0" ><i class="fa fa-fw fa-sliders"></i> Chart options</a>
+        <ul class="dropdown-menu">
+    -->
+        <li class="dropdown-submenu" ng-show="view.params.mode == 'chart' && (view.params.charttype == 'lines-stacked' || view.params.charttype == 'lines')">
+            <a href=""><i class="fa fa-fw fa-angle-up"></i> Curve type</a>
+            <ul class="dropdown-menu">
+                <li ng-class="{'active': view.params.chartoptions.lineInterpolation == 'linear'}" ng-click="view.params.chartoptions.lineInterpolation = 'linear'; refreshView();"><a href=""> Linear</a></li>
+                <li ng-class="{'active': view.params.chartoptions.lineInterpolation == 'monotone'}" ng-click="view.params.chartoptions.lineInterpolation = 'monotone'; refreshView();"><a href=""> Smooth</a></li>
+                <!-- <li ng-class="{'active': view.params.chartoptions.lineInterpolation == 'cardinal'}" ng-click="view.params.chartoptions.lineInterpolation = 'cardinal'; refreshView();"><a href=""> Smooth (Cardinal)</a></li>  -->
+            </ul>
+        </li>
+
+        <li ng-class="{'disabled': view.grid.data.length != 2 }" ng-show="view.params.mode == 'chart' && view.params.charttype == 'bars-horizontal'" ng-click="view.params.chartoptions.mirrorSerie2 = !view.params.chartoptions.mirrorSerie2; refreshView();">
+            <a><i class="fa fa-fw fa-arrows-h"></i> Invert 2nd series
+                <span style="margin-left: 5px;" class="label label-default" ng-class="{ 'label-success': view.params.chartoptions.mirrorSerie2 }">{{ view.params.chartoptions.mirrorSerie2 ? "ON" : "OFF" }}</span>
+            </a>
+        </li>
+
+    <!--
+        </ul>
+    </li>
+     -->
+
     <li ng-show="view.params.mode == 'chart'" ng-click="view.params.chartoptions.showLegend = !view.params.chartoptions.showLegend; refreshView();">
         <a><i class="fa fa-fw" ng-class="{'fa-toggle-on': view.params.chartoptions.showLegend, 'fa-toggle-off': ! view.params.chartoptions.showLegend }"></i> Toggle legend
             <span style="margin-left: 5px;" class="label label-default" ng-class="{ 'label-success': view.params.chartoptions.showLegend }">{{ view.params.chartoptions.showLegend ? "ON" : "OFF" }}</span>
-        </a>
-    </li>
-
-    <li ng-disabled="view.grid.data.length != 2" ng-show="view.params.mode == 'chart' && view.params.charttype == 'bars-horizontal'" ng-click="view.params.chartoptions.mirrorSerie2 = !view.params.chartoptions.mirrorSerie2; refreshView();">
-        <a><i class="fa fa-fw fa-arrows-h"></i> Invert 2nd series
-            <span style="margin-left: 5px;" class="label label-default" ng-class="{ 'label-success': view.params.chartoptions.mirrorSerie2 }">{{ view.params.chartoptions.mirrorSerie2 ? "ON" : "OFF" }}</span>
         </a>
     </li>
 

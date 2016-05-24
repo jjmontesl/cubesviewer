@@ -34,6 +34,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	$scope.chart = null;
 
 	$scope.initialize = function() {
+		if (! "lineInterpolation" in $scope.view.params.chartoptions) {
+			$scope.view.params.chartoptions.lineInterpolation = "linear";
+		}
 	};
 
 	$scope.$on('gridDataUpdated', function() {
@@ -101,6 +104,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 		    nv.addGraph(function() {
 		    	var chart = nv.models.lineChart()
 		    		.useInteractiveGuideline(true)
+		    		.interpolate($scope.view.params.chartoptions.lineInterpolation)
 		    		.showLegend(!!view.params.chartoptions.showLegend)
 		    		.margin({left: 120});
 
@@ -142,6 +146,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	    	                //.x(function(d) { return d[0] })
 	    	                //.y(function(d) { return "y" in d ? d.y : 0 })
 	    	  				.showLegend(!!view.params.chartoptions.showLegend)
+	    	  				.interpolate($scope.view.params.chartoptions.lineInterpolation)
 	    	  				.margin({left: 130})
 	    	                .clipEdge(true)
 	    	                .useInteractiveGuideline(true);

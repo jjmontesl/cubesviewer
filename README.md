@@ -16,25 +16,26 @@ CubesViewer is a visual interface for the
 open source [Cubes server](http://databrewery.org/cubes.html) (an OLAP server in Python).
 Purpose is to keep it simple while leveraging the web services provided by Cubes.
 
-
 Features:
 
 * Cube explorer providing drilldown and filter operations.
 * Supports dimension hierarchies and date filtering.
 * Several charts and diagrams can be created.
-* User Interface allows for multiple views on-screen.
 * Multiple modes: explore, data series, chart, facts.
 * Export data.
 * Undo / Redo.
 * Views can be embedded in other web sites.
-* Optional server-side backend for saving/sharing views.
-* Multiuser.
+* User Interface allows for multiple views on-screen.
+* Optional multi-user server side backend for saving/sharing views.
+
 
 Online Demos
 ------------
 
+* [CubesViewer Site](http://jjmontesl.github.io/cubesviewer/index.html)
+
 * [CubesViewer Studio](http://jjmontesl.github.io/cubesviewer/studio.html) with the full application
-* [CubesViewer Demo page](http://jjmontesl.github.io/cubesviewer/index.html) showing one embedded view
+* [CubesViewer Embedded Views](http://jjmontesl.github.io/cubesviewer/views.html) showing embedding possibilities
 
 Download
 --------
@@ -53,10 +54,10 @@ Requirements
 
 CubesViewer consists of two parts:
 
-**CubesViewer Client** is a HTML5 application that runs directly in the browser.
-It can run without server side support as a standalone application, and
-views can be embedded in other websites. Simply
-download the package and open the `html/studio.html` file in your favorite browser.
+**CubesViewer client** is a HTML5 application that runs on any modern browser.
+It can run without server side support. Simply download the package and open
+the `html/studio.html` file in your favorite browser. Views can
+also be embedded in other sites.
 
 CubesViewer also features an optional **server side application**
 which provides a full web application and supports features like sharing/saving and user notes.
@@ -68,9 +69,10 @@ In all cases you need a configured and running [Cubes Server](http://databrewery
 Your Cubes model may need some extra configuration if you wish to use features like date
 filters and range filters (see Documentation below).
 
-To be able for CubesViewer to connect to the slicer server, your `slicer.ini` should allow cross origin resource
-sharing. To enable this option, add `allow_cors_origin: http://localhost:8000` (or the URL from wich your app will work,
-or an asterisk `*`) under the `[server]` section.
+For CubesViewer clients to connect to Cubes slicer server, your Cubes server possibly needs to allow
+cross origin resource sharing (CORS). To enable this option, add
+`allow_cors_origin: http://localhost:8000` (or the URL from wich your app will work,
+or an asterisk `*`) under the `[server]` section of the `slicer.ini` file.
 
 For further information, see the Documentation section below.
 
@@ -81,6 +83,7 @@ This tool allows users to inspect the different dimensions, measures and
 aggregated data in different ways, allowing you to build tables and charts
 based on the analytical data available from the server.
 
+* [CubesViewer Quick Start](cubesviewer-quickstart.md)
 * [CubesViewer Documentation](https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/index.md)
 
 

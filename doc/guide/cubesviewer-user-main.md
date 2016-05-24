@@ -10,8 +10,8 @@ data and to present it in a way that is meaningful.
 Request for help
 ----------------
 
-This section of CubesViewer documentation is still not available. Please consider collaborating with
-the project by writing it. Get in touch with jjmontes@gmail.com if you wish to undertake this task:
+This section of CubesViewer documentation has not yet been created. Consider collaborating with
+the project by writing it! Get in touch with jjmontes@gmail.com if you wish to take over this task:
 
 * Introduction
 ** Facts and dimensions
@@ -19,9 +19,9 @@ the project by writing it. Get in touch with jjmontes@gmail.com if you wish to u
 ** Drilldown
 ** Filtering
 * Series
+** Operations on series
 * Charts
 * Facts view
 * Exporting data
 * Saving and sharing
-
 

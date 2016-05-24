@@ -95,21 +95,24 @@ Consider contributing to CubesViewer. This is a possible roadmap.
 [2.0]
 
     * Publish / announce.
+    * Release notes (txt and github). There've been changes: db, options, view params (normalize chart params!)
     * Test / QA.
     * Uncomment studio.html code that asks for the server url to connect to.
     * Create site, update readme.
     * Update screenshots.
-    * Add product subcategory to demo data.
+    * Add product subcategory to demo data. Add some formatters (correctly from dims via CubeETL).
 
     * Cleanup code.
+    * Reviewed and improved doc.
     * Test CORS issue from server (localhost:8000 -> localhost:5000), test JSONP.
     * Site (page). Show a couple of charts view, a table, and an enabled-controls view.
       SAME views to be automatically opened in the explorer sample.
 
-    * Reviewed and improved doc.
-    * Dimension filter hierarchy level issue + drill more, drill less minibuttons + horizontal more/less
-    * Submenu loading issue
     * Commit to master (both projects).
+    * Submenu loading issue
+    * Firefox menu wrap in Studio menu (not in View menu?). Also, submenus responsiveness stopppedworking?
+    * Dimension filter hierarchy level issue + drill more, drill less minibuttons + horizontal more/less
     * Pie chart/radar: do not draw if wrong column number message is being shown
     * Update docs (repo first). Add angular integration doc and example page.
+    * Line+area chart soften (interpolate("basis / monotone"))
 
