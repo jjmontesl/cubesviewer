@@ -69,6 +69,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
 			$scope.view.pendingRequests--;
+			$rootScope.$apply();
 		});
 		jqxhr.error($scope.requestErrorHandler);
 
@@ -88,6 +89,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 	$scope.processData = function(data) {
 
 		var view = $scope.view;
+
+		//$scope.rawData = data;
+
+		$scope.view.grid.data = [];
+		$scope.view.grid.columnDefs = [];
+		$rootScope.$apply();
 
 		// Configure grid
 		angular.extend($scope.view.grid, {
@@ -112,7 +119,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
     		//rowHeight: 50,
     		columnDefs: []
 	    });
-
 
 		// Process data
 		//$scope._sortData (data.cells, view.params.xaxis != null ? true : false);

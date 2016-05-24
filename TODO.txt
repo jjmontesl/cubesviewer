@@ -109,7 +109,7 @@ Consider contributing to CubesViewer. This is a possible roadmap.
       SAME views to be automatically opened in the explorer sample.
 
     * Commit to master (both projects).
-    * Submenu loading issue
+    * Submenu loading issue.
     * _Firefox_ menu wrap in Studio menu (not in Chrome nor View menu?)
     * Order of loading submenu CSS matters: check page and server html, adding comment.
     * Dimension filter hierarchy level issue + drill more, drill less minibuttons + horizontal more/less

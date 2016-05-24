@@ -2374,6 +2374,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
 			$scope.view.pendingRequests--;
+			$rootScope.$apply();
 		});
 		jqxhr.error($scope.requestErrorHandler);
 
@@ -3045,6 +3046,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
 			$scope.view.pendingRequests--;
+			$rootScope.$apply();
 		});
 		jqxhr.error($scope.requestErrorHandler);
 
@@ -3315,6 +3317,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
 			$scope.view.pendingRequests--;
+			$rootScope.$apply();
 		});
 		jqxhr.error($scope.requestErrorHandler);
 
@@ -3334,6 +3337,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 	$scope.processData = function(data) {
 
 		var view = $scope.view;
+
+		//$scope.rawData = data;
+
+		$scope.view.grid.data = [];
+		$scope.view.grid.columnDefs = [];
+		$rootScope.$apply();
 
 		// Configure grid
 		angular.extend($scope.view.grid, {
@@ -3358,7 +3367,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
     		//rowHeight: 50,
     		columnDefs: []
 	    });
-
 
 		// Process data
 		//$scope._sortData (data.cells, view.params.xaxis != null ? true : false);
@@ -3706,6 +3714,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 		$scope.view.pendingRequests++;
 		jqxhr.always(function() {
 			$scope.view.pendingRequests--;
+			$rootScope.$apply();
 		});
 		jqxhr.error($scope.requestErrorHandler);
 
@@ -7264,7 +7273,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "    </h3>\n" +
     "\n" +
     "    <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
-    "        <span class=\"loadingbar-expand\"></span>\n" +
+    "        <span class=\"loadingbar-expand\"></span>XXXX\n" +
     "    </div>\n" +
     "\n" +
     "    <div ng-if=\"view.grid.data.length > 0\"\n" +
