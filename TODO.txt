@@ -110,9 +110,10 @@ Consider contributing to CubesViewer. This is a possible roadmap.
 
     * Commit to master (both projects).
     * Submenu loading issue
-    * Firefox menu wrap in Studio menu (not in View menu?). Also, submenus responsiveness stopppedworking?
+    * _Firefox_ menu wrap in Studio menu (not in Chrome nor View menu?)
+    * Order of loading submenu CSS matters: check page and server html, adding comment.
     * Dimension filter hierarchy level issue + drill more, drill less minibuttons + horizontal more/less
-    * Pie chart/radar: do not draw if wrong column number message is being shown
     * Update docs (repo first). Add angular integration doc and example page.
-    * Line+area chart soften (interpolate("basis / monotone"))
+    * Colors get incorrectly drawn when series are deselected from legend, and view changed back/forth.
+    * Pie chart/radar: do not draw if wrong column number message is being shown
 
