@@ -47,6 +47,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
 		}, 2000);
 	});
 
+	$(window).on("resize.doResize", function (){
+		$scope.$apply(function(){
+			$scope.drawChartRadar();
+		});
+	});
+	$scope.$on("$destroy",function (){
+		$(window).off("resize.doResize");
+	});
+
 
 	/**
 	 */

@@ -90,6 +90,7 @@ Consider contributing to CubesViewer. This is a possible roadmap.
     * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative), move "invert 2nd serie" as a calculation?
     * Range filter.
     * Test and close issue #39, "strings with hyphen cause dimension filter to work inexpectedly" as shall be fixed.
+    * Colors get incorrectly drawn when series are deselected from legend, and view changed back/forth.
     * Map charts.
 
 [2.0]
@@ -112,8 +113,6 @@ Consider contributing to CubesViewer. This is a possible roadmap.
     * Submenu loading issue.
     * _Firefox_ menu wrap in Studio menu (not in Chrome nor View menu?)
     * Order of loading submenu CSS matters: check page and server html, adding comment.
+    * Update minimum docs (repos first). Add angular integration doc and example page.
     * Dimension filter hierarchy level issue + drill more, drill less minibuttons + horizontal more/less
-    * Update docs (repo first). Add angular integration doc and example page.
-    * Colors get incorrectly drawn when series are deselected from legend, and view changed back/forth.
-    * Pie chart/radar: do not draw if wrong column number message is being shown
 
