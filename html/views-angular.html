@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
+<head>
+
+    <title>CubesViewer Embedded View Example</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link rel="icon" type="image/png" href="img/favicon/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-194x194.png" sizes="194x194">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-96x96.png" sizes="96x96">
+    <link rel="shortcut icon" href="img/favicon/favicon.ico">
+
+    <link rel="stylesheet" href="lib/angular-ui-grid/ui-grid.css" />
+    <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="lib/nvd3/nv.d3.css" />
+    <link rel="stylesheet" href="lib/bootstrap-submenu/css/bootstrap-submenu.css" />
+    <link rel="stylesheet" href="../dist/cubesviewer.css" />
+
+    <link rel="stylesheet" href="cvapp.css" />
+
+    <script src="lib/jquery/jquery.js"></script>
+    <script src="lib/bootstrap/bootstrap.js"></script>
+    <script src="lib/bootstrap-submenu/js/bootstrap-submenu.js"></script>
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/angular-cookies/angular-cookies.js"></script>
+    <script src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="lib/angular-ui-grid/ui-grid.js"></script>
+    <script src="lib/d3/d3.js"></script>
+    <script src="lib/nvd3/nv.d3.js"></script>
+    <script src="lib/flotr2/flotr2.min.js"></script>
+    <script src="../dist/cubesviewer.js"></script>
+
+</head>
+
+<body ng-app="MyApp">
+
+<div ng-controller="MyAppController">
+
+    <div class="header">
+        <div style="float: left;">
+            <img class="cv-logo" title="CubesViewer" src="img/cubesviewer-logo.png" />
+        </div>
+
+        <h1>CubesViewer Static Views example</h1>
+        <small>Shows how CubesViewer views can be embedded in other web pages.</small>
+
+    </div>
+
+    <div style="clear: both;"></div>
+
+    <div >
+        <h2>CubesViewer View integrated in AngularJS app</h2>
+
+        <p>
+        The view below is a CubesViewer view naturally loaded as an angular directive in this page (the data
+        comes from the Cubes <a href="https://github.com/jjmontesl/cubes-examples/tree/master/webshop">example webshop</a> project).
+        </p>
+
+        <div style="border: none; margin-top: 22px; margin-bottom: 22px;">
+
+            <!-- CubesViewer view directive -->
+            <div ng-if="view1" class="cv-bootstrap">
+                <div cv-view-cube view="view1" style="width: 100%; min-height: 120px;">Loading...</div>
+            </div>
+            <div>The view can be scripted from AngularJS: <a href="" ng-click="view1.setControlsHidden(! view1.params.controlsHidden)">Toggle Controls</a></div>
+
+        </div>
+
+        <h2>Code</h2>
+
+        <p>Check the <a href="https://github.com/jjmontesl/cubesviewer/blob/master/src/html/cv-angular.html">source code of this page</a> to see how this CubesViewer view is initialized.</p>
+
+        <p>More information can be found in the documentation page
+            <a href="">Embedding CubesViewer static views</a>.
+        </p>
+    </div>
+
+
+    <div class="footer" style="clear: both; padding-top: 20px;">
+        <div style="height: 1px; border-top: 1px solid #DDDDDD; padding-top: 4px;"></div>
+        <div style="float: right; white-space: nowrap;">
+            <p style="vertical-align: middle; margin: 2px;">
+            <a href="http://databrewery.org/" target="_blank"><img title="Powered by Databrewery Cubes" style="width: 70px; height: 30px;" src="img/cubes-logo.png" /></a>
+            <a href="https://github.com/jjmontesl/cubesviewer" target="_blank"><img title="Powered by CubesViewer" style="width: 55px; height: 30px;" src="img/cubesviewer-logo.png" /></a>
+            </p>
+        </div>
+        <div>
+            <p><a href="https://github.com/jjmontesl/cubesviewer" target="_blank">CubesViewer</a> <span class="cv-version"></span> - Cubes OLAP explorer</p>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+
+
+	angular.module('cv').constant('cvOptions', {
+		cubesUrl: "http://cubesdemo.cubesviewer.com"
+	});
+
+    angular.module('MyApp', [ 'cv' ]);
+
+    angular.module('MyApp').controller("MyAppController", ['$scope', 'viewsService',
+                                        function($scope, viewsService) {
+
+        var serializedView = '{"cubename":"webshop_sales","name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+    	$scope.view1 = viewsService.createView("cube", serializedView);
+
+    }]);
+
+</script>
+
+</body>
+</html>
