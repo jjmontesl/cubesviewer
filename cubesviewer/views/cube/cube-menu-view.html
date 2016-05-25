@@ -140,11 +140,7 @@
 
     <li ng-show="view.params.mode != 'chart'" ng-click="exportService.exportGridAsCsv(view)"><a><i class="fa fa-fw fa-table"></i> Export table</a></li>
     <li ng-click="exportService.exportFacts(view)"><a><i class="fa fa-fw fa-th"></i> Export facts</a></li>
-
-    <!--
-    <div ng-show="view.params.mode == 'chart'" class="divider"></div>
-    <li ng-show="view.params.mode == 'chart'" ng-click="chartCtrl.exportChartSvg(view)"><a><i class="fa fa-fw fa-table"></i> Export chart as SVG</a></li>
-    -->
+    <li ng-show="view.params.mode == 'chart' && view.params.charttype != 'radar' " ng-click="view.exportChartAsPNG()"><a><i class="fa fa-fw fa-picture-o"></i> Export figure</a></li>
 
   </ul>
 

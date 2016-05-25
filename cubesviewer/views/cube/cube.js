@@ -383,7 +383,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			};
 		}
 		return columnSort;
-	}
+	};
 
 
 }]).directive("cvViewCube", function() {

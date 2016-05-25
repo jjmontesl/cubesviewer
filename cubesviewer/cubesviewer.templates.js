@@ -754,11 +754,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <li ng-show=\"view.params.mode != 'chart'\" ng-click=\"exportService.exportGridAsCsv(view)\"><a><i class=\"fa fa-fw fa-table\"></i> Export table</a></li>\n" +
     "    <li ng-click=\"exportService.exportFacts(view)\"><a><i class=\"fa fa-fw fa-th\"></i> Export facts</a></li>\n" +
-    "\n" +
-    "    <!--\n" +
-    "    <div ng-show=\"view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
-    "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"chartCtrl.exportChartSvg(view)\"><a><i class=\"fa fa-fw fa-table\"></i> Export chart as SVG</a></li>\n" +
-    "    -->\n" +
+    "    <li ng-show=\"view.params.mode == 'chart' && view.params.charttype != 'radar' \" ng-click=\"view.exportChartAsPNG()\"><a><i class=\"fa fa-fw fa-picture-o\"></i> Export figure</a></li>\n" +
     "\n" +
     "  </ul>\n" +
     "\n"

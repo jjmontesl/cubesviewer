@@ -2273,7 +2273,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			};
 		}
 		return columnSort;
-	}
+	};
 
 
 }]).directive("cvViewCube", function() {
@@ -3678,8 +3678,8 @@ angular.module('cv.views').service("seriesOperationsService", ['$rootScope', 'cv
  * This is an optional component, part of the cube view.
  */
 
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController", ['$rootScope', '$scope', '$timeout', '$element', 'cvOptions', 'cubesService', 'viewsService', 'seriesOperationsService',
-                                                     function ($rootScope, $scope, $timeout, $element, cvOptions, cubesService, viewsService, seriesOperationsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController", ['$rootScope', '$scope', '$timeout', '$element', 'cvOptions', 'cubesService', 'viewsService', 'seriesOperationsService', 'exportService',
+                                                     function ($rootScope, $scope, $timeout, $element, cvOptions, cubesService, viewsService, seriesOperationsService, exportService) {
 
 	var chartCtrl = this;
 
@@ -3812,6 +3812,78 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 		if (chartCtrl.chart) chartCtrl.chart.update();
 	};
+
+	/**
+	 * FIXME: This shouldn't be defined here.
+	 * Note that `this` refers to the view in this context.
+	 */
+	$scope.view.exportChartAsPNG = function() {
+
+		var doctype = '<?xml version="1.0" standalone="no"?>'
+			  + '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
+
+		// Get page styles
+		var styles = exportService.getDocumentStyles();
+		styles = (styles === undefined) ? "" : styles;
+
+		// Serialize our SVG XML to a string.
+		var svgSel = $($element).find('svg').first();
+		svgSel.addClass("cv-bootstrap");
+		svgSel.css("font-size", "10px");
+		svgSel.css("font-family", "Helvetica, Arial, sans-serif");
+		svgSel.css("background-color", "white");
+		svgSel.attr("width", svgSel.width());
+		svgSel.attr("height", svgSel.height());
+		svgSel.attr("version", "1.1")
+
+		var defsEl = document.createElement("defs");
+	    svgSel[0].insertBefore(defsEl, svgSel[0].firstChild);
+	    //defsEl.setAttribute("class", "cv-bootstrap");
+	    var styleEl = document.createElement("style")
+	    defsEl.appendChild(styleEl);
+	    styleEl.setAttribute("type", "text/css");
+
+		var source = (new XMLSerializer()).serializeToString(svgSel.get(0));
+		source = source.replace('</style>', '<![CDATA[' + styles + ']]></style>')
+
+		// Create a file blob of our SVG.
+		var blob = new Blob([doctype + source], { type: 'image/svg+xml;charset=utf-8' });
+
+		var url = window.URL.createObjectURL(blob);
+
+		// Put the svg into an image tag so that the Canvas element can read it in.
+		var img = d3.select('body').append('img').attr('visibility', 'hidden').attr('width', svgSel.width()).attr('height', svgSel.height()).node();
+
+		img.onload = function() {
+		  // Now that the image has loaded, put the image into a canvas element.
+		  var canvas = d3.select('body').append('canvas').node();
+		  $(canvas).addClass("cv-bootstrap");
+		  $(canvas).attr('visibility', 'hidden');
+		  canvas.width = svgSel.width();
+		  canvas.height = svgSel.height();
+		  var ctx = canvas.getContext('2d');
+		  ctx.drawImage(img, 0, 0, svgSel.width(), svgSel.height());
+		  var canvasUrl = canvas.toDataURL("image/png");
+
+		  $(img).remove();
+		  $(canvas).remove();
+
+		  // this is now the base64 encoded version of our PNG! you could optionally
+		  // redirect the user to download the PNG by sending them to the url with
+		  // `window.location.href= canvasUrl`.
+		  /*
+		  var img2 = d3.select('body').append('img')
+		    .attr('width', svgSel.width())
+		    .attr('height', svgSel.height())
+		    .node();
+		   */
+		  //img2.src = canvasUrl;
+		  exportService.saveAs(canvasUrl, $scope.view.cube.name + "-" + $scope.view.params.charttype + ".png");
+		}
+		// start loading the image.
+		img.src = url;
+	};
+
 
 	$scope.$on("$destroy", function() {
 		chartCtrl.cleanupNvd3();
@@ -5264,6 +5336,52 @@ angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeou
 	        location.replace(uri);
 	    }
 	};
+
+	/**
+	 * Grab page styles as a string to embed them into the SVG source
+	 * From: https://github.com/NYTimes/svg-crowbar/blob/gh-pages/svg-crowbar.js
+	 */
+	this.getDocumentStyles = function() {
+
+		var doc = window.document;
+
+		var styles = "", styleSheets = doc.styleSheets;
+
+		if (styleSheets) {
+			for ( var i = 0; i < styleSheets.length; i++) {
+				processStyleSheet(styleSheets[i]);
+			}
+		}
+
+	    function processStyleSheet(ss) {
+	    	try {
+		    	if (ss.cssRules) {
+		    		console.debug(ss);
+					for ( var i = 0; i < ss.cssRules.length; i++) {
+						var rule = ss.cssRules[i];
+						if (rule.type === 3) {
+							// Import Rule
+							processStyleSheet(rule.styleSheet);
+						} else {
+							// hack for illustrator crashing
+							// on descendent selectors
+							if (rule.selectorText) {
+								if (rule.selectorText
+										.indexOf(">") === -1) {
+									styles += "\n"
+											+ rule.cssText;
+								}
+							}
+						}
+					}
+				}
+	    	} catch (err) {
+	    		console.debug("Could not access document stylesheet.")
+	    	}
+		}
+
+		return styles;
+	}
 
 }]);
 
@@ -6916,11 +7034,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "    <li ng-show=\"view.params.mode != 'chart'\" ng-click=\"exportService.exportGridAsCsv(view)\"><a><i class=\"fa fa-fw fa-table\"></i> Export table</a></li>\n" +
     "    <li ng-click=\"exportService.exportFacts(view)\"><a><i class=\"fa fa-fw fa-th\"></i> Export facts</a></li>\n" +
-    "\n" +
-    "    <!--\n" +
-    "    <div ng-show=\"view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
-    "    <li ng-show=\"view.params.mode == 'chart'\" ng-click=\"chartCtrl.exportChartSvg(view)\"><a><i class=\"fa fa-fw fa-table\"></i> Export chart as SVG</a></li>\n" +
-    "    -->\n" +
+    "    <li ng-show=\"view.params.mode == 'chart' && view.params.charttype != 'radar' \" ng-click=\"view.exportChartAsPNG()\"><a><i class=\"fa fa-fw fa-picture-o\"></i> Export figure</a></li>\n" +
     "\n" +
     "  </ul>\n" +
     "\n"

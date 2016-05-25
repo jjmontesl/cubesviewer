@@ -114,5 +114,51 @@ angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeou
 	    }
 	};
 
+	/**
+	 * Grab page styles as a string to embed them into the SVG source
+	 * From: https://github.com/NYTimes/svg-crowbar/blob/gh-pages/svg-crowbar.js
+	 */
+	this.getDocumentStyles = function() {
+
+		var doc = window.document;
+
+		var styles = "", styleSheets = doc.styleSheets;
+
+		if (styleSheets) {
+			for ( var i = 0; i < styleSheets.length; i++) {
+				processStyleSheet(styleSheets[i]);
+			}
+		}
+
+	    function processStyleSheet(ss) {
+	    	try {
+		    	if (ss.cssRules) {
+		    		console.debug(ss);
+					for ( var i = 0; i < ss.cssRules.length; i++) {
+						var rule = ss.cssRules[i];
+						if (rule.type === 3) {
+							// Import Rule
+							processStyleSheet(rule.styleSheet);
+						} else {
+							// hack for illustrator crashing
+							// on descendent selectors
+							if (rule.selectorText) {
+								if (rule.selectorText
+										.indexOf(">") === -1) {
+									styles += "\n"
+											+ rule.cssText;
+								}
+							}
+						}
+					}
+				}
+	    	} catch (err) {
+	    		console.debug("Could not access document stylesheet.")
+	    	}
+		}
+
+		return styles;
+	}
+
 }]);
 
