@@ -58,6 +58,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		$scope.loadDimensionValues();
 	});
 
+	$scope.$on("ViewRefresh", function(view) {
+		// FIXME: Update checkboxes, but do not reload.
+		//$scope.loadDimensionValues();
+	});
+
 	$scope.closeDimensionFilter = function() {
 		$scope.view.dimensionFilter = null;
 	};
@@ -128,7 +133,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		var dimensionValues = [];
 
 		var parts = view.cube.dimensionParts($scope.view.dimensionFilter);
-		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+		//var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+		var cutDimension = $scope.view.dimensionFilter;
+
 		var filterValues = [];
 		for (var i = 0; i < view.params.cuts.length ; i++) {
 			if (view.params.cuts[i].dimension == cutDimension) {
@@ -168,10 +175,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 	/*
 	 * Updates info after loading data.
 	 */
-	$scope.applyFilter = function(view, dimensionString) {
+	$scope.applyFilter = function() {
 
 		var view = $scope.view;
-		var dimensionString = $scope.view.dimensionFilter;
 
 		var filterValues = [];
 		$($scope.dimensionValues).each(function(idx, val) {
@@ -182,7 +188,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		if (filterValues.length >= $scope.dimensionValues.length) filterValues = [];
 
 		// Cut dimension
-		var cutDimension = $scope.parts.dimension.name + ( $scope.parts.hierarchy.name != "default" ? "@" + $scope.parts.hierarchy.name : "" );
+		var cutDimension = $scope.parts.dimension.name + ( $scope.parts.hierarchy.name != "default" ? "@" + $scope.parts.hierarchy.name : "" ) + ':' + $scope.parts.level.name;
 		$scope.selectCut(cutDimension, filterValues.join(";"), $scope.filterInverted);
 
 	};

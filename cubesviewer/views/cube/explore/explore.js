@@ -144,12 +144,13 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 			// Get dimension
 			var dim = view.cube.cvdim_dim(view.params.drilldown[i]);
 			var parts = view.cube.dimensionParts(view.params.drilldown[i]);
-			var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+			//var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+			var cutDimension = view.params.drilldown[i];
 
 			//nid.push(drilldownLevelValues.join("-"));
 
 			var footer = "";
-			if (i == 0) footer = (cubesService.buildQueryCuts(view).length == 0) ? "<b>Summary</b>" : "<b>Summary <i>(Filtered)</i></b>";
+			if (i == 0) footer = (cubesService.buildQueryCuts(view).length == 0) ? "<b>Summary</b>" : '<b>Summary <i style="color: #ddaaaa;">(Filtered)</i></b>';
 
 			view.grid.columnDefs.splice(i, 0, {
 				name: label[i],

@@ -1191,7 +1191,10 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 		// Cuts
 		$(view.params.cuts).each(function(idx, e) {
 			var invert = e.invert ? "!" : "";
-			cuts.push(cubes.cut_from_string(view.cube, invert + e.dimension + ":" + e.value.replace("-", "\\-")));
+			var dimParts = view.cube.dimensionParts(e.dimension);
+			var cutDim = dimParts.dimension.name + ( dimParts.hierarchy.name != "default" ? "@" + dimParts.hierarchy.name : "" );
+
+			cuts.push(cubes.cut_from_string(view.cube, invert + cutDim + ":" + e.value.replace("-", "\\-")));
 		});
 
 		// Date filters
@@ -2466,12 +2469,13 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 			// Get dimension
 			var dim = view.cube.cvdim_dim(view.params.drilldown[i]);
 			var parts = view.cube.dimensionParts(view.params.drilldown[i]);
-			var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+			//var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+			var cutDimension = view.params.drilldown[i];
 
 			//nid.push(drilldownLevelValues.join("-"));
 
 			var footer = "";
-			if (i == 0) footer = (cubesService.buildQueryCuts(view).length == 0) ? "<b>Summary</b>" : "<b>Summary <i>(Filtered)</i></b>";
+			if (i == 0) footer = (cubesService.buildQueryCuts(view).length == 0) ? "<b>Summary</b>" : '<b>Summary <i style="color: #ddaaaa;">(Filtered)</i></b>';
 
 			view.grid.columnDefs.splice(i, 0, {
 				name: label[i],
@@ -2746,6 +2750,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		$scope.loadDimensionValues();
 	});
 
+	$scope.$on("ViewRefresh", function(view) {
+		// FIXME: Update checkboxes, but do not reload.
+		//$scope.loadDimensionValues();
+	});
+
 	$scope.closeDimensionFilter = function() {
 		$scope.view.dimensionFilter = null;
 	};
@@ -2816,7 +2825,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		var dimensionValues = [];
 
 		var parts = view.cube.dimensionParts($scope.view.dimensionFilter);
-		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+		//var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+		var cutDimension = $scope.view.dimensionFilter;
+
 		var filterValues = [];
 		for (var i = 0; i < view.params.cuts.length ; i++) {
 			if (view.params.cuts[i].dimension == cutDimension) {
@@ -2856,10 +2867,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 	/*
 	 * Updates info after loading data.
 	 */
-	$scope.applyFilter = function(view, dimensionString) {
+	$scope.applyFilter = function() {
 
 		var view = $scope.view;
-		var dimensionString = $scope.view.dimensionFilter;
 
 		var filterValues = [];
 		$($scope.dimensionValues).each(function(idx, val) {
@@ -2870,7 +2880,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		if (filterValues.length >= $scope.dimensionValues.length) filterValues = [];
 
 		// Cut dimension
-		var cutDimension = $scope.parts.dimension.name + ( $scope.parts.hierarchy.name != "default" ? "@" + $scope.parts.hierarchy.name : "" );
+		var cutDimension = $scope.parts.dimension.name + ( $scope.parts.hierarchy.name != "default" ? "@" + $scope.parts.hierarchy.name : "" ) + ':' + $scope.parts.level.name;
 		$scope.selectCut(cutDimension, filterValues.join(";"), $scope.filterInverted);
 
 	};
@@ -7123,7 +7133,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "                        var depth = $(this).parents('.cv-view-infopiece-cut').first().attr('data-value').split(';')[0].split(\",\").length;\n" +
     "                        cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, dimensionString + \":\" + parts.hierarchy.levels[depth - 1] );\n" +
     "                     -->\n" +
-    "                    <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.dimensionParts(cut.dimension.replace(':',  '@')); equality = cut.invert ? ' &ne; ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
+    "                    <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.dimensionParts(cut.dimension); equality = cut.invert ? ' &ne; ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
     "                        <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.label }} <span ng-class=\"{ 'text-danger': cut.invert }\">{{ equality }}</span> <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
     "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(cut.dimension)\" class=\"btn btn-secondary btn-xs hidden-print\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +

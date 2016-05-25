@@ -73,6 +73,7 @@ Consider contributing to CubesViewer. This is a possible roadmap.
     * Add fullscreen mode for a view (in this case, stretch grid and chart as appropriate?)
     * Drop notes system 2: use metadata for info and add a comments system
     * Allow direct link to URL (cubesviewer GUI reading configuration/anonymous-id from URL)
+    * Drill more/drill less. Same for horizontal dimension, and dimension filter (???)
 
 [2.1]
 
@@ -111,7 +112,6 @@ Consider contributing to CubesViewer. This is a possible roadmap.
     * Commit to master (both projects).
     * Submenu loading issue.
     * _Firefox_ menu wrap in Studio menu (not in Chrome nor View menu?)
-    * Order of loading submenu CSS matters: check page and server html, adding comment.
+    * Order of loading submenu CSS matters: check page and server html, adding comment to code and to doc.
     * Update minimum docs (repos first). Add angular integration doc and example page.
-    * Dimension filter hierarchy level issue + drill more, drill less minibuttons + horizontal more/less
 

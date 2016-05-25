@@ -183,7 +183,10 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 		// Cuts
 		$(view.params.cuts).each(function(idx, e) {
 			var invert = e.invert ? "!" : "";
-			cuts.push(cubes.cut_from_string(view.cube, invert + e.dimension + ":" + e.value.replace("-", "\\-")));
+			var dimParts = view.cube.dimensionParts(e.dimension);
+			var cutDim = dimParts.dimension.name + ( dimParts.hierarchy.name != "default" ? "@" + dimParts.hierarchy.name : "" );
+
+			cuts.push(cubes.cut_from_string(view.cube, invert + cutDim + ":" + e.value.replace("-", "\\-")));
 		});
 
 		// Date filters
