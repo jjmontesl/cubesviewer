@@ -6489,7 +6489,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "            <li ng-show=\"cubesService.state === 1\" class=\"disabled\"><a>Loading...</a></li>\n" +
     "            <li ng-show=\"cubesService.state === 2 && cubesService.cubesserver._cube_list.length === 0\" class=\"disabled\"><a>No cubes found</a></li>\n" +
-    "            <li ng-show=\"cubesService.state === 3\" class=\"disabled\"><a>Server error</a></li>\n" +
+    "            <li ng-show=\"cubesService.state === 3\" class=\"disabled text-danger\"><a>Loading failed</a></li>\n" +
     "\n" +
     "            <li ng-repeat=\"cube in cubesService.cubesserver._cube_list | orderBy:'label'\" ng-click=\"studioViewsService.addViewCube(cube.name)\"><a>{{ cube.label }}</a></li>\n" +
     "\n" +
@@ -6636,7 +6636,12 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "</div>\n" +
     "\n" +
     "<div ng-if=\"view.params.yaxis == null\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
-    "    Cannot present chart: no <b>measure</b> has been selected.\n" +
+    "    <p>\n" +
+    "        Cannot present chart: no <b>measure</b> has been selected.\n" +
+    "    </p>\n" +
+    "    <p>\n" +
+    "        Tip: use the <kbd><i class=\"fa fa-fw fa-cogs\"></i>View &gt; <i class=\"fa fa-fw fa-crosshairs\"></i> Measure</kbd> menú.\n" +
+    "    </p>\n" +
     "</div>\n" +
     "\n" +
     "<div ng-if=\"view.pendingRequests == 0 && view.params.yaxis != null && view.grid.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
@@ -6644,9 +6649,13 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "</div>\n" +
     "\n" +
     "<div ng-if=\"view.pendingRequests == 0 && view.params.charttype == 'pie' && view.grid.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
-    "    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.<br />\n" +
-    "    Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>,\n" +
-    "    or <a href=\"\" ng-click=\"selectXAxis(null);\" class=\"alert-link\">remove horizontal dimension</a>.\n" +
+    "    <p>\n" +
+    "        Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.<br />\n" +
+    "    </p>\n" +
+    "    <p>\n" +
+    "        Tip: review chart data and columns in <a href=\"\" ng-click=\"setViewMode('series')\" class=\"alert-link\">series mode</a>,\n" +
+    "        or <a href=\"\" ng-click=\"selectXAxis(null);\" class=\"alert-link\">remove horizontal dimension</a>.\n" +
+    "    </p>\n" +
     "</div>\n" +
     "\n" +
     "<div ng-if=\"view.pendingRequests == 0 && view.params.yaxis != null && view.params.charttype == 'radar' && view.grid.columnDefs.length < 4\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
@@ -7043,8 +7052,8 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "    <div ng-show=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"divider\"></div>\n" +
     "\n" +
     "    <li ng-show=\"view.params.mode != 'chart'\" ng-click=\"exportService.exportGridAsCsv(view)\"><a><i class=\"fa fa-fw fa-table\"></i> Export table</a></li>\n" +
-    "    <li ng-click=\"exportService.exportFacts(view)\"><a><i class=\"fa fa-fw fa-th\"></i> Export facts</a></li>\n" +
     "    <li ng-show=\"view.params.mode == 'chart' && view.params.charttype != 'radar' \" ng-click=\"view.exportChartAsPNG()\"><a><i class=\"fa fa-fw fa-picture-o\"></i> Export figure</a></li>\n" +
+    "    <li ng-click=\"exportService.exportFacts(view)\"><a><i class=\"fa fa-fw fa-th\"></i> Export facts</a></li>\n" +
     "\n" +
     "  </ul>\n" +
     "\n"
@@ -7419,11 +7428,21 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "    <div ng-if=\"view.grid.data.length > 0\" style=\"height: 30px;\">&nbsp;</div>\n" +
     "\n" +
     "    <div ng-if=\"view.pendingRequests == 0 && view.params.yaxis == null\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
-    "        Cannot present series table: no <b>measure</b> has been selected.\n" +
+    "        <p>\n" +
+    "            Cannot present series table: no <b>measure</b> has been selected.\n" +
+    "        </p>\n" +
+    "        <p>\n" +
+    "            Tip: use the <kbd><i class=\"fa fa-fw fa-cogs\"></i>View &gt; <i class=\"fa fa-fw fa-crosshairs\"></i> Measure</kbd> menú.\n" +
+    "        </p>\n" +
     "    </div>\n" +
     "\n" +
     "    <div ng-if=\"view.pendingRequests == 0 && view.params.yaxis != null && view.grid.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
-    "        Cannot present series table: no rows are returned by the current filtering, horizontal dimension, and drilldown combination.\n" +
+    "        <p>\n" +
+    "            Cannot present series table: <b>no rows</b> are returned by the current horizontal dimension, drilldown or filtering combination.\n" +
+    "        </p>\n" +
+    "        <p>\n" +
+    "            Tip: use the <kbd><i class=\"fa fa-fw fa-cogs\"></i>View &gt;</kbd> menu to select an horizontal dimension.\n" +
+    "        </p>\n" +
     "    </div>\n" +
     "\n" +
     "</div>\n"

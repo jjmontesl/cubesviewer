@@ -18,11 +18,21 @@
     <div ng-if="view.grid.data.length > 0" style="height: 30px;">&nbsp;</div>
 
     <div ng-if="view.pendingRequests == 0 && view.params.yaxis == null" class="alert alert-info" style="margin-bottom: 0px;">
-        Cannot present series table: no <b>measure</b> has been selected.
+        <p>
+            Cannot present series table: no <b>measure</b> has been selected.
+        </p>
+        <p>
+            Tip: use the <kbd><i class="fa fa-fw fa-cogs"></i>View &gt; <i class="fa fa-fw fa-crosshairs"></i> Measure</kbd> menú.
+        </p>
     </div>
 
     <div ng-if="view.pendingRequests == 0 && view.params.yaxis != null && view.grid.data.length == 0" class="alert alert-info" style="margin-bottom: 0px;">
-        Cannot present series table: no rows are returned by the current filtering, horizontal dimension, and drilldown combination.
+        <p>
+            Cannot present series table: <b>no rows</b> are returned by the current horizontal dimension, drilldown or filtering combination.
+        </p>
+        <p>
+            Tip: use the <kbd><i class="fa fa-fw fa-cogs"></i>View &gt;</kbd> menu to select an horizontal dimension.
+        </p>
     </div>
 
 </div>

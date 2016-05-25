@@ -4,7 +4,6 @@ CubesViewer - OLAP Visual Viewer and Explore Tool
 About
 -----
 
-
 CubesViewer is a visual, web-based tool application for exploring and analyzing
 OLAP databases served by the Cubes OLAP Framework.
 
@@ -16,17 +15,20 @@ CubesViewer is a visual interface for the
 open source [Cubes server](http://databrewery.org/cubes.html) (an OLAP server in Python).
 Purpose is to keep it simple while leveraging the web services provided by Cubes.
 
+**CubesViewer 2.0 is out** with tons of improvements! Check the
+[official site]() and the [release notes](), and [download]()!
+
 Features:
 
 * Cube explorer providing drilldown and filter operations.
 * Supports dimension hierarchies and date filtering.
 * Several charts and diagrams can be created.
 * Multiple modes: explore, data series, chart, facts.
-* Export data.
+* Export data and charts.
 * Undo / Redo.
 * Views can be embedded in other web sites.
 * User Interface allows for multiple views on-screen.
-* Optional multi-user server side backend for saving/sharing views.
+* Optional multi-user server-side backend for saving/sharing views.
 
 
 Online Demos
@@ -35,7 +37,7 @@ Online Demos
 * [CubesViewer Site](http://jjmontesl.github.io/cubesviewer/index.html)
 
 * [CubesViewer Studio](http://jjmontesl.github.io/cubesviewer/studio.html) with the full application
-* [CubesViewer Embedded Views](http://jjmontesl.github.io/cubesviewer/views.html) showing embedding possibilities
+* [CubesViewer Embedded Views](http://jjmontesl.github.io/cubesviewer/views.html) showing embedded views
 
 Download
 --------
@@ -55,24 +57,21 @@ Requirements
 CubesViewer consists of two parts:
 
 **CubesViewer client** is a HTML5 application that runs on any modern browser.
-It can run without server side support. Simply download the package and open
-the `html/studio.html` file in your favorite browser. Views can
-also be embedded in other sites.
+It can run without server side support. **Simply download the package and open**
+`html/studio.html` in your favorite browser. Views can also be embedded in other sites.
 
 CubesViewer also features an optional **server side application**
-which provides a full web application and supports features like sharing/saving and user notes.
-This project lives on a separate repository:
-[CubesViewer Server](https://github.com/jjmontesl/cubesviewer-server)
+which provides a full web application and supports features like sharing/saving views.
+This project lives on a separate repository: [CubesViewer Server](https://github.com/jjmontesl/cubesviewer-server)
 (not to be confused with Cubes Server itself).
 
-In all cases you need a configured and running [Cubes Server](http://databrewery.org/cubes.html) version 1.0.x or later.
-Your Cubes model may need some extra configuration if you wish to use features like date
+You need a configured and running [Cubes Server](http://databrewery.org/cubes.html) version 1.0.x or later.
+Your Cubes model may use some extra configuration if you wish to use features like date
 filters and range filters (see Documentation below).
 
-For CubesViewer clients to connect to Cubes slicer server, your Cubes server possibly needs to allow
-cross origin resource sharing (CORS). To enable this option, add
-`allow_cors_origin: http://localhost:8000` (or the URL from wich your app will work,
-or an asterisk `*`) under the `[server]` section of the `slicer.ini` file.
+For CubesViewer clients to connect to Cubes server ("slicer"), your Cubes server possibly needs to allow
+cross origin resource sharing (CORS). To enable this option, add `allow_cors_origin: *`
+(or a more restrictive setting) under the `[server]` section of the `slicer.ini` file.
 
 For further information, see the Documentation section below.
 
@@ -83,8 +82,10 @@ This tool allows users to inspect the different dimensions, measures and
 aggregated data in different ways, allowing you to build tables and charts
 based on the analytical data available from the server.
 
-* [CubesViewer Quick Start](cubesviewer-quickstart.md)
+* [CubesViewer Quick Start](https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-quickstart.md)
 * [CubesViewer Documentation](https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/index.md)
+
+* [CubesViewer 2.0 Release Notes]()
 
 
 Screenshots
@@ -100,14 +101,11 @@ Screenshots
 Support
 =======
 
-If you have questions, problems or suggestions, please get in touch.
 CubesViewer doesn't have a list on its own. Instead, please use
 the Cubes project mailing list:
 
 * User group: http://groups.google.com/group/cubes-discuss
 * Report bugs: https://github.com/jjmontesl/cubesviewer/issues
-
-If you are using or trying CubesViewer, we'd love to hear from you (please tweet #cubesviewer !).
 
 Source
 ======
@@ -116,6 +114,30 @@ Github source repository:
 
 * https://github.com/jjmontesl/cubesviewer
 * https://github.com/jjmontesl/cubesviewer-server
+
+About versioning:
+
+* Tagged versions (ie. v2.0.1) are stable releases.
+* The "master" branch may be ahead the latest stable version, but is meant to be stable (fixes and documentation improvements).
+* Development and latest changes happen in the "devel" branch and others.
+
+Collaborate!
+============
+
+Using CubesViewer or interested in data engineering / data visualization? CubesViewer
+is an open source project and could grow up best with the help of fellow coders.
+
+You can collaborate:
+
+* If you find bugs, please [file an issue]().
+* If you have a feature request, also file an issue.
+* If you fix bugs, please do send a pull request.
+* If you make reusable changes, please document those and send a pull request.
+* If you wish to take over a larger feature, get in touch through the Cubes discuss group above
+  in order to plan for it collectively. Check the roadmap.txt file if you need some inspiration.
+* You can also help improving the documentation or writing about Cubes/CubesViewer, and spreading the love.
+
+If you are using or trying CubesViewer, we'd love to hear from you (please tweet #cubesviewer !).
 
 Authors
 =======

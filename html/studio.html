@@ -40,7 +40,7 @@
     // Initialize CubesViewer when document is ready
     $(document).ready(function() {
 
-    	var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
+    	var cubesUrl = prompt ("Enter your Cubes Server URL\n(or try http://cubesdemo.cubesviewer.com)", "http://localhost:5000");
         //var cubesUrl = "http://localhost:5000";
 
         cubesviewerStudio.init({
@@ -66,9 +66,11 @@
 
     <div style="clear: both;"></div>
 
+
     <!-- Cubes Viewer container -->
     <div id="cubesviewer">
     </div>
+
 
     <div class="footer" style="clear: both; padding-top: 20px;">
     	<div style="height: 1px; border-top: 1px solid #DDDDDD; padding-top: 4px;"></div>

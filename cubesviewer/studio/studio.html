@@ -11,7 +11,7 @@
 
             <li ng-show="cubesService.state === 1" class="disabled"><a>Loading...</a></li>
             <li ng-show="cubesService.state === 2 && cubesService.cubesserver._cube_list.length === 0" class="disabled"><a>No cubes found</a></li>
-            <li ng-show="cubesService.state === 3" class="disabled"><a>Server error</a></li>
+            <li ng-show="cubesService.state === 3" class="disabled text-danger"><a>Loading failed</a></li>
 
             <li ng-repeat="cube in cubesService.cubesserver._cube_list | orderBy:'label'" ng-click="studioViewsService.addViewCube(cube.name)"><a>{{ cube.label }}</a></li>
 

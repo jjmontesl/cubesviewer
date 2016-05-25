@@ -56,7 +56,7 @@ Consider contributing to CubesViewer. This is a possible roadmap.
 
 [2.3]
 
-    * Fulltext search (facts, dimension values, extra data) ?
+    * Fulltext search (facts, dimension values/info, extra external data (refs), metadata) ?
 
 [2.2]
 
@@ -78,6 +78,7 @@ Consider contributing to CubesViewer. This is a possible roadmap.
 [2.1]
 
     * Restore cached content notice (is missing, commented out).
+    * Chart series view/hide selection is serialized using label instead of key. Normalize.
     * Issue #55 (chart shows measure name, not measure label).
     * Fix submenu timer hack: is causing issues already. Watch contents and perhaps debounce menu activation?
     * Add "accumulated", "difference" and other operations to series and charts.
@@ -92,26 +93,30 @@ Consider contributing to CubesViewer. This is a possible roadmap.
     * Colors get incorrectly drawn when series are deselected from legend, and view changed back/forth.
     * Map charts.
 
-[2.0]
-
-    # Remove -devel from version, Disable debug mode, Release notes, Tag repo, Announcement (Cubes list, twitter, etc.).
-    # Uncomment studio.html code that asks for the server url to connect to.
-
-    * Test / QA.
-    * Create site, update readme.
-    * Update screenshots.
-    * Add product subcategory to demo data. Add some formatters (correctly from dims via CubeETL).
+[2.0.2]
 
     * Cleanup code.
     * Reviewed and improved doc.
+    * Angular example, angular integration doc.
     * Test CORS issue from server (localhost:8000 -> localhost:5000), test JSONP.
     * Site (page). Show a couple of charts view, a table, and an enabled-controls view.
       SAME views to be automatically opened in the explorer sample.
     * Release notes (txt and github). There've been changes: db, options, view params (normalize chart params!)
+    * _Firefox_ menu wrap in Studio menu (not in Chrome nor View menu?)
+    * Submenu loading issue.
+
+    * Update screenshots.
+    * Add product subcategory to demo data. Add some formatters (correctly from dims via CubeETL).
+    * Update site.
+
+[2.0.1]
+
+    # Remove -devel from version, Disable debug mode, Release notes, Tag repo, Announcement (Cubes list, twitter, etc.).
+
+    * Test / QA.
 
     * Commit to master (both projects).
-    * Submenu loading issue.
-    * _Firefox_ menu wrap in Studio menu (not in Chrome nor View menu?)
+    * Test CV Server and create django migrations.
     * Order of loading submenu CSS matters: check page and server html, adding comment to code and to doc.
     * Update minimum docs (repos first). Add angular integration doc and example page.
 

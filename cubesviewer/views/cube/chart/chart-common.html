@@ -12,7 +12,12 @@
 </div>
 
 <div ng-if="view.params.yaxis == null" class="alert alert-info" style="margin-bottom: 0px;">
-    Cannot present chart: no <b>measure</b> has been selected.
+    <p>
+        Cannot present chart: no <b>measure</b> has been selected.
+    </p>
+    <p>
+        Tip: use the <kbd><i class="fa fa-fw fa-cogs"></i>View &gt; <i class="fa fa-fw fa-crosshairs"></i> Measure</kbd> menú.
+    </p>
 </div>
 
 <div ng-if="view.pendingRequests == 0 && view.params.yaxis != null && view.grid.data.length == 0" class="alert alert-info" style="margin-bottom: 0px;">
@@ -20,9 +25,13 @@
 </div>
 
 <div ng-if="view.pendingRequests == 0 && view.params.charttype == 'pie' && view.grid.columnDefs.length > 2" class="alert alert-info" style="margin-bottom: 0px;">
-    Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.<br />
-    Tip: review chart data and columns in <a href="" ng-click="setViewMode('series')" class="alert-link">series mode</a>,
-    or <a href="" ng-click="selectXAxis(null);" class="alert-link">remove horizontal dimension</a>.
+    <p>
+        Cannot present a <b>pie chart</b> when <b>more than one column</b> is present.<br />
+    </p>
+    <p>
+        Tip: review chart data and columns in <a href="" ng-click="setViewMode('series')" class="alert-link">series mode</a>,
+        or <a href="" ng-click="selectXAxis(null);" class="alert-link">remove horizontal dimension</a>.
+    </p>
 </div>
 
 <div ng-if="view.pendingRequests == 0 && view.params.yaxis != null && view.params.charttype == 'radar' && view.grid.columnDefs.length < 4" class="alert alert-info" style="margin-bottom: 0px;">
