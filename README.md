@@ -70,7 +70,7 @@ Your Cubes model may use some extra configuration if you wish to use features li
 filters and range filters (see Documentation below).
 
 For CubesViewer clients to connect to Cubes server ("slicer"), your Cubes server possibly needs to allow
-cross origin resource sharing (CORS). To enable this option, add `allow_cors_origin: *`
+cross origin resource sharing (CORS). To enable it, add `allow_cors_origin: *`
 (or a more restrictive setting) under the `[server]` section of the `slicer.ini` file.
 
 For further information, see the Documentation section below.
@@ -91,12 +91,9 @@ based on the analytical data available from the server.
 Screenshots
 -----------
 
-![CubesViewer Chart Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-chart-2.png "CubesViewer Chart")
-![CubesViewer Chart Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-chart-3-notes.png "CubesViewer Chart")
 ![CubesViewer Chart Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-chart-1.png "CubesViewer Chart")
 ![CubesViewer Explore Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-explore-1.png "CubesViewer Explore")
-![CubesViewer Explore Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-explore-2.png "CubesViewer Explore")
-![CubesViewer Series Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-series-1.png "CubesViewer Series")
+![CubesViewer Chart Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-chart-2.png "CubesViewer Chart")
 
 Support
 =======

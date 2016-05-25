@@ -1,5 +1,6 @@
 [2.0.1]
 
+    * Added chart image export support.
     * Line charts now allow various curve types.
     * Google Analytics plugin restored (events tracking).
     * Added warning if server result limit has been hit.
@@ -23,8 +24,8 @@
     * Refactored to Angular. Dropped jQueryUI.
     * Now using Bootstrap embedded (no global CSS selectors) for styling, without
       impacting page styles and better avoiding being impacted by container page styling.
-    * Introduced Grunt and Bower build toolchain.
-    * Separated cubesviewer server and client into two projects.
+    * Introduced Grunt and Bower build toolchain. Also JSDoc.
+    * Separated CubesViewer server and client into two different projects.
     * License changed to pure MIT (removed extra clause).
 
 [0.0.11]

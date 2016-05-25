@@ -1071,7 +1071,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 		this.cubesserver = new cubes.Server(cubesService._cubesAjaxHandler);
 		console.debug("Cubes client connecting to: " + cvOptions.cubesUrl);
 		this.cubesserver.connect (cvOptions.cubesUrl, function() {
-			console.debug('Cubes client initialized (server version: ' + cubesService.cubesserver.server_version + ')');
+			$log.debug('Cubes client initialized (server version: ' + cubesService.cubesserver.server_version + ')');
 			cubesService.state = cubesviewer.VIEW_STATE_INITIALIZED;
 			$rootScope.$apply();
 		}, function(xhr) {
@@ -1760,7 +1760,7 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 		// TODO: Define a view object
 		var view = {
 
-			id: "view-" + this.lastViewId,
+			id: "_cv-view-" + this.lastViewId,
 			type: type,
 			state: cubesviewer.STATE_INITIALIZING,
 			error: "",

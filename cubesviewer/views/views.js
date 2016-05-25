@@ -76,7 +76,7 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 		// TODO: Define a view object
 		var view = {
 
-			id: "view-" + this.lastViewId,
+			id: "_cv-view-" + this.lastViewId,
 			type: type,
 			state: cubesviewer.STATE_INITIALIZING,
 			error: "",

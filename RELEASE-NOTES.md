@@ -75,11 +75,11 @@ Upgrading from 0.10 or 0.11
 ---------------------------
 
 1. If you are integrating CubesViewer in your HTML, note that the code needed for
-   initializing CubesViewer has changed slightly. Refer to the
-   [Embedding CubesViewer] for detailed instructions on integrating views and
-   the full list of initialization options.
+   initializing CubesViewer has changed slightly. The list of Javascript and CSS
+   dependencies has also changed. Refer to the [Embedding CubesViewer] for detailed
+   instructions on integrating views and the full list of initialization options.
 
-2. View definitions are partially backwards compatible, but some of the attributes
+2. View definitions are (partially) backwards compatible, but some of the attributes
    have changed (ie. column width definition). If you or your users have stored view
    definitions, either via CubesViewer Server or any other JSON view definition,
    it is recommended to test drive your existing view definitions to check they
@@ -89,7 +89,7 @@ Upgrading from 0.10 or 0.11
    is not available. If you were using "Range Filter" these will not show up.
 
 4. For CubesViewer clients to connect to Cubes server ("slicer"), your Cubes server
-   possibly needs to allow cross origin resource sharing (CORS). To enable this option,
+   possibly needs to allow cross origin resource sharing (CORS). To enable it,
    add `allow_cors_origin: *` (or a more restrictive setting)
    under the `[server]` section of the `slicer.ini` file.
 
