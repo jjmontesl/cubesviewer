@@ -12,7 +12,7 @@ CubesViewer Documentation
 
 * [Quick Start](cubesviewer-quickstart.md)
 * [Configuring your Cubes data model](cubesviewer-model.md)
-* [Installing CubesViewer Server](cubesviewer-gui-installation.md)
+* [Installing CubesViewer Server](cubesviewer-server-installation.md)
 * [Integrating CubesViewer views in other web applications](cubesviewer-embed.md)
 
 **For end users**:
@@ -22,6 +22,9 @@ CubesViewer Documentation
 **Links**:
 
 * [CubesViewer Demo](http://jjmontesl.github.io/cubesviewer/)
-
 * [CubesViewer](https://github.com/jjmontesl/cubesviewer) at Github
 * [CubesViewer Server](https://github.com/jjmontesl/cubesviewer-server) at Github
+
+
+Please see the README.md file for information on collaborating with CubesViewer project!
+

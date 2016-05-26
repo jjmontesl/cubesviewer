@@ -4,13 +4,13 @@ CubesViewer - OLAP Visual Viewer and Explore Tool
 Installing the full CubesViewer application
 -------------------------------------------
 
-CubesViewer full application includes the complete of user interface features to explore and navigate
+CubesViewer Studio Server includes the complete set of user interface features to explore and navigate
 a Cubes Server.
 
-The full CubesViewer application includes a server-side Python/Django application which serves as backend for some
-of the operations (ie. saving / sharing).
+This full CubesViewer application adds a server-side Python/Django application which serves as backend for
+some of the operations (ie. saving / sharing).
 
-The CubesViewer application is a web application and as such it must be served by an HTTP server.
+The CubesViewer Studio Server application is a web application and as such it must be served by an HTTP server.
 It can be run using Python Django local webserver, but for more serious/production environments, it should
 be fronted by a real web server like Apache.
 
@@ -19,6 +19,7 @@ which means that although the full application is a Python Django Server-Side ap
 of the GUI features running the tool directly from your browser (as long as the Cubes server is accessible).
 
 The installation steps are:
+
 
 ## 1 - Python Cubes Requisite
 
@@ -29,31 +30,37 @@ Cubes includes an HTTP server called "slicer", which provides a REST-like API in
 server needs to be running for CubesViewer. Follow [Cubes Framework](http://databrewery.org/cubes.html) instructions
 in order to install and set up a cubes server if you haven't done so yet.
 
-It is not required that the Cubes server runs on the same host as the CubesViewer application.
+It is not required that the *Cubes Server* runs on the same host as the *CubesViewer Server* application.
 
-To be able for CubesViewer to connect to the slicer server, your `slicer.ini` should allow cross origin resource
-sharing. To enable this option, put `allow_cors_origin: http://localhost:8000` (or the URL from wich your app will work,
-or an asterisk *) under the `[server]` section.
+For CubesViewer clients to connect to Cubes server (*slicer*), your Cubes server possibly needs to allow
+cross origin resource sharing (CORS). To enable it, add `allow_cors_origin: *`
+(or a more restrictive setting) under the `[server]` section of the `slicer.ini` file.
+
 
 ## 2 - Dependencies
 
 CubesViewer application runs on Python/Django. You need to have the following packages available in your system:
 
 * Python 2.7
-* Django 1.7 or later
+* Django 1.9
 
 You will also need Python packages "requests" and "django-rest-framework". Check the requirements.txt file for
-the full list of dependencies (you can also use this file to install all dependencies via "pip install").
+the full list of dependencies (you can also use this file to install all dependencies via
+`pip install -r requirements.txt`).
 
 Django applications can run on local SQLite files, but if you plan to run on a different database system, you may
-need to install also the Python connectors for the appropriate database backend (ie. python-mysqldb).
+need to install also the Python connectors for the appropriate database backend.
+
 
 ## 3 - Download and install CubesViewer
 
-Download CubesViewer project from GitHub (https://github.com/jjmontesl/cubesviewer). You can use 'git' or [download the ZIP
-version](https://github.com/jjmontesl/cubesviewer/archive/master.zip) of the project.
+Download **cubesviewer-server** project from GitHub (https://github.com/jjmontesl/cubesviewer).
+You can use 'git' or get a zipped package fgrom the project page.
 
-Put the content of the /src directory of the project, in the target directory of your choice.
+```
+git clone https://github.com/jjmontesl/cubesviewer-server.git
+```
+
 
 ## 4 - Configure the application.
 
@@ -62,12 +69,12 @@ There are a few parameters that need to be configured.
 Besides of the OLAP database served by Cubes, the CubesViewer application requires access to a database in order
 to support save/load operations. You can use a local SQLite file or any other database system supported by Django.
 
-By default, CubesViewer uses a SQLite database located in the same directory as the "settings.py" file (web/cvapp).
-See [Django Database configuration](https://docs.djangoproject.com/en/dev/ref/settings/#databases) documents for more information
-on the database configuration.
+By default, CubesViewer uses a SQLite database located in the same directory as the `settings.py` file (`cvapp/cvapp/`).
+See [Django Database configuration](https://docs.djangoproject.com/en/dev/ref/settings/#databases) documents for
+more information on the database configuration.
 
-**Edit the web/cvapp/cvapp/settings.py file**, and review the following sections according to your Cubes URL, database config and
-installation path.
+**Edit the web/cvapp/cvapp/settings.py file**, and review the following sections according to your
+Cubes URL, database config and installation path.
 
 ```python
 ##
@@ -79,8 +86,8 @@ installation path.
 # match your needs.
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(CURRENT_DIR, 'cubesviewer.sqlite'), # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': os.path.join(CURRENT_DIR, 'cubesviewer.sqlite'),  # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -91,27 +98,31 @@ DATABASES = {
 
 ```python
 ##
-# 2. Configuration of Slicer OLAP Server
+# 2. Configuration of CubesViewer Server
 ##
 
 # Base Cubes Server URL.
 # Your Cubes Server needs to be running and listening on this URL, and it needs
 # to be accessible to clients of the application.
-CUBESVIEWER_CUBES_URL="http://localhost:5000"
+CUBESVIEWER_CUBES_URL = "http://localhost:5000"
 
 # CubesViewer Store backend URL. It should point to this application.
-CUBESVIEWER_BACKEND_URL="http://localhost:8000/cubesviewer"
+# Note that this must match the URL that you use to access the application,
+# otherwise you may hit security issues. If you access your server
+# via http://localhost:8000, use the same here. Note that 127.0.0.1 and
+# 'localhost' are different strings for this purpose. (If you wish to accept
+# requests from different URLs, you may need to add CORS support).
+CUBESVIEWER_BACKEND_URL = "http://localhost:8000/cubesviewer"
 
 # Optional user and password tuple to access the backend, or False
-# (only meaningful when CubesViewer Cubes proxy is used)
+# (only applies when CubesViewer Cubes proxy is used)
 #CUBESVIEWER_CUBES_PROXY_USER = ('user', 'password')
 CUBESVIEWER_CUBES_PROXY_USER = None
 
 # CubesViewer Proxy ACL
-# (only meaningful when CubesViewer Cubes proxy is used)
+# (only applies when CubesViewer Cubes proxy is used)
 # ie. CUBESVIEWER_PROXY_ACL = [ { "cube": "my_cube", "group": "my_group" } ]
-CUBESVIEWER_PROXY_ACL = [
-                         ]
+CUBESVIEWER_PROXY_ACL = [ ]
 ```
 
 ```python
@@ -120,8 +131,8 @@ CUBESVIEWER_PROXY_ACL = [
 ##
 
 # Path to static files
-STATIC_DIR=os.path.join(CURRENT_DIR, os.path.pardir, 'static')
-TEMPLATE_DIR=os.path.join(CURRENT_DIR, os.path.pardir, 'templates')
+STATIC_DIR = ( os.path.join(BASE_DIR, os.path.pardir, 'static'), )
+TEMPLATE_DIR = ( os.path.join(BASE_DIR, os.path.pardir, 'templates'), )
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -140,31 +151,33 @@ LANGUAGE_CODE = 'en-us'
 
 ## 5 - Initializing the database
 
-Once the application is configured, we need to initialize the backend database. Django applications are initialized using the "manage.py" script.
+Once the application is configured, we need to initialize the backend database.
+Django applications are initialized using the `manage.py` script.
 
-Move into your INSTALLATION_PATH/web/cvapp directory and run the manage script with the "syncdb" option:
+Move into your `cubesviewer-server/cvapp` directory and run the manage script with the `syncdb` option:
 
 ```
 python manage.py syncdb
 ```
 
-You will be prompted for an "admin" user and password. This is the user that will have access to the administration section.
+You will be prompted for an "admin" user and password. This is the user that will have access
+to the administration section.
+
 
 ## 6 - Running with Django WebServer
 
-Finally, let's run the application. As mentioned above, you should think of using a front web server like Apache for production web sites.
-However, Django provides a convenient way to spawn a server for testing purposes. Run the manage script with the following parameters:
+Finally, let's run the application. Django provides a convenient way to spawn a server
+for testing purposes. Run the manage script with the following parameters:
 
 ```
-python manage.py runserver
+python manage.py runserver 0.0.0.0:8000
 ```
 
-Now, the application should be available from your browser, using the following URL:
-
-http://localhost:8000/
+Now, the application should be available from your browser using `http://localhost:8000/`.
 
 If the data model can be loaded from Cubes server and contains any cube definitions, you should be able to see them and inspect
 them using CubesViewer.
+
 
 ## 7 - Configure your model for CubesViewer
 
@@ -172,6 +185,5 @@ Note that you can benefit from extra features if you configure your Cubes model.
 [Configuring your Cubes data model](cubesviewer-model.md) section of the documentation.
 
 
-If you are using CubesViewer, share your experience in the [discussion list](http://groups.google.com/group/cubes-discuss)
-or tweet #cubesviewer !
+If you are using CubesViewer, please share and tweet #cubesviewer !
 

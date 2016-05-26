@@ -14,14 +14,17 @@ This section of CubesViewer documentation has not yet been created. Consider col
 the project by writing it! Get in touch with jjmontes@gmail.com if you wish to take over this task:
 
 * Introduction
-** Facts and dimensions
+* Facts and dimensions
 * Explore view
 ** Drilldown
 ** Filtering
-* Series
+* Series view
 ** Operations on series
-* Charts
+* Charts view
 * Facts view
 * Exporting data
 * Saving and sharing
+
+
+![CubesViewer Explore Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-explore-1.png "CubesViewer Explore")
 

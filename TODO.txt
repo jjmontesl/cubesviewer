@@ -1,8 +1,8 @@
-Consider contributing to CubesViewer. This is a possible roadmap.
+Consider contributing to CubesViewer! This is a possible roadmap (reverse order).
 
 [ROADMAP]
 
-    * Support multiple servers and multiple versions.
+    * Support multiple servers and multiple versions (use adaptors, and own data dictionary).
 
     * Translation site / tool / ask for help.
     * Interface available in English and one more language.
@@ -36,17 +36,19 @@ Consider contributing to CubesViewer. This is a possible roadmap.
     * Make charts more interactive (allow cut from chart, etc).
 
     * Series annotation system: markers for annotations in time or other dimension.
-    * Default cube settings is incorrect? it should only be applied if the view is not otherwise configured (ie loaded or json)
-
-    * Abstract backend?? Create CV objects for dimensions, levels, etc... Plug cubes as one more adaptor???
-    * Divide in reusable angular directives (ie. start with fact viewer). JS doc. Make views
-      proper objects.
-    * Move to a more object oriented API, directives for widgets for model and cubeview.
-      Keep drilldown and cuts as objects in API, serialize only as
-      needed (and so introduce the ability optionally include column widths, etc).
-    * Abstract data/grid in cubeview?
-    * Use controllerAs.
     * Better loading bar (account for pending requests, etc).
+    * Default cube settings (cv-info) feature bug? it should only be applied if the view is not otherwise configured (ie loaded or json). Check.
+
+    * Major architecture improvements:
+        * Abstract backend?? Create CV objects for dimensions, levels, etc... Plug cubes as one more adaptor???
+        * Divide in reusable angular directives (ie. start with fact viewer). JS doc. Make views
+          proper objects.
+        * Move to a more object oriented API, directives for widgets for model and cubeview.
+          Keep drilldown and cuts as objects in API, serialize only as
+          needed (and so introduce the ability optionally include column widths, etc).
+        * Abstract data/grid in cubeview? -> Add own data dictionary (<->CubETL).
+        * (Use controllerAs).
+        * Make cubesviewer-studio an angular app.
 
 [2.4]
 
@@ -89,7 +91,6 @@ Consider contributing to CubesViewer. This is a possible roadmap.
     * Automatically hide legend if too many results.
     * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative), move "invert 2nd serie" as a calculation?
     * Range filter.
-    * Test and close issue #39, "strings with hyphen cause dimension filter to work inexpectedly" as shall be fixed.
     * Colors get incorrectly drawn when series are deselected from legend, and view changed back/forth.
     * Map charts.
 
@@ -97,26 +98,29 @@ Consider contributing to CubesViewer. This is a possible roadmap.
 
     * Cleanup code.
     * Reviewed and improved doc.
+    * Test and close issue #39, "strings with hyphen cause dimension filter to work inexpectedly" as shall be fixed.
     * Angular example, angular integration doc.
     * Test CORS issue from server (localhost:8000 -> localhost:5000), test JSONP.
-    * Site (page). Show a couple of charts view, a table, and an enabled-controls view.
-      SAME views to be automatically opened in the explorer sample.
-    * Release notes (txt and github). There've been changes: db, options, view params (normalize chart params!)
     * _Firefox_ menu wrap in Studio menu (not in Chrome nor View menu?)
     * Submenu loading issue.
 
+    * Announcement (Cubes list, twitter, reddit, etc.).
+
+    * Site (page). Show a couple of charts view, a table, and an enabled-controls view.
+      SAME views to be automatically opened in the explorer sample.
     * Update screenshots.
     * Add product subcategory to demo data. Add some formatters (correctly from dims via CubeETL).
-    * Update site.
+    * Update & simplify demo views JSON.
 
 [2.0.1]
 
-    # Remove -devel from version, Disable debug mode, Release notes, Tag repo, Announcement (Cubes list, twitter, etc.).
+    # Remove -devel from version, Disable debug mode, Release notes, Tag repo (release),
 
     * Test / QA.
 
+    * Update site, point downloads and doc to master.
     * Commit to master (both projects).
     * Test CV Server and create django migrations.
-    * Order of loading submenu CSS matters: check page and server html, adding comment to code and to doc.
-    * Update minimum docs (repos first). Add angular integration doc and example page.
+    * Switching from facts to series mode, when series mode is not loading data, leaves
+      grid data in place and doesnt't show series missing measure message. Clean grid where necessary.
 

@@ -16,19 +16,20 @@ open source [Cubes server](http://databrewery.org/cubes.html) (an OLAP server in
 Purpose is to keep it simple while leveraging the web services provided by Cubes.
 
 **CubesViewer 2.0 is out** with tons of improvements! Check the
-[official site]() and the [release notes](), and [download]()!
+[official site](https://www.cubesviewer.com/) and
+the [release notes](https://github.com/jjmontesl/cubesviewer/blob/master/RELEASE-NOTES.md)!
 
 Features:
 
-* Cube explorer providing drilldown and filter operations.
-* Supports dimension hierarchies and date filtering.
-* Several charts and diagrams can be created.
-* Multiple modes: explore, data series, chart, facts.
-* Export data and charts.
-* Undo / Redo.
-* Views can be embedded in other web sites.
-* User Interface allows for multiple views on-screen.
-* Optional multi-user server-side backend for saving/sharing views.
+* Dimension hierarchies, date filtering
+* Several charts and diagrams can be created
+* Explore, create data series, draw charts, see raw facts
+* Export data and images
+* Responsive and mobile friendly
+* Undo / redo
+* Views can be embedded in other web sites
+* User Interface allows for multiple views on-screen
+* Optional multi-user server-side backend for saving/sharing views
 
 
 Online Demos
@@ -42,12 +43,12 @@ Online Demos
 Download
 --------
 
-Latest CubesViewer release is 2.0.1:
+Latest CubesViewer stable release is 2.0.1:
 
 * CubesViewer 2.0.1
   * [cubesviewer-2.0.1.zip](https://github.com/jjmontesl/cubesviewer/archive/cubesviewer-2.0.1.zip)
   * [cubesviewer-server-2.0.1.zip](https://github.com/jjmontesl/cubesviewer-server/archive/cubesviewer-server-2.0.1.zip)
-  * [Changelog](https://github.com/jjmontesl/cubesviewer/blob/2.0.1/CHANGES.txt)
+  * [Changelog](https://github.com/jjmontesl/cubesviewer/blob/master/CHANGES.txt)
   * Works with *Cubes 1.0.x*
 
 
@@ -85,7 +86,7 @@ based on the analytical data available from the server.
 * [CubesViewer Quick Start](https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-quickstart.md)
 * [CubesViewer Documentation](https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/index.md)
 
-* [CubesViewer 2.0 Release Notes]()
+* [CubesViewer 2.0 Release Notes](https://github.com/jjmontesl/cubesviewer/blob/master/RELEASE-NOTES.md)
 
 
 Screenshots
@@ -119,14 +120,14 @@ About versioning:
 * Development and latest changes happen in the "devel" branch and others.
 
 Collaborate!
-============
+------------
 
 Using CubesViewer or interested in data engineering / data visualization? CubesViewer
 is an open source project and could grow up best with the help of fellow coders.
 
 You can collaborate:
 
-* If you find bugs, please [file an issue]().
+* If you find bugs, please [file an issue](https://github.com/jjmontesl/cubesviewer/issues).
 * If you have a feature request, also file an issue.
 * If you fix bugs, please do send a pull request.
 * If you make reusable changes, please document those and send a pull request.

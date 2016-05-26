@@ -7,11 +7,15 @@ CubesViewer model options
 Some of CubesViewer features rely on your model being correctly configured. This is required, for example,
 in order to identify date dimensions so CubesViewer knows which dimensions can be used by date filters.
 
+Remember to **restart your Cubes server after changing cube metadata** in order for the changes to be picked up.
+
+
 Labels
 ------
 
-Cubes supports the "label" attribute on every object. If available, CubesViewer will show this attribute
+Cubes supports the `label` attribute on every object. If available, CubesViewer will show this attribute
 when referring to Cubes, Dimensions, Hierarchies, Levels and other Cubes objects.
+
 
 Date Filtering
 --------------
@@ -80,8 +84,11 @@ This is an example dimension "date_created" showing this configuration:
         ...
 ```
 
+
 Range Filtering
 ---------------
+
+**Note:** This feature is temporarily not available, but will be brought back soon.
 
 CubesViewer has a "Range Filter" option that shows a special cut filter for ranges. This can be applied
 to simple dimensions which *keys* are sortable.
@@ -112,12 +119,14 @@ This is an example dimension "year" showing this configuration:
         ...
 ```
 
-Per-cube default configuration
-------------------------------
 
-Sometimes you may wish to define an initial configuration for each cube. You can do so
-by adding a "cv-view-params" dictionary to the cube "info". This way you can, for
-example, hide some columns, apply a datefilter or show a chart view for a given cube:
+Per-cube default configuration from Cubes model
+-----------------------------------------------
+
+Sometimes you may wish to define an initial default configuration for each cube.
+You can do so by adding a "cv-view-params" dictionary to the cube "info". This way
+you can, for example, hide some columns, apply a datefilter or show a chart view as
+a default for a given cube:
 
 ```
         "name": "cube_name",
@@ -132,10 +141,16 @@ example, hide some columns, apply a datefilter or show a chart view for a given 
 ```
 
 
-Meassure Formatting
--------------------
+Note that this settings won't apply if you are creating a view passing configuration
+parameters as JSON. This option impacts cube views created with no options (as you'd
+do when working from CubesViewer Studio, or when using the `viewService.createView()`
+API call with empty options).
 
-You can apply a formatting expression to your measures as shown in the
+
+Measure Formatting
+------------------
+
+You can apply a formatting expression to your measures like shown in the
 example below.
 
 ```
@@ -153,12 +168,10 @@ example below.
 The `cv-formatter` value is a Javascript expression that returns a formatted
 string.
 
-You can use the `Math.formatnumber` function, added by CubesViewer, which
+You can use the `Math.formatnumber` function (added by CubesViewer) which
 formats a number the given number of decimal places and optional thousands
 separator.
 
 Remember to restart your Cubes server when changing cube metadata in order
 for the changes to be picked up.
-
-
 

@@ -25,17 +25,15 @@ CubesViewer has undergone a major upgrade. The code is now built upon
 *Bootstrap* and Angular Bootstrap components.
 
 The application is now more *responsive* and *mobile friendly*
-and looks more stylish overall. CSS has been reworked and styling is now
-embedded into private styles, making view integration into other web
-documents a very straightforward process.
+and looks more stylish overall. CSS has been reworked and namespaced,
+easing integration into other web documents.
 
 Migration to AngularJS has involved an comprehensive
-refactoring and reviewing of every module and function in the app, and we
-trust it's been for the better. Internally, the build pipeline now uses
-*Less*, *Grunt* and *Bower*, and a lot of dependencies have been removed. All
-together allow CubesViewer to now be distributed as a single `.js` file
-(minified version available) and accompanying `.css` file. *JSDoc* has also
-been added (although documentation at that level is still far from complete).
+refactoring and review of every module, and we trust it's been for the better.
+Internally, the build pipeline now uses *Less*, *Grunt* and *Bower*, and a lot
+of dependencies have been removed. All together allow CubesViewer to now be
+distributed as a single `.js` file (minified version also available) and
+accompanying `.css` file. *JSDoc* has also been introduced.
 
 Other additions feature:
 
@@ -45,7 +43,7 @@ Other additions feature:
 * Line and area charts with curved lines.
 * Improved error reporting and user interface.
 * CubesViewer Server (optional) upgraded to Django 1.9.
-* Cube usage tracking via Google Analytics has been restored.
+* Plugin for cube usage tracking via Google Analytics.
 
 Make sure you read the [Changelog]() for the full list of changes.
 
@@ -66,9 +64,8 @@ which provides a full web application and supports features like sharing/saving 
 This project lives on a separate repository: [CubesViewer Server](https://github.com/jjmontesl/cubesviewer-server)
 (not to be confused with Cubes Server itself).
 
-You need a configured and running [Cubes Server](http://databrewery.org/cubes.html)
-version 1.0.x or later. Your Cubes model may need some extra configuration if you wish
-to use features like date filters.
+You need a configured and running [Cubes Server](http://databrewery.org/cubes.html) version 1.0.x or later.
+Your Cubes model may need some extra configuration if you wish to use features like date filters.
 
 
 Upgrading from 0.10 or 0.11

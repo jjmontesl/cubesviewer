@@ -56,16 +56,14 @@
         var serializedView = '{"cubename":"webshop_sales","name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
 
         // Using a JSON string for view parameters:
-        setTimeout(function() {
-        }, 1500);
         cubesviewer.apply(function() {
         	view1 = cubesviewer.createView("#cv-view-1", "cube", serializedView);
         });
 
-
         // Using a Javascript object for view parameters:
-        //view2 = cubesviewer.createView('#cv-view-1', "cube", { "cubename": "webshop_visits" });
-
+        //cubesviewer.apply(function() {
+        //    view2 = cubesviewer.createView('#cv-view-1', "cube", { "cubename": "webshop_visits" });
+        //});
     });
 
     function switchMode(mode) {
@@ -106,7 +104,7 @@
         </p>
 
         <div style="border: none; margin-top: 22px; margin-bottom: 22px;">
-            <div id="cv-view-1" style="width: 100%; min-height: 120px;">CubesViewer view should appear here...</div>
+            <div id="cv-view-1" style="width: 100%; min-height: 120px;">Loading CubesViewer...</div>
         </div>
 
         <h2>Scripting</h2>
