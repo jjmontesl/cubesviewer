@@ -246,6 +246,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 	};
 
+	$scope.$on("$destroy", function() {
+		$scope.view.grid.data = [];
+		$scope.view.grid.columnDefs = [];
+	});
+
 	$scope.initialize();
 
 }]);

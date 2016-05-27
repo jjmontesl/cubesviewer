@@ -350,12 +350,17 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        Cannot present chart: no <b>measure</b> has been selected.\n" +
     "    </p>\n" +
     "    <p>\n" +
-    "        Tip: use the <kbd><i class=\"fa fa-fw fa-cogs\"></i>View &gt; <i class=\"fa fa-fw fa-crosshairs\"></i> Measure</kbd> menú.\n" +
+    "        Tip: use the <kbd><i class=\"fa fa-fw fa-cogs\"></i> View &gt; <i class=\"fa fa-fw fa-crosshairs\"></i> Measure</kbd> menu.\n" +
     "    </p>\n" +
     "</div>\n" +
     "\n" +
     "<div ng-if=\"view.pendingRequests == 0 && view.params.yaxis != null && view.grid.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
-    "    Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.\n" +
+    "    <p>\n" +
+    "        Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.\n" +
+    "    </p>\n" +
+    "    <p>\n" +
+    "        Tip: use the <kbd><i class=\"fa fa-fw fa-cogs\"></i> View</kbd> menu to select an horizontal dimension.\n" +
+    "    </p>\n" +
     "</div>\n" +
     "\n" +
     "<div ng-if=\"view.pendingRequests == 0 && view.params.charttype == 'pie' && view.grid.columnDefs.length > 2\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
@@ -1142,7 +1147,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "            Cannot present series table: no <b>measure</b> has been selected.\n" +
     "        </p>\n" +
     "        <p>\n" +
-    "            Tip: use the <kbd><i class=\"fa fa-fw fa-cogs\"></i>View &gt; <i class=\"fa fa-fw fa-crosshairs\"></i> Measure</kbd> menú.\n" +
+    "            Tip: use the <kbd><i class=\"fa fa-fw fa-cogs\"></i> View &gt; <i class=\"fa fa-fw fa-crosshairs\"></i> Measure</kbd> menu.\n" +
     "        </p>\n" +
     "    </div>\n" +
     "\n" +
@@ -1151,7 +1156,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "            Cannot present series table: <b>no rows</b> are returned by the current horizontal dimension, drilldown or filtering combination.\n" +
     "        </p>\n" +
     "        <p>\n" +
-    "            Tip: use the <kbd><i class=\"fa fa-fw fa-cogs\"></i>View &gt;</kbd> menu to select an horizontal dimension.\n" +
+    "            Tip: use the <kbd><i class=\"fa fa-fw fa-cogs\"></i> View</kbd> menu to select an horizontal dimension.\n" +
     "        </p>\n" +
     "    </div>\n" +
     "\n" +

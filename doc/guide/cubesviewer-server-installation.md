@@ -130,6 +130,11 @@ CUBESVIEWER_PROXY_ACL = [ ]
 # 3. Other Django application settings
 ##
 
+# Uncomment this if you need to allow access to CubesViewer resources
+# from a different origin (schema, domain or port) from which CubesViewer
+# is served to users.
+#CORS_ORIGIN_ALLOW_ALL = True
+
 # Path to static files
 STATIC_DIR = ( os.path.join(BASE_DIR, os.path.pardir, 'static'), )
 TEMPLATE_DIR = ( os.path.join(BASE_DIR, os.path.pardir, 'templates'), )

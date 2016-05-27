@@ -1,5 +1,6 @@
 [2.0.1]
 
+    * Added AngularJS integration example.
     * Added chart image export support.
     * Line charts now allow various curve types.
     * Google Analytics plugin restored (events tracking).
