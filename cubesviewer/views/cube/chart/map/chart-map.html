@@ -1,4 +1,4 @@
-<div ng-show="gridOptions.data.length > 0" style="width: 99%;">
+<div ng-show="view.grid.data.length > 0">
     <div>
         <div class="cv-chart-container">
             <div class="cv-map-container" style="height: 400px;" ></div>
@@ -11,11 +11,7 @@
     </div>
 </div>
 
-<div ng-if="view.params.yaxis == null" class="alert alert-info" style="margin-bottom: 0px;">
-    Cannot present chart: no <b>measure</b> has been selected.
-</div>
-
-<div ng-if="view.params.yaxis != null && gridOptions.data.length == 0" class="alert alert-info" style="margin-bottom: 0px;">
+<div ng-if="gridOptions.data.length == 0" class="alert alert-info" style="margin-bottom: 0px;">
     Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.
 </div>
 

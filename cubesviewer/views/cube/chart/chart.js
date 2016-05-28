@@ -133,6 +133,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 		//$($element).find("svg").empty();
 		$($element).find("svg").parent().children().not("svg").remove();
+		$($element).find("svg").empty();
 
 		if (chartCtrl.chart) {
 			$("#" + chartCtrl.chart.tooltip.id()).remove(); // div.nvtooltip

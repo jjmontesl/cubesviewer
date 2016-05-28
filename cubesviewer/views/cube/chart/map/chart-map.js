@@ -29,14 +29,14 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	$scope.map = null;
 
 	$scope.initialize = function() {
+		// Add chart view parameters to view definition
 	};
 
-	$scope.$on('GridDataUpdated', function() {
+	$scope.$on('gridDataUpdated', function() {
 		$timeout(function() {
 			$scope.drawChartMap();
 		}, 0);
 	});
-
 
 	/**
 	 * Draws a vertical bars chart.
@@ -44,13 +44,13 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	$scope.drawChartMap = function () {
 
 		var view = $scope.view;
-		var dataRows = $scope.gridData;
-		var columnDefs = $scope.gridOptions.columnDefs;
+		var dataRows = $scope.view.grid.data;
+		var columnDefs = view.grid.columnDefs;
 
 		var container = $($element).find(".cv-map-container").get(0);
 		$(container).empty();
 
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None")
 
 		var projection = ol.proj.get('EPSG:3857');
 

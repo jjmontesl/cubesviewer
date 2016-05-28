@@ -108,6 +108,7 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Restore cached content notice (is missing, commented out).
     * Automatically hide legend if too many results.
     * Colors get incorrectly drawn when series are deselected from legend, and view changed back/forth.
+    * Cleanup charts, destroy events, resize handlers (use a single resize event across views, and bind from angular).
 
     * Divide in reusable angular directives (ie. start with fact viewer). JS doc. Make views
           proper objects.
