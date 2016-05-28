@@ -118,7 +118,7 @@
             <div class="row" style="margin-top: 25px; margin-bottom: 15px;">
                 <div class="col-xs-12 col-sm-6 col-md-3 text-center">
                     <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-cube"></i> OLAP Browser</h4>
-                    Explore data across several dimensions. Filter and drill down to discover new facts.
+                    Explore data across dimensions. Filter and drill down to discover new facts and trends.
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-3 text-center">
                     <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-area-chart"></i> Charts</h4>
@@ -238,23 +238,54 @@
             <div class="col-xs-12">
 
 
-            <h3>Download</h3>
+            <h2 style="margin-bottom: 20px;">Download</h2>
+
             <section id="downloads" class="clearfix">
 
-            <div>
-                <a href="https://github.com/jjmontesl/cubesviewer/zipball/master"
-                    id="download-zip" class="btn btn-primary"><span>Download .zip</span></a>
-                <a href="https://github.com/jjmontesl/cubesviewer/tarball/master"
-                    id="download-tar-gz" class="btn btn-primary"><span>Download .tar.gz</span></a>
-                <a href="https://github.com/jjmontesl/cubesviewer"
+            <p style="margin-bottom: 15px;">
+                CubesViewer Server already includes the CubesViewer library so you just need that package
+                if you plan to deploy the server-side application.
+            </p>
+
+            <div class="col-xs-10 col-sm-6 col-md-4 col-lg-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading"><b>CubesViewer</b></div>
+                <div class="panel-body">
+                <a style="margin-bottom: 5px;" href="https://github.com/jjmontesl/cubesviewer/zipball/master"
+                    id="download-zip" class="btn btn-primary"><span>Download .zip</span></a><br/>
+                <a style="margin-bottom: 5px;" href="https://github.com/jjmontesl/cubesviewer/tarball/master"
+                    id="download-tar-gz" class="btn btn-primary"><span>Download .tar.gz</span></a><br/>
+                <a href="http://github.com/jjmontesl/cubesviewer"
                     id="view-on-github" class="btn btn-success"><span>Fork me at GitHub</span></a>
+                </div>
             </div>
+            </div>
+
+            <div class="col-xs-10 col-sm-6 col-md-4 col-lg-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading"><b>CubesViewer Server</b></div>
+                <div class="panel-body">
+                <a style="margin-bottom: 5px;" href="https://github.com/jjmontesl/cubesviewer-server/zipball/master"
+                    id="download-zip" class="btn btn-primary"><span>Download .zip</span></a><br/>
+                <a style="margin-bottom: 5px;" href="https://github.com/jjmontesl/cubesviewer-server/tarball/master"
+                    id="download-tar-gz" class="btn btn-primary"><span>Download .tar.gz</span></a><br/>
+                <a href="http://github.com/jjmontesl/cubesviewer-server"
+                    id="view-on-github" class="btn btn-success"><span>Fork me at GitHub</span></a>
+                </div>
+            </div>
+            </div>
+
             <div style="clear: both; margin-bottom: 30px;" ></div>
 
             <p>
             You need a configured and running <a href="http://databrewery.org/cubes.html" target="_blank">Cubes Server</a> version 1.0.x
             or later serving your data. Your Cubes model may need some extra configuration if you wish to use Cubes Viewer features like date
             filters and range filters (see documentation below).
+            </p>
+
+            <p>
+            If you do modifications to the project, cloning both repositories via <tt>git</tt> is encouraged, so you can
+            easily contribute your fixes and improvements back.
             </p>
 
             <p>If you are trying or using CubesViewer, we'd love to hear about you, please
@@ -276,15 +307,20 @@
     <div class="container " >
         <div class="row">
             <div class="col-xs-12" style="margin-bottom: 25px;">
-                <h3>Documentation and Community</h3>
+                <h2>Documentation and Community</h2>
                 <p>
                     CubesViewer is an open source application hosted on
                     Github.
                 </p>
-                <p>
-                    Please visit <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer project site</a> for full up to
-                    date information: CubesViewer.
-                </p>
+
+                <ul>
+                    <li><a href="http://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-quickstart.md">CubesViewer Quick Start</a></li>
+                    <li><a href="http://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/index.md">CubesViewer Documentation</a></li>
+                </ul>
+                <ul>
+                    <li><a href="http://github.com/jjmontesl/cubesviewer/blob/master/RELEASE-NOTES.md">CubesViewer 2.0 Release Notes</a></li>
+                    <li><a href="http://github.com/jjmontesl/cubesviewer">CubesViewer project site</a></li>
+                </ul>
 
             </div>
         </div>
@@ -300,10 +336,10 @@
                 <footer>
                     <div style="float: right; white-space: nowrap;">
                         <p style="vertical-align: top;">
-                        <a href="https://github.com/jjmontesl/cubesviewer" target="_blank"><img title="Powered by CubesViewer" style="width: 50px; height: 25px;" src="img/cubesviewer-logo.png" /></a>
+                        <a href="http://github.com/jjmontesl/cubesviewer" target="_blank"><img title="Powered by CubesViewer" style="width: 50px; height: 25px;" src="img/cubesviewer-logo.png" /></a>
                         </p>
                     </div>
-                  <small><a href="https://www.cubesviewer.com">CubesViewer</a> &copy; <a href="https://twitter.com/jjmontes">Jose Juan Montes</a> 2012-2016</small>
+                  <small><a href="http://www.cubesviewer.com">CubesViewer</a> &copy; <a href="http://twitter.com/jjmontes">Jose Juan Montes</a> 2012-2016</small>
                 </footer>
 
           </div>
@@ -329,7 +365,7 @@
 
       // Sample serialized view (Based on cubes-examples project data)
       var serializedView =
-          '{"cubename":"webshop_sales","controlsHidden":true,"name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+          '{"cubename":"webshop_sales","controlsHidden":true,"name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
 
       // Add views
       cubesviewer.apply(function() {
