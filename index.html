@@ -45,7 +45,7 @@
                       <header>
                           <div style="float: left;"><img class="cv-logo" style="height: 60px; width: 130px;" alt="CubesViewer" src="img/cubesviewer-logo.png" /></div>
                           <h1 style="margin-top: 10px; margin-bottom: 0px;"><b>CubesViewer</b></h1>
-                          <h4 style="margin-top: 0px;">Data exploration and visualization tool</h4>
+                          <h4 style="margin-top: 0px; margin-bottom: 15px;">Data exploration and visualization tool</h4>
                       </header>
                   </div>
             </div>
@@ -72,11 +72,11 @@
                             <!-- Collect the nav links, forms, and other content for toggling -->
                             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                               <ul class="nav navbar-nav navbar-right" style="background-color: none;">
-                                <li><a href="#"><i class="fa fa-fw fa-star-o"></i> Features</a></li>
-                                <li><a href="#"><i class="fa fa-fw fa-cogs"></i> Demos</a></li>
-                                <li><a href="#"><i class="fa fa-fw fa-download"></i> Download</a></li>
-                                <li><a href="#"><i class="fa fa-fw fa-book"></i> Documentation</a></li>
-                                <li><a href="#"><i class="fa fa-fw fa-question"></i> Support</a></li>
+                                <li><a href="#features" target="_self"><i class="fa fa-fw fa-star-o"></i> Features</a></li>
+                                <li><a href="#demos" target="_self"><i class="fa fa-fw fa-cogs"></i> Demos</a></li>
+                                <li><a href="#download" target="_self"><i class="fa fa-fw fa-download"></i> Download</a></li>
+                                <li><a href="#documentation" target="_self"><i class="fa fa-fw fa-book"></i> Documentation</a></li>
+                                <!-- <li><a href="#support" target="_self"><i class="fa fa-fw fa-question"></i> Support</a></li>  -->
                               </ul>
                             </div><!-- /.navbar-collapse -->
                           </div><!-- /.container-fluid -->
@@ -89,48 +89,55 @@
     <div class="container-fluid" style="margin: 0px; background-image: url(img/cubesviewer-laptop-tablet.jpg); background-size: cover; background-position: center 35%; height: 350px; max-height: 350px;"><div class="row-fluid" ><div class="col-xs-12">
     </div></div></div>
 
+    <a id="features"></a>
     <div class="container-fluid" style="background-color: white;"><div class="row-fluid" ><div class="col-xs-12">
         <div class="container">
-            <div class="row" style="margin-top: 30px; margin-bottom: 20px;">
+
+            <div class="row" style="margin-top: 30px; margin-bottom: 10px;">
                 <div class="col-sm-12 col-md-6">
 
+                    <div class="panel panel-info" style="margin-top: -80px; -webkit-box-shadow: 0px 0px 5px 5px rgba(50, 50, 50, 0.25); -moz-box-shadow: 0px 0px 5px 5px rgba(50, 50, 50, 0.25); box-shadow: 0px 0px 5px 5px rgba(50, 50, 50, 0.25); "><div class="panel-body bg-info">
+
                     <p>
-                        <b>CubesViewer</b>
+                        <b> CubesViewer</b>
                         is a visual, web-based application for
-                        exploring and analyzing OLAP databases served by the
-                        <a href="http://databrewery.org/">Cubes</a> OLAP Framework.
+                        exploring and analyzing OLAP datasets.
                     </p>
-                    <p>
+                    <p style="margin-bottom: 0px;">
                         CubesViewer can be used for data exploration and data auditory,
                         generation of reports, chart design and embedding,
                         and as a (simple) company-wide analytics application.
                     </p>
+
+                    </div></div>
+
                 </div>
             </div>
 
 
-            <div class="row" style="margin-top: 5px; margin-bottom: 5px;">
+            <div class="row" style="margin-top: 25px; margin-bottom: 15px;">
                 <div class="col-xs-12 col-sm-6 col-md-3 text-center">
                     <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-cube"></i> OLAP Browser</h4>
                     Explore data across several dimensions. Filter and drill down to discover new facts.
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-3 text-center">
                     <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-area-chart"></i> Charts</h4>
-                    Several charts and diagrams can be created.
+                    A range of data visualization options is available. Switch between
+                    representations with a click.
                 </div>
                 <div class="clearfix hidden-md hidden-lg"></div>
                 <div class="col-xs-12 col-sm-6 col-md-3 text-center">
                     <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-clock-o"></i> Series</h4>
-                    Define and operate with data series to highlight features in your data.
+                    Define and operate with data series to discover and highlight features in your data.
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-3 text-center">
                     <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-picture-o"></i> Export</h4>
                     Export data and charts.
                 </div>
-            </div><div class="row" style="margin-top: 5px; margin-bottom: 5px;">
+            </div><div class="row" style="margin-top: 15px; margin-bottom: 35px;">
                 <div class="col-xs-12 col-sm-6 col-md-3 text-center">
                     <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-mobile"></i> Responsive</h4>
-                    Responsive design, tablet friendly
+                    Responsive design, tablet friendly.
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-3 text-center">
                     <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-undo"></i> Undo, redo, clone</h4>
@@ -139,46 +146,82 @@
                 </div>
                 <div class="clearfix hidden-md hidden-lg"></div>
                 <div class="col-xs-12 col-sm-6 col-md-3 text-center">
-                    <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-file-o"></i> Embed views</h4>
-                    Views can be embedded in other web sites
+                    <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-clone"></i> Embed views</h4>
+                    Views can be embedded in other web sites.
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-3 text-center">
                     <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-server"></i> CubesViewer Server</h4>
-                    Optional multi-user server-side backend for saving/sharing views
+                    Optional multi-user backend for storing and sharing views.
                 </div>
             </div>
 
         </div>
     </div></div></div>
 
+    <a id="demos"></a>
     <div class="container-fluid"><div class="row-fluid" ><div class="col-xs-12">
         <div class="container">
             <div class="row" >
                 <div class="col-sm-12 col-md-5 col-lg-5">
 
-                    <h3>Embedded Views</h3>
+                    <h2>CubesViewer Demos</h2>
+
+                        <p style="margin-bottom: 15px;">The following online demos are available:</p>
+
+                        <ul>
+                            <li><a class="btn btn-lg btn-success" style="margin-bottom: 15px;" href="studio.html"><b>CubesViewer Studio</b> demo</a></li>
+                            <li><a href="index.html">Embedded View</a> (this page)</li>
+                        </ul>
+
+                    <h2 style="margin-top: 40px;">Embedded Views</h2>
 
                     <p>CubesViewer can be embedded fully or partially
-                        into other websites. This is useful to show dynamic
-                        analytics or charts into any web page, like this chart here.</p>
+                        into other websites. Useful to show dynamic
+                        analytics or charts on other website
+                        articles or applications,
+                        like this chart here.
+                    </p>
+                    <p>
+                        Embedded charts can also be manipulated in the same
+                        way they are designed within CubesViewer Studio,
+                        try it:
+                    </p>
 
-                    <p>You can use the menu and interface to navigate
-                        this dataset (composed of fictional sales along
-                        years 2014-2015):</p>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col-xs-4 text-center">
+                            <button style="margin-bottom: 25px; vertical-align: middle;" class="btn btn-default" onclick="cubesviewer.apply(function() { view1.params.xaxis=null; view1.params.charttype='pie'; view1.setViewMode('chart');});"><i class="fa fa-fw fa-pie-chart"></i><br/>Pie Chart</button>
+                        </div>
+                        <div class="col-xs-4 text-center">
+                            <button style="margin-bottom: 25px; vertical-align: middle;" class="btn btn-default" onclick="cubesviewer.apply(function() { view1.params.xaxis='date_sale@daily:month'; view1.params.charttype='bars-vertical'; view1.setViewMode('chart');});"><i class="fa fa-fw fa-bar-chart"></i><br/>Bar Chart</button>
+                        </div>
+                        <div class="col-xs-4 text-center">
+                            <button style="margin-bottom: 25px; vertical-align: middle;" class="btn btn-default" onclick="cubesviewer.apply(function() { view1.params.xaxis='date_sale@daily:month'; view1.params.charttype='lines-stacked'; view1.setViewMode('chart');});"><i class="fa fa-fw fa-area-chart"></i><br/>Area Chart</button>
+                        </div>
+                        <div class="col-xs-4 text-center">
+                            <button style="margin-bottom: 25px; vertical-align: middle;" class="btn btn-default" onclick="cubesviewer.apply(function() { view1.setControlsHidden(! view1.params.controlsHidden); });"><i class="fa fa-fw fa-unlock-alt"></i><br />Toggle controls</button>
+                        </div>
+                        <div class="col-xs-4 text-center">
+                            <button style="margin-bottom: 25px; vertical-align: middle;" class="btn btn-default" onclick="cubesviewer.apply(function() { view1.setViewMode('explore'); });"><i class="fa fa-fw fa-arrow-circle-down"></i><br />Summary</button>
+                        </div>
+                        <div class="col-xs-4 text-center">
+                            <button style="margin-bottom: 25px; vertical-align: middle;" class="btn btn-default" onclick="cubesviewer.apply(function() { view1.setViewMode('series'); });"><i class="fa fa-fw fa-clock-o"></i><br />Data Series</button>
+                        </div>
+
+                    </div>
 
                 </div>
 
                 <div class="col-sm-12 col-md-7 col-lg-7">
 
-                    <div style="overflow-x: hidden;">
-                    <style>
-                    .nv-axis line {
-                        stroke: #ccc !important;
-                    }
-                    </style>
-                    <div style="margin-bottom: 10px; padding: 5px;" >
-                        <div id="cv-view-1" style="min-width: 200px;"></div>
-                    </div>
+                    <div style="margin-top: 15px;"> <!-- style="overflow-x: hidden" -->
+                        <style>
+                        .nv-axis line {
+                            stroke: #ccc !important;
+                        }
+                        </style>
+                        <div style="margin-bottom: 10px; padding: 5px;" >
+                            <div id="cv-view-1" style="min-width: 200px;"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -186,35 +229,9 @@
         </div>
     </div></div></div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12">
-                <h3>Documentation</h3>
-                <p>
-                    CubesViewer is an open source application hosted on
-                    Github. Please visit the main site for full up to
-                    date information: <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a>.
-                </p>
 
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12">
-
-                <h4>CubesViewer Demos</h4>
-
-                <ul>
-                    <li><a href="index.html">Embedded Views</a></li>
-                    <li><a href="cv.html">CubesViewer Explorer demo</a></li>
-                </ul>
-
-            </div>
-        </div>
-    </div>
-
+    <a id="download"></a>
+    <div class="container-fluid" style="background-color: white;"><div class="row-fluid" ><div class="col-xs-12">
     <div class="container">
 
         <div class="row">
@@ -234,6 +251,12 @@
             </div>
             <div style="clear: both; margin-bottom: 30px;" ></div>
 
+            <p>
+            You need a configured and running <a href="http://databrewery.org/cubes.html" target="_blank">Cubes Server</a> version 1.0.x
+            or later serving your data. Your Cubes model may need some extra configuration if you wish to use Cubes Viewer features like date
+            filters and range filters (see documentation below).
+            </p>
+
             <p>If you are trying or using CubesViewer, we'd love to hear about you, please
             <a style="vertical-align: bottom;" href="https://twitter.com/intent/tweet?button_hashtag=cubesviewer" class="twitter-hashtag-button" data-size="large" data-related="jjmontes">tweet #cubesviewer</a> !
             <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
@@ -245,16 +268,42 @@
         </div>
 
     </div>
+    </div></div></div>
 
+
+    <a id="documentation"></a>
+    <div class="container-fluid" style="background-color: white;"><div class="row-fluid" ><div class="col-xs-12">
+    <div class="container " >
+        <div class="row">
+            <div class="col-xs-12" style="margin-bottom: 25px;">
+                <h3>Documentation and Community</h3>
+                <p>
+                    CubesViewer is an open source application hosted on
+                    Github.
+                </p>
+                <p>
+                    Please visit <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer project site</a> for full up to
+                    date information: CubesViewer.
+                </p>
+
+            </div>
+        </div>
+    </div>
+    </div></div></div>
 
 
     <div class="container">
 
-        <div class="row" style="margin-bottom: 25px;">
+        <div class="row" style="margin-top: 25px; margin-bottom: 25px;">
             <div class="col-xs-12">
 
                 <footer>
-                  <small><a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a> &copy; <a href="https://twitter.com/jjmontes">Jose Juan Montes</a> 2012-2016</small>
+                    <div style="float: right; white-space: nowrap;">
+                        <p style="vertical-align: top;">
+                        <a href="https://github.com/jjmontesl/cubesviewer" target="_blank"><img title="Powered by CubesViewer" style="width: 50px; height: 25px;" src="img/cubesviewer-logo.png" /></a>
+                        </p>
+                    </div>
+                  <small><a href="https://www.cubesviewer.com">CubesViewer</a> &copy; <a href="https://twitter.com/jjmontes">Jose Juan Montes</a> 2012-2016</small>
                 </footer>
 
           </div>
@@ -270,18 +319,17 @@
   // Initialize CubesViewer when document is ready
   $(document).ready(function() {
 
-      var cubesUrl = "http://cubesdemo.anastutia.com";
+      var cubesUrl = "http://cubesdemo.cubesviewer.com";
 
       // Initialize CubesViewer system
       cubesviewer.init({
           cubesUrl: cubesUrl,
-          gaTrackEvents: true,
-          hideControls: true
+          gaTrackEvents: true
       });
 
       // Sample serialized view (Based on cubes-examples project data)
       var serializedView =
-          '{"cubename":"webshop_sales","name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+          '{"cubename":"webshop_sales","controlsHidden":true,"name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
 
       // Add views
       cubesviewer.apply(function() {
