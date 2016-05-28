@@ -115,7 +115,11 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 
 		jqxhr.fail(errCallback || cubesService.defaultRequestErrorHandler);
 
-		gaService.trackRequest(path);
+		try {
+			gaService.trackRequest(path);
+		} catch(e) {
+			$log.error("An error happened during CubesViewer event tracking: " + e)
+		}
 
 		return jqxhr;
 

@@ -52,6 +52,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 	this.studioScope = null;
 
 	viewsService.studioViewsService = this;
+	cubesviewerStudio.studioViewsService = this;
 
 	/**
 	 * Adds a new clean view of type "cube" given a cube name.
@@ -320,15 +321,14 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
     // Get main template from template cache and compile it
 	$http.get("studio/studio.html", { cache: $templateCache } ).then(function(response) {
 
-		var scope = angular.element(cvOptions.container).scope();
-
-		var templateScope = scope.$new();
+		//var scope = angular.element(document).scope();
+		var templateScope = $rootScope.$new();
 		$(cvOptions.container).html(response.data);
 
 		//templateCtrl = $controller("CubesViewerStudioController", { $scope: templateScope } );
 		//$(cvOptions.container).children().data('$ngControllerController', templateCtrl);
 
-		$compile($(cvOptions.container).contents())(scope);
+		$compile($(cvOptions.container).contents())(templateScope);
 	});
 
 }]);
@@ -362,11 +362,13 @@ function CubesViewerStudio() {
 	 * need to call this method. Instead, use your application Angular `config`
 	 * block to initialize the cvOptions constant with your settings,
 	 * and add the 'cv.studio' module as a dependency to your application.
+	 *
+	 * See the `cv-angular.html` example for further information.
 	 */
 	this.init = function(options) {
 		this._configure(options);
    		angular.element(document).ready(function() {
-   			angular.bootstrap(options.container, ['cv.studio']);
+   			angular.bootstrap(document, ['cv.studio']);
    		});
 	};
 

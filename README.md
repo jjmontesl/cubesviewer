@@ -25,7 +25,7 @@ Features:
 * Several charts and diagrams can be created
 * Explore, create data series, draw charts, see raw facts
 * Export data and images
-* Responsive and mobile friendly
+* Responsive design, tablet friendly
 * Undo / redo
 * Views can be embedded in other web sites
 * User Interface allows for multiple views on-screen
@@ -57,7 +57,7 @@ Requirements
 
 CubesViewer consists of two parts:
 
-**CubesViewer client** is a HTML5 application that runs on any modern browser.
+**CubesViewer client** is an HTML5 application that runs on any modern browser.
 It can run without server side support. **Simply download the package and open**
 `html/studio.html` in your favorite browser. Views can also be embedded in other sites.
 
@@ -99,8 +99,8 @@ Screenshots
 Support
 =======
 
-CubesViewer doesn't have a list on its own. Instead, please use
-the Cubes project mailing list:
+You can use the Cubes discuss group for CubesViewer related questions,
+and report bugs or features via CubesViewer issue tracker:
 
 * User group: http://groups.google.com/group/cubes-discuss
 * Report bugs: https://github.com/jjmontesl/cubesviewer/issues

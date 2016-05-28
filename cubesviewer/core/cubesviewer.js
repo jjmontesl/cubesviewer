@@ -200,7 +200,7 @@ function CubesViewer() {
 		var viewDirective = '<div class="cv-bootstrap"><div cv-view-cube view="view"></div></div>';
 		$(container).first().html(viewDirective);
 
-		var scope = angular.element(document).scope();
+		var scope = angular.element(document).scope().$root;
 		var templateScope = scope.$new();
 		templateScope.view = view;
 
@@ -222,6 +222,7 @@ function CubesViewer() {
 	 */
 	this.apply = function(routine) {
 		if (! angular.element(document).scope()) {
+			console.debug("Delaying");
 			setTimeout(function() { cubesviewer.apply(routine); }, 1000);
 		} else {
 			angular.element(document).scope().$apply(routine);

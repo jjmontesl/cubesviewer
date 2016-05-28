@@ -36,8 +36,8 @@
 
 "use strict";
 
-angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookies', 'cvOptions',
-                                                  function ($rootScope, $http, $cookies, cvOptions) {
+angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookies', '$log', 'cvOptions',
+                                                  function ($rootScope, $http, $cookies, $log, cvOptions) {
 
 	var gaService = this;
 
@@ -45,13 +45,13 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
 
 	this.initTime = new Date();
 
-	this.initialize = function() {};
-
-	this.enabled = cvOptions.gaTrackEvents;
+	this.initialize = function() {
+		if (cvOptions.gaTrackEvents) $log.debug("Google Analytics events tracking plugin enabled.")
+	};
 
 	this.trackRequest = function(path) {
 
-		if (! gaService.enabled) return;
+		if (! (cvOptions.gaTrackEvents)) return;
 		if ((((new Date()) - this.initTime) / 1000) < this.ignorePeriod) return;
 
 		// Track request, through Google Analytics events API
@@ -63,25 +63,26 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
 			pathParts = pathParts.slice(modelPos + 1);
 
 			if (pathParts[1] == "model") {
-				event = ['_trackEvent', 'CubesViewer', 'Model', pathParts[0], , true];
+				event = ['model', pathParts[0]];
 			} else if (pathParts[1] == "aggregate") {
-				event = ['_trackEvent', 'CubesViewer', 'Aggregate', pathParts[0], , true];
+				event = ['aggregate', pathParts[0]];
 			} else if (pathParts[1] == "facts") {
-				event = ['_trackEvent', 'CubesViewer', 'Facts', cubeOperation[0], , true];
+				event = ['facts', pathParts[0]];
 			} else if (pathParts[1] == "members") {
-				event = ['_trackEvent', 'CubesViewer', 'Dimension', cubeOperation[2], , true];
+				event = ['dimension', pathParts[2]];
 			}
 		}
 
-		console.debug(event);
+
 		if (event) {
-			if (typeof _gaq !== 'undefined') {
-				_gaq.push(event);
+			if (typeof ga !== 'undefined') {
+				ga('send', 'event', "CubesViewer", event[0], event[1]);
+				$log.debug("Tracking GA event: " + event[0] + "/" + event[1]);
 			} else {
-				console.debug("Cannot track CubesViewer events: GA object '_gaq' not available.")
+				$log.debug("Cannot track CubesViewer events: GA object 'ga' not available.")
 			}
 		} else {
-			console.debug("Unknown cubes operation, cannot be tracked by GA service: " + path)
+			$log.warn("Unknown cubes operation, cannot be tracked by GA service: " + path)
 		}
 
 	};

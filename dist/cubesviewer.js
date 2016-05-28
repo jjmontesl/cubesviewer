@@ -1123,7 +1123,11 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 
 		jqxhr.fail(errCallback || cubesService.defaultRequestErrorHandler);
 
-		gaService.trackRequest(path);
+		try {
+			gaService.trackRequest(path);
+		} catch(e) {
+			$log.error("An error happened during CubesViewer event tracking: " + e)
+		}
 
 		return jqxhr;
 
@@ -1644,7 +1648,7 @@ function CubesViewer() {
 		var viewDirective = '<div class="cv-bootstrap"><div cv-view-cube view="view"></div></div>';
 		$(container).first().html(viewDirective);
 
-		var scope = angular.element(document).scope();
+		var scope = angular.element(document).scope().$root;
 		var templateScope = scope.$new();
 		templateScope.view = view;
 
@@ -1666,6 +1670,7 @@ function CubesViewer() {
 	 */
 	this.apply = function(routine) {
 		if (! angular.element(document).scope()) {
+			console.debug("Delaying");
 			setTimeout(function() { cubesviewer.apply(routine); }, 1000);
 		} else {
 			angular.element(document).scope().$apply(routine);
@@ -5559,6 +5564,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 	this.studioScope = null;
 
 	viewsService.studioViewsService = this;
+	cubesviewerStudio.studioViewsService = this;
 
 	/**
 	 * Adds a new clean view of type "cube" given a cube name.
@@ -5827,15 +5833,14 @@ angular.module('cv.studio').run(['$rootScope', '$compile', '$controller', '$http
     // Get main template from template cache and compile it
 	$http.get("studio/studio.html", { cache: $templateCache } ).then(function(response) {
 
-		var scope = angular.element(cvOptions.container).scope();
-
-		var templateScope = scope.$new();
+		//var scope = angular.element(document).scope();
+		var templateScope = $rootScope.$new();
 		$(cvOptions.container).html(response.data);
 
 		//templateCtrl = $controller("CubesViewerStudioController", { $scope: templateScope } );
 		//$(cvOptions.container).children().data('$ngControllerController', templateCtrl);
 
-		$compile($(cvOptions.container).contents())(scope);
+		$compile($(cvOptions.container).contents())(templateScope);
 	});
 
 }]);
@@ -5869,11 +5874,13 @@ function CubesViewerStudio() {
 	 * need to call this method. Instead, use your application Angular `config`
 	 * block to initialize the cvOptions constant with your settings,
 	 * and add the 'cv.studio' module as a dependency to your application.
+	 *
+	 * See the `cv-angular.html` example for further information.
 	 */
 	this.init = function(options) {
 		this._configure(options);
    		angular.element(document).ready(function() {
-   			angular.bootstrap(options.container, ['cv.studio']);
+   			angular.bootstrap(document, ['cv.studio']);
    		});
 	};
 
@@ -6238,8 +6245,8 @@ angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', 
 
 "use strict";
 
-angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookies', 'cvOptions',
-                                                  function ($rootScope, $http, $cookies, cvOptions) {
+angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookies', '$log', 'cvOptions',
+                                                  function ($rootScope, $http, $cookies, $log, cvOptions) {
 
 	var gaService = this;
 
@@ -6247,13 +6254,13 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
 
 	this.initTime = new Date();
 
-	this.initialize = function() {};
-
-	this.enabled = cvOptions.gaTrackEvents;
+	this.initialize = function() {
+		if (cvOptions.gaTrackEvents) $log.debug("Google Analytics events tracking plugin enabled.")
+	};
 
 	this.trackRequest = function(path) {
 
-		if (! gaService.enabled) return;
+		if (! (cvOptions.gaTrackEvents)) return;
 		if ((((new Date()) - this.initTime) / 1000) < this.ignorePeriod) return;
 
 		// Track request, through Google Analytics events API
@@ -6265,25 +6272,26 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
 			pathParts = pathParts.slice(modelPos + 1);
 
 			if (pathParts[1] == "model") {
-				event = ['_trackEvent', 'CubesViewer', 'Model', pathParts[0], , true];
+				event = ['model', pathParts[0]];
 			} else if (pathParts[1] == "aggregate") {
-				event = ['_trackEvent', 'CubesViewer', 'Aggregate', pathParts[0], , true];
+				event = ['aggregate', pathParts[0]];
 			} else if (pathParts[1] == "facts") {
-				event = ['_trackEvent', 'CubesViewer', 'Facts', cubeOperation[0], , true];
+				event = ['facts', pathParts[0]];
 			} else if (pathParts[1] == "members") {
-				event = ['_trackEvent', 'CubesViewer', 'Dimension', cubeOperation[2], , true];
+				event = ['dimension', pathParts[2]];
 			}
 		}
 
-		console.debug(event);
+
 		if (event) {
-			if (typeof _gaq !== 'undefined') {
-				_gaq.push(event);
+			if (typeof ga !== 'undefined') {
+				ga('send', 'event', "CubesViewer", event[0], event[1]);
+				$log.debug("Tracking GA event: " + event[0] + "/" + event[1]);
 			} else {
-				console.debug("Cannot track CubesViewer events: GA object '_gaq' not available.")
+				$log.debug("Cannot track CubesViewer events: GA object 'ga' not available.")
 			}
 		} else {
-			console.debug("Unknown cubes operation, cannot be tracked by GA service: " + path)
+			$log.warn("Unknown cubes operation, cannot be tracked by GA service: " + path)
 		}
 
 	};
@@ -6537,7 +6545,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "                <li ng-click=\"toggleTwoColumn()\" ng-class=\"{ 'hidden-xs': ! cvOptions.studioTwoColumn, 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-columns\"></i> 2 column\n" +
     "                    <span class=\"label label-default pull-right\" ng-class=\"{ 'label-success': cvOptions.studioTwoColumn }\">{{ cvOptions.studioTwoColumn ? \"ON\" : \"OFF\" }}</span></a>\n" +
     "                </li>\n" +
-    "                <li ng-click=\"toggleHideControls()\" ng-class=\"{ 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-arrows-alt\"></i> Hide controls\n" +
+    "                <li ng-click=\"toggleHideControls()\" ng-class=\"{ 'disabled': studioViewsService.views.length == 0 }\"><a tabindex=\"0\"><i class=\"fa fa-fw fa-unlock-alt\"></i> Hide controls\n" +
     "                    <span class=\"label label-default pull-right\" ng-class=\"{ 'label-success': cvOptions.hideControls }\">{{ cvOptions.hideControls ? \"ON\" : \"OFF\" }}</span></a>\n" +
     "                </li>\n" +
     "\n" +
@@ -6561,7 +6569,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "                <button class=\"btn\" type=\"button\" title=\"2 column\" ng-disabled=\"studioViewsService.views.length == 0\" ng-class=\"cvOptions.studioTwoColumn ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleTwoColumn()\"><i class=\"fa fa-fw fa-columns\"></i></button>\n" +
     "             </div>\n" +
     "             <div class=\"form-group\" style=\"display: inline-block; margin-bottom: 0px;\">\n" +
-    "                <button class=\"btn\" type=\"button\" title=\"Hide controls\" ng-disabled=\"studioViewsService.views.length == 0\" ng-class=\"cvOptions.hideControls ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleHideControls()\"><i class=\"fa fa-fw fa-arrows-alt\"></i></button>\n" +
+    "                <button class=\"btn\" type=\"button\" title=\"Hide controls\" ng-disabled=\"studioViewsService.views.length == 0\" ng-class=\"cvOptions.hideControls ? 'btn-active btn-success' : 'btn-primary'\" ng-click=\"toggleHideControls()\"><i class=\"fa fa-fw fa-unlock-alt\"></i></button>\n" +
     "             </div>\n" +
     "\n" +
     "        </div>\n" +
