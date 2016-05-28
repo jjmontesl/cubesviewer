@@ -16,7 +16,7 @@ open source [Cubes server](http://databrewery.org/cubes.html) (an OLAP server in
 Purpose is to keep it simple while leveraging the web services provided by Cubes.
 
 **CubesViewer 2.0 is out** with tons of improvements! Check the
-[official site](https://www.cubesviewer.com/) and
+[official site](http://www.cubesviewer.com/) and
 the [release notes](https://github.com/jjmontesl/cubesviewer/blob/master/RELEASE-NOTES.md)!
 
 Features:
@@ -35,10 +35,12 @@ Features:
 Online Demos
 ------------
 
-* [CubesViewer Site](http://jjmontesl.github.io/cubesviewer/index.html)
+* [CubesViewer Site](http://www.cubesviewer.com)
+* [CubesViewer Studio](http://www.cubesviewer.com/studio.html) with the full application
 
-* [CubesViewer Studio](http://jjmontesl.github.io/cubesviewer/studio.html) with the full application
+<!---
 * [CubesViewer Embedded Views](http://jjmontesl.github.io/cubesviewer/views.html) showing embedded views
+-->
 
 Download
 --------
@@ -46,8 +48,8 @@ Download
 Latest CubesViewer stable release is 2.0.1:
 
 * CubesViewer 2.0.1
-  * [cubesviewer-2.0.1.zip](https://github.com/jjmontesl/cubesviewer/archive/cubesviewer-2.0.1.zip)
-  * [cubesviewer-server-2.0.1.zip](https://github.com/jjmontesl/cubesviewer-server/archive/cubesviewer-server-2.0.1.zip)
+  * [cubesviewer-v2.0.1.zip](https://github.com/jjmontesl/cubesviewer/archive/v2.0.1-beta.zip)
+  * [cubesviewer-server-v2.0.1.zip](https://github.com/jjmontesl/cubesviewer-server/archive/v2.0.1-beta.zip)
   * [Changelog](https://github.com/jjmontesl/cubesviewer/blob/master/CHANGES.txt)
   * Works with *Cubes 1.0.x*
 
@@ -92,7 +94,6 @@ based on the analytical data available from the server.
 Screenshots
 -----------
 
-![CubesViewer Chart Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-chart-1.png "CubesViewer Chart")
 ![CubesViewer Explore Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-explore-1.png "CubesViewer Explore")
 ![CubesViewer Chart Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-chart-2.png "CubesViewer Chart")
 

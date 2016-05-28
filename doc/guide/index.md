@@ -28,3 +28,5 @@ CubesViewer Documentation
 
 Please see the README.md file for information on collaborating with CubesViewer project!
 
+![CubesViewer Chart Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-chart-1.png "CubesViewer Chart")
+

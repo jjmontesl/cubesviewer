@@ -81,6 +81,7 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
 
 [2.1]
 
+    * Update screenshots showing map chart.
     * Chart series view/hide selection is serialized using label instead of key. Normalize.
     * Issue #55 (chart shows measure name, not measure label).
     * Fix submenu timer hack: is causing issues already. Watch contents and perhaps debounce menu activation?
@@ -110,7 +111,6 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
 
     * Site (second iteration). Show a couple of charts view, a table, and an enabled-controls view.
       SAME views to be automatically opened in the explorer sample.
-    * Update screenshots?
     * Add product subcategory to demo data. Add some formatters (correctly from dims via CubeETL).
     * Update & simplify demo views JSON.
     * Size change when switching views is very irritating. Hack that (fix height during changes/reloads?).
