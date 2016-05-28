@@ -17,7 +17,7 @@ Purpose is to keep it simple while leveraging the web services provided by Cubes
 
 **CubesViewer 2.0 is out** with tons of improvements! Check the
 [official site](http://www.cubesviewer.com/) and
-the [release notes](https://github.com/jjmontesl/cubesviewer/blob/master/RELEASE-NOTES.md)!
+the [release notes](http://github.com/jjmontesl/cubesviewer/blob/master/RELEASE-NOTES.md)!
 
 Features:
 
@@ -50,7 +50,7 @@ Latest CubesViewer stable release is 2.0.1:
 * CubesViewer 2.0.1
   * [cubesviewer-v2.0.1.zip](https://github.com/jjmontesl/cubesviewer/archive/v2.0.1-beta.zip)
   * [cubesviewer-server-v2.0.1.zip](https://github.com/jjmontesl/cubesviewer-server/archive/v2.0.1-beta.zip)
-  * [Changelog](https://github.com/jjmontesl/cubesviewer/blob/master/CHANGES.txt)
+  * [Changelog](http://github.com/jjmontesl/cubesviewer/blob/master/CHANGES.txt)
   * Works with *Cubes 1.0.x*
 
 
@@ -65,7 +65,7 @@ It can run without server side support. **Simply download the package and open**
 
 CubesViewer also features an optional **server side application**
 which provides a full web application and supports features like sharing/saving views.
-This project lives on a separate repository: [CubesViewer Server](https://github.com/jjmontesl/cubesviewer-server)
+This project lives on a separate repository: [CubesViewer Server](http://github.com/jjmontesl/cubesviewer-server)
 (not to be confused with Cubes Server itself).
 
 You need a configured and running [Cubes Server](http://databrewery.org/cubes.html) version 1.0.x or later.
@@ -85,10 +85,10 @@ This tool allows users to inspect the different dimensions, measures and
 aggregated data in different ways, allowing you to build tables and charts
 based on the analytical data available from the server.
 
-* [CubesViewer Quick Start](https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-quickstart.md)
-* [CubesViewer Documentation](https://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/index.md)
+* [CubesViewer Quick Start](http://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/cubesviewer-quickstart.md)
+* [CubesViewer Documentation](http://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/index.md)
 
-* [CubesViewer 2.0 Release Notes](https://github.com/jjmontesl/cubesviewer/blob/master/RELEASE-NOTES.md)
+* [CubesViewer 2.0 Release Notes](http://github.com/jjmontesl/cubesviewer/blob/master/RELEASE-NOTES.md)
 
 
 Screenshots
@@ -104,15 +104,15 @@ You can use the Cubes discuss group for CubesViewer related questions,
 and report bugs or features via CubesViewer issue tracker:
 
 * User group: http://groups.google.com/group/cubes-discuss
-* Report bugs: https://github.com/jjmontesl/cubesviewer/issues
+* Report bugs: http://github.com/jjmontesl/cubesviewer/issues
 
 Source
 ======
 
 Github source repository:
 
-* https://github.com/jjmontesl/cubesviewer
-* https://github.com/jjmontesl/cubesviewer-server
+* http://github.com/jjmontesl/cubesviewer
+* http://github.com/jjmontesl/cubesviewer-server
 
 About versioning:
 
@@ -128,7 +128,7 @@ is an open source project and could grow up best with the help of fellow coders.
 
 You can collaborate:
 
-* If you find bugs, please [file an issue](https://github.com/jjmontesl/cubesviewer/issues).
+* If you find bugs, please [file an issue](http://github.com/jjmontesl/cubesviewer/issues).
 * If you have a feature request, also file an issue.
 * If you fix bugs, please do send a pull request.
 * If you make reusable changes, please document those and send a pull request.

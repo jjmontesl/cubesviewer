@@ -81,7 +81,9 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
 
 [2.1]
 
-    * Update screenshots showing map chart.
+    * Update screenshots showing map chart (ie from views.html).
+    * Create views.html page for site, showing a full story w/ source code ("start with a blank cube", "exploration", "series", "chart", "map"...)
+
     * Chart series view/hide selection is serialized using label instead of key. Normalize.
     * Issue #55 (chart shows measure name, not measure label).
     * Fix submenu timer hack: is causing issues already. Watch contents and perhaps debounce menu activation?
