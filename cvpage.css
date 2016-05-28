@@ -1,0 +1,60 @@
+/*
+ * Cubesviewer sites CSS
+ * This file must not be included needed if you are embedding cubesviewer in your site, as it
+ * contains global CSS selectors.
+ */
+
+html {
+    font-size: 13px;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+body {
+    background: #e7e7e7 url(img/gh/highlight-bg.jpg) 50% 0 no-repeat;
+    min-height: 595px;
+    font-size: 16px;
+}
+
+img.cv-logo {
+	margin: 0px;
+	height: 80px;
+	width: 170px;
+}
+
+#cubesviewer {
+    margin-top: 10px;
+}
+
+#download-zip span {
+  background: transparent url(img/gh/zip-icon.png) 2px 50% no-repeat;
+  padding-left: 50px;
+  padding-right: 10px;
+}
+#download-tar-gz span {
+  background: transparent url(img/gh/tar-gz-icon.png) 2px 50% no-repeat;
+  padding-left: 50px;
+  padding-right: 10px;
+}
+#view-on-github span {
+  background: transparent url(img/gh/octocat-icon.png) 2px 50% no-repeat;
+  padding-left: 50px;
+  padding-right: 10px;
+}
+iframe#twitter-widget-0 {
+	vertical-align: middle;
+}
+
+.bulletlist li:before {
+    font-family: 'FontAwesome';
+    font-size: 8px;
+    vertical-align: middle;
+    content: "";
+    margin:0 5px 0 -15px;
+    color: black;
+}
+.bulletlist li { margin-left: -15px; }
+.bulletlist ul { list-style-type: none; }
+
+.navbar-default .navbar-nav > li > a {
+	  color: white;
+}

@@ -2,7 +2,7 @@
 <html>
   <head>
 
-    <title>CubesViewer - Visual OLAP analysis and reporting tool</title>
+    <title>CubesViewer - Visual OLAP analysis and exploration tool</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
     <link rel="icon" type="image/png" href="img/favicon/favicon-32x32.png" sizes="32x32">
@@ -12,19 +12,20 @@
     <link rel="icon" type="image/png" href="img/favicon/favicon-16x16.png" sizes="16x16">
     <link rel="shortcut icon" href="img/favicon/favicon.ico">
 
-    <!-- <link rel="stylesheet" href="../lib/bootstrap/bootstrap.css" /> -->
+    <link rel="stylesheet" href="lib/bootstrap/bootstrap.css" />
     <link rel="stylesheet" href="lib/angular-ui-grid/ui-grid.css" />
     <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.css" />
     <link rel="stylesheet" href="lib/nvd3/nv.d3.css" />
     <link rel="stylesheet" href="lib/cubesviewer/cubesviewer.css" />
-    <link rel="stylesheet" href="lib/bootstrap-submenu/css/bootstrap-submenu.css" />
+    <link rel="stylesheet" href="lib/bootstrap-submenu/css/bootstrap-submenu.css" /> <!-- after cubesviewer.css! -->
 
-    <link rel="stylesheet" href="cvapp.css" />
+    <link rel="stylesheet" href="cvpage.css" />
 
     <script src="lib/jquery/jquery.js"></script>
     <script src="lib/bootstrap/bootstrap.js"></script>
     <script src="lib/bootstrap-submenu/js/bootstrap-submenu.js"></script>
     <script src="lib/angular/angular.js"></script>
+    <script src="lib/angular-cookies/angular-cookies.js"></script>
     <script src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="lib/angular-ui-grid/ui-grid.js"></script>
     <script src="lib/d3/d3.js"></script>
@@ -32,160 +33,283 @@
     <script src="lib/flotr2/flotr2.min.js"></script>
     <script src="lib/cubesviewer/cubesviewer.js"></script>
 
+</head>
 
-<script type="text/javascript">
+<body>
 
-    //Reference to the created view
-    var view1 = null;
+    <div class="container-fluid" ><div class="row-fluid" ><div class="col-xs-12">
+        <div class="container">
+            <div class="row">
+                  <div class="col-xs-12">
+                      <header>
+                          <div style="float: left;"><img class="cv-logo" style="height: 60px; width: 130px;" alt="CubesViewer" src="img/cubesviewer-logo.png" /></div>
+                          <h1 style="margin-top: 10px; margin-bottom: 0px;"><b>CubesViewer</b></h1>
+                          <h4 style="margin-top: 0px;">Data exploration and visualization tool</h4>
+                      </header>
+                  </div>
+            </div>
+        </div>
+    </div></div></div>
 
-    // Initialize CubesViewer when document is ready
-    $(document).ready(function() {
+    <div class="container-fluid" style="background-color: #337AB7; -webkit-box-shadow: 0px -3px 10px 0px rgba(0,0,0,0.7); -moz-box-shadow: 0px -3px 10px 0px rgba(0,0,0,0.7); box-shadow: 0px -3px 10px 0px rgba(0,0,0,0.7);"><div class="row-fluid" ><div class="col-xs-12">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <nav class="navbar navbar-default" style="margin-bottom: 0px; background-color: inherit; border-color: transparent;">
+                          <div class="container-fluid">
+                            <!-- Brand and toggle get grouped for better mobile display -->
+                            <div class="navbar-header">
+                              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                              </button>
+                              <a class="navbar-brand" href="#"></a>
+                            </div>
 
-        var cubesUrl = "http://cubesdemo.anastutia.com";
+                            <!-- Collect the nav links, forms, and other content for toggling -->
+                            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                              <ul class="nav navbar-nav navbar-right" style="background-color: none;">
+                                <li><a href="#"><i class="fa fa-fw fa-star-o"></i> Features</a></li>
+                                <li><a href="#"><i class="fa fa-fw fa-cogs"></i> Demos</a></li>
+                                <li><a href="#"><i class="fa fa-fw fa-download"></i> Download</a></li>
+                                <li><a href="#"><i class="fa fa-fw fa-book"></i> Documentation</a></li>
+                                <li><a href="#"><i class="fa fa-fw fa-question"></i> Support</a></li>
+                              </ul>
+                            </div><!-- /.navbar-collapse -->
+                          </div><!-- /.container-fluid -->
+                        </nav>
+                </div>
+            </div>
+        </div>
+    </div></div></div>
 
-        // Initialize CubesViewer system
-        cubesviewer.init({
-            cubesUrl: cubesUrl
-        });
+    <div class="container-fluid" style="margin: 0px; background-image: url(img/cubesviewer-laptop-tablet.jpg); background-size: cover; background-position: center 35%; height: 350px; max-height: 350px;"><div class="row-fluid" ><div class="col-xs-12">
+    </div></div></div>
 
-        // Sample serialized view (Based on cubes-examples project data)
-        var serializedView =
-            '{"cubename":"webshop_sales","name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+    <div class="container-fluid" style="background-color: white;"><div class="row-fluid" ><div class="col-xs-12">
+        <div class="container">
+            <div class="row" style="margin-top: 30px; margin-bottom: 20px;">
+                <div class="col-sm-12 col-md-6">
 
-        // Add views
+                    <p>
+                        <b>CubesViewer</b>
+                        is a visual, web-based application for
+                        exploring and analyzing OLAP databases served by the
+                        <a href="http://databrewery.org/">Cubes</a> OLAP Framework.
+                    </p>
+                    <p>
+                        CubesViewer can be used for data exploration and data auditory,
+                        generation of reports, chart design and embedding,
+                        and as a (simple) company-wide analytics application.
+                    </p>
+                </div>
+            </div>
 
-        // You can use a Javascript object with view arguments (ie. "cubename")
-        //view1 = cubesviewer.views.createView($('#cv-view1'), "cube", { "cubename": "webshop_visits" });
 
-        // You can use a serialized JSON string of the object with view arguments
-        setTimeout(function() {
-            view1 = cubesviewer.createView('#cv-view-1', "cube", serializedView);
-        }, 0);
+            <div class="row" style="margin-top: 5px; margin-bottom: 5px;">
+                <div class="col-xs-12 col-sm-6 col-md-3 text-center">
+                    <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-cube"></i> OLAP Browser</h4>
+                    Explore data across several dimensions. Filter and drill down to discover new facts.
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3 text-center">
+                    <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-area-chart"></i> Charts</h4>
+                    Several charts and diagrams can be created.
+                </div>
+                <div class="clearfix hidden-md hidden-lg"></div>
+                <div class="col-xs-12 col-sm-6 col-md-3 text-center">
+                    <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-clock-o"></i> Series</h4>
+                    Define and operate with data series to highlight features in your data.
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3 text-center">
+                    <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-picture-o"></i> Export</h4>
+                    Export data and charts.
+                </div>
+            </div><div class="row" style="margin-top: 5px; margin-bottom: 5px;">
+                <div class="col-xs-12 col-sm-6 col-md-3 text-center">
+                    <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-mobile"></i> Responsive</h4>
+                    Responsive design, tablet friendly
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3 text-center">
+                    <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-undo"></i> Undo, redo, clone</h4>
+                    Undo, redo, clone. CubesViewer gives you freedom
+                    to easily try different variations of a view.
+                </div>
+                <div class="clearfix hidden-md hidden-lg"></div>
+                <div class="col-xs-12 col-sm-6 col-md-3 text-center">
+                    <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-file-o"></i> Embed views</h4>
+                    Views can be embedded in other web sites
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3 text-center">
+                    <h4 style="color: #FF2A2A;"><i class="fa fa-fw fa-server"></i> CubesViewer Server</h4>
+                    Optional multi-user server-side backend for saving/sharing views
+                </div>
+            </div>
 
+        </div>
+    </div></div></div>
 
-    });
+    <div class="container-fluid"><div class="row-fluid" ><div class="col-xs-12">
+        <div class="container">
+            <div class="row" >
+                <div class="col-sm-12 col-md-5 col-lg-5">
 
-</script>
+                    <h3>Embedded Views</h3>
 
-  </head>
+                    <p>CubesViewer can be embedded fully or partially
+                        into other websites. This is useful to show dynamic
+                        analytics or charts into any web page, like this chart here.</p>
 
-  <body>
-    <div id="container">
-      <div class="inner">
+                    <p>You can use the menu and interface to navigate
+                        this dataset (composed of fictional sales along
+                        years 2014-2015):</p>
 
-        <header>
-          <div style="float: right;"><img alt="CubesViewer" src="img/cubesviewer-logo.png" /></div>
-          <h1>CubesViewer</h1>
-          <h2>Visual data analysis<br/> and explore tool</h2>
-        </header>
-
-        <hr>
-
-            <section id="main_content">
-
-                <h3>CubesViewer Demos</h3>
-
-                <p>Welcome to <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a>
-                demos.</p>
-
-                <p>
-                    <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a>
-                    is a visual, web-based tool application for
-                    exploring and analyzing OLAP databases served by the
-                    Cubes OLAP Framework.
-                <p>
-                <p>
-                    CubesViewer can be used for data exploration and data auditory,
-                    generation of reports, chart design and embedding,
-                    and as a (simple) company-wide analytics application.
-                <p>
-
-                <ul>
-                <li><a href="index.html">Embedded View demo</a> <i>(this page)</i></li>
-                <li><a href="cv.html">CubesViewer Explorer demo</a></li>
-                </ul>
-
-                <h3>Embedded View Demo</h3>
-
-                <p>CubesViewer can be embedded fully or partially
-                    into other websites. This is useful to show dynamic
-                    analytics or charts into any web page, like shown
-                    below</p>
-
-                <p>You can use the menu and interface to navigate
-                    this dataset (composed of fictional sales along
-                    years 2014-2015):</p>
-
-                <div style="margin-bottom: 10px; padding: 5px;" >
-                    <div id="cv-view-1" style="min-width: 400px;"></div>
                 </div>
 
-                <br />
+                <div class="col-sm-12 col-md-7 col-lg-7">
 
-                <h3>Full documentation and information</h3>
+                    <div style="overflow-x: hidden;">
+                    <style>
+                    .nv-axis line {
+                        stroke: #ccc !important;
+                    }
+                    </style>
+                    <div style="margin-bottom: 10px; padding: 5px;" >
+                        <div id="cv-view-1" style="min-width: 200px;"></div>
+                    </div>
+                    </div>
+                </div>
 
+            </div>
+        </div>
+    </div></div></div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h3>Documentation</h3>
                 <p>
                     CubesViewer is an open source application hosted on
                     Github. Please visit the main site for full up to
                     date information: <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a>.
                 </p>
 
-            </section>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+
+                <h4>CubesViewer Demos</h4>
+
+                <ul>
+                    <li><a href="index.html">Embedded Views</a></li>
+                    <li><a href="cv.html">CubesViewer Explorer demo</a></li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-xs-12">
+
 
             <h3>Download</h3>
             <section id="downloads" class="clearfix">
 
             <div>
-                <a
-                    href="https://github.com/jjmontesl/cubesviewer/zipball/master"
-                    id="download-zip" class="button"><span>Download
-                        .zip</span></a>
-                <a
-                    href="https://github.com/jjmontesl/cubesviewer/tarball/master"
-                    id="download-tar-gz" class="button"><span>Download
-                        .tar.gz</span></a>
-                <a
-                    href="https://github.com/jjmontesl/cubesviewer"
-                    id="view-on-github" class="button"><span>View
-                        on GitHub</span></a>
+                <a href="https://github.com/jjmontesl/cubesviewer/zipball/master"
+                    id="download-zip" class="btn btn-primary"><span>Download .zip</span></a>
+                <a href="https://github.com/jjmontesl/cubesviewer/tarball/master"
+                    id="download-tar-gz" class="btn btn-primary"><span>Download .tar.gz</span></a>
+                <a href="https://github.com/jjmontesl/cubesviewer"
+                    id="view-on-github" class="btn btn-success"><span>Fork me at GitHub</span></a>
             </div>
             <div style="clear: both; margin-bottom: 30px;" ></div>
 
-            <p>If you are using or trying CubesViewer, we'd love to hear from you! (tweet: #cubesviewer)<br /><br/>
-            <a href="https://twitter.com/intent/tweet?button_hashtag=cubesviewer" class="twitter-hashtag-button" data-size="large" data-related="jjmontes">Tweet #cubesviewer</a>
+            <p>If you are trying or using CubesViewer, we'd love to hear about you, please
+            <a style="vertical-align: bottom;" href="https://twitter.com/intent/tweet?button_hashtag=cubesviewer" class="twitter-hashtag-button" data-size="large" data-related="jjmontes">tweet #cubesviewer</a> !
             <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
             </p>
 
             </section>
 
-            <footer>
-          <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a> created and maintained by <a href="https://github.com/jjmontesl">jjmontesl</a><br>
-        </footer>
+            </div>
+        </div>
 
-      </div>
+    </div>
+
+
+
+    <div class="container">
+
+        <div class="row" style="margin-bottom: 25px;">
+            <div class="col-xs-12">
+
+                <footer>
+                  <small><a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a> &copy; <a href="https://twitter.com/jjmontes">Jose Juan Montes</a> 2012-2016</small>
+                </footer>
+
+          </div>
+        </div>
+
     </div>
 
 <script type="text/javascript">
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-6169223-4']); // jjmontesl.github.io
-  _gaq.push(['_trackPageview']);
+  //Reference to the created view
+  var view1 = null;
 
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
+  // Initialize CubesViewer when document is ready
+  $(document).ready(function() {
 
+      var cubesUrl = "http://cubesdemo.anastutia.com";
+
+      // Initialize CubesViewer system
+      cubesviewer.init({
+          cubesUrl: cubesUrl,
+          gaTrackEvents: true,
+          hideControls: true
+      });
+
+      // Sample serialized view (Based on cubes-examples project data)
+      var serializedView =
+          '{"cubename":"webshop_sales","name":"Cube Webshop / Sales","mode":"chart","drilldown":["country:continent"],"cuts":[],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product@product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+
+      // Add views
+      cubesviewer.apply(function() {
+    	  view1 = cubesviewer.createView('#cv-view-1', "cube", serializedView);
+      });
+
+  });
+
+</script>
+
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6169223-7', 'auto');  // www.cubesviewer.com
+ga('send', 'pageview');
+
+</script>
+<script>
   /*
   function eventLogTimeGoogleAnalytics() {
       _gaq.push(['_trackEvent', 'Time', 'Ping']);
   }
   setInterval( eventLogTimeGoogleAnalytics, 30000 );
   */
-
 </script>
-
 
   </body>
 </html>

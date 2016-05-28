@@ -2,7 +2,96 @@
 <html>
   <head>
 
-    <title>CubesViewer - Visual OLAP analysis and reporting tool</title>
+    <title>CubesViewer Studio - Demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link rel="icon" type="image/png" href="img/favicon/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-194x194.png" sizes="194x194">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="img/favicon/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-16x16.png" sizes="16x16">
+    <link rel="shortcut icon" href="img/favicon/favicon.ico">
+
+    <link rel="stylesheet" href="lib/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" href="lib/angular-ui-grid/ui-grid.css" />
+    <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="lib/nvd3/nv.d3.css" />
+    <link rel="stylesheet" href="lib/cubesviewer/cubesviewer.css" />
+    <link rel="stylesheet" href="lib/bootstrap-submenu/css/bootstrap-submenu.css" /> <!-- after cubesviewer.css! -->
+
+    <link rel="stylesheet" href="cvpage.css" />
+
+    <script src="lib/jquery/jquery.js"></script>
+    <script src="lib/bootstrap/bootstrap.js"></script>
+    <script src="lib/bootstrap-submenu/js/bootstrap-submenu.js"></script>
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/angular-cookies/angular-cookies.js"></script>
+    <script src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="lib/angular-ui-grid/ui-grid.js"></script>
+    <script src="lib/d3/d3.js"></script>
+    <script src="lib/nvd3/nv.d3.js"></script>
+    <script src="lib/flotr2/flotr2.min.js"></script>
+    <script src="lib/cubesviewer/cubesviewer.js"></script>
+
+  </head>
+
+  <body>
+
+      <div class="container-fluid" ><div class="row-fluid" ><div class="col-xs-12">
+          <div class="header">
+              <div style="float: left;"><img class="cv-logo" style="height: 60px; width: 130px;" alt="CubesViewer" src="img/cubesviewer-logo.png" /></div>
+              <h1 style="margin-top: 10px; margin-bottom: 0px;"><b>CubesViewer</b></h1>
+              <div style="display: inline-block;">
+                  <h4 style="margin-top: 0px; margin-bottom: 0px;">Data exploration and visualization tool</h4>
+                  <small style="margin-top: 0px;">Demo version (<a href="https://github.com/jjmontesl/cubesviewer-server" target="_blank">server-side features</a> are not available).</small>
+              </div>
+          </div>
+      </div></div></div>
+
+      <div class="container-fluid" style="margin-top: 25px;" ><div class="row-fluid" ><div class="col-xs-12">
+
+            <section id="main_content">
+                <p>Welcome to <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a>
+                Explorer Demo. This is a visual, web-based tool application for exploring and analyzing
+                data. CubesViewer can be used for data exploration and data auditory,
+                generation of reports, chart design and embedding,
+                and as a (simple) company-wide analytics application.
+                This demo shows a reduced set of the full applicaton features.</p>
+                <p>
+
+                <p>You can use the menu and interface to navigate this example dataset, which is composed of fictional
+                   sales of a web and also fictional web visit data.</p>
+
+                <p> <span style="font-weight: bold;">Explore the example views, or create a new
+                   view from scratch selecting "Cubes" from the top menu. New views are added at the bottom.</span>
+                </p>
+            </section>
+
+            <p><span style="font-weight: bold;">Learn more! </span>
+                <a style="margin-left: 20px;" href="index.html">CubesViewer Home</a>
+                <a style="margin-left: 20px;" href="https://github.com/jjmontesl/cubesviewer/">CubesViewer at Github</a>
+                <a style="margin-left: 20px;" href="http://cubes.databrewery.org/">Cubes OLAP Server</a>
+            </p>
+
+            <hr>
+
+            <!-- Cubes Viewer container -->
+            <div id="cubesviewer">
+            </div>
+
+      </div></div></div>
+
+        <div class="container-fluid">
+            <div class="row-fluid" style="margin-bottom: 25px;">
+                <div class="col-xs-12">
+                    <footer>
+                      <small><a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a> &copy; <a href="https://twitter.com/jjmontes">Jose Juan Montes</a> 2012-2016</small>
+                    </footer>
+                </div>
+            </div>
+        </div>
+
+
 
 <script type="text/javascript">
 
@@ -10,127 +99,57 @@
     $(document).ready(function() {
 
         //var cubesUrl = prompt ("Enter your Cubes Server URL", "http://localhost:5000");
-        var cubesUrl = "http://cubesdemo.anastutia.com";
+        var cubesUrl = "http://cubesdemo.cubesviewer.com";
 
-        // Add views
-        $(document).bind("cubesviewerModelLoaded", { }, function() {
-            $('.cv-demo-example-view').slice(0, 3).click();
+        cubesviewerStudio.init({
+            cubesUrl: cubesUrl,
+            container: '#cubesviewer',
+            gaTrackEvents: true
         });
 
-        cubesviewer.init({
-            cubesUrl: cubesUrl
+        cubesviewer.apply(function() {
+
+        	var serialized = null;
+
+        	serialized = '{"cubename":"webshop_sales","name":"Product sales monthly","mode":"chart","drilldown":["product:product_category"],"cuts":[],"datefilters":[],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+            var view1 = cubesviewerStudio.studioViewsService.addViewObject(serialized);
+
+            serialized = '{"cubename":"webshop_sales","name":"Product sales per region","mode":"chart","drilldown":["product:product_category"],"cuts":[],"datefilters":[],"rangefilters":[],"xaxis":"country:continent","yaxis":"price_total_sum","charttype":"bars-vertical","columnHide":{},"columnWidths":{},"columnSort":{}}';
+            var view2 = cubesviewerStudio.studioViewsService.addViewObject(serialized);
+
+            serialized = '{"cubename":"webshop_sales","name":"Product sales quarterly filtered","mode":"series","drilldown":["product:product_product"],"cuts":[{"dimension":"country@contcountry","value":"europe;north_america;south_america"}],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:quarter","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
+            var view3 = cubesviewerStudio.studioViewsService.addViewObject(serialized);
+
+            serialized = '{"cubename":"webshop_visits","name":"Web visits per country","mode":"chart","drilldown":["country:country"],"cuts":[],"datefilters":[{"dimension":"date_visit@daily","mode":"auto-last12m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_visit@daily:month","yaxis":"pageviews_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"browser","disabled":{"Chrome":false,"Firefox":false,"Lynx":false}}}';
+            var view4 = cubesviewerStudio.studioViewsService.addViewObject(serialized);
+
+            serialized = '{"cubename":"webshop_visits","name":"Web visits per browser","mode":"chart","drilldown":["browser"],"cuts":[],"datefilters":[],"rangefilters":[],"xaxis":"date_visit@daily:month","yaxis":"pageviews_sum","charttype":"lines","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"browser","disabled":{"Chrome":false,"Firefox":false,"Lynx":false}}}';
+            var view5 = cubesviewerStudio.studioViewsService.addViewObject(serialized);
         });
-
-        cubesviewer.gui.init({
-            container: $('#cubesviewer').get(0)
-        });
-
-        // Start Cubesviewer system
-        cubesviewer.refresh();
-
-        $('.cv-gui-panel').sticky({topSpacing:0});
-
-
-
-        serialized = '{"cubename":"webshop_sales","name":"Product sales monthly","mode":"chart","drilldown":["product:product_category"],"cuts":[],"datefilters":[],"rangefilters":[],"xaxis":"date_sale@daily:month","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
-        var view = cubesviewer.gui.addViewObject(serialized);
-        cubesviewer.views.redrawView (view);
-
-
-        serialized = '{"cubename":"webshop_sales","name":"Product sales per region","mode":"chart","drilldown":["product:product_category"],"cuts":[],"datefilters":[],"rangefilters":[],"xaxis":"country:continent","yaxis":"price_total_sum","charttype":"bars-vertical","columnHide":{},"columnWidths":{},"columnSort":{}}';
-        var view = cubesviewer.gui.addViewObject(serialized);
-        cubesviewer.views.redrawView (view);
-
-        serialized = '{"cubename":"webshop_sales","name":"Product sales quarterly filtered","mode":"series","drilldown":["product:product_product"],"cuts":[{"dimension":"country@contcountry","value":"europe;north_america;south_america"}],"datefilters":[{"dimension":"date_sale@daily","mode":"auto-last24m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_sale@daily:quarter","yaxis":"price_total_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"product:product_category","disabled":{"Books":false,"Sports":false,"Various":false,"Videos":false}}}';
-        var view = cubesviewer.gui.addViewObject(serialized);
-        cubesviewer.views.redrawView (view);
-
-        serialized = '{"cubename":"webshop_visits","name":"Web visits per country","mode":"chart","drilldown":["country:country"],"cuts":[],"datefilters":[{"dimension":"date_visit@daily","mode":"auto-last12m","date_from":"","date_to":""}],"rangefilters":[],"xaxis":"date_visit@daily:month","yaxis":"pageviews_sum","charttype":"lines-stacked","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"browser","disabled":{"Chrome":false,"Firefox":false,"Lynx":false}}}';
-        var view = cubesviewer.gui.addViewObject(serialized);
-        cubesviewer.views.redrawView (view);
-
-    	serialized = '{"cubename":"webshop_visits","name":"Web visits per browser","mode":"chart","drilldown":["browser"],"cuts":[],"datefilters":[],"rangefilters":[],"xaxis":"date_visit@daily:month","yaxis":"pageviews_sum","charttype":"lines","columnHide":{},"columnWidths":{},"columnSort":{},"chart-barsvertical-stacked":true,"chart-disabledseries":{"key":"browser","disabled":{"Chrome":false,"Firefox":false,"Lynx":false}}}';
-    	var view = cubesviewer.gui.addViewObject(serialized);
-        cubesviewer.views.redrawView (view);
 
     });
 
 </script>
 
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-  </head>
+ga('create', 'UA-6169223-7', 'auto');  // www.cubesviewer.com
+ga('send', 'pageview');
 
-  <body>
-    <div id="container">
-      <div class="inner" style="width: 96%;">
-
-        <header>
-          <div style="float: right;"><img alt="CubesViewer" src="static/img/cubesviewer-logo.png" style="width: 60%; height: 60%;" /></div>
-          <h1>CubesViewer</h1>
-          <h2>Visual data analysis and explore tool</h2>
-        </header>
-
-        <section id="main_content">
-            <p>Welcome to <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a>
-            Explorer Demo. This is a visual, web-based tool application for exploring and analyzing
-            data. CubesViewer can be used for data exploration and data auditory,
-            generation of reports, chart design and embedding,
-            and as a (simple) company-wide analytics application.
-            This demo shows a reduced set of the full applicaton features.</p>
-            <p>
-
-            <p>You can use the menu and interface to navigate this example dataset, which is composed of fictional
-               sales of a web store during years 2012-2013 and also fictional web visit data.</p>
-
-            <p> <span style="font-weight: bold;">Explore the example views, or create a new
-               view from scratch selecting "Cubes" from the top menu. New views are added at the bottom.</span>
-            </p>
-        </section>
-
-        <p><span style="font-weight: bold;">Learn more! </span>
-            <a style="margin-left: 20px;" href="index.html">CubesViewer Demo Site</a>
-            <a style="margin-left: 20px;" href="https://github.com/jjmontesl/cubesviewer/">CubesViewer Main Site</a> at Github
-            <a style="margin-left: 20px;" href="http://cubes.databrewery.org/">Cubes OLAP Server</a>
-        </p>
-
-        <hr>
-
-        <!-- Cubes Viewer GUI container -->
-        <div id="cubesviewer">
-
-            <div class="cv-gui-panel ui-widget ui-widget-content ui-corner-all" >
-            </div>
-
-            <div class="cv-gui-workspace" style="min-height: 400px;">
-            </div>
-
-        </div>
-
-        <footer>
-          <a href="https://github.com/jjmontesl/cubesviewer">CubesViewer</a> by <a href="https://github.com/jjmontesl">Jose Juan Montes</a><br>
-        </footer>
-
-      </div>
-    </div>
-
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-6169223-4']); // jjmontesl.github.io
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
+</script>
+<script>
+  /*
   function eventLogTimeGoogleAnalytics() {
       _gaq.push(['_trackEvent', 'Time', 'Ping']);
   }
   setInterval( eventLogTimeGoogleAnalytics, 30000 );
-
+  */
 </script>
+
 
   </body>
 </html>
