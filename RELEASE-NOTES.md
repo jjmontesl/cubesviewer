@@ -45,6 +45,7 @@ Other additions feature:
 * Improved error reporting and user interface.
 * CubesViewer Server (optional) upgraded to Django 1.9.
 * Plugin for cube usage tracking via Google Analytics.
+* Improved documentation and tutorials.
 
 Make sure you read the [Changelog]() for the full list of changes.
 

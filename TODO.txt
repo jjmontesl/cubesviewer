@@ -17,7 +17,6 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Support dimension attributes, and fact details in fact view etc..
     * Support better exploration of facts
 
-    * Filter from chart filter / synchronize filter and chart filter (?).
     * GUI options (and all other plugin options) now as cubesviewer options
       (with plugin namespace?).
     * Hide interface mode (also, make these programmable options for the views)
@@ -59,6 +58,9 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
 [2.3]
 
     * Fulltext search (facts, dimension values/info, extra external data (refs), metadata) ?
+
+    * Filter from chart filter / synchronize filter and chart filter (?)
+    * Synchronize view to other view (one way/two way, attributes to synchronize)
 
 [2.2]
 
@@ -106,8 +108,6 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * _Firefox_ menu wrap in Studio menu (not in Chrome nor View menu?)
     * Submenu loading issue.
 
-    * Announcement (Cubes list, twitter, reddit, etc.).
-
     * Site (second iteration). Show a couple of charts view, a table, and an enabled-controls view.
       SAME views to be automatically opened in the explorer sample.
     * Update screenshots?
@@ -116,6 +116,7 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Size change when switching views is very irritating. Hack that (fix height during changes/reloads?).
     * Sorting issues.
 
+    * Possible repeated data load?
     * Add "plus / minus" signs to dimension filters and drilldown/horizontal when more than one level.
     * Tooltip columns: column=val remove columnTooltipAttr, enable tooltips?
     * Regression: tooltips (column label = formatted value), and row highlighting. Also row selection odd/even issue.
@@ -124,8 +125,7 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
 
 [2.0.1]
 
+    * Announcement (Cubes list, twitter, reddit, etc.).
     * Remove -devel from version, Disable debug mode, Release notes, Tag repo (release), Move this todo item to next release top.
-
-    * Commit to master (both projects).
-    * Update site (first iteration). Point downloads and doc to master.
-    * Create django migrations.
+    * Review all site and doc links.
+    * Site bug when changing chart modes: implement API and mode change correctly (watch? event? repeated events?)

@@ -54,8 +54,8 @@ need to install also the Python connectors for the appropriate database backend.
 
 ## 3 - Download and install CubesViewer
 
-Download **cubesviewer-server** project from GitHub (https://github.com/jjmontesl/cubesviewer).
-You can use 'git' or get a zipped package fgrom the project page.
+Download **cubesviewer-server** project from GitHub (https://github.com/jjmontesl/cubesviewer-server).
+You can use 'git' or get a zipped package from the project page.
 
 ```
 git clone https://github.com/jjmontesl/cubesviewer-server.git
