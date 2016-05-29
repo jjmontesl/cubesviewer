@@ -17,7 +17,7 @@ CubesViewer Documentation
 
 **For end users**:
 
-* [CubesViewer User Guide](cubesviewer-user-main.md)
+* [CubesViewer User Guide](cubesviewer-user-main.md) - Work in progress
 
 **Links**:
 

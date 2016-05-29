@@ -53,6 +53,11 @@ Latest CubesViewer stable release is 2.0.1:
   * [Changelog](http://github.com/jjmontesl/cubesviewer/blob/master/CHANGES.txt)
   * Works with *Cubes 1.0.x*
 
+CubesViewer Server already includes the CubesViewer library so you just need that package
+if you plan to deploy the server-side application.
+
+If you do modifications to the project, cloning both repositories via `git` is encouraged, so you can
+easily contribute your fixes and improvements back.
 
 Requirements
 ------------

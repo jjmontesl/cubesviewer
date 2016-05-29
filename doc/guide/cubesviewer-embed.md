@@ -34,7 +34,7 @@ Files
 
 You need to include CubesViewer CSS and Javascript in the `dist` directory.
 
-You can get dependencies using your favourite dependency manager, but all libraries
+You can get dependencies using your favourite dependency manager, but all the needed libraries
 are available in the `html/lib` directory for convenience.
 
 

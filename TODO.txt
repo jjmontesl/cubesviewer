@@ -64,7 +64,8 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
 
 [2.2]
 
-    * Maintenance and missing stuff? ~notes~->comments..., info metadata (html/url), etc...
+    * Info metadata (html/url), etc...
+    * Django views admin -> include CubesViewer
     * Scroll to recently open view on GUI (also provide function to do it from code for standalone views).
     * Fact Viewer and fact templates (html/url/angular template?), i.e. including links to documents or etc...
     * Data formatters (color, decimals, abbreviations, units, etc...). Allow client side changes?
@@ -81,8 +82,16 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
 
 [2.1]
 
-    * Update screenshots showing map chart (ie from views.html).
-    * Create views.html page for site, showing a full story w/ source code ("start with a blank cube", "exploration", "series", "chart", "map"...)
+    * Site, demos and data:
+        * Update screenshots showing map chart (ie from views.html).
+        * Create views.html page for site, showing a full story w/ source code ("start with a blank cube", "exploration", "series", "chart", "map"...)
+        * Site (second iteration). Show a couple of charts view, a table, and an enabled-controls view.
+          SAME views to be automatically opened in the explorer sample.
+        * Add product subcategory to demo data. Add some formatters (correctly from dims via CubeETL).
+        * Update & simplify demo views JSON.
+        * Review site and doc links.
+
+    * Comments system.
 
     * Chart series view/hide selection is serialized using label instead of key. Normalize.
     * Issue #55 (chart shows measure name, not measure label).
@@ -111,10 +120,6 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * _Firefox_ menu wrap in Studio menu (not in Chrome nor View menu?)
     * Submenu loading issue.
 
-    * Site (second iteration). Show a couple of charts view, a table, and an enabled-controls view.
-      SAME views to be automatically opened in the explorer sample.
-    * Add product subcategory to demo data. Add some formatters (correctly from dims via CubeETL).
-    * Update & simplify demo views JSON.
     * Size change when switching views is very irritating. Hack that (fix height during changes/reloads?).
     * Sorting issues.
 
@@ -129,5 +134,4 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
 
     * Announcement (Cubes list, twitter, reddit, etc.).
     * Remove -devel from version, Disable debug mode, Release notes, Tag repo (release), Move this todo item to next release top.
-    * Review all site and doc links.
     * Site bug when changing chart modes: implement API and mode change correctly (watch? event? repeated events?)
