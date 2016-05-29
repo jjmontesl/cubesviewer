@@ -26,7 +26,7 @@ CubesViewer family
 * *Cubes* is the OLAP Cubes Server by DataBrewery.
 * *CubesViewer* is the client-side HTML5 viewer library for Cubes.
 * *CubesViewer Studio* is the client-side HTML5 exploring solution for Cubes.
-* *CubesViewer Server* is the server-side backend for CubesViewer Studio.
+* *CubesViewer Server* is the server-side backend for CubesViewer Studio (optional).
 
 
 Setting up Cubes and CubesViewer example data
@@ -38,16 +38,18 @@ own data, you need to run your own Cubes installation.
 We'll download the example data and install it locally along with Cubes. This example
 needs *Python*, *PIP* and *virtualenv* installed:
 
-1. Clone the (forked) cubes-examples repository with CubesViewer example "webshop":
+1. Clone the CubesViewer cubes-examples repository which contains this example:
 
    `git clone https://github.com/jjmontesl/cubes-examples`
 
 2. Enter the directory. Create a virtual environment and activate it (this is optional,
    but helps keeping your Python installation clean):
 
-   `cd cubes-examples`
-   `virtualenv env`
-   `. env/bin/activate`
+   ```
+   cd cubes-examples
+   virtualenv env
+   . env/bin/activate
+   ```
 
 3. Install Cubes package via PIP:
 
@@ -57,8 +59,10 @@ needs *Python*, *PIP* and *virtualenv* installed:
 
 4. Enter the "webshop" dir and run Cubes OLAP server (the tool is called `slicer`):
 
-   `cd webshop`
-   `slicer server slicer.ini`
+   ```
+   cd webshop
+   slicer server slicer.ini
+   ```
 
    This will use the `slicer.ini` file and `model.json` config files to
    initialize Cubes server. The database is a SQLite database included in

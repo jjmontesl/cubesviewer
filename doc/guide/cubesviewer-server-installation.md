@@ -192,3 +192,8 @@ Note that you can benefit from extra features if you configure your Cubes model.
 
 If you are using CubesViewer, please share and tweet #cubesviewer !
 
+
+Further information
+-------------------
+
+* [Documentation index](index.md)

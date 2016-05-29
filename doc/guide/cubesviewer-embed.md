@@ -132,3 +132,9 @@ Use CubesViewer Studio to design views
 CubesViewer Studio includes a menu option for serializing a view as JSON, which can be used to initialize views,
 as shown above. It also includes an option to load views from serialized JSON strings.
 
+Further information
+-------------------
+
+* [Configuring your Cubes model](cubesviewer-model.md)
+* [Documentation index](index.md)
+

@@ -175,3 +175,8 @@ separator.
 Remember to restart your Cubes server when changing cube metadata in order
 for the changes to be picked up.
 
+Further information
+-------------------
+
+* [Documentation index](index.md)
+

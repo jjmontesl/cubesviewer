@@ -91,7 +91,6 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
         * Update & simplify demo views JSON.
         * Review site and doc links.
 
-    * Comments system.
 
     * Chart series view/hide selection is serialized using label instead of key. Normalize.
     * Issue #55 (chart shows measure name, not measure label).
@@ -109,8 +108,8 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Automatically hide legend if too many results.
     * Colors get incorrectly drawn when series are deselected from legend, and view changed back/forth.
 
-    * Map charts. Design.
-
+    * Comments system.
+    * Map charts. Design already available.
     * Range filter.
 
 [2.0.2]

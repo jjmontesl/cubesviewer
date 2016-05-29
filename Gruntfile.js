@@ -69,6 +69,8 @@ module.exports = function(grunt) {
     copy: {
       	dist: {
     		files: [
+    		    { expand: true, cwd: 'dist', src: '*', dest: '../cubesviewer-page/lib/cubesviewer/' },
+    		    { expand: true, cwd: 'dist', src: '*', dest: '../cubesviewer-server/cvapp/cubesviewer/static/lib/cubesviewer/' }
 	        ]
     	}
     },
@@ -127,7 +129,7 @@ module.exports = function(grunt) {
     },
     watch: {
       files: ['<%= jshint.files %>', 'bower.json', 'cubesviewer/**/**.*'],
-      tasks: ['default']
+      tasks: ['default', 'copy']
     },
     ngtemplates:  {
     	  app:        {
@@ -153,9 +155,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-angular-templates');
   grunt.loadNpmTasks('grunt-jsdoc');
 
-  grunt.registerTask('test', ['jshint', 'qunit']);
+  grunt.registerTask('test', ['jshint']);  // 'qunit'
 
-  grunt.registerTask('default', ['less', 'ngtemplates', 'concat', 'uglify', 'jsdoc']); // 'bower',
+  grunt.registerTask('default', ['less', 'ngtemplates', 'concat', 'uglify', 'jsdoc']);  // 'bower',
 
 };
 

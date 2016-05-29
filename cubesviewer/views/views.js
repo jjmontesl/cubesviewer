@@ -21,7 +21,9 @@
  * SOFTWARE.
  */
 
+
 "use strict";
+
 
 /**
  * The views module manages different views in CubesViewer.
@@ -29,6 +31,7 @@
  * @namespace cv.views
  */
 angular.module('cv.views', ['cv.views.cube']);
+
 
 /**
  * This service manages CubesViewer views in the application.
@@ -50,6 +53,7 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 	 *
 	 * @param type Type of view to create. Currently only "cube" is available.
 	 * @param data View parameters, as an object or as a serialized JSON string.
+	 * @returns CubesViewer view object.
 	 *
 	 * @memberOf cv.views.viewsService
 	 */
@@ -117,8 +121,11 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 		return view;
 	};
 
-	/*
+	/**
 	 * Serialize view data.
+	 *
+	 * @param view The view object for which definition will be serialized.
+	 * @returns A string with the definition of the view (view.params) serialized in JSON.
 	 */
 	this.serializeView = function(view) {
 		//return JSON.stringify(view.params);

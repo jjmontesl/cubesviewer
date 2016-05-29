@@ -26,5 +26,8 @@ the project by writing it! Get in touch with jjmontes@gmail.com if you wish to t
 * Saving and sharing
 
 
+* [Documentation index](index.md)
+
+
 ![CubesViewer Explore Screenshot](https://raw.github.com/jjmontesl/cubesviewer/master/doc/screenshots/view-explore-1.png "CubesViewer Explore")
 

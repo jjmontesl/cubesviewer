@@ -220,6 +220,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	/**
 	 * Accepts an aggregation or a measure and returns the formatter function.
+	 *
+	 * @param agmes Aggregation or measure object.
+	 * @returns A formatter function that takes an argument with the metric value to be formatted.
 	 */
 	$scope.columnFormatFunction = function(agmes) {
 
@@ -234,7 +237,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		}
 
 		if ('measure' in agmes) {
-			measure = $.grep(view.cube.measures, function(item, idx) { return item.ref == agmes.measure })[0];
+			measure = $.grep(view.cube.measures, function(item, idx) { return item.ref == agmes.measure; })[0];
 		}
 
 		var formatterFunction = null;
@@ -298,7 +301,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	$scope.selectMeasure = function(measure) {
 		$scope.view.params.yaxis = measure;
 		$scope.refreshView();
-	}
+	};
 
 	/*
 	 * Selects horizontal axis
@@ -306,7 +309,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	$scope.selectXAxis = function(dimension) {
 		$scope.view.params.xaxis = (dimension == "" ? null : dimension);
 		$scope.refreshView();
-	}
+	};
 
 	/*
 	 * Selects chart type
