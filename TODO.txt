@@ -90,6 +90,7 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
         * Add product subcategory to demo data. Add some formatters (correctly from dims via CubeETL).
         * Update & simplify demo views JSON.
         * Review site and doc links.
+        * Mention Python, jQuery+Angular, database agnostic / systems
 
 
     * Chart series view/hide selection is serialized using label instead of key. Normalize.
@@ -101,14 +102,16 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
       Ability to save groups.
     * Add "reduce to N items" operation on series (allows to represent charts adding "Others" for the rest),
       reducing using some criteria -> uses grouping.
-    * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative), move "invert 2nd serie" as a calculation?
-    * Operations. Design.
+    * Finish calculations: show infos, mark which ones are enabled, order, add series colorize (positive/negative) | move "invert 2nd serie -> mirror 2nd serie" as a calculation?
+    * Operations. Design. Possible error: operations shall be applied after series but before flatennign cols for charts. Ensure this is correct.
 
     * Restore cached content notice (is missing, commented out).
     * Automatically hide legend if too many results.
     * Colors get incorrectly drawn when series are deselected from legend, and view changed back/forth.
 
     * Comments system.
+
+    * Flag icons support OOTB.
     * Map charts. Design already available.
     * Range filter.
 
@@ -132,5 +135,5 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
 [2.0.1]
 
     * Announcement (Cubes list, twitter, reddit, etc.).
-    * Remove -devel from version, Disable debug mode, Release notes, Tag repo (release), Move this todo item to next release top.
+    * Remove -devel from version, -beta from doc, Disable debug mode, Release notes, Tag repo (release), Move this todo item to next release top.
     * Site bug when changing chart modes: implement API and mode change correctly (watch? event? repeated events?)

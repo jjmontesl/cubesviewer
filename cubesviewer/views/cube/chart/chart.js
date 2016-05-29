@@ -42,9 +42,16 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 			{ "charttype" : "bars-vertical", "chartoptions": { showLegend: true } },
 			$scope.view.params
 		);
-		$scope.refreshView();
+		//$scope.refreshView();
 	};
 
+	$scope.$on("ViewResize", function(view) {
+
+	});
+
+	$scope.$watch("view.params.charttype", function() {
+		chartCtrl.loadData();
+	});
 	$scope.$on("ViewRefresh", function(view) {
 		chartCtrl.loadData();
 	});

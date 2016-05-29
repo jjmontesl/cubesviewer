@@ -41,7 +41,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
 
 	var gaService = this;
 
-	this.ignorePeriod = 5; // 35
+	this.ignorePeriod = 12; // 35
 
 	this.initTime = new Date();
 

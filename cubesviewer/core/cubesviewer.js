@@ -78,7 +78,7 @@ angular.module('cv').config([ '$logProvider', 'cvOptions', /* 'editableOptions',
 
             gaTrackEvents: false,
 
-            debug: true
+            debug: false
     };
 
 	$.extend(defaultOptions, cvOptions);
@@ -125,8 +125,8 @@ angular.module('cv').run([ '$timeout', '$log', 'cvOptions', 'cubesService', 'cub
  * create views. Note that the initialization method varies depending
  * on whether your application uses Angular 1.x or not.
  *
- * This class is available through the global cubesviewer variable,
- * and must not be instantiated.
+ * An instance of this class is available as the global `cubesviewer`
+ * variable. This class must not be instantiated.
  *
  * @class
  */

@@ -24,6 +24,53 @@
 "use strict";
 
 /**
+ * The CubeView class represents a view of type `cube`.
+ *
+ * @param cvOptions The cv options object.
+ * @param id The numeric id of the view to be created.
+ * @param type The view type (ie. 'cube').
+ * @returns The new view object.
+ *
+ * @namespace cubesviewer
+ */
+cubesviewer.CubeView = function(cvOptions, id, type) {
+
+	var view = cubesviewer.View(cvOptions, id, type);
+
+	view.resultLimitHit = false;
+	view.requestFailed = false;
+	view.pendingRequests = 0;
+	view.dimensionFilter = null;
+
+	view._invalidatedData = true;
+	view._invalidatedDefs = true;
+
+	view.grid = {
+		api: null,
+		data: [],
+		columnDefs: []
+	};
+
+	view.invalidateData = function() {
+		view._invalidatedData = true;
+	};
+
+	view.invalidateDefs = function() {
+		view._invalidatedData = true;
+		view._invalidatedDefs = true;
+	};
+
+	view.setViewMode = function(mode) {
+		view.params.mode = mode;
+		view.invalidateDefs();
+	};
+
+	return view;
+
+};
+
+
+/**
  * CubesViewer view module.
  *
  * @namespace cv.views.cube
@@ -36,8 +83,8 @@ angular.module('cv.views.cube', []);
  *
  * FIXME: Some of this code shall be on a parent generic "view" directive.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$log', '$injector', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService',
-                                                     function ($rootScope, $log, $injector, $scope, $timeout, cvOptions, cubesService, viewsService, exportService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$log', '$window','$injector', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService',
+                                                     function ($rootScope, $log, $window, $injector, $scope, $timeout, cvOptions, cubesService, viewsService, exportService) {
 
 	// TODO: Functions shall be here?
 	$scope.viewController = {};
@@ -54,18 +101,17 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
         $scope.reststoreService = $injector.get('reststoreService');
     }
 
-	$scope.refreshView = function() {
-		if ($scope.view && $scope.view.cube) {
+
+    $scope.refreshView = function() {
+    	if ($scope.view && $scope.view.cube) {
 			//$scope.view.grid.data = [];
 			//$scope.view.grid.columnDefs = [];
 			$scope.$broadcast("ViewRefresh", $scope.view);
 		}
 	};
 
-	/**
-	 * Define view mode ('explore', 'series', 'facts', 'chart').
-	 */
 	$scope.setViewMode = function(mode) {
+		console.debug("Remove setViewMode call on the controller?")
 		$scope.view.setViewMode(mode);
 	};
 
@@ -104,9 +150,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			$scope.view.state = cubesviewer.VIEW_STATE_INITIALIZED;
 			$scope.view.error = "";
 
-			$timeout(function() {
-				//$scope.refreshView();
-			}, 0);
+			$rootScope.$apply();
 
 		});
 		jqxhr.fail(function(req) {
@@ -324,7 +368,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.selectCalculation = function(calculation) {
 		$scope.view.params.calculation = calculation;
-		$scope.refreshView();
+		$scope.refreshView();  // TODO: This depends on the calculation
 	};
 
 
@@ -387,6 +431,18 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		}
 		return columnSort;
 	};
+
+	/*
+	$scope.onResize = function() {
+		$rootScope.$broadcast('ViewResize');
+	}
+
+	angular.element($window).on('resize', $scope.onResize);
+
+	$scope.$destroy(function() {
+		angular.element($window).off('resize', $scope.onResize);
+	});
+	*/
 
 
 }]).directive("cvViewCube", function() {

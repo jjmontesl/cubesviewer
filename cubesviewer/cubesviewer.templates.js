@@ -337,7 +337,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        <div class=\"cv-chart-container\">\n" +
     "            <svg style=\"height: 400px;\" />\n" +
     "        </div>\n" +
-    "        <div ng-hide=\"view.controlsHidden() || view.params.charttype == 'radar'\" style=\"font-size: 8px; float: right;\">\n" +
+    "        <div ng-hide=\"view.getControlsHidden() || view.params.charttype == 'radar'\" style=\"font-size: 8px; float: right;\">\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"chartCtrl.resizeChart(400);\">Small</a>\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"chartCtrl.resizeChart(550);\">Medium</a>\n" +
     "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"chartCtrl.resizeChart(700);\">Tall</a>\n" +
@@ -791,7 +791,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    </div>\n" +
     "\n" +
     "    <div>\n" +
-    "        <h2 ng-show=\"view.controlsHidden()\" style=\"margin-top: 5px;\">\n" +
+    "        <h2 ng-show=\"view.getControlsHidden()\" style=\"margin-top: 5px;\">\n" +
     "            <i class=\"fa fa-fw fa-file-o\"></i> {{ view.params.name }}\n" +
     "        </h2>\n" +
     "\n" +
@@ -800,7 +800,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div ng-if=\"view.state == 2\" style=\"min-height: 80px;\">\n" +
     "\n" +
-    "        <div class=\"cv-view-viewmenu hidden-print\" ng-hide=\"view.controlsHidden()\">\n" +
+    "        <div class=\"cv-view-viewmenu hidden-print\" ng-hide=\"view.getControlsHidden()\">\n" +
     "\n" +
     "            <div class=\"panel panel-primary pull-right\" style=\"padding: 3px; white-space: nowrap; margin-bottom: 6px; margin-left: 6px;\">\n" +
     "\n" +
@@ -845,8 +845,8 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                    <div ng-repeat=\"drilldown in view.params.drilldown\" ng-if=\"view.params.mode != 'facts'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-drill\" style=\"color: black; background-color: #ccffcc;\">\n" +
     "                        <span><i class=\"fa fa-fw fa-arrow-down\"></i> <b>Drilldown:</b> {{ view.cube.dimensionParts(drilldown).label }}</span>\n" +
     "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
-    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(drilldown)\" class=\"btn btn-secondary btn-xs hidden-print\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
-    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectDrill(drilldown, '')\" class=\"btn btn-danger btn-xs hidden-print\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "                        <button ng-hide=\"view.getControlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(drilldown)\" class=\"btn btn-secondary btn-xs hidden-print\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
+    "                        <button ng-hide=\"view.getControlsHidden()\" type=\"button\" ng-click=\"selectDrill(drilldown, '')\" class=\"btn btn-danger btn-xs hidden-print\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
     "                    </div>\n" +
     "\n" +
     "                </div>\n" +
@@ -860,8 +860,8 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "                    <div ng-repeat=\"cut in view.params.cuts\" ng-init=\"dimparts = view.cube.dimensionParts(cut.dimension); equality = cut.invert ? ' &ne; ' : ' = ';\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut\" style=\"color: black; background-color: #ffcccc;\">\n" +
     "                        <span style=\"max-width: 480px;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.label }} <span ng-class=\"{ 'text-danger': cut.invert }\">{{ equality }}</span> <span title=\"{{ cut.value }}\">{{ cut.value }}</span></span>\n" +
     "                        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
-    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(cut.dimension)\" class=\"btn btn-secondary btn-xs hidden-print\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
-    "                        <button ng-hide=\"view.controlsHidden()\" type=\"button\" ng-click=\"selectCut(cut.dimension, '', cut.invert)\" class=\"btn btn-danger btn-xs hidden-print\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "                        <button ng-hide=\"view.getControlsHidden()\" type=\"button\" ng-click=\"showDimensionFilter(cut.dimension)\" class=\"btn btn-secondary btn-xs hidden-print\" style=\"margin-left: 3px;\"><i class=\"fa fa-fw fa-search\"></i></button>\n" +
+    "                        <button ng-hide=\"view.getControlsHidden()\" type=\"button\" ng-click=\"selectCut(cut.dimension, '', cut.invert)\" class=\"btn btn-danger btn-xs hidden-print\" style=\"margin-left: 1px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
     "                    </div>\n" +
     "                </div>\n" +
     "\n" +
@@ -973,10 +973,10 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "                 <div class=\"form-group\" style=\"display: inline-block; margin: 0px;\">\n" +
     "                    <div class=\"dropdown\" style=\"display: inline-block;\">\n" +
-    "                      <button ng-hide=\"view.controlsHidden()\" style=\"height: 20px;\" class=\"btn btn-default btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
+    "                      <button ng-hide=\"view.getControlsHidden()\" style=\"height: 20px;\" class=\"btn btn-default btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
     "                        <i class=\"fa fa-fw fa-calendar\"></i> {{ datefilter.mode | datefilterMode }} <span class=\"caret\"></span>\n" +
     "                      </button>\n" +
-    "                      <span ng-show=\"view.controlsHidden()\"><i class=\"fa fa-fw fa-calendar\"></i> {{ datefilter.mode | datefilterMode }}</span>\n" +
+    "                      <span ng-show=\"view.getControlsHidden()\"><i class=\"fa fa-fw fa-calendar\"></i> {{ datefilter.mode | datefilterMode }}</span>\n" +
     "\n" +
     "                      <ul class=\"dropdown-menu cv-view-menu cv-view-menu-view\">\n" +
     "                        <li ng-click=\"setMode('custom')\"><a><i class=\"fa fa-fw\"></i> Custom</a></li>\n" +
@@ -998,20 +998,20 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "                 <div class=\"form-group\" style=\"display: inline-block; margin: 0px;\">\n" +
     "                    <p class=\"input-group disabled\" style=\"margin: 0px; display: inline-block;\">\n" +
-    "                      <input ng-disabled=\"view.controlsHidden()\" autocomplete=\"off\" type=\"text\" style=\"height: 20px; width: 80px; display: inline-block;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateStart.value\" is-open=\"dateStart.opened\" datepicker-options=\"dateStart.options\" ng-required=\"true\" close-text=\"Close\" />\n" +
-    "                      <span ng-hide=\"view.controlsHidden()\"  class=\"input-group-btn\" style=\"display: inline-block;\">\n" +
+    "                      <input ng-disabled=\"view.getControlsHidden()\" autocomplete=\"off\" type=\"text\" style=\"height: 20px; width: 80px; display: inline-block;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateStart.value\" is-open=\"dateStart.opened\" datepicker-options=\"dateStart.options\" ng-required=\"true\" close-text=\"Close\" />\n" +
+    "                      <span ng-hide=\"view.getControlsHidden()\"  class=\"input-group-btn\" style=\"display: inline-block;\">\n" +
     "                        <button type=\"button\" style=\"height: 20px;\" class=\"btn btn-default\" ng-click=\"dateStartOpen()\"><i class=\"fa fa-fw fa-calendar\"></i></button>\n" +
     "                      </span>\n" +
     "                    </p>\n" +
     "                </div>\n" +
     "\n" +
-    "                <span ng-hide=\"view.controlsHidden()\" style=\"margin-left: 17px; margin-right: 0px;\">-</span>\n" +
-    "                <span ng-show=\"view.controlsHidden()\" style=\"margin-left: 0px; margin-right: 0px;\">-</span>\n" +
+    "                <span ng-hide=\"view.getControlsHidden()\" style=\"margin-left: 17px; margin-right: 0px;\">-</span>\n" +
+    "                <span ng-show=\"view.getControlsHidden()\" style=\"margin-left: 0px; margin-right: 0px;\">-</span>\n" +
     "\n" +
     "                 <div class=\"form-group\" style=\"display: inline-block; margin: 0px;\">\n" +
     "                    <p class=\"input-group\" style=\"margin: 0px; display: inline-block;\">\n" +
-    "                      <input ng-disabled=\"view.controlsHidden()\" autocomplete=\"off\" type=\"text\" style=\"height: 20px; width: 80px; display: inline-block;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateEnd.value\" is-open=\"dateEnd.opened\" datepicker-options=\"dateEnd.options\" ng-required=\"true\" close-text=\"Close\" />\n" +
-    "                      <span ng-hide=\"view.controlsHidden()\" class=\"input-group-btn\" style=\"display: inline-block;\">\n" +
+    "                      <input ng-disabled=\"view.getControlsHidden()\" autocomplete=\"off\" type=\"text\" style=\"height: 20px; width: 80px; display: inline-block;\" class=\"form-control input-sm\" uib-datepicker-popup=\"yyyy-MM-dd\" ng-model=\"dateEnd.value\" is-open=\"dateEnd.opened\" datepicker-options=\"dateEnd.options\" ng-required=\"true\" close-text=\"Close\" />\n" +
+    "                      <span ng-hide=\"view.getControlsHidden()\" class=\"input-group-btn\" style=\"display: inline-block;\">\n" +
     "                        <button type=\"button\" style=\"height: 20px;\" class=\"btn btn-default\" ng-click=\"dateEndOpen()\"><i class=\"fa fa-fw fa-calendar\"></i></button>\n" +
     "                      </span>\n" +
     "                    </p>\n" +
@@ -1023,7 +1023,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "        </div>\n" +
     "\n" +
-    "        <button type=\"button\" ng-hide=\"view.controlsHidden()\" ng-click=\"selectDateFilter(datefilter.dimension, false)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 20px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "        <button type=\"button\" ng-hide=\"view.getControlsHidden()\" ng-click=\"selectDateFilter(datefilter.dimension, false)\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 20px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
     "        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
     "\n" +
     "\n" +
@@ -1036,7 +1036,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
   $templateCache.put('views/cube/filter/dimension.html',
     "<div ng-controller=\"CubesViewerViewsCubeFilterDimensionController\">\n" +
     "\n" +
-    "    <div class=\"panel panel-default panel-outline hidden-print\" ng-hide=\"view.controlsHidden()\" style=\"border-color: #ffcccc;\">\n" +
+    "    <div class=\"panel panel-default panel-outline hidden-print\" ng-hide=\"view.getControlsHidden()\" style=\"border-color: #ffcccc;\">\n" +
     "        <div class=\"panel-heading clearfix\" style=\"border-color: #ffcccc;\">\n" +
     "            <button class=\"btn btn-xs btn-danger pull-right\" ng-click=\"closeDimensionFilter()\"><i class=\"fa fa-fw fa-close\"></i></button>\n" +
     "            <h4 style=\"margin: 2px 0px 0px 0px;\"><i class=\"fa fa-fw fa-filter\"></i> Dimension filter: <b>{{ parts.label }}</b></h4>\n" +

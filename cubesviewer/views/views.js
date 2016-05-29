@@ -26,6 +26,57 @@
 
 
 /**
+ * View class, which contains view definition (params), view state,
+ * and provides the view API.
+ *
+ * This is the generic base View class definition.
+ * Specific views (ie. CubeView) enrich this model.
+ *
+ * @param cvOptions The cv options object.
+ * @param id The numeric id of the view to be created.
+ * @param type The view type (ie. 'cube').
+ * @returns The new view object.
+ *
+ * @namespace cubesviewer
+ */
+cubesviewer.View = function(cvOptions, id, type) {
+
+	var view = {};
+
+	view.id = "_cv-view-" + id;
+	view.type = type;
+	view.cvOptions = cvOptions;
+
+	view.state = cubesviewer.VIEW_STATE_INITIALIZING;
+	view.error = "";
+
+	view.params = {};
+
+	view.savedId = 0;
+	view.owner = cvOptions.user;
+	view.shared = false;
+
+
+	/**
+	 * Returns a boolean indicating whether controls are hidden for this view.
+	 *
+	 * @returns boolean indicating whether controls are hidden for this view.
+	 */
+	view.getControlsHidden = function() {
+		return !!view.params.controlsHidden || !!view.cvOptions.hideControls;
+	};
+
+	view.setControlsHidden = function(controlsHidden) {
+		view.params.controlsHidden = controlsHidden;
+	};
+
+	return view;
+
+};
+
+
+
+/**
  * The views module manages different views in CubesViewer.
  *
  * @namespace cv.views
@@ -39,8 +90,8 @@ angular.module('cv.views', ['cv.views.cube']);
  * @class viewsService
  * @memberof cv.views
  */
-angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', 'cubesService', 'dialogService',
-                                                    function ($rootScope, cvOptions, cubesService, dialogService) {
+angular.module('cv.views').service("viewsService", ['$rootScope', '$window', 'cvOptions', 'cubesService', 'dialogService',
+                                                    function ($rootScope, $window, cvOptions, cubesService, dialogService) {
 
 	this.views = [];
 
@@ -77,45 +128,8 @@ angular.module('cv.views').service("viewsService", ['$rootScope', 'cvOptions', '
 			params = data;
 		}
 
-		// TODO: Define a view object
-		var view = {
-
-			id: "_cv-view-" + this.lastViewId,
-			type: type,
-			state: cubesviewer.STATE_INITIALIZING,
-			error: "",
-			params: {},
-
-	        savedId: 0,
-	        owner: cvOptions.user,
-	        shared: false,
-
-			resultLimitHit: false,
-			requestFailed: false,
-			pendingRequests: 0,
-			dimensionFilter: null,
-
-	    	grid: {
-	    		api: null,
-	    		data: [],
-	    		columnDefs: []
-			},
-
-			controlsHidden: function() {
-				return !!this.params.controlsHidden || !!cvOptions.hideControls;
-			},
-
-			setControlsHidden: function(controlsHidden) {
-				this.params.controlsHidden = controlsHidden;
-			},
-
-			setViewMode: function(mode) {
-				this.params.mode = mode;
-				//$scope.refreshView();
-			}
-
-		};
-
+		// FIXME: cvOptions shall not be passed, and getControlsHidden() shall possibly be part of this view service
+		var view = cubesviewer.CubeView(cvOptions, this.lastViewId, type);
 		$.extend(view.params, params);
 
 		return view;

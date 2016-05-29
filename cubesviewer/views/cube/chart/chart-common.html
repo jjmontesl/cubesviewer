@@ -3,7 +3,7 @@
         <div class="cv-chart-container">
             <svg style="height: 400px;" />
         </div>
-        <div ng-hide="view.controlsHidden() || view.params.charttype == 'radar'" style="font-size: 8px; float: right;">
+        <div ng-hide="view.getControlsHidden() || view.params.charttype == 'radar'" style="font-size: 8px; float: right;">
             <a href="" class="cv-chart-height" ng-click="chartCtrl.resizeChart(400);">Small</a>
             <a href="" class="cv-chart-height" ng-click="chartCtrl.resizeChart(550);">Medium</a>
             <a href="" class="cv-chart-height" ng-click="chartCtrl.resizeChart(700);">Tall</a>

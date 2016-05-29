@@ -1,6 +1,6 @@
 <div ng-controller="CubesViewerViewsCubeFilterDimensionController">
 
-    <div class="panel panel-default panel-outline hidden-print" ng-hide="view.controlsHidden()" style="border-color: #ffcccc;">
+    <div class="panel panel-default panel-outline hidden-print" ng-hide="view.getControlsHidden()" style="border-color: #ffcccc;">
         <div class="panel-heading clearfix" style="border-color: #ffcccc;">
             <button class="btn btn-xs btn-danger pull-right" ng-click="closeDimensionFilter()"><i class="fa fa-fw fa-close"></i></button>
             <h4 style="margin: 2px 0px 0px 0px;"><i class="fa fa-fw fa-filter"></i> Dimension filter: <b>{{ parts.label }}</b></h4>

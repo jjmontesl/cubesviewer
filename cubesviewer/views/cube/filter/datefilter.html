@@ -13,10 +13,10 @@
 
                  <div class="form-group" style="display: inline-block; margin: 0px;">
                     <div class="dropdown" style="display: inline-block;">
-                      <button ng-hide="view.controlsHidden()" style="height: 20px;" class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" data-submenu>
+                      <button ng-hide="view.getControlsHidden()" style="height: 20px;" class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" data-submenu>
                         <i class="fa fa-fw fa-calendar"></i> {{ datefilter.mode | datefilterMode }} <span class="caret"></span>
                       </button>
-                      <span ng-show="view.controlsHidden()"><i class="fa fa-fw fa-calendar"></i> {{ datefilter.mode | datefilterMode }}</span>
+                      <span ng-show="view.getControlsHidden()"><i class="fa fa-fw fa-calendar"></i> {{ datefilter.mode | datefilterMode }}</span>
 
                       <ul class="dropdown-menu cv-view-menu cv-view-menu-view">
                         <li ng-click="setMode('custom')"><a><i class="fa fa-fw"></i> Custom</a></li>
@@ -38,20 +38,20 @@
 
                  <div class="form-group" style="display: inline-block; margin: 0px;">
                     <p class="input-group disabled" style="margin: 0px; display: inline-block;">
-                      <input ng-disabled="view.controlsHidden()" autocomplete="off" type="text" style="height: 20px; width: 80px; display: inline-block;" class="form-control input-sm" uib-datepicker-popup="yyyy-MM-dd" ng-model="dateStart.value" is-open="dateStart.opened" datepicker-options="dateStart.options" ng-required="true" close-text="Close" />
-                      <span ng-hide="view.controlsHidden()"  class="input-group-btn" style="display: inline-block;">
+                      <input ng-disabled="view.getControlsHidden()" autocomplete="off" type="text" style="height: 20px; width: 80px; display: inline-block;" class="form-control input-sm" uib-datepicker-popup="yyyy-MM-dd" ng-model="dateStart.value" is-open="dateStart.opened" datepicker-options="dateStart.options" ng-required="true" close-text="Close" />
+                      <span ng-hide="view.getControlsHidden()"  class="input-group-btn" style="display: inline-block;">
                         <button type="button" style="height: 20px;" class="btn btn-default" ng-click="dateStartOpen()"><i class="fa fa-fw fa-calendar"></i></button>
                       </span>
                     </p>
                 </div>
 
-                <span ng-hide="view.controlsHidden()" style="margin-left: 17px; margin-right: 0px;">-</span>
-                <span ng-show="view.controlsHidden()" style="margin-left: 0px; margin-right: 0px;">-</span>
+                <span ng-hide="view.getControlsHidden()" style="margin-left: 17px; margin-right: 0px;">-</span>
+                <span ng-show="view.getControlsHidden()" style="margin-left: 0px; margin-right: 0px;">-</span>
 
                  <div class="form-group" style="display: inline-block; margin: 0px;">
                     <p class="input-group" style="margin: 0px; display: inline-block;">
-                      <input ng-disabled="view.controlsHidden()" autocomplete="off" type="text" style="height: 20px; width: 80px; display: inline-block;" class="form-control input-sm" uib-datepicker-popup="yyyy-MM-dd" ng-model="dateEnd.value" is-open="dateEnd.opened" datepicker-options="dateEnd.options" ng-required="true" close-text="Close" />
-                      <span ng-hide="view.controlsHidden()" class="input-group-btn" style="display: inline-block;">
+                      <input ng-disabled="view.getControlsHidden()" autocomplete="off" type="text" style="height: 20px; width: 80px; display: inline-block;" class="form-control input-sm" uib-datepicker-popup="yyyy-MM-dd" ng-model="dateEnd.value" is-open="dateEnd.opened" datepicker-options="dateEnd.options" ng-required="true" close-text="Close" />
+                      <span ng-hide="view.getControlsHidden()" class="input-group-btn" style="display: inline-block;">
                         <button type="button" style="height: 20px;" class="btn btn-default" ng-click="dateEndOpen()"><i class="fa fa-fw fa-calendar"></i></button>
                       </span>
                     </p>
@@ -63,7 +63,7 @@
 
         </div>
 
-        <button type="button" ng-hide="view.controlsHidden()" ng-click="selectDateFilter(datefilter.dimension, false)" class="btn btn-danger btn-xs" style="margin-left: 20px;"><i class="fa fa-fw fa-trash"></i></button>
+        <button type="button" ng-hide="view.getControlsHidden()" ng-click="selectDateFilter(datefilter.dimension, false)" class="btn btn-danger btn-xs" style="margin-left: 20px;"><i class="fa fa-fw fa-trash"></i></button>
         <button type="button" class="btn btn-info btn-xs" style="visibility: hidden; margin-left: -20px;"><i class="fa fa-fw fa-info"></i></button>
 
 

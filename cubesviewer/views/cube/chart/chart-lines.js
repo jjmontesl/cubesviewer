@@ -122,8 +122,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 		    		.datum(d)
 		    		.call(chart);
 
-		    	nv.utils.windowResize(chart.update);
-
 		    	  // Handler for state change
 		          chart.dispatch.on('stateChange', function(newState) {
 		        	  view.params["chart-disabledseries"] = {
@@ -169,8 +167,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	    	  d3.select(container)
 	    	  	  .datum(d)
 	    	      .call(chart);
-
-	    	  nv.utils.windowResize(chart.update);
 
 	    	  // Handler for state change
 	          chart.dispatch.on('stateChange', function(newState) {

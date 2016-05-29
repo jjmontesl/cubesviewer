@@ -138,7 +138,7 @@ You can collaborate:
 * If you fix bugs, please do send a pull request.
 * If you make reusable changes, please document those and send a pull request.
 * If you wish to take over a larger feature, get in touch through the Cubes discuss group above
-  in order to plan for it collectively. Check the roadmap.txt file if you need some inspiration.
+  in order to plan for it collectively. Check the TODO.txt file if you need some inspiration.
 * You can also help improving the documentation or writing about Cubes/CubesViewer, and spreading the love.
 
 If you are using or trying CubesViewer, we'd love to hear from you (please tweet #cubesviewer !).
