@@ -45,7 +45,7 @@ cubes.Dimension.prototype.default_hierarchy = function()  {
 cubes.Dimension.prototype.isDateDimension = function()  {
 
 	// Inform if a dimension is a date dimension and can be used as a date
-	// filter (i.e. with range selection tool).
+	// filter (i.e. with date selection tool).
 	return ((this.role == "time") &&
 			((! ("cv-datefilter" in this.info)) || (this.info["cv-datefilter"] == true)) );
 
@@ -108,9 +108,9 @@ cubes.Cube.prototype.dimensionParts = function(dimensionString) {
 		level: lev,
 		depth: depth,
 		hierarchy: hie,
-		label: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ) + ( hie.levels.length > 1 ? (": " + lev.label) : "" ),
-		labelShort: (lev.label),
-		labelNoLevel: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ),
+		label: dim.label + ( hie.name != "default" ? (" - " + hie.label) : "" ) + ( hie.levels.length > 1 ? (" / " + lev.label) : "" ),
+		labelShort: (dim.label +  ( hie.levels.length > 1 ? (" / " + lev.label) : "" )),
+		labelNoLevel: dim.label + ( hie.name != "default" ? (" - " + hie.label) : "" ),
 		fullDrilldownValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" ) + ":" + lev.name,
 		fullCutValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" )
 	};

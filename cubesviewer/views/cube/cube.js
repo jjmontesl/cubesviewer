@@ -233,7 +233,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		var cube = $scope.view.cube;
 
 		// view.params.drilldown = (drilldown == "" ? null : drilldown);
-		if (dimension == "") {
+		if (! dimension) {
 			$scope.view.params.drilldown = [];
 		} else {
 			$scope.removeDrill(dimension);
@@ -250,14 +250,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.removeDrill = function(drilldown) {
 
-		var drilldowndim = drilldown.split(':')[0];
-
-		for ( var i = 0; i < $scope.view.params.drilldown.length; i++) {
-			if ($scope.view.params.drilldown[i].split(':')[0] == drilldowndim) {
-				$scope.view.params.drilldown.splice(i, 1);
-				break;
-			}
-		}
+		$scope.view.params.drilldown = $.grep($scope.view.params.drilldown, function(e) {
+			return $scope.view.cube.dimensionParts(e).dimension.name == $scope.view.cube.dimensionParts(drilldown).dimension.name;
+		}, true);
 
 		$scope.refreshView();
 	};
