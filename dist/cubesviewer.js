@@ -2339,6 +2339,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	};
 
+	$scope.clearFilters = function() {
+		$scope.view.params.cuts = [];
+		$scope.view.params.datefilters = [];
+		$scope.refreshView();
+	};
+
 	$scope.defineColumnWidth = function(column, vdefault) {
 		if (column in $scope.view.params.columnWidths) {
 			return $scope.view.params.columnWidths[column];
@@ -6989,7 +6995,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "    <div class=\"divider\"></div>\n" +
     "\n" +
-    "    <li ng-class=\"{ 'disabled': view.params.cuts.length == 0 }\"><a href=\"\"><i class=\"fa fa-fw fa-trash\"></i> Clear filters</a></li>\n" +
+    "    <li ng-class=\"{ 'disabled': view.params.cuts.length == 0 && view.params.datefilters.length == 0 }\" ng-click=\"clearFilters()\"><a href=\"\"><i class=\"fa fa-fw fa-trash\"></i> Clear filters</a></li>\n" +
     "\n" +
     "  </ul>\n"
   );

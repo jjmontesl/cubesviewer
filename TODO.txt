@@ -130,8 +130,6 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Add "plus / minus" signs to dimension filters and drilldown/horizontal when more than one level.
     * Tooltip columns: column=val remove columnTooltipAttr, enable tooltips?
     * Regression: tooltips (column label = formatted value), and row highlighting. Also row selection odd/even issue.
-    * Regression: clear filters bug (at least with datefilter)
-    * Regression: clicking on magnifier to open a dimension filter shall close it if already opened
 
 
 [2.0.1]

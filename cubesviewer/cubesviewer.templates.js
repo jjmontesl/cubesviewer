@@ -596,7 +596,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <div class=\"divider\"></div>\n" +
     "\n" +
-    "    <li ng-class=\"{ 'disabled': view.params.cuts.length == 0 }\"><a href=\"\"><i class=\"fa fa-fw fa-trash\"></i> Clear filters</a></li>\n" +
+    "    <li ng-class=\"{ 'disabled': view.params.cuts.length == 0 && view.params.datefilters.length == 0 }\" ng-click=\"clearFilters()\"><a href=\"\"><i class=\"fa fa-fw fa-trash\"></i> Clear filters</a></li>\n" +
     "\n" +
     "  </ul>\n"
   );

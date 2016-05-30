@@ -417,6 +417,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	};
 
+	$scope.clearFilters = function() {
+		$scope.view.params.cuts = [];
+		$scope.view.params.datefilters = [];
+		$scope.refreshView();
+	};
+
 	$scope.defineColumnWidth = function(column, vdefault) {
 		if (column in $scope.view.params.columnWidths) {
 			return $scope.view.params.columnWidths[column];
