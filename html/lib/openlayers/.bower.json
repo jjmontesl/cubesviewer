@@ -1,0 +1,15 @@
+{
+  "name": "openlayers",
+  "_cacheHeaders": {
+    "ETag": "\"11e011b7a5c239a499425ccfb3b2d5db\"",
+    "Last-Modified": "Thu, 07 Apr 2016 15:03:58 GMT",
+    "Content-Length": "757279",
+    "Content-Type": "application/octet-stream",
+    "Content-Disposition": "attachment; filename=v3.15.1-dist.zip"
+  },
+  "_release": "e-tag:11e011b7a",
+  "_source": "https://github.com/openlayers/ol3/releases/download/v3.15.1/v3.15.1-dist.zip",
+  "_target": "*",
+  "_originalSource": "https://github.com/openlayers/ol3/releases/download/v3.15.1/v3.15.1-dist.zip",
+  "_direct": true
+}
