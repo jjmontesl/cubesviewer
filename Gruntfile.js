@@ -129,7 +129,7 @@ module.exports = function(grunt) {
     },
     watch: {
       files: ['<%= jshint.files %>', 'bower.json', 'cubesviewer/**/**.*'],
-      tasks: ['default', 'copy']
+      tasks: ['default']  // 'copy'
     },
     ngtemplates:  {
     	  app:        {

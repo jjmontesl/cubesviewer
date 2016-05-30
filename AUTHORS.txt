@@ -1,7 +1,7 @@
 Authors
 =======
 
-CubesViewer is maintained by Jose Juan Montes.
+CubesViewer by Jose Juan Montes.
 
 Development:
 

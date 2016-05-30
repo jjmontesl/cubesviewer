@@ -4,11 +4,11 @@ CubesViewer - OLAP Visual Viewer and Explore Tool
 About
 -----
 
-CubesViewer is a visual, web-based tool application for exploring and analyzing
+CubesViewer is a visual, web-based tool for exploring and analyzing
 OLAP databases served by the Cubes OLAP Framework.
 
-CubesViewer can be used for data exploration and data auditory,
-generation of reports, chart design and embedding,
+CubesViewer can be used for data exploration and auditory,
+generation of reports, chart designing and embedding,
 and as a (simple) company-wide analytics application.
 
 CubesViewer is a visual interface for the
