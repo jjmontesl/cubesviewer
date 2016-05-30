@@ -111,9 +111,9 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
 
     * Comments system.
 
+    * Range filter.
     * Flag icons support OOTB.
     * Map charts. Design already available.
-    * Range filter.
 
 [2.0.2]
 
@@ -122,17 +122,16 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * _Firefox_ menu wrap in Studio menu (not in Chrome nor View menu?)
     * Submenu loading issue.
 
-    * Size change when switching views is very irritating. Hack that (fix height during changes/reloads?).
-    * Sorting issues.
-
-    * Possible repeated data load / events?
     * Select next drill level (if available) when filtering by clicking on a single selection in explore mode.
     * Add "plus / minus" signs to dimension filters and drilldown/horizontal when more than one level.
     * Tooltip columns: column=val remove columnTooltipAttr, enable tooltips?
     * Regression: tooltips (column label = formatted value), and row highlighting. Also row selection odd/even issue.
 
+    * Size change when switching views is very irritating. Hack that (fix height during changes/reloads?).
+    * Sorting issues.
+    * Possible repeated data load / events?
+    * Refresh: use watches to trigger invalidation? (also check for repeated events).
 
 [2.0.1]
 
     * Remove -devel from version, -beta from doc, Disable debug mode, Release notes, Tag repo (release), Announcement, Move this todo item to next release top.
-    * Refresh: use watches to trigger invalidation? (also check for repeated events).

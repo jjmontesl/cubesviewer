@@ -437,17 +437,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		return columnSort;
 	};
 
-	/*
 	$scope.onResize = function() {
 		$rootScope.$broadcast('ViewResize');
-	}
+	};
 
 	angular.element($window).on('resize', $scope.onResize);
 
-	$scope.$destroy(function() {
+	$scope.$on("$destroy", function() {
 		angular.element($window).off('resize', $scope.onResize);
 	});
-	*/
 
 
 }]).directive("cvViewCube", function() {

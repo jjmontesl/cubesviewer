@@ -116,7 +116,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
 	              //.attr('height', height)
 	              .call(chart);
 
-	        nv.utils.windowResize(chart.update);
+	        //nv.utils.windowResize(chart.update);
 
 	    	// Handler for state change
 	        chart.dispatch.on('stateChange', function(newState) {

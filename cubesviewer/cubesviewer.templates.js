@@ -960,7 +960,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
   $templateCache.put('views/cube/filter/datefilter.html',
     "<div class=\"cv-view-viewinfo-date\">\n" +
     "    <div ng-repeat=\"datefilter in view.params.datefilters\" ng-controller=\"CubesViewerViewsCubeFilterDateController\" ng-init=\"dimparts = view.cube.dimensionParts(datefilter.dimension);\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut text-left\" style=\"color: black; background-color: #ffdddd; text-align: left;\">\n" +
-    "        <span style=\"max-width: 280px; white-space: nowrap;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.labelNoLevel }}:</span>\n" +
+    "        <span style=\"max-width: 280px; white-space: nowrap;\"><i class=\"fa fa-fw fa-filter\"></i> <b class=\"hidden-xs hidden-sm\">Filter:</b> {{ dimparts.labelNoLevel }}:</span>\n" +
     "\n" +
     "        <!--\n" +
     "        <br class=\"hidden-sm hidden-md hidden-lg\" />\n" +

@@ -45,10 +45,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 		//$scope.refreshView();
 	};
 
-	$scope.$on("ViewResize", function(view) {
-
-	});
-
 	$scope.$watch("view.params.charttype", function() {
 		chartCtrl.loadData();
 	});
@@ -169,6 +165,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 		if (chartCtrl.chart) chartCtrl.chart.update();
 	};
+
+	$scope.$on("ViewResize", function(view) {
+		if (chartCtrl.chart) chartCtrl.chart.update();
+	});
 
 	/**
 	 * FIXME: This shouldn't be defined here.

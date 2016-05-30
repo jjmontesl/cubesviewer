@@ -2359,17 +2359,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		return columnSort;
 	};
 
-	/*
 	$scope.onResize = function() {
 		$rootScope.$broadcast('ViewResize');
-	}
+	};
 
 	angular.element($window).on('resize', $scope.onResize);
 
-	$scope.$destroy(function() {
+	$scope.$on("$destroy", function() {
 		angular.element($window).off('resize', $scope.onResize);
 	});
-	*/
 
 
 }]).directive("cvViewCube", function() {
@@ -3803,10 +3801,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 		//$scope.refreshView();
 	};
 
-	$scope.$on("ViewResize", function(view) {
-
-	});
-
 	$scope.$watch("view.params.charttype", function() {
 		chartCtrl.loadData();
 	});
@@ -3927,6 +3921,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 		if (chartCtrl.chart) chartCtrl.chart.update();
 	};
+
+	$scope.$on("ViewResize", function(view) {
+		if (chartCtrl.chart) chartCtrl.chart.update();
+	});
 
 	/**
 	 * FIXME: This shouldn't be defined here.
@@ -4132,7 +4130,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	            .datum(d)
 	            .call(chart);
 
-	        nv.utils.windowResize(chart.update);
+	        //nv.utils.windowResize(chart.update);
 
     	    // Handler for state change
             chart.dispatch.on('stateChange', function(newState) {
@@ -4296,7 +4294,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	            .datum(d)
 	            .call(chart);
 
-	        nv.utils.windowResize(chart.update);
+	        //nv.utils.windowResize(chart.update);
 
     	    // Handler for state change
             chart.dispatch.on('stateChange', function(newState) {
@@ -4711,7 +4709,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
 	              //.attr('height', height)
 	              .call(chart);
 
-	        nv.utils.windowResize(chart.update);
+	        //nv.utils.windowResize(chart.update);
 
 	    	// Handler for state change
 	        chart.dispatch.on('stateChange', function(newState) {
@@ -4785,13 +4783,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
 		}, 2000);
 	});
 
-	$(window).on("resize.doResize", function (){
+	$scope.$on("ViewResize", function (){
 		$scope.$apply(function(){
 			$scope.drawChartRadar();
 		});
-	});
-	$scope.$on("$destroy",function (){
-		$(window).off("resize.doResize");
 	});
 
 
@@ -7354,7 +7349,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
   $templateCache.put('views/cube/filter/datefilter.html',
     "<div class=\"cv-view-viewinfo-date\">\n" +
     "    <div ng-repeat=\"datefilter in view.params.datefilters\" ng-controller=\"CubesViewerViewsCubeFilterDateController\" ng-init=\"dimparts = view.cube.dimensionParts(datefilter.dimension);\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut text-left\" style=\"color: black; background-color: #ffdddd; text-align: left;\">\n" +
-    "        <span style=\"max-width: 280px; white-space: nowrap;\"><i class=\"fa fa-fw fa-filter\"></i> <b>Filter:</b> {{ dimparts.labelNoLevel }}:</span>\n" +
+    "        <span style=\"max-width: 280px; white-space: nowrap;\"><i class=\"fa fa-fw fa-filter\"></i> <b class=\"hidden-xs hidden-sm\">Filter:</b> {{ dimparts.labelNoLevel }}:</span>\n" +
     "\n" +
     "        <!--\n" +
     "        <br class=\"hidden-sm hidden-md hidden-lg\" />\n" +
