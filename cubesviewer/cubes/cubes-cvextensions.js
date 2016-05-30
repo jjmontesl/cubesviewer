@@ -109,8 +109,10 @@ cubes.Cube.prototype.dimensionParts = function(dimensionString) {
 		depth: depth,
 		hierarchy: hie,
 		label: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ) + ( hie.levels.length > 1 ? (": " + lev.label) : "" ),
+		labelShort: (lev.label),
 		labelNoLevel: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ),
-		fullDrilldownValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" ) + ":" + lev.name
+		fullDrilldownValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" ) + ":" + lev.name,
+		fullCutValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" )
 	};
 
 };
@@ -123,6 +125,7 @@ cubes.Cube.prototype.measureAggregates = function(measureName) {
 	var aggregates = $.grep(this.aggregates, function(ia) { return measureName ? ia.measure == measureName : !ia.measure; } );
 	return aggregates;
 };
+
 
 cubes.Cube.prototype.aggregateFromName = function(aggregateName) {
 	var aggregates = $.grep(this.aggregates, function(ia) { return aggregateName ? ia.name == aggregateName : !ia.measure; } );

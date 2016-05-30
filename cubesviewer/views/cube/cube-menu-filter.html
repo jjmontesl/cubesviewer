@@ -29,7 +29,7 @@
 
             <ul ng-if="dimension.hierarchies_count() == 1" class="dropdown-menu">
                 <!--  selectDrill(dimension.name + ':' + level.name, true) -->
-                <li ng-repeat="level in dimension.default_hierarchy().levels" ng-click="showDimensionFilter(dimension.name + ':' + level.name);"><a href="">{{ level.label }}</a></li>
+                <li ng-repeat="level in dimension.default_hierarchy().levels" ng-click="showDimensionFilter(dimension.name + '@' + dimension.default_hierarchy().name + ':' + level.name);"><a href="">{{ level.label }}</a></li>
             </ul>
 
           </li>

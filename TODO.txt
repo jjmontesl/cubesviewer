@@ -125,15 +125,16 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Size change when switching views is very irritating. Hack that (fix height during changes/reloads?).
     * Sorting issues.
 
-    * Possible repeated data load?
+    * Possible repeated data load / events?
+    * Select next drill level (if available) when filtering by clicking on a single selection in explore mode.
     * Add "plus / minus" signs to dimension filters and drilldown/horizontal when more than one level.
     * Tooltip columns: column=val remove columnTooltipAttr, enable tooltips?
     * Regression: tooltips (column label = formatted value), and row highlighting. Also row selection odd/even issue.
     * Regression: clear filters bug (at least with datefilter)
     * Regression: clicking on magnifier to open a dimension filter shall close it if already opened
 
+
 [2.0.1]
 
-    * Announcement (Cubes list, twitter, reddit, etc.).
-    * Remove -devel from version, -beta from doc, Disable debug mode, Release notes, Tag repo (release), Move this todo item to next release top.
-    * Site bug when changing chart modes: implement API and mode change correctly (watch? event? repeated events?)
+    * Remove -devel from version, -beta from doc, Disable debug mode, Release notes, Tag repo (release), Announcement, Move this todo item to next release top.
+    * Refresh: use watches to trigger invalidation? (also check for repeated events).

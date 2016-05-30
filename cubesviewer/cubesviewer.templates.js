@@ -495,7 +495,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </ul>\n" +
     "\n" +
     "        <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
-    "            <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectDrill(dimension.name + ':' + level.name, true)\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "            <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectDrill(dimension.name + '@' + dimension.default_hierarchy().name + ':' + level.name, true)\"><a href=\"\">{{ level.label }}</a></li>\n" +
     "        </ul>\n" +
     "\n" +
     "      </li>\n" +
@@ -541,7 +541,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "            <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
     "                <!--  selectDrill(dimension.name + ':' + level.name, true) -->\n" +
-    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"showDimensionFilter(dimension.name + ':' + level.name);\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"showDimensionFilter(dimension.name + '@' + dimension.default_hierarchy().name + ':' + level.name);\"><a href=\"\">{{ level.label }}</a></li>\n" +
     "            </ul>\n" +
     "\n" +
     "          </li>\n" +

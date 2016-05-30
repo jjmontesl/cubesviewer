@@ -946,8 +946,10 @@ cubes.Cube.prototype.dimensionParts = function(dimensionString) {
 		depth: depth,
 		hierarchy: hie,
 		label: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ) + ( hie.levels.length > 1 ? (": " + lev.label) : "" ),
+		labelShort: (lev.label),
 		labelNoLevel: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ),
-		fullDrilldownValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" ) + ":" + lev.name
+		fullDrilldownValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" ) + ":" + lev.name,
+		fullCutValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" )
 	};
 
 };
@@ -960,6 +962,7 @@ cubes.Cube.prototype.measureAggregates = function(measureName) {
 	var aggregates = $.grep(this.aggregates, function(ia) { return measureName ? ia.measure == measureName : !ia.measure; } );
 	return aggregates;
 };
+
 
 cubes.Cube.prototype.aggregateFromName = function(aggregateName) {
 	var aggregates = $.grep(this.aggregates, function(ia) { return aggregateName ? ia.name == aggregateName : !ia.measure; } );
@@ -2222,8 +2225,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 		var view = $scope.view;
 
-		if (dimension != "") {
-			if (value != "") {
+		if (dimension) {
+			if (value) {
 				/*
 				var existing_cut = $.grep(view.params.cuts, function(e) {
 					return e.dimension == dimension;
@@ -2233,7 +2236,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 					//return;
 				} else {*/
 					view.params.cuts = $.grep(view.params.cuts, function(e) {
-						return e.dimension == dimension;
+						return view.cube.dimensionParts(e.dimension).fullCutValue == view.cube.dimensionParts(dimension).fullCutValue;
 					}, true);
 					view.params.cuts.push({
 						"dimension" : dimension,
@@ -2243,7 +2246,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 				/*}*/
 			} else {
 				view.params.cuts = $.grep(view.params.cuts, function(e) {
-					return e.dimension == dimension;
+					return view.cube.dimensionParts(e.dimension).fullCutValue == view.cube.dimensionParts(dimension).fullCutValue;
 				}, true);
 			}
 		} else {
@@ -2255,7 +2258,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	};
 
 	$scope.showDimensionFilter = function(dimension) {
-		$scope.view.dimensionFilter = dimension;
+		if ($scope.view.dimensionFilter && $scope.view.dimensionFilter == dimension) {
+			$scope.view.dimensionFilter = null;
+		} else {
+			$scope.view.dimensionFilter = dimension;
+		}
 	};
 
 	/*
@@ -6881,7 +6888,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "        </ul>\n" +
     "\n" +
     "        <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
-    "            <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectDrill(dimension.name + ':' + level.name, true)\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "            <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"selectDrill(dimension.name + '@' + dimension.default_hierarchy().name + ':' + level.name, true)\"><a href=\"\">{{ level.label }}</a></li>\n" +
     "        </ul>\n" +
     "\n" +
     "      </li>\n" +
@@ -6927,7 +6934,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "            <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
     "                <!--  selectDrill(dimension.name + ':' + level.name, true) -->\n" +
-    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"showDimensionFilter(dimension.name + ':' + level.name);\"><a href=\"\">{{ level.label }}</a></li>\n" +
+    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"showDimensionFilter(dimension.name + '@' + dimension.default_hierarchy().name + ':' + level.name);\"><a href=\"\">{{ level.label }}</a></li>\n" +
     "            </ul>\n" +
     "\n" +
     "          </li>\n" +
