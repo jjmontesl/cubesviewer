@@ -78,6 +78,13 @@ angular.module('cv').config([ '$logProvider', 'cvOptions', /* 'editableOptions',
 
             gaTrackEvents: false,
 
+            geoMapLayers: {
+            	"world-osm": { label: "OpenStreetMap", source: "xyz", opacity: 1.0, attribution: "&copy; OpenStreetMap contributors", params: { url: 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' } },
+            	"world-continents": { label: "World Continents", source: "geojson", opacity: 1.0, attribution: "&copy; Resolve attribution", params: { url: 'maps/world-continents.geo.json' } },
+            	"world-countries": { label: "World Countries", source: "geojson", opacity: 1.0, attribution: "&copy; Resolve attribution", params: { url: 'maps/world-palestine.geo.json' } },
+            	"spain-ign-ortho": { label: "Spain IGN Orthophotos", source: "wmts", opacity: 1.0, attribution: "IGN Spain", params: { url: 'http://www.ign.es/wmts/pnoa-ma?service=WMTS', layer: 'OI.OrthoimageCoverage' } }
+            },
+
             debug: false
     };
 
