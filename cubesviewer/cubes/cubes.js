@@ -267,6 +267,7 @@
         var i;
 
         dim.name = md.name;
+        dim.label = md.name;
         !md.label || (dim.label = md.label);
         !md.description || (dim.description = md.description);
         !md.default_hierarchy_name || (dim.default_hierarchy_name = md.default_hierarchy_name);
@@ -348,6 +349,7 @@
         var i;
 
         hier.name = desc.name;
+        hier.label = hier.name;
         !desc.label || (hier.label = desc.label)
         !desc.description || (hier.description = desc.description)
         !desc.info || (hier.info = desc.info);
