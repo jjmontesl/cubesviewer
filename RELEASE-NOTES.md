@@ -105,6 +105,6 @@ Upgrading from 0.9 or earlier
 -----------------------------
 
 CubesViewer 0.9 supported older Cubes 0.10.x. This version of Cubes is no longer supported
-by CubesViewer and thus you need to upgrade your Cubes Server installation first.
-
+by CubesViewer and thus you need to upgrade your Cubes Server installation first and
+reinstall CubesViewer.
 
