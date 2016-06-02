@@ -305,6 +305,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
         var i;
 
         dim.name = md.name;
+        dim.label = md.name;
         !md.label || (dim.label = md.label);
         !md.description || (dim.description = md.description);
         !md.default_hierarchy_name || (dim.default_hierarchy_name = md.default_hierarchy_name);
@@ -386,6 +387,7 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
         var i;
 
         hier.name = desc.name;
+        hier.label = hier.name;
         !desc.label || (hier.label = desc.label)
         !desc.description || (hier.description = desc.description)
         !desc.info || (hier.info = desc.info);
@@ -6548,7 +6550,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "      <div class=\"modal-body\">\n" +
     "\n" +
     "            <p>\n" +
-    "                <i>This CubesViewer version supports Cubes Server version 1.0.x</i><br />\n" +
+    "                <i>This CubesViewer version supports Cubes Server version 1.0.x and 1.1.x</i><br />\n" +
     "                <br />\n" +
     "                <b>Server version:</b> {{ cubesService.cubesserver.server_version }} <br />\n" +
     "                <b>Cubes version:</b> {{ cubesService.cubesserver.cubes_version }} <br />\n" +

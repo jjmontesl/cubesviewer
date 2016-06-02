@@ -159,7 +159,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "      <div class=\"modal-body\">\n" +
     "\n" +
     "            <p>\n" +
-    "                <i>This CubesViewer version supports Cubes Server version 1.0.x</i><br />\n" +
+    "                <i>This CubesViewer version supports Cubes Server version 1.0.x and 1.1.x</i><br />\n" +
     "                <br />\n" +
     "                <b>Server version:</b> {{ cubesService.cubesserver.server_version }} <br />\n" +
     "                <b>Cubes version:</b> {{ cubesService.cubesserver.cubes_version }} <br />\n" +
