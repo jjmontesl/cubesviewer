@@ -220,6 +220,7 @@ cubesviewer._seriesAddRows = function($scope, data) {
 		var row = $.grep(rows, function(ed) { return ed["key"] == rowKey; });
 		if (row.length > 0) {
 			row[0][colKey] = value;
+			row[0]["_cell"] = e;
 		} else {
 			var newrow = {};
 			newrow["key"] = rowKey;
@@ -228,6 +229,8 @@ cubesviewer._seriesAddRows = function($scope, data) {
 			for (var i = baseidx ; i < key.length; i++) {
 				newrow["key" + (i - baseidx)] = key[i];
 			}
+
+			newrow["_cell"] = e;
 			rows.push ( newrow );
 		}
 
@@ -243,7 +246,7 @@ cubesviewer._seriesAddRows = function($scope, data) {
 				field: colKey,
 				index : colKey,
 				cellClass : "text-right",
-				sorttype : "number",
+				//sorttype : "number",
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				formatter: $scope.columnFormatFunction(ag),
 				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
@@ -251,8 +254,8 @@ cubesviewer._seriesAddRows = function($scope, data) {
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 				enableHiding: false,
-				width : $scope.defineColumnWidth(colKey, 90),
-				sort: $scope.defineColumnSort(colKey)
+				width: $scope.defineColumnWidth(colKey, 90),
+				sort: $scope.defineColumnSort(colKey),
 			};
 			view.grid.columnDefs.push(col);
 		}
@@ -275,7 +278,8 @@ cubesviewer._seriesAddRows = function($scope, data) {
 			//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 			//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 			width : $scope.defineColumnWidth("key" + idx, 190),
-			sort: $scope.defineColumnSort("key" + idx)
+			sort: $scope.defineColumnSort("key" + idx),
+			sortingAlgorithm: $scope.sortDimensionParts(view.cube.dimensionParts(e))
 		};
 		view.grid.columnDefs.splice(idx, 0, col);
 	});

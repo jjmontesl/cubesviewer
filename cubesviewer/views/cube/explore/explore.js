@@ -113,11 +113,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				visible: ! view.params.columnHide[ag.ref],
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				formatter: $scope.columnFormatFunction(ag),
-				footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col),
 				sort: $scope.defineColumnSort(ag.ref)
 				//formatoptions: {},
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 			};
+			col.footerValue = $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col);
 			col.footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 			view.grid.columnDefs.push(col);
 
@@ -125,7 +125,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		});
 
 		// If there are cells, show them
-		$scope._sortData(data.cells, false);
+		//$scope._sortData(data.cells, false);
 		$scope._addRows(data);
 
 		/*
@@ -162,7 +162,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				width : $scope.defineColumnWidth("key" + i, 190),
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><a href="" ng-click="grid.appScope.selectCut(col.colDef.cutDimension, COL_FIELD.cutValue, false)">{{ COL_FIELD.title }}</a></div>',
 				footerCellTemplate: '<div class="ui-grid-cell-contents">' + footer + '</div>',
-				sort: $scope.defineColumnSort("key" + i)
+				sort: $scope.defineColumnSort("key" + i),
+				sortingAlgorithm: $scope.sortDimensionParts(parts)
 			});
 		}
 
@@ -174,7 +175,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				enableHiding: false,
 				align: "left",
 				width : $scope.defineColumnWidth("key" + 0, 190),
-				sort: $scope.defineColumnSort("key" + 0)
+				sort: $scope.defineColumnSort("key" + 0),
+				//type: "string"
 			});
 		}
 
@@ -214,7 +216,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				nid.push(drilldownLevelValues.join("-"));
 
 				var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
-				key.push({ cutValue: drilldownLevelValues.join(","), title: drilldownLevelLabels.join(" / ")});
+				key.push({ cutValue: drilldownLevelValues.join(","), title: drilldownLevelLabels.join(" / ") });
 			}
 
 			// Set key
@@ -230,6 +232,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 			});
 
 			row["id"] = nid.join('-');
+			row["_cell"] = e;
 			rows.push(row);
 		});
 
@@ -324,12 +327,6 @@ function cubesviewerViewCubeExplore() {
 		};
 	};
 
-
-	this._onTableSort = function (view) {
-		return function (index, iCol, sortorder) {
-			view.cubesviewer.views.cube.explore.onTableSort (view, index, iCol, sortorder);
-		}
-	}
 
 };
 

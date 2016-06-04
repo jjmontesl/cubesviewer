@@ -95,9 +95,11 @@ handle the *$(document).ready()* event.
 First, inside this method,
 
 * Initialize CubesViewer (the URL of the Cubes server needs to be passed)
-* Use *cubesviewer.views.createView* to create a view in your container (options
+* Use `cubesviewer.createView()` to create a view in your container (options
   can be defined with a JSON string or a Javascript array).
-* View need to be refreshed after initializing them (calling *cubesviewer.refresh()*).
+* You need to wrap your calls to CubesViewer in a `cubesviewer.apply()`.
+  (note: if you are using CubesViewer from an Angular application, you don't
+  need to do this, but you should be using CubesViewer directives directly.
 
 
 ```

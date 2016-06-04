@@ -422,10 +422,11 @@
 
     cubes.Level.prototype.order_attribute = function() {
         var the_attr = null;
-        if ( this._order_attribute ) {
-          the_attr = _.find(this.attributes, function(a) { a.name === this.__order_attribute; });
+        var order_attribute = this._order_attribute;
+        if (order_attribute ) {
+          the_attr = _.find(this.attributes, function(a) { return a.name === order_attribute; });
         }
-        return the_attr || this.key();
+        return the_attr || this.label_attribute();
     };
 
     cubes.Level.prototype.toString = function() {

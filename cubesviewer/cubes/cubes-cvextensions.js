@@ -147,10 +147,12 @@ cubes.Level.prototype.readCell = function(cell) {
 	var result = {};
 	result.key = cell[this.key().ref];
 	result.label = cell[this.label_attribute().ref];
+	result.orderValue = cell[this.order_attribute().ref];
 	result.info = {};
 	$(this.attributes).each(function(idx, attribute) {
 		result.info[attribute.ref] = cell[attribute.ref];
 	});
+
 	return result;
 };
 

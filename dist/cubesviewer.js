@@ -460,10 +460,11 @@ angular.module('bootstrapSubmenu', []).directive("submenu", ['$timeout', functio
 
     cubes.Level.prototype.order_attribute = function() {
         var the_attr = null;
-        if ( this._order_attribute ) {
-          the_attr = _.find(this.attributes, function(a) { a.name === this.__order_attribute; });
+        var order_attribute = this._order_attribute;
+        if (order_attribute ) {
+          the_attr = _.find(this.attributes, function(a) { return a.name === order_attribute; });
         }
-        return the_attr || this.key();
+        return the_attr || this.label_attribute();
     };
 
     cubes.Level.prototype.toString = function() {
@@ -986,10 +987,12 @@ cubes.Level.prototype.readCell = function(cell) {
 	var result = {};
 	result.key = cell[this.key().ref];
 	result.label = cell[this.label_attribute().ref];
+	result.orderValue = cell[this.order_attribute().ref];
 	result.info = {};
 	$(this.attributes).each(function(idx, attribute) {
 		result.info[attribute.ref] = cell[attribute.ref];
 	});
+
 	return result;
 };
 
@@ -2254,6 +2257,36 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	};
 
+
+	/*
+	 * Filters current selection
+	 */
+	$scope.filterSelected = function() {
+
+		var view = $scope.view;
+
+		if (view.params.drilldown.length != 1) {
+			dialogService.show('Can only filter multiple values in a view with one level of drilldown.');
+			return;
+		}
+
+		if (view.grid.api.selection.getSelectedCount() <= 0) {
+			dialogService.show('Cannot filter. No rows are selected.');
+			return;
+		}
+
+		var filterValues = [];
+		var selectedRows = view.grid.api.selection.getSelectedRows();
+		$(selectedRows).each( function(idx, gd) {
+			filterValues.push(gd["key0"].cutValue);
+		});
+
+		var invert = false;
+		$scope.selectCut(view.grid.columnDefs[0].cutDimension, filterValues.join(";"), invert);
+
+	};
+
+
 	$scope.showDimensionFilter = function(dimension) {
 		if ($scope.view.dimensionFilter && $scope.view.dimensionFilter == dimension) {
 			$scope.view.dimensionFilter = null;
@@ -2359,6 +2392,81 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			};
 		}
 		return columnSort;
+	};
+
+	/**
+	 * Function to compare two values by guessing the
+	 * data type.
+	 *
+	 * @return An integer, negative or positive depending on relative inputs ordering.
+	 */
+	$scope.sortValues = function(a, b) {
+		if (typeof a == "number" && typeof b == "number") {
+			return a - b;
+		} else if (typeof a == "string" && typeof b == "string") {
+			if ($.isNumeric(a) && $.isNumeric(b)) {
+				return parseFloat(a) - parseFloat(b);
+			} else {
+				return a.localeCompare(b);
+			}
+		} else if (a == null && b == null) {
+			return 0;
+		} else if (a == null) {
+			return 1;
+		} else if (b == null) {
+			return -1;
+		} else {
+			return a - b;
+		}
+	};
+
+	/**
+	 * Called to sort a column which is a dimension drilled down to a particular level.
+	 * This is called by UIGrid, since this method is used as `compareAlgorithm` for it.
+	 *
+	 * @returns A compare function.
+	 */
+	$scope.sortDimensionParts = function(dimparts) {
+
+		var cmpFunction = function(a, b, rowA, rowB, direction) {
+			var result = 0;
+
+			for (var j = 0; result == 0 && j < dimparts.hierarchy.levels.length; j++) {
+				var level = dimparts.hierarchy.levels[j];
+				var order_attribute = level.order_attribute();
+				var fieldname = order_attribute.ref;
+				if ((fieldname in rowA.entity._cell) && (fieldname in rowB.entity._cell)) {
+					result = $scope.sortValues(rowA.entity._cell[fieldname], rowB.entity._cell[fieldname]);
+				} else {
+					break;
+				}
+			}
+
+			return result;
+		};
+
+		return cmpFunction;
+	};
+
+	/**
+	 * Called to sort a column which is a level of a dimension, without a hierarchy
+	 * context. This is ie. used from the Facts view (where levels are sorted independently).
+	 *
+	 * This is called by UIGrid, since this method is used as `compareAlgorithm` for it.
+	 *
+	 * @returns A compare function.
+	 */
+	$scope.sortDimensionLevel = function(level) {
+		var cmpFunction = function(a, b, rowA, rowB, direction) {
+			var result = 0;
+			var order_attribute = level.order_attribute();
+			var fieldname = order_attribute.ref;
+			if ((fieldname in rowA.entity._cell) && (fieldname in rowB.entity._cell)) {
+				result = $scope.sortValues(rowA.entity._cell[fieldname], rowB.entity._cell[fieldname]);
+			}
+			return result;
+		};
+		return cmpFunction;
 	};
 
 	$scope.onResize = function() {
@@ -2531,11 +2639,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				visible: ! view.params.columnHide[ag.ref],
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				formatter: $scope.columnFormatFunction(ag),
-				footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col),
 				sort: $scope.defineColumnSort(ag.ref)
 				//formatoptions: {},
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 			};
+			col.footerValue = $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col);
 			col.footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 			view.grid.columnDefs.push(col);
 
@@ -2543,7 +2651,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		});
 
 		// If there are cells, show them
-		$scope._sortData(data.cells, false);
+		//$scope._sortData(data.cells, false);
 		$scope._addRows(data);
 
 		/*
@@ -2580,7 +2688,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				width : $scope.defineColumnWidth("key" + i, 190),
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><a href="" ng-click="grid.appScope.selectCut(col.colDef.cutDimension, COL_FIELD.cutValue, false)">{{ COL_FIELD.title }}</a></div>',
 				footerCellTemplate: '<div class="ui-grid-cell-contents">' + footer + '</div>',
-				sort: $scope.defineColumnSort("key" + i)
+				sort: $scope.defineColumnSort("key" + i),
+				sortingAlgorithm: $scope.sortDimensionParts(parts)
 			});
 		}
 
@@ -2592,7 +2701,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				enableHiding: false,
 				align: "left",
 				width : $scope.defineColumnWidth("key" + 0, 190),
-				sort: $scope.defineColumnSort("key" + 0)
+				sort: $scope.defineColumnSort("key" + 0),
+				//type: "string"
 			});
 		}
 
@@ -2632,7 +2742,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				nid.push(drilldownLevelValues.join("-"));
 
 				var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
-				key.push({ cutValue: drilldownLevelValues.join(","), title: drilldownLevelLabels.join(" / ")});
+				key.push({ cutValue: drilldownLevelValues.join(","), title: drilldownLevelLabels.join(" / ") });
 			}
 
 			// Set key
@@ -2648,6 +2758,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 			});
 
 			row["id"] = nid.join('-');
+			row["_cell"] = e;
 			rows.push(row);
 		});
 
@@ -2672,37 +2783,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		//data.sort(cubesviewer._drilldownSortFunction(view.id, includeXAxis));
 	};
 
-	/*
-	 * Filters current selection
-	 */
-	$scope.filterSelected = function() {
-
-		var view = $scope.view;
-
-		if (view.params.drilldown.length != 1) {
-			dialogService.show('Can only filter multiple values in a view with one level of drilldown.');
-			return;
-		}
-
-		if (view.grid.api.selection.getSelectedCount() <= 0) {
-			dialogService.show('Cannot filter. No rows are selected.');
-			return;
-		}
-
-		var filterValues = [];
-		var selectedRows = view.grid.api.selection.getSelectedRows();
-		$(selectedRows).each( function(idx, gd) {
-			filterValues.push(gd["key0"].cutValue);
-		});
-
-		var invert = false;
-		$scope.selectCut(view.grid.columnDefs[0].cutDimension, filterValues.join(";"), invert);
-
-	};
-
-	$scope.$on('filterSelected', function () {
-		$scope.filterSelected();
-	});
 
 	$scope.$on("$destroy", function() {
 		$scope.view.grid.data = [];
@@ -2773,12 +2853,6 @@ function cubesviewerViewCubeExplore() {
 		};
 	};
 
-
-	this._onTableSort = function (view) {
-		return function (index, iCol, sortorder) {
-			view.cubesviewer.views.cube.explore.onTableSort (view, index, iCol, sortorder);
-		}
-	}
 
 };
 
@@ -3231,8 +3305,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>'
 					visible: ! view.params.columnHide[level.key().ref],
 					width : $scope.defineColumnWidth(level.key().ref, 95),
-					sort: $scope.defineColumnSort(level.key().ref)
-
+					sort: $scope.defineColumnSort(level.key().ref),
+					sortingAlgorithm: $scope.sortDimensionLevel(level)
 				};
 				view.grid.columnDefs.push(col);
 			}
@@ -3247,7 +3321,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				index : measure.ref,
 				cellClass : "text-right",
 				headerCellClass: "cv-grid-header-measure",
-				sorttype : "number",
+				//type : "number",
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				formatter: $scope.columnFormatFunction(measure),
 				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
@@ -3256,7 +3330,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 				visible: ! view.params.columnHide[measure.ref],
 				width : $scope.defineColumnWidth(measure.ref, 75),
-				sort: $scope.defineColumnSort(measure.ref)
+				sort: $scope.defineColumnSort(measure.ref),
 			};
 			view.grid.columnDefs.push(col);
 		}
@@ -3278,7 +3352,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>'
 				visible: ! view.params.columnHide[detail.ref],
 				width: $scope.defineColumnWidth(detail.ref, 95),
-				sort: $scope.defineColumnSort(detail.ref)
+				sort: $scope.defineColumnSort(detail.ref),
+				sortingAlgorithm: $scope.sortValues
 			};
             view.grid.columnDefs.push(col);
         }
@@ -3336,6 +3411,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 			row["id"] = counter++;
 			if ("id" in e) row["id"] = e["id"];
 			row["key"] = row["id"];
+
+			row["_cell"] = e;
 
 			rows.push(row);
 		});
@@ -3576,6 +3653,7 @@ cubesviewer._seriesAddRows = function($scope, data) {
 		var row = $.grep(rows, function(ed) { return ed["key"] == rowKey; });
 		if (row.length > 0) {
 			row[0][colKey] = value;
+			row[0]["_cell"] = e;
 		} else {
 			var newrow = {};
 			newrow["key"] = rowKey;
@@ -3584,6 +3662,8 @@ cubesviewer._seriesAddRows = function($scope, data) {
 			for (var i = baseidx ; i < key.length; i++) {
 				newrow["key" + (i - baseidx)] = key[i];
 			}
+
+			newrow["_cell"] = e;
 			rows.push ( newrow );
 		}
 
@@ -3599,7 +3679,7 @@ cubesviewer._seriesAddRows = function($scope, data) {
 				field: colKey,
 				index : colKey,
 				cellClass : "text-right",
-				sorttype : "number",
+				//sorttype : "number",
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				formatter: $scope.columnFormatFunction(ag),
 				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
@@ -3607,8 +3687,8 @@ cubesviewer._seriesAddRows = function($scope, data) {
 				//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 				enableHiding: false,
-				width : $scope.defineColumnWidth(colKey, 90),
-				sort: $scope.defineColumnSort(colKey)
+				width: $scope.defineColumnWidth(colKey, 90),
+				sort: $scope.defineColumnSort(colKey),
 			};
 			view.grid.columnDefs.push(col);
 		}
@@ -3631,7 +3711,8 @@ cubesviewer._seriesAddRows = function($scope, data) {
 			//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 			//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 			width : $scope.defineColumnWidth("key" + idx, 190),
-			sort: $scope.defineColumnSort("key" + idx)
+			sort: $scope.defineColumnSort("key" + idx),
+			sortingAlgorithm: $scope.sortDimensionParts(view.cube.dimensionParts(e))
 		};
 		view.grid.columnDefs.splice(idx, 0, col);
 	});
@@ -6907,7 +6988,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "  <ul class=\"dropdown-menu dropdown-menu-right cv-view-menu cv-view-menu-cut\">\n" +
     "\n" +
-    "    <li ng-show=\"view.params.mode == 'explore'\" ng-click=\"$rootScope.$broadcast('filterSelected')\" ng-class=\"{ 'disabled': view.params.drilldown.length != 1 }\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected rows</a></li>\n" +
+    "    <li ng-show=\"view.params.mode == 'explore'\" ng-click=\"filterSelected()\" ng-class=\"{ 'disabled': view.params.drilldown.length != 1 }\"><a href=\"\"><i class=\"fa fa-fw fa-filter\"></i> Filter selected rows</a></li>\n" +
     "    <div ng-show=\"view.params.mode == 'explore'\" class=\"divider\"></div>\n" +
     "\n" +
     "    <li class=\"dropdown-submenu\">\n" +

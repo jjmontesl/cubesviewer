@@ -38,7 +38,7 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Better loading bar (account for pending requests, etc).
     * Default cube settings (cv-info) feature bug? it should only be applied if the view is not otherwise configured (ie loaded or json). Check.
 
-    * Major architecture improvements:
+    * Architecture improvements:
         * Abstract backend?? Create CV objects for dimensions, levels, etc... Plug cubes as one more adaptor???
         * Divide in reusable angular directives (ie. start with fact viewer). JS doc. Make views
           proper objects.
@@ -48,6 +48,8 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
         * Abstract data/grid in cubeview? -> Add own data dictionary (<->CubETL).
         * (Use controllerAs).
         * Make cubesviewer-studio an angular app.
+
+    * Save filters (segments). Info pieces shall be made directives first.
 
 [2.4]
 
@@ -129,6 +131,7 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * 2 columns issue: use masonry. Column / row / subview management needs re-thinking (subcontainer?).
 
     * Fix: toggling legend does not redraw chart (just moves legend?). Redrawing the chart (ie switching view mode) actually works.
+      Same for sometimes drilling down or changing a filter, grid doens't get correct size.
     * Size change when switching views is very irritating. Hack that (fix height during changes/reloads?). Also loading bar.
     * Possible repeated data load / events?
     * Refresh: use watches to trigger invalidation? (also check for repeated events).

@@ -467,6 +467,81 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		return columnSort;
 	};
 
+	/**
+	 * Function to compare two values by guessing the
+	 * data type.
+	 *
+	 * @return An integer, negative or positive depending on relative inputs ordering.
+	 */
+	$scope.sortValues = function(a, b) {
+		if (typeof a == "number" && typeof b == "number") {
+			return a - b;
+		} else if (typeof a == "string" && typeof b == "string") {
+			if ($.isNumeric(a) && $.isNumeric(b)) {
+				return parseFloat(a) - parseFloat(b);
+			} else {
+				return a.localeCompare(b);
+			}
+		} else if (a == null && b == null) {
+			return 0;
+		} else if (a == null) {
+			return 1;
+		} else if (b == null) {
+			return -1;
+		} else {
+			return a - b;
+		}
+	};
+
+	/**
+	 * Called to sort a column which is a dimension drilled down to a particular level.
+	 * This is called by UIGrid, since this method is used as `compareAlgorithm` for it.
+	 *
+	 * @returns A compare function.
+	 */
+	$scope.sortDimensionParts = function(dimparts) {
+
+		var cmpFunction = function(a, b, rowA, rowB, direction) {
+			var result = 0;
+
+			for (var j = 0; result == 0 && j < dimparts.hierarchy.levels.length; j++) {
+				var level = dimparts.hierarchy.levels[j];
+				var order_attribute = level.order_attribute();
+				var fieldname = order_attribute.ref;
+				if ((fieldname in rowA.entity._cell) && (fieldname in rowB.entity._cell)) {
+					result = $scope.sortValues(rowA.entity._cell[fieldname], rowB.entity._cell[fieldname]);
+				} else {
+					break;
+				}
+			}
+
+			return result;
+		};
+
+		return cmpFunction;
+	};
+
+	/**
+	 * Called to sort a column which is a level of a dimension, without a hierarchy
+	 * context. This is ie. used from the Facts view (where levels are sorted independently).
+	 *
+	 * This is called by UIGrid, since this method is used as `compareAlgorithm` for it.
+	 *
+	 * @returns A compare function.
+	 */
+	$scope.sortDimensionLevel = function(level) {
+		var cmpFunction = function(a, b, rowA, rowB, direction) {
+			var result = 0;
+			var order_attribute = level.order_attribute();
+			var fieldname = order_attribute.ref;
+			if ((fieldname in rowA.entity._cell) && (fieldname in rowB.entity._cell)) {
+				result = $scope.sortValues(rowA.entity._cell[fieldname], rowB.entity._cell[fieldname]);
+			}
+			return result;
+		};
+		return cmpFunction;
+	};
+
 	$scope.onResize = function() {
 		$rootScope.$broadcast('ViewResize');
 	};

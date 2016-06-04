@@ -88,12 +88,16 @@ Upgrading from 0.10 or 0.11
 3. The "Range Filter" feature hasn't yet been upgraded from previous version and
    is not available. If you were using "Range Filter" these will not show up.
 
-4. For CubesViewer clients to connect to Cubes server ("slicer"), your Cubes server
+4. Column sorting now follows `order_attribute` from model. Depending on your
+   model definition, you may find that some columns are not ordered as in 0.x.
+   See documentation "CubesViewer Model options" for details.
+
+5. For CubesViewer clients to connect to Cubes server ("slicer"), your Cubes server
    possibly needs to allow cross origin resource sharing (CORS). To enable it,
    add `allow_cors_origin: *` (or a more restrictive setting)
    under the `[server]` section of the `slicer.ini` file.
 
-5. If you are using CubesViewer Server, you need to upgrade your database after
+6. If you are using CubesViewer Server, you need to upgrade your database after
    upgrading the application package. As with any Django app,
    run `python manage.py migrate`.
 

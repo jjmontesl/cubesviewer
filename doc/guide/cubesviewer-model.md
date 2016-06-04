@@ -17,6 +17,29 @@ Cubes supports the `label` attribute on every object. If available, CubesViewer 
 when referring to Cubes, Dimensions, Hierarchies, Levels and other Cubes objects.
 
 
+Ordering
+--------
+
+When sorting data, CubesViewer will follow the `order_attribute` in your model definition if available.
+Cubes default order_attribute is the key, which is often not desired, therefore setting this parameter
+in your model is recommended.
+
+You can control ordering by setting the `order_attribute` for dimension levels in the model:
+
+```
+    "levels": [
+           {
+               "name":"month",
+               "label":"Month"
+               "role": "month",
+               'attributes': ['month', 'month_name']
+               "label_attribute": "month_name,
+               "order_attribute": "month",
+           },
+           ...
+```
+
+
 Date Filtering
 --------------
 
@@ -50,11 +73,16 @@ This is an example dimension "date_created" showing this configuration:
                    },
                    {
                        "name":"quarter",
-                       "label":"Quarter"
+                       "label":"Quarter",
+                       "role": "quarter"
                    },
                    {
                        "name":"month",
                        "label":"Month"
+                       "role": "month",
+                       "order_attribute": "month",
+                       "label_attribute": "month_name,
+                       'attributes': ['month', 'month_name']
                    },
                    {
                        "name":"week",

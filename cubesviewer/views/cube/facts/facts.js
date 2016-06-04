@@ -134,8 +134,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 					//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>'
 					visible: ! view.params.columnHide[level.key().ref],
 					width : $scope.defineColumnWidth(level.key().ref, 95),
-					sort: $scope.defineColumnSort(level.key().ref)
-
+					sort: $scope.defineColumnSort(level.key().ref),
+					sortingAlgorithm: $scope.sortDimensionLevel(level)
 				};
 				view.grid.columnDefs.push(col);
 			}
@@ -150,7 +150,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				index : measure.ref,
 				cellClass : "text-right",
 				headerCellClass: "cv-grid-header-measure",
-				sorttype : "number",
+				//type : "number",
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
 				formatter: $scope.columnFormatFunction(measure),
 				//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
@@ -159,7 +159,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>';
 				visible: ! view.params.columnHide[measure.ref],
 				width : $scope.defineColumnWidth(measure.ref, 75),
-				sort: $scope.defineColumnSort(measure.ref)
+				sort: $scope.defineColumnSort(measure.ref),
 			};
 			view.grid.columnDefs.push(col);
 		}
@@ -181,7 +181,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>'
 				visible: ! view.params.columnHide[detail.ref],
 				width: $scope.defineColumnWidth(detail.ref, 95),
-				sort: $scope.defineColumnSort(detail.ref)
+				sort: $scope.defineColumnSort(detail.ref),
+				sortingAlgorithm: $scope.sortValues
 			};
             view.grid.columnDefs.push(col);
         }
@@ -239,6 +240,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 			row["id"] = counter++;
 			if ("id" in e) row["id"] = e["id"];
 			row["key"] = row["id"];
+
+			row["_cell"] = e;
 
 			rows.push(row);
 		});
