@@ -254,37 +254,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		//data.sort(cubesviewer._drilldownSortFunction(view.id, includeXAxis));
 	};
 
-	/*
-	 * Filters current selection
-	 */
-	$scope.filterSelected = function() {
-
-		var view = $scope.view;
-
-		if (view.params.drilldown.length != 1) {
-			dialogService.show('Can only filter multiple values in a view with one level of drilldown.');
-			return;
-		}
-
-		if (view.grid.api.selection.getSelectedCount() <= 0) {
-			dialogService.show('Cannot filter. No rows are selected.');
-			return;
-		}
-
-		var filterValues = [];
-		var selectedRows = view.grid.api.selection.getSelectedRows();
-		$(selectedRows).each( function(idx, gd) {
-			filterValues.push(gd["key0"].cutValue);
-		});
-
-		var invert = false;
-		$scope.selectCut(view.grid.columnDefs[0].cutDimension, filterValues.join(";"), invert);
-
-	};
-
-	$scope.$on('filterSelected', function () {
-		$scope.filterSelected();
-	});
 
 	$scope.$on("$destroy", function() {
 		$scope.view.grid.data = [];

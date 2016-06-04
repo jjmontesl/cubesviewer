@@ -126,12 +126,14 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Add "plus / minus" signs to dimension filters and drilldown/horizontal when more than one level.
     * Tooltip columns: column=val remove columnTooltipAttr, enable tooltips?
     * Regression: tooltips (column label = formatted value), and row highlighting. Also row selection odd/even issue.
+    * 2 columns issue: use masonry. Column / row / subview management needs re-thinking (subcontainer?).
 
-    * Size change when switching views is very irritating. Hack that (fix height during changes/reloads?).
-    * Sorting issues.
+    * Fix: toggling legend does not redraw chart (just moves legend?). Redrawing the chart (ie switching view mode) actually works.
+    * Size change when switching views is very irritating. Hack that (fix height during changes/reloads?). Also loading bar.
     * Possible repeated data load / events?
     * Refresh: use watches to trigger invalidation? (also check for repeated events).
 
 [2.0.1]
 
     * Remove -devel from version, -beta from doc, Disable debug mode, Release notes, Tag repo (release), Announcement, Move this todo item to next release top.
+    * Sorting issues (dimension, charts, custom sorting functions, review old state).
