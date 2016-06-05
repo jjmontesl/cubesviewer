@@ -21,7 +21,12 @@
  * SOFTWARE.
  */
 
-/*
+/**
+ *
+    "cv-geo-feature-layer": "world-countries",
+    "cv-geo-feature-attribute": "geo_code",
+    "cv-geo-feature-mode": "cloropleth"
+ *
  */
 angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapController", ['$rootScope', '$scope', '$element', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
                                                      function ($rootScope, $scope, $element, $timeout, cvOptions, cubesService, viewsService) {
@@ -61,51 +66,58 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	    });
 
 	    var vector = new ol.layer.Vector({
+	    	title: "Features layer",
 	    	source: new ol.source.Vector({
-	    		url: 'maps/countries_world_20150828.kml',
-	    		format: new ol.format.KML()
-	        })
+	    		url: 'maps/ne_110m_admin_0_countries.geo.json',
+	    		format: new ol.format.GeoJSON(),
+	    		projection: projection,
+	        }),
+	        projection: projection
 	    });
 
-	    var map = new ol.Map({
-	    	layers: [raster],
+	    $scope.map = new ol.Map({
+	    	layers: [vector],  // raster
 	        target: container,
 	        view: new ol.View({
 	        	center: [876970.8463461736, 5859807.853963373],
-	        	projection: projection,
-	        	zoom: 10
+	        	projection: ol.proj.get('EPSG:3857'),
+	        	zoom: 6
 	        })
 	    });
 
+	    $scope.layerVector = vector;
 
-		/*
-	    // TODO: Check there's only one value column
-		var d = [];
+	    $timeout(function() {
+	    // Walk rows to define features
 	    var numRows = dataRows.length;
-	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
-	    	serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		if (columnDefs[i].field in e) {
 	    			var value = e[columnDefs[i].field];
-	    			serie.push( { "x": i, "y":  (value != undefined) ? value : 0 } );
-	    		} else  {
-	    			if (view.params.charttype == "lines-stacked") {
-	    				serie.push( { "x": i, "y":  0 } );
+
+//	    			console.debug(e._cell);
+
+	    			if (value !== undefined) {
+	    				//serie.push( { "x": i, "y":  (value != undefined) ? value : 0 } );
+	    				$($scope.layerVector.getSource().getFeatures()).each(function(idx, feature) {
+//	    					console.debug(feature);
+	    					if (feature.getProperties().iso_a2 == e._cell['geo.geo_code']) {
+//	    						console.debug("Match");
+	    						feature.setStyle(
+	    							new ol.style.Style({
+	    								fill: new ol.style.Fill({color: "#ff0000", opacity: 0.7}),  // colorArr[colorindex]
+	    								stroke: new ol.style.Stroke({color: "#ffffff", width: 2,opacity: 0.7} )
+	    							})
+	    						);
+	    					}
+	    				});
 	    			}
 	    		}
 	    	}
-	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
-	    	if (view.params["chart-disabledseries"]) {
-	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
-	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
-	    		}
-	    	}
-	    	d.push(series);
-	    	serieCount++;
 	    });
-	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+	    }, 4000);
 
+	    /*
 	    var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
 	    var colFormatter = $scope.columnFormatFunction(ag);
 

@@ -3,7 +3,7 @@
         <div class="cv-chart-container">
             <div class="cv-map-container" style="height: 400px;" ></div>
         </div>
-        <div style="font-size: 8px; float: right;">
+        <div ng-hide="view.getControlsHidden()" style="font-size: 8px; float: right;">
             <a href="" class="cv-chart-height" ng-click="resizeChart(400);">Small</a>
             <a href="" class="cv-chart-height" ng-click="resizeChart(550);">Medium</a>
             <a href="" class="cv-chart-height" ng-click="resizeChart(700);">Tall</a>
