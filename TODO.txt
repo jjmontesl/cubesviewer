@@ -119,6 +119,8 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
 
 [2.0.2]
 
+    * Remove -devel from version, -beta from doc, generate files, copy to web and server, same on server.
+      Release notes, Tag repo (release), Announcement, Move this todo item to next release top.
     * Cleanup code.
     * Test and close issue #39, "strings with hyphen cause dimension filter to work inexpectedly" as shall be fixed.
     * _Firefox_ menu wrap in Studio menu (not in Chrome nor View menu?)
@@ -136,7 +138,3 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Possible repeated data load / events?
     * Refresh: use watches to trigger invalidation? (also check for repeated events).
 
-[2.0.1]
-
-    * Remove -devel from version, -beta from doc, Disable debug mode, Release notes, Tag repo (release), Announcement, Move this todo item to next release top.
-    * Sorting issues (dimension, charts, custom sorting functions, review old state).

@@ -133,7 +133,7 @@ angular.module('cv').run([ '$timeout', '$log', 'cvOptions', 'cubesService', 'cub
 function CubesViewer() {
 
 	// CubesViewer version
-	this.version = "2.0.1-devel";
+	this.version = "2.0.1";
 
 	/**
 	 * State of a view that has not yet been fully initialized, and cannot be interacted with.
