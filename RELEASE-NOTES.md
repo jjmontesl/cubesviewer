@@ -22,7 +22,7 @@ that greatly eases development and paves the way for following versions.
 
 CubesViewer has undergone a major upgrade. The code is now built upon
 *AngularJS*, and the UI framework has been migrated from jQueryUI to
-*Bootstrap* and Angular Bootstrap components. HTML has been rewritten
+*Bootstrap* and *Angular Bootstrap* components. HTML has been rewritten
 and separated into easier to handle templates.
 
 The application is now more *responsive* and *mobile friendly*
