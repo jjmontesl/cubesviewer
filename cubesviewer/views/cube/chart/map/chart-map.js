@@ -89,7 +89,18 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 
 	    $timeout(function() {
 	    // Walk rows to define features
-	    var numRows = dataRows.length;
+
+	    var allValues = [];
+	    $(dataRows).each(function(idx, e) {
+	    	for (var i = 1; i < columnDefs.length; i++) {
+	    		if (columnDefs[i].field in e) {
+	    			var value = e[columnDefs[i].field];
+	    			allValues.push(value);
+	    		}
+	    	}
+	    });
+
+    	var numRows = dataRows.length;
 	    $(dataRows).each(function(idx, e) {
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		if (columnDefs[i].field in e) {
@@ -103,9 +114,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 //	    					console.debug(feature);
 	    					if (feature.getProperties().iso_a2 == e._cell['geo.geo_code']) {
 //	    						console.debug("Match");
+	    						var colorScale = d3.scale.linear().range(['white','red']);
+	    						var color = d3.scale.linear().range(['white','red'])(d3.scale.quantize().domain([d3.min(allValues), d3.max(allValues)]).range([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])(value));
 	    						feature.setStyle(
 	    							new ol.style.Style({
-	    								fill: new ol.style.Fill({color: "#ff0000", opacity: 0.7}),  // colorArr[colorindex]
+	    								fill: new ol.style.Fill({color: color, opacity: 0.7}),  // colorArr[colorindex]
 	    								stroke: new ol.style.Stroke({color: "#ffffff", width: 2,opacity: 0.7} )
 	    							})
 	    						);
