@@ -76,7 +76,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	    });
 
 	    $scope.map = new ol.Map({
-	    	layers: [vector],  // raster
+	    	layers: [raster, vector],  // raster
 	        target: container,
 	        view: new ol.View({
 	        	center: [876970.8463461736, 5859807.853963373],
@@ -100,11 +100,29 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	    	}
 	    });
 
+	    var createTextStyle = function(feature, text) {
+	    	return new ol.style.Text({
+	    	    textAlign: 'center',
+	    	    textBaseline: 'middle',
+	    	    font: '10px Verdana',
+	    	    text: text, // getText(feature),
+	    	    fill: new ol.style.Fill({color: 'black'}),
+	    	    stroke: new ol.style.Stroke({color: 'white', width: 1.0})
+    	  	});
+    	};
+
+    	var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+    	var colFormatter = $scope.columnFormatFunction(ag);
+
     	var numRows = dataRows.length;
 	    $(dataRows).each(function(idx, e) {
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		if (columnDefs[i].field in e) {
+
+
 	    			var value = e[columnDefs[i].field];
+	    			var valueFormatted = colFormatter(value);
+	    			var label = e._cell['geo.geo_label'];
 
 //	    			console.debug(e._cell);
 
@@ -114,12 +132,13 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 //	    					console.debug(feature);
 	    					if (feature.getProperties().iso_a2 == e._cell['geo.geo_code']) {
 //	    						console.debug("Match");
-	    						var colorScale = d3.scale.linear().range(['white','red']);
-	    						var color = d3.scale.linear().range(['white','red'])(d3.scale.quantize().domain([d3.min(allValues), d3.max(allValues)]).range([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])(value));
+	    						var colorScale = d3.scale.linear().range(['white', 'red']);
+	    						var color = colorScale(d3.scale.quantize().domain([d3.min(allValues), d3.max(allValues)]).range([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])(value));
 	    						feature.setStyle(
 	    							new ol.style.Style({
 	    								fill: new ol.style.Fill({color: color, opacity: 0.7}),  // colorArr[colorindex]
-	    								stroke: new ol.style.Stroke({color: "#ffffff", width: 2,opacity: 0.7} )
+	    								stroke: new ol.style.Stroke({color: "#ffffff", width: 2,opacity: 0.7} ),
+	    								text: createTextStyle(feature, label + "\n" + valueFormatted)
 	    							})
 	    						);
 	    					}
@@ -128,7 +147,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	    		}
 	    	}
 	    });
-	    }, 4000);
+	    }, 2000);
 
 	    /*
 	    var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
