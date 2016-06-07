@@ -155,7 +155,7 @@ See AUTHORS file for more information.
 License
 =======
 
-CubesViewer is licensed under MIT license.
+CubesViewer is published under MIT license.
 
 For full license see the LICENSE file.
 
