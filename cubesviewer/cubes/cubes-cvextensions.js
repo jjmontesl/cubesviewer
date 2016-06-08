@@ -88,9 +88,11 @@ cubes.Cube.prototype.dimensionParts = function(dimensionString) {
 	}
 
 	var lev = null;
+	var levelIndex = 0;
 	if (dimensionString.indexOf(":") > 0) {
 		var levelname = dimensionString.split(":")[1];
 		lev = dim.level(levelname);
+		for (levelIndex = 0; levelIndex < hie.levels.length && hie.levels[levelIndex] != lev; levelIndex++);
 	} else {
 		lev = dim.level(hie.levels[0]);
 	}
@@ -106,6 +108,7 @@ cubes.Cube.prototype.dimensionParts = function(dimensionString) {
 	return {
 		dimension: dim,
 		level: lev,
+		levelIndex: levelIndex,
 		depth: depth,
 		hierarchy: hie,
 		label: dim.label + ( hie.name != "default" ? (" - " + hie.label) : "" ) + ( hie.levels.length > 1 ? (" / " + lev.label) : "" ),

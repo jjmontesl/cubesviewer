@@ -70,6 +70,18 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 		};
 	};
 
+	$scope.exploreCut = function(dimension, value, invert) {
+		$scope.selectCut(dimension, value, invert);
+		if ($scope.view.params.drilldown.length == 1) {
+			// A single item has been selected, so automatically drill one more level
+			var dimparts = $scope.view.cube.dimensionParts($scope.view.params.drilldown[0]);
+			if (dimparts.levelIndex < dimparts.hierarchy.levels.length - 1) {
+				var drilldown = dimparts.dimension.name + ( dimparts.hierarchy.name != "default" ? ("@" + dimparts.hierarchy.name) : "" ) + ":" + dimparts.hierarchy.levels[dimparts.levelIndex + 1].name;
+				$scope.selectDrill(drilldown, true);
+			}
+		}
+	};
+
 	$scope.processData = function(data) {
 
 		var view = $scope.view;
@@ -162,7 +174,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 				enableHiding: false,
 				cutDimension: cutDimension,
 				width : $scope.defineColumnWidth("key" + i, 190),
-				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><a href="" ng-click="grid.appScope.selectCut(col.colDef.cutDimension, COL_FIELD.cutValue, false)">{{ COL_FIELD.title }}</a></div>',
+				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><a href="" ng-click="grid.appScope.exploreCut(col.colDef.cutDimension, COL_FIELD.cutValue, false)">{{ COL_FIELD.title }}</a></div>',
 				footerCellTemplate: '<div class="ui-grid-cell-contents">' + footer + '</div>',
 				sort: $scope.defineColumnSort("key" + i),
 				sortingAlgorithm: $scope.sortDimensionParts(parts)

@@ -238,7 +238,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 			}
 
 			// Set key
-			row["id"] = counter++;
+			console.debug (e);
+			console.debug(row);
+            row["id"] = counter++;
 			if ("id" in e) row["id"] = e["id"];
 			row["key"] = row["id"];
 

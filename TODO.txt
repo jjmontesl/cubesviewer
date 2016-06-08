@@ -126,19 +126,19 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
 
     * Remove -devel from version, -beta from doc, generate files, copy to web and server, same on server.
       Release notes, Tag repo (release), Announcement, Move this todo item to next release top.
-    * Cleanup code.
     * Test and close issue #39, "strings with hyphen cause dimension filter to work inexpectedly" as shall be fixed.
     * Submenu loading issue.
 
-    * Select next drill level (if available) when filtering by clicking on a single selection in explore mode if single drilldown.
-    * Add "plus / minus" signs to dimension filters and drilldown/horizontal when more than one level.
     * Tooltip columns: column=val remove columnTooltipAttr, enable tooltips?
     * Regression: tooltips (column label = formatted value), and row highlighting. Also row selection odd/even issue.
 
     * Possible repeated data load / events?
-    * Refresh: use watches to trigger invalidation? (also check for repeated events).
+    * Refresh: use watches to trigger invalidation? (also check for repeated events). Example: drilldown with click on item
+      now triggers refresh twice: cut and drilldown.
 
     * Fix: toggling legend does not redraw chart (just moves legend?). Redrawing the chart (ie switching view mode) actually works.
       Same for sometimes drilling down or changing a filter, grid doens't get correct size.
-    * Size change when switching views is very irritating. Hack that (fix height during changes/reloads?). Also loading bar.
+    * Size change when switching views is very irritating. Hack that (fix height during changes/reloads?).
+
+    * Add "plus / minus" signs to dimension filters and drilldown/horizontal when more than one level (add functions to dimensionparts object from exploreCut)
 
