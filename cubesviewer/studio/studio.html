@@ -52,10 +52,10 @@
                 <div class="divider"></div>
 
                 <li ng-click="toggleTwoColumn()" ng-class="{ 'hidden-xs': ! cvOptions.studioTwoColumn, 'disabled': studioViewsService.views.length == 0 }"><a tabindex="0"><i class="fa fa-fw fa-columns"></i> 2 column
-                    <span class="label label-default pull-right" ng-class="{ 'label-success': cvOptions.studioTwoColumn }">{{ cvOptions.studioTwoColumn ? "ON" : "OFF" }}</span></a>
+                    <span class="label label-default" style="margin-left: 10px;" ng-class="{ 'label-success': cvOptions.studioTwoColumn }">{{ cvOptions.studioTwoColumn ? "ON" : "OFF" }}</span></a>
                 </li>
                 <li ng-click="toggleHideControls()" ng-class="{ 'disabled': studioViewsService.views.length == 0 }"><a tabindex="0"><i class="fa fa-fw fa-unlock-alt"></i> Hide controls
-                    <span class="label label-default pull-right" ng-class="{ 'label-success': cvOptions.hideControls }">{{ cvOptions.hideControls ? "ON" : "OFF" }}</span></a>
+                    <span class="label label-default" style="margin-left: 10px;" ng-class="{ 'label-success': cvOptions.hideControls }">{{ cvOptions.hideControls ? "ON" : "OFF" }}</span></a>
                 </li>
 
                 <div class="divider"></div>

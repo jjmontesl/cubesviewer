@@ -120,6 +120,7 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Flag icons support OOTB.
     * Map representations from facts, including segments from individual points in facts (plot paths, with metrics and filtering!)
     * Map charts. Design already available.
+    * 2 columns issue: use masonry. Column / row / subview management needs re-thinking (subcontainer?).
 
 [2.0.2]
 
@@ -127,18 +128,17 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
       Release notes, Tag repo (release), Announcement, Move this todo item to next release top.
     * Cleanup code.
     * Test and close issue #39, "strings with hyphen cause dimension filter to work inexpectedly" as shall be fixed.
-    * _Firefox_ menu wrap in Studio menu (not in Chrome nor View menu?)
     * Submenu loading issue.
 
-    * Select next drill level (if available) when filtering by clicking on a single selection in explore mode.
+    * Select next drill level (if available) when filtering by clicking on a single selection in explore mode if single drilldown.
     * Add "plus / minus" signs to dimension filters and drilldown/horizontal when more than one level.
     * Tooltip columns: column=val remove columnTooltipAttr, enable tooltips?
     * Regression: tooltips (column label = formatted value), and row highlighting. Also row selection odd/even issue.
-    * 2 columns issue: use masonry. Column / row / subview management needs re-thinking (subcontainer?).
+
+    * Possible repeated data load / events?
+    * Refresh: use watches to trigger invalidation? (also check for repeated events).
 
     * Fix: toggling legend does not redraw chart (just moves legend?). Redrawing the chart (ie switching view mode) actually works.
       Same for sometimes drilling down or changing a filter, grid doens't get correct size.
     * Size change when switching views is very irritating. Hack that (fix height during changes/reloads?). Also loading bar.
-    * Possible repeated data load / events?
-    * Refresh: use watches to trigger invalidation? (also check for repeated events).
 
