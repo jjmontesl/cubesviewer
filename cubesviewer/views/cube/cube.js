@@ -83,8 +83,8 @@ angular.module('cv.views.cube', []);
  *
  * FIXME: Some of this code shall be on a parent generic "view" directive.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$log', '$window','$injector', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService',
-                                                     function ($rootScope, $log, $window, $injector, $scope, $timeout, cvOptions, cubesService, viewsService, exportService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$log', '$window','$injector', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService', 'rowSorter',
+                                                                               function ($rootScope, $log, $window, $injector, $scope, $timeout, cvOptions, cubesService, viewsService, exportService, rowSorter) {
 
 	// TODO: Functions shall be here?
 	$scope.viewController = {};
@@ -166,6 +166,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		$scope.view._requestFailed = true;
 	};
 
+
+	$scope.resetGrid = function() {
+		rowSorter.colSortFnCache = {};
+		//$scope.view.grid.api.core.notifyDataChange(uiGridConstants.dataChange.ALL);
+	};
 
 
 	// TODO: Move to explore view or grid component as cube view shall be split into directives
@@ -256,6 +261,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 		$scope.refreshView();
 	};
+
 
 	/**
 	 * Accepts an aggregation or a measure and returns the formatter function.
@@ -499,7 +505,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 *
 	 * @returns A compare function.
 	 */
-	$scope.sortDimensionParts = function(dimparts) {
+	$scope.sortDimensionParts = function(tdimparts) {
+
+		var dimparts = tdimparts;
 
 		var cmpFunction = function(a, b, rowA, rowB, direction) {
 			var result = 0;

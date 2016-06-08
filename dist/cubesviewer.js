@@ -1116,6 +1116,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 	 * Sends a request to the Cubes server.
 	 *
 	 * @memberOf cv.cubes.cubesService
+	 * @returns The jQuery XHR object.
 	 */
 	this.cubesRequest = function(path, params, successCallback, errCallback) {
 
@@ -1589,7 +1590,7 @@ angular.module('cv').run([ '$timeout', '$log', 'cvOptions', 'cubesService', 'cub
 function CubesViewer() {
 
 	// CubesViewer version
-	this.version = "2.0.1";
+	this.version = "2.0.2-devel";
 
 	/**
 	 * State of a view that has not yet been fully initialized, and cannot be interacted with.
@@ -2010,8 +2011,8 @@ angular.module('cv.views.cube', []);
  *
  * FIXME: Some of this code shall be on a parent generic "view" directive.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$log', '$window','$injector', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService',
-                                                     function ($rootScope, $log, $window, $injector, $scope, $timeout, cvOptions, cubesService, viewsService, exportService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$log', '$window','$injector', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService', 'rowSorter',
+                                                                               function ($rootScope, $log, $window, $injector, $scope, $timeout, cvOptions, cubesService, viewsService, exportService, rowSorter) {
 
 	// TODO: Functions shall be here?
 	$scope.viewController = {};
@@ -2093,6 +2094,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		$scope.view._requestFailed = true;
 	};
 
+
+	$scope.resetGrid = function() {
+		rowSorter.colSortFnCache = {};
+		//$scope.view.grid.api.core.notifyDataChange(uiGridConstants.dataChange.ALL);
+	};
 
 
 	// TODO: Move to explore view or grid component as cube view shall be split into directives
@@ -2183,6 +2189,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 		$scope.refreshView();
 	};
+
 
 	/**
 	 * Accepts an aggregation or a measure and returns the formatter function.
@@ -2426,7 +2433,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 *
 	 * @returns A compare function.
 	 */
-	$scope.sortDimensionParts = function(dimparts) {
+	$scope.sortDimensionParts = function(tdimparts) {
+
+		var dimparts = tdimparts;
 
 		var cmpFunction = function(a, b, rowA, rowB, direction) {
 			var result = 0;
@@ -2553,8 +2562,8 @@ Math.formatnumber = function(value, decimalPlaces, decimalSeparator, thousandsSe
 
 "use strict";
 
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
-                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, dialogService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService', 'uiGridConstants',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, dialogService, uiGridConstants) {
 
 	$scope.view.grid.enableRowSelection = true;
 	$scope.view.grid.enableRowHeaderSelection = true;
@@ -2590,6 +2599,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 			if (viewStateKey == $scope._viewStateKey) {
 				$scope.validateData(data, status);
 				$scope.processData(data);
+				//$scope.view.grid.api.core.notifyDataChange(uiGridConstants.dataChange.ALL);
 				$rootScope.$apply();
 			}
 		};
@@ -2599,6 +2609,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 
 		var view = $scope.view;
 
+		$scope.resetGrid();
 		$scope.view.grid.data = [];
 		$scope.view.grid.columnDefs = [];
 		$rootScope.$apply();
@@ -3244,6 +3255,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 		var view = $scope.view;
 
+		$scope.resetGrid();
 		$scope.view.grid.data = [];
 		$scope.view.grid.columnDefs = [];
 		$rootScope.$apply();
@@ -3525,6 +3537,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController
 
 		//$scope.rawData = data;
 
+		$scope.resetGrid();
 		$scope.view.grid.data = [];
 		$scope.view.grid.columnDefs = [];
 		$rootScope.$apply();
@@ -3932,6 +3945,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 		$scope.rawData = data;
 
+		$scope.resetGrid();
 		$scope.view.grid.data = [];
 		$scope.view.grid.columnDefs = [];
 		$rootScope.$apply();
@@ -5448,7 +5462,7 @@ function cubesviewerViewCubeDynamicChart() {
  * @memberof cv.views.cube
  */
 angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesOperationsService',
-                                                              function ($rootScope, $timeout, cvOptions, cubesService, viewsService, seriesOperationsService) {
+                                                         function ($rootScope, $timeout, cvOptions, cubesService, viewsService, seriesOperationsService) {
 
 	/**
 	 * Download facts in CSV format from Cubes Server
@@ -5498,7 +5512,13 @@ angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeou
 		$(dataRows).each(function(idxr, r) {
 			values = [];
 			$(view.grid.columnDefs).each(function(idx, e) {
-				values.push ('"' + r[e.field] + '"');
+				if (r[e.field].title) {
+					// Explore view uses objects as values, where "title" is the label
+					values.push('"' + r[e.field].title + '"');
+				} else {
+					//
+					values.push('"' + r[e.field] + '"');
+				}
 			});
 			content = content + (values.join(",")) + "\n";
 		});

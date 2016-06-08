@@ -100,6 +100,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 	 * Sends a request to the Cubes server.
 	 *
 	 * @memberOf cv.cubes.cubesService
+	 * @returns The jQuery XHR object.
 	 */
 	this.cubesRequest = function(path, params, successCallback, errCallback) {
 

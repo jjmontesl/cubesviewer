@@ -27,8 +27,8 @@
 
 "use strict";
 
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
-                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, dialogService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService', 'uiGridConstants',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, dialogService, uiGridConstants) {
 
 	$scope.view.grid.enableRowSelection = true;
 	$scope.view.grid.enableRowHeaderSelection = true;
@@ -64,6 +64,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 			if (viewStateKey == $scope._viewStateKey) {
 				$scope.validateData(data, status);
 				$scope.processData(data);
+				//$scope.view.grid.api.core.notifyDataChange(uiGridConstants.dataChange.ALL);
 				$rootScope.$apply();
 			}
 		};
@@ -73,6 +74,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 
 		var view = $scope.view;
 
+		$scope.resetGrid();
 		$scope.view.grid.data = [];
 		$scope.view.grid.columnDefs = [];
 		$rootScope.$apply();

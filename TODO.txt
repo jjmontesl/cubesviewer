@@ -40,13 +40,8 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
 
     * Architecture improvements:
         * Abstract backend?? Create CV objects for dimensions, levels, etc... Plug cubes as one more adaptor???
-        * Divide in reusable angular directives (ie. start with fact viewer). JS doc. Make views
-          proper objects.
-        * Move to a more object oriented API, directives for widgets for model and cubeview.
-          Keep drilldown and cuts as objects in API, serialize only as
-          needed (and so introduce the ability optionally include column widths, etc).
         * Abstract data/grid in cubeview? -> Add own data dictionary (<->CubETL).
-        * (Use controllerAs).
+
         * Make cubesviewer-studio an angular app.
 
     * Save filters (segments). Info pieces shall be made directives first.
@@ -82,6 +77,8 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Drill more/drill less. Same for horizontal dimension, and dimension filter (???)
     * Reviewed and improved doc (JSDoc).
 
+    * Comments system.
+
 [2.1]
 
     * Site, demos and data:
@@ -111,10 +108,17 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Automatically hide legend if too many results.
     * Colors get incorrectly drawn when series are deselected from legend, and view changed back/forth.
 
-    * Comments system.
+    * Divide in reusable angular directives (ie. start with fact viewer). JS doc. Make views
+          proper objects.
+        * Move to a more object oriented API, directives for widgets for model and cubeview.
+          Keep drilldown and cuts as objects in API, serialize only as
+          needed (and so introduce the ability optionally include column widths, etc).
+        * (Use controllerAs).
+
 
     * Range filter.
     * Flag icons support OOTB.
+    * Map representations from facts, including segments from individual points in facts (plot paths, with metrics and filtering!)
     * Map charts. Design already available.
 
 [2.0.2]
