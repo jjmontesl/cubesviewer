@@ -49,7 +49,7 @@
                         <div ng-show="loadingDimensionValues" ><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Loading...</div>
 
                         <div ng-if="!loadingDimensionValues">
-                            <div ng-repeat="val in dimensionValues | filter:filterDimensionValue(searchString) track by val.value" style="overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            <div ng-repeat="val in dimensionValues | filter:filterDimensionValue(searchString)" style="overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                 <label style="font-weight: normal; margin-bottom: 2px;">
                                     <input type="checkbox" name="selectedValues[]" ng-model="val.selected" value="{{ ::val.value }}" style="vertical-align: bottom;" />
                                     {{ ::val.label }}

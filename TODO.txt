@@ -132,13 +132,13 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Tooltip columns: column=val remove columnTooltipAttr, enable tooltips?
     * Regression: tooltips (column label = formatted value), and row highlighting. Also row selection odd/even issue.
 
-    * Possible repeated data load / events?
-    * Refresh: use watches to trigger invalidation? (also check for repeated events). Example: drilldown with click on item
-      now triggers refresh twice: cut and drilldown.
 
     * Fix: toggling legend does not redraw chart (just moves legend?). Redrawing the chart (ie switching view mode) actually works.
       Same for sometimes drilling down or changing a filter, grid doens't get correct size.
     * Size change when switching views is very irritating. Hack that (fix height during changes/reloads?).
 
+    * Possible repeated data load / events?
+    * Refresh: use watches to trigger invalidation? (also check for repeated events). Example: drilldown with click on item
+      now triggers refresh twice: cut and drilldown. Also causes incorrect Undo/Redo tracking.
     * Add "plus / minus" signs to dimension filters and drilldown/horizontal when more than one level (add functions to dimensionparts object from exploreCut)
 

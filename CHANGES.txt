@@ -1,5 +1,6 @@
 [2.0.2]
 
+    * Fixed dimension filter empty list if dimension members contains repeated values.
     * Select next drill level (if available) when clicking on an item in explore mode.
     * Fixed dimension sorting when grid was reused or multiple grids on screen (fixes #71).
     * Fixed CSV export in explore mode (#72).
