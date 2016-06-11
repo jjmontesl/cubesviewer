@@ -103,7 +103,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 		var path = "/cube/" + $scope.view.cube.name + "/members/" + $scope.parts.dimension.name;
 		var dataId = path + "?" + $.param(params);
-		if ($scope.currentDataId == dataId) { console.debug("Not loading"); return; }
+		if ($scope.currentDataId == dataId) { return; }
 		$scope.currentDataId = dataId;
 
 		var tdimension = $scope.view.dimensionFilter;
