@@ -1,5 +1,6 @@
 [2.0.2]
 
+    * Added drill more/less buttons to drilldown and horizontal dimension tags.
     * Added dimension filter item filtering based on current view cut.
     * Fixed dimension filter empty list if dimension members contains repeated values.
     * Select next drill level (if available) when clicking on an item in explore mode.

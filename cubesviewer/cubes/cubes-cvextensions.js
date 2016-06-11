@@ -53,6 +53,8 @@ cubes.Dimension.prototype.isDateDimension = function()  {
 
 /**
  * List date dimensions.
+ *
+ * @returns An array with the dimensions that are date dimensions (role: time).
  */
 cubes.Cube.prototype.dateDimensions = function() {
 	var result = [];
@@ -78,6 +80,8 @@ cubes.Cube.prototype.cvdim_dim = function(dimensionString) {
 
 cubes.Cube.prototype.dimensionParts = function(dimensionString) {
 	// Get a dimension info by name. Accepts dimension hierarchy and level in the input string.
+
+	if (!dimensionString) return null;
 
 	var dim = this.cvdim_dim(dimensionString);
 	var hie = dim.default_hierarchy();
@@ -114,7 +118,12 @@ cubes.Cube.prototype.dimensionParts = function(dimensionString) {
 		label: dim.label + ( hie.name != "default" ? (" - " + hie.label) : "" ) + ( hie.levels.length > 1 ? (" / " + lev.label) : "" ),
 		labelShort: (dim.label +  ( hie.levels.length > 1 ? (" / " + lev.label) : "" )),
 		labelNoLevel: dim.label + ( hie.name != "default" ? (" - " + hie.label) : "" ),
+
 		fullDrilldownValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" ) + ":" + lev.name,
+		drilldownDimension: dim.name + '@' + hie.name + ':' + lev.name,
+		drilldownDimensionPlus: (hie.levels.length > 1 && levelIndex < hie.levels.length - 1) ? (dim.name + '@' + hie.name + ':' + hie.levels[levelIndex + 1].name) : null,
+		drilldownDimensionMinus: (hie.levels.length > 1 && levelIndex > 0) ? (dim.name + '@' + hie.name + ':' + hie.levels[levelIndex - 1].name) : null,
+
 		fullCutValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" ),
 		cutDimension: dim.name + ( hie.name != "default" ? "@" + hie.name : "" )
 	};
@@ -124,6 +133,8 @@ cubes.Cube.prototype.dimensionParts = function(dimensionString) {
 /**
  * Returns the aggregates for the given measure, by name.
  * If passed null, returns aggregates with no measure.
+ *
+ * @returns The list of aggregates of a measure.
  */
 cubes.Cube.prototype.measureAggregates = function(measureName) {
 	var aggregates = $.grep(this.aggregates, function(ia) { return measureName ? ia.measure == measureName : !ia.measure; } );

@@ -82,24 +82,21 @@ In your page, reserve a space for your embedded view or views:
 <div id="cv-view-1" style="width: 100%; min-height: 120px;">Loading CubesViewer...</div>
 ```
 
-If you plan to embed the full CubesViewer Studio, you will need a slightly different
-initialization procedure. Check the `/html` examples for further details.
-
 
 Initializing CubesViewer
 ------------------------
 
 Cubesviewer needs to be instantiated after the document has been loaded. We use the jQuery library to
-handle the *$(document).ready()* event.
+handle the `$(document).ready()` event.
 
-First, inside this method,
+Inside this method:
 
 * Initialize CubesViewer (the URL of the Cubes server needs to be passed)
 * Use `cubesviewer.createView()` to create a view in your container (options
   can be defined with a JSON string or a Javascript array).
-* You need to wrap your calls to CubesViewer in a `cubesviewer.apply()`.
+* You need to wrap your calls to CubesViewer in a `cubesviewer.apply()`
   (note: if you are using CubesViewer from an Angular application, you don't
-  need to do this, but you should be using CubesViewer directives directly.
+  need to do this, instead you should be using CubesViewer directives directly).
 
 
 ```
@@ -133,6 +130,9 @@ Use CubesViewer Studio to design views
 
 CubesViewer Studio includes a menu option for serializing a view as JSON, which can be used to initialize views,
 as shown above. It also includes an option to load views from serialized JSON strings.
+
+If you plan to embed the full CubesViewer Studio, you will need a slightly different
+initialization procedure. Check the `/html` examples for further details.
 
 Further information
 -------------------
