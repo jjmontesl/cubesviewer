@@ -38,15 +38,17 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 	$scope.searchString = "";
 	$scope.selectedValues = null;
 	$scope.filterInverted = null;
+	$scope.filterShowAll = false;
+
+	$scope.currentDataId = null;
 
 	$scope.initialize = function() {
 
 		// Check if current filter is inverted
 		var view = $scope.view;
 		var parts = view.cube.dimensionParts($scope.view.dimensionFilter);
-		var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
 		for (var i = 0; i < view.params.cuts.length ; i++) {
-			if (view.params.cuts[i].dimension == cutDimension) {
+			if (view.params.cuts[i].dimension == parts.cutDimension) {
 				$scope.filterInverted = view.params.cuts[i].invert;
 				break;
 			}
@@ -60,8 +62,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 	$scope.$on("ViewRefresh", function(view) {
 		// FIXME: Update checkboxes, but do not reload.
-		//$scope.loadDimensionValues();
+		$scope.loadDimensionValues();
 	});
+	$scope.$watch("filterShowAll", function(view) {
+		$scope.loadDimensionValues();
+	});
+
 
 	$scope.closeDimensionFilter = function() {
 		$scope.view.dimensionFilter = null;
@@ -73,17 +79,38 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 	$scope.loadDimensionValues = function() {
 
 		var params = {
-				"hierarchy": $scope.parts.hierarchy.name,
-				"depth": $scope.parts.depth
+			"hierarchy": $scope.parts.hierarchy.name,
+			"depth": $scope.parts.depth
 		};
 
 		//view.cubesviewer.views.blockViewLoading(view);
+
+		if (! $scope.filterShowAll) {
+
+			var parts = $scope.view.cube.dimensionParts($scope.view.dimensionFilter);
+			var buildQueryCutsStrings = cubesService.buildQueryCutsStrings($scope.view);
+
+			if (buildQueryCutsStrings.length > 0) {
+				// Remove current dimension
+				buildQueryCutsStrings = $.grep(buildQueryCutsStrings, function(cs) {
+					return ((cs.indexOf(parts.dimension.name) != 0) && (cs.indexOf("!" + parts.dimension.name) != 0));
+				});
+
+				params["cut"] = buildQueryCutsStrings.join(cubes.CUT_STRING_SEPARATOR_CHAR);
+			}
+
+		};
+
+		var path = "/cube/" + $scope.view.cube.name + "/members/" + $scope.parts.dimension.name;
+		var dataId = path + "?" + $.param(params);
+		if ($scope.currentDataId == dataId) { console.debug("Not loading"); return; }
+		$scope.currentDataId = dataId;
 
 		var tdimension = $scope.view.dimensionFilter;
 		$scope.loadingDimensionValues = true;
 		var jqxhr = cubesService.cubesRequest(
                 // Doc says it's dimension, not members
-				"/cube/" + $scope.view.cube.name + "/members/" + $scope.parts.dimension.name,
+				path,
 				params,
 				$scope._loadDimensionValuesCallback(tdimension));
 		jqxhr.always(function() {

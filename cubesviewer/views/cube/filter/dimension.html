@@ -16,16 +16,22 @@
                 <i class="fa fa-fw fa-times-circle form-control-feedback" ng-click="searchString = ''" style="cursor: pointer; pointer-events: inherit;"></i>
               </div>
 
-              <div class="btn-group" style="margin-left: 10px; display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px;">
+              <div class="btn-group" style="margin-left: 10px; display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px; margin-right: 5px;">
                     <button class="btn btn-default" ng-click="selectAll();" type="button" title="Select all"><i class="fa fa-fw fa-check-square-o"></i></button>
                     <button class="btn btn-default" ng-click="selectNone();" type="button" title="Select none"><i class="fa fa-fw fa-square-o"></i></button>
               </div>
 
-             <div class="form-group" style="display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px;">
-              <button class="btn btn-default" type="button" title="Drilldown this" ng-click="selectDrill(parts.fullDrilldownValue, true)"><i class="fa fa-fw fa-arrow-down"></i></button>
+              <div class="form-group" style="display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px;">
+                <button class="btn btn-default" type="button" title="Drilldown this" ng-click="selectDrill(parts.fullDrilldownValue, true)"><i class="fa fa-fw fa-arrow-down"></i></button>
               </div>
 
-              <div class="form-group" style="display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px;">
+              <div class="form-group" style="display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px; margin-right: 5px;">
+                 <div class="btn btn-default" ng-click="filterShowAll = ! filterShowAll" ng-class="{ 'active': filterShowAll, 'btn-info': filterShowAll }">
+                    <i class="fa fa-fw fa-filter fa-rotate-180"></i> Show all
+                 </div>
+              </div>
+
+              <div class="form-group" style="display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px; ">
 
                   <div class="btn btn-default" ng-click="filterInverted = !filterInverted" ng-class="{ 'active': filterInverted, 'btn-danger': filterInverted }">
                     <input type="checkbox" ng-model="filterInverted" style="pointer-events: none; margin: 0px; vertical-align: middle;" ></input>
@@ -43,7 +49,7 @@
             <div class="clearfix"></div>
 
             <div class="row">
-                <div class="col-xs-6">
+                <div class="col-xs-9 col-sm-6">
                 <div style="margin-top: 5px;">
                     <div class="panel panel-default panel-outline" style="margin-bottom: 0px; "><div class="panel-body" style="max-height: 180px; overflow-y: auto; overflow-x: hidden;">
                         <div ng-show="loadingDimensionValues" ><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Loading...</div>
@@ -65,7 +71,7 @@
                         </div>
                     </div>
 
-                    <div ng-if="dimensionValues.length >= cubesService.cubesserver.info.json_record_limit" class="alert alert-warning" style="margin-bottom: 0px;">
+                    <div ng-if="!loadingDimensionValues && dimensionValues.length >= cubesService.cubesserver.info.json_record_limit" class="alert alert-warning" style="margin-bottom: 0px;">
                         <div style="display: inline-block;"><i class="fa fa-exclamation"></i></div>
                         <div style="display: inline-block; margin-left: 20px;">
                             Limit of {{ cubesService.cubesserver.info.json_record_limit }} items has been hit. Dimension value list is <b>incomplete</b>.<br />

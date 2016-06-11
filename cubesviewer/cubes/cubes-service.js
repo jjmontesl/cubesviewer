@@ -181,7 +181,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 	/*
 	 * Builds Query Cuts
 	 */
-	this.buildQueryCuts = function(view) {
+	this.buildQueryCutsStrings = function(view) {
 
 		var cuts = [];
 
@@ -191,17 +191,26 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 			var dimParts = view.cube.dimensionParts(e.dimension);
 			var cutDim = dimParts.dimension.name + ( dimParts.hierarchy.name != "default" ? "@" + dimParts.hierarchy.name : "" );
 
-			cuts.push(cubes.cut_from_string(view.cube, invert + cutDim + ":" + e.value.replace("-", "\\-")));
+			cuts.push(invert + cutDim + ":" + e.value.replace("-", "\\-"));
 		});
 
 		// Date filters
 		$(view.params.datefilters).each(function(idx, e) {
 			var datefilterval = cubesService.datefilterValue(view, e);
 			if (datefilterval != null) {
-				cuts.push(cubes.cut_from_string(view.cube, e.dimension + ":" + datefilterval));
+				cuts.push(e.dimension + ":" + datefilterval);
 			}
 		});
 
+		return cuts;
+	};
+
+	this.buildQueryCuts = function(view) {
+		var cuts = [];
+		var cutsStrings = cubesService.buildQueryCutsStrings(view);
+		$(cutsStrings).each(function(idx, e) {
+			cuts.push(cubes.cut_from_string(view.cube, e));
+		});
 		return cuts;
 	};
 

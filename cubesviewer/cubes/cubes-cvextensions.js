@@ -115,7 +115,8 @@ cubes.Cube.prototype.dimensionParts = function(dimensionString) {
 		labelShort: (dim.label +  ( hie.levels.length > 1 ? (" / " + lev.label) : "" )),
 		labelNoLevel: dim.label + ( hie.name != "default" ? (" - " + hie.label) : "" ),
 		fullDrilldownValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" ) + ":" + lev.name,
-		fullCutValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" )
+		fullCutValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" ),
+		cutDimension: dim.name + ( hie.name != "default" ? "@" + hie.name : "" )
 	};
 
 };
