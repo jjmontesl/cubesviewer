@@ -6843,6 +6843,9 @@ button.cv-bootstrap .close {
 .cv-grid-header-dimension {
   color: #004400;
 }
+.cv-grid-header-dimensionattribute {
+  color: #666666;
+}
 .cv-grid-header-measure {
   color: #444477;
 }
@@ -6984,8 +6987,7 @@ div.nvtooltip {
   width: 100%;
   /* Full Width */
   height: 3px;
-  margin: 0px 0px 3px 0px;
-  /*position: fixed;*/
+  margin: -4px 0px 1px 0px;
   position: relative;
   overflow-x: hidden;
 }

@@ -45,13 +45,13 @@ Online Demos
 Download
 --------
 
-Latest CubesViewer stable release is 2.0.1:
+Latest CubesViewer stable release is 2.0.2:
 
-* CubesViewer 2.0.1
-  * [cubesviewer-v2.0.1.zip](https://github.com/jjmontesl/cubesviewer/archive/v2.0.1.zip)
-  * [cubesviewer-server-v2.0.1.zip](https://github.com/jjmontesl/cubesviewer-server/archive/v2.0.1.zip)
-  * [Changelog](http://github.com/jjmontesl/cubesviewer/blob/v2.0.1/CHANGES.txt)
-  * [Release Notes](http://github.com/jjmontesl/cubesviewer/blob/v2.0.1/RELEASE-NOTES.txt)
+* CubesViewer 2.0.2
+  * [cubesviewer-v2.0.2.zip](https://github.com/jjmontesl/cubesviewer/archive/v2.0.2.zip)
+  * [cubesviewer-server-v2.0.2.zip](https://github.com/jjmontesl/cubesviewer-server/archive/v2.0.2.zip)
+  * [Changelog](http://github.com/jjmontesl/cubesviewer/blob/v2.0.2/CHANGES.txt)
+  * [Release Notes](http://github.com/jjmontesl/cubesviewer/blob/v2.0.2/RELEASE-NOTES.txt)
   * Works with *Cubes 1.0.x* and *Cubes 1.1.x*
 
 CubesViewer Server already includes the CubesViewer library so you just need that package

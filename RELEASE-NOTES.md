@@ -74,9 +74,10 @@ Your Cubes model may need some extra configuration if you wish to use features l
 Upgrading from 2.0.1
 --------------------
 
-1. A new Javascript dependency has been added to the Studio application (this does
-   not apply if you are using embedding CubesViewer views, only Studio).
-   Check the sample `html/studio.html` for an up to date list of dependencies.
+1. A new Javascript dependency (masonry) has been added to the Studio application
+   (this does not apply if you are using embedding CubesViewer views, only if
+   embedding CubesViewer Studio). Check the sample `html/studio.html` for an up to
+   date list of dependencies.
 
 
 Upgrading from 0.10 or 0.11

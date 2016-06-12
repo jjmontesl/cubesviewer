@@ -122,9 +122,9 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Map representations from facts, including segments from individual points in facts (plot paths, with metrics and filtering!)
     * Map charts. Design already available.
 
-[2.0.2]
+[2.0.3]
 
-    * Remove -devel from version, -beta from doc, generate files, copy to web and server, same on server.
+    * Remove -devel from version, -beta from doc, package.json version cubesviewer version,  generate files, copy to web and server, same on server.
       Release notes, Tag repo (release), Announcement, Move this todo item to next release top.
     * Submenu loading issue.
 
@@ -133,7 +133,7 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
 
     * Fix: toggling legend does not redraw chart (just moves legend?). Redrawing the chart (ie switching view mode) actually works.
       Same for sometimes drilling down or changing a filter, grid doens't get correct size.
-    * Size change when switching views is very irritating. Hack that (fix height during changes/reloads?).
+    * Size change when switching views is irritating. Hack that (fix height during changes/reloads?).
 
     * Fix to grid sort function cache was incorrect? If two grids are loaded, clicking on a column in grid A could affect sorting in grid B (#71).
     * Error: [$parse:lexerr] Lexer Error: Unexpected next character  at columns 45-45 [Í] in expression [entity['SECRETARÍA XERAL TÉCNICA '](CONSELLERÍA DE CULTURA, EDUCACIÓN E ORDENACIÓN UNIVERSITARIA)].
