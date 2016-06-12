@@ -16,13 +16,16 @@
                 <i class="fa fa-fw fa-times-circle form-control-feedback" ng-click="searchString = ''" style="cursor: pointer; pointer-events: inherit;"></i>
               </div>
 
-              <div class="btn-group" style="margin-left: 10px; display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px; margin-right: 5px;">
+              <div class="btn-group" style="margin-left: 10px; display: inline-block; vertical-align: middle; margin-bottom: 2px; margin-right: 5px;">
                     <button class="btn btn-default" ng-click="selectAll();" type="button" title="Select all"><i class="fa fa-fw fa-check-square-o"></i></button>
                     <button class="btn btn-default" ng-click="selectNone();" type="button" title="Select none"><i class="fa fa-fw fa-square-o"></i></button>
               </div>
 
-              <div class="form-group" style="display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px;">
-                <button class="btn btn-default" type="button" title="Drilldown this" ng-click="selectDrill(parts.fullDrilldownValue, true)"><i class="fa fa-fw fa-arrow-down"></i></button>
+<!--               <div class="form-group" style="display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px;"> -->
+              <div class="btn-group" style="display: inline-block; vertical-align: middle; margin-bottom: 2px; margin-right: 5px;">
+                    <button ng-hide="parts.hierarchy.levels.length < 2" ng-disabled="! parts.drilldownDimensionMinus"  class="btn btn-default" ng-click="showDimensionFilter(parts.drilldownDimensionMinus)" type="button" title="Drilldown less"><i class="fa fa-fw fa-minus"></i></button>
+                    <button ng-hide="parts.hierarchy.levels.length < 2" ng-disabled="! parts.drilldownDimensionPlus"  class="btn btn-default" ng-click="showDimensionFilter(parts.drilldownDimensionPlus)" type="button" title="Drilldown more"><i class="fa fa-fw fa-plus"></i></button>
+                    <button class="btn btn-default" type="button" title="Drilldown this" ng-click="selectDrill(parts.drilldownDimension, true)"><i class="fa fa-fw fa-arrow-down"></i></button>
               </div>
 
               <div class="form-group" style="display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px; margin-right: 5px;">
@@ -58,7 +61,7 @@
                             <div ng-repeat="val in dimensionValues | filter:filterDimensionValue(searchString)" style="overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                 <label style="font-weight: normal; margin-bottom: 2px;">
                                     <input type="checkbox" name="selectedValues[]" ng-model="val.selected" value="{{ ::val.value }}" style="vertical-align: bottom;" />
-                                    {{ ::val.label }}
+                                    <span title="{{ val.label }}">{{ ::val.label }}</span>
                                 </label>
                             </div>
                         </div>

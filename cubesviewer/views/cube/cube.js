@@ -315,7 +315,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 					//return;
 				} else {*/
 					view.params.cuts = $.grep(view.params.cuts, function(e) {
-						return view.cube.dimensionParts(e.dimension).fullCutValue == view.cube.dimensionParts(dimension).fullCutValue;
+						return view.cube.dimensionParts(e.dimension).cutDimension == view.cube.dimensionParts(dimension).cutDimension;
 					}, true);
 					view.params.cuts.push({
 						"dimension" : dimension,
@@ -325,7 +325,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 				/*}*/
 			} else {
 				view.params.cuts = $.grep(view.params.cuts, function(e) {
-					return view.cube.dimensionParts(e.dimension).fullCutValue == view.cube.dimensionParts(dimension).fullCutValue;
+					return view.cube.dimensionParts(e.dimension).cutDimension == view.cube.dimensionParts(dimension).cutDimension;
 				}, true);
 			}
 		} else {
@@ -367,10 +367,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 
 	$scope.showDimensionFilter = function(dimension) {
-		if ($scope.view.dimensionFilter && $scope.view.dimensionFilter == dimension) {
+		var parts = $scope.view.cube.dimensionParts(dimension);
+		if ($scope.view.dimensionFilter && $scope.view.dimensionFilter == parts.drilldownDimension) {
 			$scope.view.dimensionFilter = null;
 		} else {
-			$scope.view.dimensionFilter = dimension;
+			$scope.view.dimensionFilter = parts.drilldownDimension;
 		}
 	};
 

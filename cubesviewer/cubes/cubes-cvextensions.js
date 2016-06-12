@@ -78,6 +78,14 @@ cubes.Cube.prototype.cvdim_dim = function(dimensionString) {
 	return this.dimension(dimname);
 };
 
+cubes.Cube.prototype.dimensionPartsFromCut = function(cut) {
+	var parts = this.dimensionParts(cut.dimension);
+	var depth = (cut.value.split(';')[0].match(/,/g) || []).length + 1;
+
+	var dimstring = parts.dimension.name + '@' + parts.hierarchy.name + ':' + parts.hierarchy.levels[depth - 1].name;
+	return this.dimensionParts(dimstring);
+};
+
 cubes.Cube.prototype.dimensionParts = function(dimensionString) {
 	// Get a dimension info by name. Accepts dimension hierarchy and level in the input string.
 
@@ -124,7 +132,6 @@ cubes.Cube.prototype.dimensionParts = function(dimensionString) {
 		drilldownDimensionPlus: (hie.levels.length > 1 && levelIndex < hie.levels.length - 1) ? (dim.name + '@' + hie.name + ':' + hie.levels[levelIndex + 1].name) : null,
 		drilldownDimensionMinus: (hie.levels.length > 1 && levelIndex > 0) ? (dim.name + '@' + hie.name + ':' + hie.levels[levelIndex - 1].name) : null,
 
-		fullCutValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" ),
 		cutDimension: dim.name + ( hie.name != "default" ? "@" + hie.name : "" )
 	};
 

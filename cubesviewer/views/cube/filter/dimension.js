@@ -183,8 +183,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 			var drilldownLevelLabels = [];
 
 			$(infos).each(function(idx, info) {
-				drilldownLevelValues.push (info.key);
-				drilldownLevelLabels.push (info.label);
+				drilldownLevelValues.push(info.key);
+				drilldownLevelLabels.push(info.label);
 			});
 
 			dimensionValues.push({

@@ -238,8 +238,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 			}
 
 			// Set key
-			console.debug (e);
-			console.debug(row);
             row["id"] = counter++;
 			if ("id" in e) row["id"] = e["id"];
 			row["key"] = row["id"];
@@ -248,7 +246,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 			rows.push(row);
 		});
-
 
 	};
 

@@ -83,10 +83,10 @@
                         var depth = $(this).parents('.cv-view-infopiece-cut').first().attr('data-value').split(';')[0].split(",").length;
                         cubesviewer.views.cube.dimensionfilter.drawDimensionFilter(view, dimensionString + ":" + parts.hierarchy.levels[depth - 1] );
                      -->
-                    <div ng-repeat="cut in view.params.cuts" ng-init="dimparts = view.cube.dimensionParts(cut.dimension); equality = cut.invert ? ' &ne; ' : ' = ';" class="label label-secondary cv-infopiece cv-view-viewinfo-cut" style="color: black; background-color: #ffcccc;">
-                        <span style="max-width: 480px;"><i class="fa fa-fw fa-filter" title="Filter"></i> <b class="hidden-xs hidden-sm">Filter:</b> <span title="{{ dimparts.label }}">{{ dimparts.labelShort }}</span> <span ng-class="{ 'text-danger': cut.invert }">{{ equality }}</span> <span title="{{ cut.value }}">{{ cut.value }}</span></span>
+                    <div ng-repeat="cut in view.params.cuts" ng-init="equality = cut.invert ? ' &ne; ' : ' = ';" class="label label-secondary cv-infopiece cv-view-viewinfo-cut" style="color: black; background-color: #ffcccc;">
+                        <span style="max-width: 480px;"><i class="fa fa-fw fa-filter" title="Filter"></i> <b class="hidden-xs hidden-sm">Filter:</b> <span title="{{ view.cube.dimensionPartsFromCut(cut).label }}">{{ view.cube.dimensionPartsFromCut(cut).labelShort }}</span> <span ng-class="{ 'text-danger': cut.invert }">{{ equality }}</span> <span title="{{ cut.value }}">{{ cut.value }}</span></span>
                         <button type="button" class="btn btn-info btn-xs" style="visibility: hidden; margin-left: -20px;"><i class="fa fa-fw fa-info"></i></button>
-                        <button ng-hide="view.getControlsHidden()" type="button" ng-click="showDimensionFilter(cut.dimension)" class="btn btn-secondary btn-xs hidden-print" style="margin-left: 3px;"><i class="fa fa-fw fa-search"></i></button>
+                        <button ng-hide="view.getControlsHidden()" type="button" ng-click="showDimensionFilter(view.cube.dimensionPartsFromCut(cut).drilldownDimension)" class="btn btn-secondary btn-xs hidden-print" style="margin-left: 3px;"><i class="fa fa-fw fa-search"></i></button>
                         <button ng-hide="view.getControlsHidden()" type="button" ng-click="selectCut(cut.dimension, '', cut.invert)" class="btn btn-danger btn-xs hidden-print" style="margin-left: 1px;"><i class="fa fa-fw fa-trash"></i></button>
                     </div>
                 </div>
