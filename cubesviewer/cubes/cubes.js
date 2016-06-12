@@ -196,12 +196,19 @@
     };
 
     cubes.Server.prototype.get_cube = function(name, callback, errCallback) {
-        var self = this;
+
+    	var self = this;
 
         // Return the cube if already loaded
         if((name in this._cubes) && callback){
-            callback(this._cubes[name]);
-            return null;
+        	var jqxhr = $.Deferred();
+        	jqxhr.error = function() { };
+        	setTimeout(function() {
+        		// TODO: What is the correct ordering of success/complete callbacks?
+        		callback(self._cubes[name]);
+        		jqxhr.resolve(); //.promise();
+        	}, 0);
+        	return jqxhr;
         }
 
         var options = {dataType : 'json', type : "GET"};

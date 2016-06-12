@@ -1,5 +1,6 @@
 [2.0.2]
 
+    * Fixed 'apply already in progress' bug when loading a cube after first time.
     * Added masonry library to show improve alignment of Studio views.
     * Added drill more/less buttons to drilldown, horizontal dimension tags and dimension filter.
     * Added dimension filter item filtering based on current view cut.
