@@ -86,7 +86,7 @@ angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeou
 		$(dataRows).each(function(idxr, r) {
 			values = [];
 			$(view.grid.columnDefs).each(function(idx, e) {
-				if (r[e.field].title) {
+				if (r[e.field] && r[e.field].title) {
 					// Explore view uses objects as values, where "title" is the label
 					values.push('"' + r[e.field].title + '"');
 				} else {
@@ -97,9 +97,9 @@ angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeou
 			content = content + (values.join(",")) + "\n";
 		});
 
-		var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(content);
+
 		//window.open (url, "_blank");
-		this.saveAs(uri, view.cube.name + "-summary.csv")
+		this.saveAs(content, "text/csv", view.cube.name + "-summary.csv")
 	};
 
 	/**
@@ -107,14 +107,22 @@ angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeou
 	 *
 	 * @memberof cv.views.cube.exportService
 	 */
-	this.saveAs = function(uri, filename) {
-	    var link = document.createElement('a');
+	this.saveAs = function(content, mime, filename) {
+
+		// Method 1
+		//var uri = "data:" + mime + ";charset=utf-8," + encodeURIComponent(content);
+
+		// Method 2
+		var csvData = new Blob([content], { type: mime });
+		var uri = URL.createObjectURL(csvData);
+
+		var link = document.createElement('a');
 	    if (typeof link.download === 'string') {
 	        document.body.appendChild(link); // Firefox requires the link to be in the body
 	        link.download = filename;
 	        link.href = uri;
 	        link.click();
-	        document.body.removeChild(link); // remove the link when done
+        	document.body.removeChild(link); // remove the link when done
 	    } else {
 	        location.replace(uri);
 	    }

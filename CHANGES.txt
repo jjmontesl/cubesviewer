@@ -1,5 +1,7 @@
 [2.0.2]
 
+    * Fixed export bug causing table not to be exported if dataset was too large.
+    * Facts view now shows attribute details (#76).
     * Fixed 'apply already in progress' bug when loading a cube after first time.
     * Added masonry library to show improve alignment of Studio views.
     * Added drill more/less buttons to drilldown, horizontal dimension tags and dimension filter.

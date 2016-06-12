@@ -71,6 +71,14 @@ You need a configured and running [Cubes Server](http://databrewery.org/cubes.ht
 Your Cubes model may need some extra configuration if you wish to use features like date filters.
 
 
+Upgrading from 2.0.1
+--------------------
+
+1. A new Javascript dependency has been added to the Studio application (this does
+   not apply if you are using embedding CubesViewer views, only Studio).
+   Check the sample `html/studio.html` for an up to date list of dependencies.
+
+
 Upgrading from 0.10 or 0.11
 ---------------------------
 
@@ -102,7 +110,8 @@ Upgrading from 0.10 or 0.11
    run `python manage.py migrate`.
 
 
-For complete installation instructions, see the [CubesViewer Documentation]().
+For complete installation instructions, see the
+[CubesViewer Documentation](http://github.com/jjmontesl/cubesviewer/blob/master/doc/guide/index.md).
 
 
 Upgrading from 0.9 or earlier

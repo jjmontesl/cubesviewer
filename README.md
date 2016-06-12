@@ -15,7 +15,7 @@ CubesViewer is a visual interface for the
 open source [Cubes server](http://databrewery.org/cubes.html) (an OLAP server in Python).
 Purpose is to keep it simple while leveraging the web services provided by Cubes.
 
-**CubesViewer 2.0 is out** with tons of improvements! Check the
+**CubesViewer 2.0 is out** with tons of new features! Check the
 [official site](http://www.cubesviewer.com/) and
 the [release notes](http://github.com/jjmontesl/cubesviewer/blob/master/RELEASE-NOTES.md)!
 

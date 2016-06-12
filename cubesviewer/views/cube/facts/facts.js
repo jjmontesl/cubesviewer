@@ -139,6 +139,32 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 					sortingAlgorithm: $scope.sortDimensionLevel(level)
 				};
 				view.grid.columnDefs.push(col);
+
+				// Additional dimension attributes
+				$(level.attributes).each(function(idx, e) {
+					if (e.ref != level.key().ref && e.ref != level.label_attribute().ref) {
+						var col = {
+							name: e.name,
+							field: e.ref,
+							index : e.ref,
+							headerCellClass: "cv-grid-header-dimensionattribute",
+							//cellClass : "text-right",
+							//sorttype : "number",
+							cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ row.entity[col.colDef.field] }}</div>',
+							//formatter: $scope.columnFormatFunction(ag),
+							//footerValue: $scope.columnFormatFunction(ag)(data.summary[ag.ref], null, col)
+							//formatoptions: {},
+							//cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
+							//footerCellTemplate = '<div class="ui-grid-cell-contents text-right">{{ col.colDef.footerValue }}</div>'
+							visible: ! view.params.columnHide[e.ref],
+							width : $scope.defineColumnWidth(e.ref, 85),
+							sort: $scope.defineColumnSort(e.ref),
+							//sortingAlgorithm: $scope.sortDimensionLevel(level)
+						};
+						view.grid.columnDefs.push(col);
+					}
+				});
+
 			}
 		}
 
@@ -220,9 +246,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 				for (var i = 0; i < dimension.levels.length; i++) {
 
 					var level = dimension.levels[i];
-					var levelData = level.readCell (e);
+					var levelData = level.readCell(e);
 
 					row[level.key().ref] = levelData.label;
+
+					$(level.attributes).each(function(aidx, ae) {
+						if (ae.ref != level.key().ref && ae.ref != level.label_attribute().ref) {
+							row[ae.ref] = levelData.info[ae.ref];
+						}
+					});
 
 				}
 			}

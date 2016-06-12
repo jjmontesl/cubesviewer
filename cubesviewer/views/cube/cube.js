@@ -163,7 +163,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	};
 
 	$scope.requestErrorHandler = function() {
-		$scope.view._requestFailed = true;
+		$scope.view.requestFailed = true;
 	};
 
 
