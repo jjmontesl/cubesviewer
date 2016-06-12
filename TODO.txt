@@ -144,5 +144,4 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
     * Possible repeated data load / events?
     * Refresh: use watches to trigger invalidation? (also check for repeated events). Example: drilldown with click on item
       now triggers refresh twice: cut and drilldown. Also causes incorrect Undo/Redo tracking.
-    * Add "plus / minus" signs to dimension filters and drilldown/horizontal when more than one level (add functions to dimensionparts object from exploreCut)
 

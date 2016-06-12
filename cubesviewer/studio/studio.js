@@ -58,6 +58,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 	 * Adds a new clean view of type "cube" given a cube name.
 	 *
 	 * @memberof cv.studio.studioViewsService
+	 * @returns The created view object.
 	 */
 	this.addViewCube = function(cubename) {
 
@@ -71,7 +72,13 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 		var view = viewsService.createView("cube", { "cubename": cubename, "name": name });
 		this.views.push(view);
 
-		$timeout(function() { $anchorScroll('cvView' + view.id); }, 100);
+		$timeout(function() {
+			$('.cv-views-container').masonry('appended', $('.cv-views-container').find(".sv" + view.id).show());
+			//$('.cv-views-container').masonry('reloadItems');
+			//$('.cv-views-container').masonry('layout');
+			$timeout(function() { $anchorScroll("cvView" + view.id); }, 500);
+		}, 0);
+
 		return view;
 	};
 
@@ -80,6 +87,7 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 	 * a JSON string.
 	 *
 	 * @memberof cv.studio.studioViewsService
+	 * @returns The created view object.
 	 */
 	this.addViewObject = function(data) {
 
@@ -95,7 +103,13 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 
 		var view = viewsService.createView("cube", data);
 		this.views.push(view);
-		$timeout(function() { $anchorScroll('cvView' + view.id); }, 250);
+
+		$timeout(function() {
+			$('.cv-views-container').masonry('appended', $('.cv-views-container').find(".sv" + view.id).show());
+			//$('.cv-views-container').masonry('reloadItems');
+			//$('.cv-views-container').masonry('layout');
+			$timeout(function() { $anchorScroll("cvView" + view.id); }, 500);
+		}, 0);
 
 		return view;
 	};
@@ -108,11 +122,13 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 	this.closeView = function(view) {
 		var viewIndex = this.views.indexOf(view);
 		if (viewIndex >= 0) {
+			$('.cv-views-container').masonry('remove', $('.cv-views-container').find(".sv" + view.id));
 			this.views.splice(viewIndex, 1);
+			//$('.cv-views-container').masonry('reloadItems');
+			$('.cv-views-container').masonry('layout');
 		}
+
 	};
-
-
 
 	/**
 	 * Collapses the panel of the given view.
@@ -121,6 +137,9 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 	 */
 	this.toggleCollapseView = function(view) {
 		view.collapsed = !view.collapsed;
+		$timeout(function() {
+			$('.cv-views-container').masonry('layout');
+		}, 100);
 	};
 
 
@@ -138,13 +157,24 @@ angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$roo
 	$scope.cvOptions = cvOptions;
 	$scope.reststoreService = reststoreService;
 
+	$scope.$watch('__height', function() {
+		$('.cv-views-container').masonry('layout');
+	});
+
 }]).directive("cvStudioView", function() {
 	return {
 		restrict: 'A',
 		templateUrl: 'studio/panel.html',
 		scope: {
 			view: "="
-		}
+		},
+        link: function( scope, elem, attrs ) {
+
+            scope.$watch( function() {
+                scope.__height = elem.height();
+            } );
+
+        }
 
 	};
 });
@@ -162,6 +192,8 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 
 	$scope.studioViewsService.studioScope = $scope;
 
+	$scope.initialize = function() {
+	};
 
 	$scope.showSerializeAdd = function() {
 
@@ -249,6 +281,9 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 	 */
 	$scope.toggleTwoColumn = function() {
 		cvOptions.studioTwoColumn = ! cvOptions.studioTwoColumn;
+		$timeout(function() {
+			$('.cv-views-container').masonry('layout');
+		}, 100);
 	};
 
 	/**
@@ -256,7 +291,12 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 	 */
 	$scope.toggleHideControls = function() {
 		cvOptions.hideControls = ! cvOptions.hideControls;
+		$timeout(function() {
+			$('.cv-views-container').masonry('layout');
+		}, 100);
 	};
+
+	$scope.initialize();
 
 }]);
 

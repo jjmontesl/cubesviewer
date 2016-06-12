@@ -101,9 +101,11 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row cv-views-container" data-masonry='{ "itemSelector": ".cv-view-container", "columnWidth": ".cv-views-gridsizer", "percentPosition": true }'>
 
-            <div ng-repeat="studioView in studioViewsService.views" class="col-xs-12" ng-class="(cvOptions.studioTwoColumn ? 'col-sm-6' : 'col-sm-12')">
+            <div class="col-xs-1 cv-views-gridsizer"></div>
+
+            <div ng-repeat="studioView in studioViewsService.views" style="display: none;" class="col-xs-12 cv-view-container sv{{ studioView.id }}" ng-class="(cvOptions.studioTwoColumn ? 'col-sm-6' : 'col-sm-12')">
                 <div >
                     <div cv-studio-view view="studioView"></div>
                 </div>
