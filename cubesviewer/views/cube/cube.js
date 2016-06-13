@@ -318,7 +318,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 						return view.cube.dimensionParts(e.dimension).cutDimension == view.cube.dimensionParts(dimension).cutDimension;
 					}, true);
 					view.params.cuts.push({
-						"dimension" : dimension,
+						"dimension" : view.cube.dimensionParts(dimension).cutDimension,
 						"value" : value,
 						"invert" : invert
 					});

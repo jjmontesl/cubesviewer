@@ -127,7 +127,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 	$scope._loadDimensionValuesCallback = function(dimension) {
 		var dimension = dimension;
 		return function(data, status) {
-			if ($scope.view.dimensionFilter == dimension) $scope._processData(data);
+			if ($scope.view.dimensionFilter == dimension) $scope._processDimensionValuesData(data);
 		};
 	};
 
@@ -152,7 +152,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 		});
 	};
 
-	$scope._processData = function(data) {
+	$scope._processDimensionValuesData = function(data) {
 
 		// Get dimension
 		var view = $scope.view;
@@ -161,11 +161,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 
 		var parts = view.cube.dimensionParts($scope.view.dimensionFilter);
 		//var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
-		var cutDimension = $scope.view.dimensionFilter;
 
 		var filterValues = [];
 		for (var i = 0; i < view.params.cuts.length ; i++) {
-			if (view.params.cuts[i].dimension == cutDimension) {
+			if (view.params.cuts[i].dimension == view.cube.dimensionParts($scope.view.dimensionFilter).cutDimension) {
 				$scope.filterInverted = view.params.cuts[i].invert;
 				filterValues = view.params.cuts[i].value.split(";");
 				break;
