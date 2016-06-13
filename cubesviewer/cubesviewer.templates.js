@@ -1150,7 +1150,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    </h3>\n" +
     "\n" +
     "    <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
-    "        <span class=\"loadingbar-expand\"></span>XXXX\n" +
+    "        <span class=\"loadingbar-expand\"></span>\n" +
     "    </div>\n" +
     "\n" +
     "    <div ng-if=\"view.grid.data.length > 0\"\n" +
