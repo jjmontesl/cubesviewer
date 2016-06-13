@@ -61,7 +61,7 @@ needs *Python*, *PIP* and *virtualenv* installed:
 
    ```
    cd webshop
-   slicer server slicer.ini
+   slicer serve slicer.ini
    ```
 
    This will use the `slicer.ini` file and `model.json` config files to
