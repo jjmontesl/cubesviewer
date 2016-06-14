@@ -38,7 +38,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 	$scope.searchString = "";
 	$scope.selectedValues = null;
 	$scope.filterInverted = null;
-	$scope.filterShowAll = false;
+	$scope.filterShowAll = true;
 
 	$scope.currentDataId = null;
 
