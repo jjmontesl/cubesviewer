@@ -135,7 +135,6 @@ Consider contributing to CubesViewer! This is a possible roadmap (reverse order)
       Same for sometimes drilling down or changing a filter, grid doens't get correct size.
     * Size change when switching views is irritating. Hack that (fix height during changes/reloads?).
 
-    * Fix to grid sort function cache was incorrect? If two grids are loaded, clicking on a column in grid A could affect sorting in grid B (#71).
     * Error: [$parse:lexerr] Lexer Error: Unexpected next character  at columns 45-45 [Í] in expression [entity['SECRETARÍA XERAL TÉCNICA '](CONSELLERÍA DE CULTURA, EDUCACIÓN E ORDENACIÓN UNIVERSITARIA)].
 
     * Possible repeated data load / events?
