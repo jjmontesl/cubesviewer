@@ -203,6 +203,14 @@ separator.
 Remember to restart your Cubes server when changing cube metadata in order
 for the changes to be picked up.
 
+Map charts / Geographic information
+-----------------------------------
+
+CubesViewer needs extra metadata in order to present map charts. This is covered
+on a separate chapter of this guide: [CubesViewer Maps](cubesviewer-maps.md)
+
+
+
 Further information
 -------------------
 

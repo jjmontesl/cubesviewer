@@ -21,6 +21,8 @@
  * SOFTWARE.
  */
 
+'use strict';
+
 /**
  *
     "cv-geo-feature-layer": "world-countries",
@@ -107,7 +109,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	    	    font: '10px Verdana',
 	    	    text: text, // getText(feature),
 	    	    fill: new ol.style.Fill({color: 'black'}),
-	    	    stroke: new ol.style.Stroke({color: 'white', width: 1.0})
+	    	    stroke: new ol.style.Stroke({color: 'white', width: 0.0})
     	  	});
     	};
 
