@@ -167,7 +167,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	};
 
 
-	$scope.resetGrid = function() {
+	$scope.workaroundSortCacheBug = function() {
 		rowSorter.colSortFnCache = {};
 		//$scope.view.grid.api.core.notifyDataChange(uiGridConstants.dataChange.ALL);
 	};
@@ -194,6 +194,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
         });
         gridApi.core.on.sortChanged($scope, function(grid, sortColumns){
             // do something
+        	$scope.workaroundSortCacheBug();
         	$scope.view.params.columnSort[$scope.view.params.mode] = {};
         	$(sortColumns).each(function (idx, col) {
         		$scope.view.params.columnSort[$scope.view.params.mode][col.field] = { direction: col.sort.direction, priority: col.sort.priority };

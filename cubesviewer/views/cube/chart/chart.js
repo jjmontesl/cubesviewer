@@ -93,7 +93,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 		$scope.rawData = data;
 
-		$scope.resetGrid();
+		$scope.workaroundSortCacheBug();
 		$scope.view.grid.data = [];
 		$scope.view.grid.columnDefs = [];
 		$rootScope.$apply();
