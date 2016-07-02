@@ -58,7 +58,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 
 		var container = $($element).find("svg").get(0);
 
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "");
 
 
 	    // TODO: Check there's only one value column
@@ -196,7 +196,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	this.drawChartLinesCumulative = function (view, colNames, dataRows, dataTotals) {
 
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.getDimensionParts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.getDimensionParts(view.params.xaxis).label : "");
 
 	    var d = [];
 

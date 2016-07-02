@@ -179,6 +179,7 @@ cubesviewer._seriesAddRows = function($scope, data) {
 
 	// Copy drilldown as we'll modify it
 	var drilldown = view.params.drilldown.slice(0);
+	var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis; })[0];
 
 	// Include X Axis if necessary
 	if (view.params.xaxis != null) {
@@ -189,9 +190,9 @@ cubesviewer._seriesAddRows = function($scope, data) {
 	var addedCols = [];
 	$(data.cells).each(function (idx, e) {
 
-		var row = [];
 		var key = [];
 		var nid = [];
+		var label = [];
 
 		// For the drilldown level, if present
 		for (var i = 0; i < drilldown.length; i++) {
@@ -201,21 +202,25 @@ cubesviewer._seriesAddRows = function($scope, data) {
 			var infos = parts.hierarchy.readCell(e, parts.level);
 
 			// Values and Labels
-			var drilldownLevelValues = [];
+			var drilldownLevelKeys = [];
 			var drilldownLevelLabels = [];
 
 			$(infos).each(function(idx, info) {
-				drilldownLevelValues.push(info.key);
+				drilldownLevelKeys.push(info.key);
 				drilldownLevelLabels.push(info.label);
 			});
 
-			key.push (drilldownLevelLabels.join(" / "));
 			nid.push(drilldownLevelValues.join('-'));
+			label.push(drilldownLevelLabels.join(" / "));
+			//key.push (drilldownLevelLabels.join(" / "));
+			key.push(drilldownLevelKeys.join("_"));
 		}
 
 		// Set key
-		var colKey = (view.params.xaxis == null) ? view.params.yaxis : key[0];
+		var colKey = (view.params.xaxis == null) ? view.params.yaxis : key[0];  // key[0] because that's the horizontal dimension key
+		var colLabel = (view.params.xaxis == null) ? ag.label : label[0];
 		var value = (e[view.params.yaxis]);
+		//var rowKey = (view.params.xaxis == null) ? key.join (' / ') : key.slice(1).join(' / ');
 		var rowKey = (view.params.xaxis == null) ? nid.join ('-') : nid.slice(1).join ('-');
 
 		// Search or introduce
@@ -230,6 +235,7 @@ cubesviewer._seriesAddRows = function($scope, data) {
 
 			for (var i = baseidx ; i < key.length; i++) {
 				newrow["key" + (i - baseidx)] = key[i];
+				newrow["label" + (i - baseidx)] = label[i];
 			}
 
 			newrow["_cell"] = e;
@@ -241,12 +247,11 @@ cubesviewer._seriesAddRows = function($scope, data) {
 		if (addedCols.indexOf(colKey) < 0) {
 			addedCols.push(colKey);
 
-			var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
 
 			var col = {
-				name: colKey,
+				name: colLabel,
 				field: colKey,
-				index : colKey,
+				index: colKey,
 				cellClass : "text-right",
 				//sorttype : "number",
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
@@ -264,10 +269,10 @@ cubesviewer._seriesAddRows = function($scope, data) {
 	});
 
 	//var label = [];
-	$(view.params.drilldown).each (function (idx, e) {
+	$(view.params.drilldown).each(function (idx, e) {
 		var col = {
 			name: view.cube.cvdim_dim(e).label,
-			field: "key" + idx,
+			field: "label" + idx,
 			index : "key" + idx,
 			headerCellClass: "cv-grid-header-dimension",
 			enableHiding: false,
@@ -287,7 +292,8 @@ cubesviewer._seriesAddRows = function($scope, data) {
 	});
 
 	if (view.params.drilldown.length == 0 && rows.length > 0) {
-		rows[0]["key0"] = view.cube.aggregateFromName(view.params.yaxis).label;
+		rows[0]["key0"] = view.cube.aggregateFromName(view.params.yaxis).name;
+		rows[0]["label0"] = view.cube.aggregateFromName(view.params.yaxis).label;
 
 		var col = {
 			name: "Measure",

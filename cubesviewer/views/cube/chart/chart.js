@@ -115,8 +115,14 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 
 			$(rows).each(function(idx, e) {
 				var jointkey = [];
+				var jointlabel = [];
 				for (var i = 0; i < view.params.drilldown.length; i++) jointkey.push(e["key" + i]);
-				e["key"] = jointkey.join(" / ");
+				for (var i = 0; i < view.params.drilldown.length; i++) jointlabel.push(e["label" + i]);
+				e["key"] = jointkey.join("_");
+				e["label"] = jointlabel.join(" / ");
+
+				// FIXME: Using label as key for charts, but we should properly use keys/labels for charts and column definitions in general
+				e["key"] = e["label"];
 			});
 		}
 

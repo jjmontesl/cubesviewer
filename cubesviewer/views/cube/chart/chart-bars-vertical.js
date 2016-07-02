@@ -53,7 +53,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 		var columnDefs = view.grid.columnDefs;
 
 		var container = $($element).find("svg").get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "");
 
 	    var d = [];
 
@@ -62,7 +62,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	    $(dataRows).each(function(idx, e) {
 	    	var serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
-	    		var value = e[columnDefs[i].name];
+	    		var value = e[columnDefs[i].field];
 	    		serie.push( { "x": columnDefs[i].name, "y":  (value != undefined) ? value : 0 } );
 	    	}
 	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };

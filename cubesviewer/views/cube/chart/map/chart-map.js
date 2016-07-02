@@ -35,6 +35,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 
 	$scope.map = null;
 
+
 	$scope.initialize = function() {
 		// Add chart view parameters to view definition
 	};
@@ -57,11 +58,31 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 		var container = $($element).find(".cv-map-container").get(0);
 		$(container).empty();
 
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None");
 
 		var projection = ol.proj.get('EPSG:3857');
 
-	    var raster = new ol.layer.Tile({
+		// Select column
+		var geoLevels = $.grep(view.params.drilldown, function(e) {
+			var dimParts = view.cube.dimensionParts(e);
+			return dimParts.level.isGeoLevel();
+		});
+
+		// Get geo info from model
+		$scope.geoLevel = null;
+		if (geoLevels.length > 0) {
+			$scope.geoLevel = geoLevels[0];
+			console.debug($scope.geoLevel);
+		} else {
+			return;
+		}
+
+		// Create layers
+		var mapLayers = $scope.geoLevel.info['cv-geo-map-layers'];
+		$scope.mapLayers = $scope.createLayers(mapLayers);
+
+	    /*
+		var raster = new ol.layer.Tile({
 	    	source: new ol.source.XYZ({
 	    		url: 'http://tile.openstreetmap.org/{z}/{x}/{y}.png'
 	        })
@@ -76,9 +97,10 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	        }),
 	        projection: projection
 	    });
+	    */
 
 	    $scope.map = new ol.Map({
-	    	layers: [raster, vector],  // raster
+	    	layers: $scope.mapLayers['_order'],
 	        target: container,
 	        view: new ol.View({
 	        	center: [876970.8463461736, 5859807.853963373],
@@ -109,7 +131,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	    	    font: '10px Verdana',
 	    	    text: text, // getText(feature),
 	    	    fill: new ol.style.Fill({color: 'black'}),
-	    	    stroke: new ol.style.Stroke({color: 'white', width: 0.0})
+	    	    stroke: new ol.style.Stroke({color: 'white', width: 2.0})
     	  	});
     	};
 
@@ -139,7 +161,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	    						feature.setStyle(
 	    							new ol.style.Style({
 	    								fill: new ol.style.Fill({color: color, opacity: 0.7}),  // colorArr[colorindex]
-	    								stroke: new ol.style.Stroke({color: "#ffffff", width: 2,opacity: 0.7} ),
+	    								stroke: new ol.style.Stroke({color: color, width: 0.0, opacity: 0.7} ),   // "#ffffff"
 	    								text: createTextStyle(feature, label + "\n" + valueFormatted)
 	    							})
 	    						);
@@ -195,6 +217,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 
 	};
 
+	defineMapControllerLayerMethods($scope);
 	$scope.initialize();
 
 }]);

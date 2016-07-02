@@ -111,7 +111,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	};
 
 	$scope.setViewMode = function(mode) {
-		console.debug("Remove setViewMode call on the controller?")
+		// TODO: Remove setViewMode call on the controller
 		$scope.view.setViewMode(mode);
 	};
 

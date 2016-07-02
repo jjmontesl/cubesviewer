@@ -64,7 +64,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartPieControll
 	    	var value = e[columnDefs[1].field];
     		if ((value != undefined) && (value > 0)) {
 
-    	    	var series = { "y": value, "key": e["key"] != "" ? e["key"] : columnDefs[0].name };
+    	    	var series = { "y": value, "key": e["key"] != "" ? e["key"] : columnDefs[0].field };
     	    	if (view.params["chart-disabledseries"]) {
     	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
     	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];

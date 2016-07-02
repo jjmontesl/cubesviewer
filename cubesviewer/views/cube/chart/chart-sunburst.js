@@ -86,6 +86,8 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartSunburstCon
 	 */
 	$scope.prepareDrilldownTree = function (data) {
 
+		// FIXME: This representation is using cells directly, instead of data from series.
+
 		var view = $scope.view;
 
 		var json =  [{

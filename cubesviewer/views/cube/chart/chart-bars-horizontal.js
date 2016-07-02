@@ -52,7 +52,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 		var columnDefs = view.grid.columnDefs;
 
 		var container = $($element).find("svg").get(0);
-		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None")
+		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "");
 
 	    var d = [];
 
@@ -61,7 +61,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	    $(dataRows).each(function(idx, e) {
 	    	var serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
-	    		var value = e[columnDefs[i].name];
+	    		var value = e[columnDefs[i].field];
 
 	    		// If second serie is reversed
 	    		if (dataRows.length == 2 && serieCount == 1 && view.params.chartoptions.mirrorSerie2) value = (value != undefined) ? -value : 0;

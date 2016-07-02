@@ -85,7 +85,12 @@
     </div>
 
     <div ng-if="view.params.charttype == 'map'">
-        <h3><i class="fa fa-fw fa-globe"></i> Map chart</h3>
+        <h3><i class="fa fa-fw fa-globe"></i> Map chart
+            <i ng-show="view.pendingRequests > 0" class="fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right"></i>
+        </h3>
+        <div ng-if="view.pendingRequests > 0" class="loadingbar-content">
+            <span class="loadingbar-expand"></span>
+        </div>
         <div ng-controller="CubesViewerViewsCubeChartMapController">
             <div ng-include="'views/cube/chart/map/chart-map.html'"></div>
         </div>

@@ -24,6 +24,8 @@
 "use strict";
 
 /* Extensions to cubesviewer client lib */
+
+
 cubes.Dimension.prototype.hierarchies_count = function()  {
 
 	var count = 0;
@@ -39,17 +41,17 @@ cubes.Dimension.prototype.default_hierarchy = function()  {
 	return this.hierarchies[this.default_hierarchy_name];
 };
 
-/*
+/**
  * Extend model prototype to support datefilter dimensions.
+ * Inform if a dimension is a date dimension and can be used as a date
+ * filter (i.e. with date selection tool).
+ * @returns Whether the dimension is a date dimension.
  */
 cubes.Dimension.prototype.isDateDimension = function()  {
-
-	// Inform if a dimension is a date dimension and can be used as a date
-	// filter (i.e. with date selection tool).
 	return ((this.role == "time") &&
 			((! ("cv-datefilter" in this.info)) || (this.info["cv-datefilter"] == true)) );
-
 };
+
 
 /**
  * List date dimensions.
@@ -61,6 +63,33 @@ cubes.Cube.prototype.dateDimensions = function() {
 	for (var index in this.dimensions) {
 		var dimension = this.dimensions[index];
 		if (dimension.isDateDimension()) result.push(dimension);
+	}
+	return result;
+};
+
+
+/**
+ * Extend model prototype to support geographic dimensions.
+ * @returns Whether the dimension level is a geographic dimension.
+ */
+cubes.Level.prototype.isGeoLevel = function() {
+	return ((this.role == "geo") || ("cv-geo-source" in this.info));
+};
+
+
+/**
+ * List date dimensions.
+ *
+ * @returns An array with the dimensions that are date dimensions (role: time).
+ */
+cubes.Cube.prototype.geoLevels = function() {
+	var result = [];
+	for (var index in this.dimensions) {
+		var dimension = this.dimensions[index];
+		for (var indexL in dimension.levels) {
+			var level = dimension.levels[indexL];
+			if (level.isGeoLevel()) result.push(level);
+		}
 	}
 	return result;
 };

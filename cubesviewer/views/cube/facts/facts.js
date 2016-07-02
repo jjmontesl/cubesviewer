@@ -107,7 +107,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 	    });
 
 		view.grid.columnDefs.push({
-			name: "id",
+			name: "Id",
 			field: "id",
 			index: "id",
 			enableHiding: false,
@@ -271,7 +271,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 
 			// Set key
             row["id"] = counter++;
+
 			if ("id" in e) row["id"] = e["id"];
+			if ("__fact_key__" in e) row["id"] = e["__fact_key__"];
 			row["key"] = row["id"];
 
 			row["_cell"] = e;
