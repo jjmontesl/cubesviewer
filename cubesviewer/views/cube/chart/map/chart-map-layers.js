@@ -31,7 +31,7 @@ var defineMapControllerLayerMethods = function($scope) {
 	 * @param mapLayer
 	 * @returns The created layer.
 	 */
-	$scope.createLayerXYZ = function (mapLayer) {
+	$scope.createLayerXYZ = function(mapLayer) {
 
 		var sourceParams = {};
 		angular.extend(sourceParams, mapLayer.params);
@@ -40,7 +40,7 @@ var defineMapControllerLayerMethods = function($scope) {
 		var layer = new ol.layer.Tile({
 			source: new ol.source.XYZ(sourceParams),
 			opacity: mapLayer.opacity ? mapLayer.opacity : 1.0,
-	        visible: false
+	        visible: true
 	    });
 
 		return layer;
@@ -50,7 +50,7 @@ var defineMapControllerLayerMethods = function($scope) {
 	 * Creates a WMTS layer. This provides a set of default parameters.
 	 * @returns The created layer.
 	 */
-	$scope.createLayerWMTS = function (mapLayer) {
+	$scope.createLayerWMTS = function(mapLayer) {
 
 		// Generate resolutions and matrixIds arrays for this WMTS (having seen capabilities)
 		// Note: Grid may be built also by: ol.tilegrid.WMTS.createFromCapabilitiesMatrixSet(matrixSet, opt_extent)
@@ -86,7 +86,7 @@ var defineMapControllerLayerMethods = function($scope) {
 		var layer = new ol.layer.Tile({
 			source: new ol.source.WMTS(sourceParams),
 			opacity: mapLayer.opacity ? mapLayer.opacity : 1.0,
-			visible: false
+			visible: true
 			//extent: projectionExtent,
 		})
 
@@ -115,13 +115,16 @@ var defineMapControllerLayerMethods = function($scope) {
 	 * Creates a GeoJSON layer.
 	 * @returns The created layer.
 	 */
-	$scope.createLayerGeoJSON = function (mapLayer) {
+	$scope.createLayerVector = function(mapLayer) {
 
 		var sourceParams = {};
-		angular.extend(sourceParams, { format: new ol.format.GeoJSON() });
 		angular.extend(sourceParams, mapLayer.params);
 
-		var cityNamesStyle = function(feature, resolution) {
+		if (mapLayer.attribution) sourceParams['attributions'] = [ new ol.Attribution({ 'html': "" + mapLayer.attribution }) ];
+		if (sourceParams['format'] == "geojson") sourceParams['format'] = new ol.format.GeoJSON();
+
+		/*
+		var style = function(feature, resolution) {
         	var fontSize = 1.5 - 0.5 * feature.get("scalerank") / 10;
         	return [ new ol.style.Style({
         		text: new ol.style.Text({
@@ -132,15 +135,16 @@ var defineMapControllerLayerMethods = function($scope) {
                 })
     		}) ]
         };
+		*/
 
 		// Populated places GeoJSON
 		var layer = new ol.layer.Vector({
 	        title: mapLayer.label,
 	        source: new ol.source.Vector(sourceParams),
-	        visible: false,
+	        visible: true,
 
 	        // TODO: Layer styles shall be optional and chosen from several possibilities (if applied)
-	        style: cityNamesStyle
+	        //style: style
 	    });
 
 		return layer;
@@ -149,6 +153,7 @@ var defineMapControllerLayerMethods = function($scope) {
 
 	/**
 	 * Creates various types of map layers based on settings.
+	 * @returns A hash of OpenLayers map layers, along with an '_order' key with an ordered array.
 	 */
 	$scope.createLayers = function(mapLayers) {
 
@@ -162,24 +167,25 @@ var defineMapControllerLayerMethods = function($scope) {
 				mapLayer.params.url = mapLayer.params.url.replace('{}', $location.host());
 			}
 
-			if (mapLayer.source == 'wmts') {
+			if (mapLayer.type == 'wmts') {
 				layer = $scope.createLayerWMTS(mapLayer);
-			} else if (mapLayer.source == 'xyz') {
+			} else if (mapLayer.type == 'xyz') {
 				layer = $scope.createLayerXYZ(mapLayer);
-			} else if (mapLayer.source == 'geojson') {
-				layer = $scope.createLayerGeoJSON(mapLayer);
-			} else if (mapLayer.source == 'kml') {
+			} else if (mapLayer.type == 'vector') {
+				layer = $scope.createLayerVector(mapLayer);
+			} /*else if (mapLayer.type == 'kml') {
 				layer = $scope.createLayerKML(mapLayer);
-			} else {
-				console.error('Wrong map settings. Could not create map layer of source type: ' + mapLayer.source);
+			} */ else {
+				console.error('Wrong map settings. Could not create map layer of source type: ' + mapLayer.type);
 				return;
 			}
 
 			layers[mapLayer.name] = layer;
 			layers['_order'].push(layer);
 
-
 		});
+
+		return layers;
 	};
 
 };

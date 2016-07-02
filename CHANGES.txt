@@ -1,8 +1,9 @@
-[2.0.3]
+[2.1.1]
 
     * Fixed chart figure export (was not working). Chart images can again be exported as PNG.
     * Fixed series missing data with same label but different key value.
     * Fixed #71 for cases where more than one grid was on screen.
+    * Fixed series column label (fixes #55).
     * Added map view.
 
 [2.0.2]

@@ -50,6 +50,7 @@ note that **the order of inclusion of Javascript and CSS files is critical**.
     <link rel="stylesheet" href="lib/angular-ui-grid/ui-grid.css" />
     <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.css" />
     <link rel="stylesheet" href="lib/nvd3/nv.d3.css" />
+    <link rel="stylesheet" href="lib/openlayers/ol.css" /> <!-- for maps -->
     <link rel="stylesheet" href="lib/cubesviewer/cubesviewer.css" />
     <link rel="stylesheet" href="lib/bootstrap-submenu/css/bootstrap-submenu.css" /> <!-- after cubesviewer.css! -->
 
@@ -63,6 +64,7 @@ note that **the order of inclusion of Javascript and CSS files is critical**.
     <script src="lib/d3/d3.js"></script>
     <script src="lib/nvd3/nv.d3.js"></script>
     <script src="lib/flotr2/flotr2.min.js"></script>
+    <script src="lib/openlayers/ol.js"></script> <!-- for maps -->
     <script src="lib/cubesviewer/cubesviewer.js"></script>
 ```
 

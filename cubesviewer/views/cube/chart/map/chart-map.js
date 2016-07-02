@@ -60,22 +60,26 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 
 		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None");
 
-		var projection = ol.proj.get('EPSG:3857');
 
 		// Select column
-		var geoLevels = $.grep(view.params.drilldown, function(e) {
+		var geoLevels = [];
+		$(view.params.drilldown).each(function(idx, e) {
 			var dimParts = view.cube.dimensionParts(e);
-			return dimParts.level.isGeoLevel();
+			if (dimParts.level.isGeoLevel()) geoLevels.push(dimParts.level);
 		});
 
 		// Get geo info from model
 		$scope.geoLevel = null;
 		if (geoLevels.length > 0) {
 			$scope.geoLevel = geoLevels[0];
-			console.debug($scope.geoLevel);
 		} else {
 			return;
 		}
+
+		console.debug($scope.geoLevel);
+
+		var projectionId = $scope.geoLevel.info['cv-geo-crs'] ? $scope.geoLevel.info['cv-geo-crs'] : 'EPSG:3857';
+		$scope.mapProjection = ol.proj.get(projectionId);
 
 		// Create layers
 		var mapLayers = $scope.geoLevel.info['cv-geo-map-layers'];
@@ -109,68 +113,85 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	        })
 	    });
 
-	    $scope.layerVector = vector;
+	    // Feature layer
+	    var layerFeatureId = $scope.geoLevel.info['cv-geo-ref-layer'];
+	    $scope.layerFeature = $scope.mapLayers[layerFeatureId];
 
+	    // Geo ref attributes
+	    var refAttributes = $.grep($scope.geoLevel.attributes, function(e) {
+	    	return e.name == $scope.geoLevel.info['cv-geo-ref-model-attribute'];
+	    });
+	    if (refAttributes.length != 1) {
+	    	console.error("Could not find attribute with name '" + $scope.geoLevel.info['cv-geo-ref-model-attribute'] + "' to use as geographic reference key (cv-geo-ref-model-attribute).");
+	    	return;
+	    }
+	    $scope.refModelAttribute = refAttributes[0].ref;
+	    $scope.refLayerAttribute = $scope.geoLevel.info['cv-geo-ref-layer-attribute'];
+
+
+	    // Data rendering
 	    $timeout(function() {
-	    // Walk rows to define features
 
-	    var allValues = [];
-	    $(dataRows).each(function(idx, e) {
-	    	for (var i = 1; i < columnDefs.length; i++) {
-	    		if (columnDefs[i].field in e) {
-	    			var value = e[columnDefs[i].field];
-	    			allValues.push(value);
-	    		}
-	    	}
-	    });
+	    	// Walk rows to define features
+		    var allValues = [];
+		    $(dataRows).each(function(idx, e) {
+		    	for (var i = 1; i < columnDefs.length; i++) {
+		    		if (columnDefs[i].field in e) {
+		    			var value = e[columnDefs[i].field];
+		    			allValues.push(value);
+		    		}
+		    	}
+		    });
 
-	    var createTextStyle = function(feature, text) {
-	    	return new ol.style.Text({
-	    	    textAlign: 'center',
-	    	    textBaseline: 'middle',
-	    	    font: '10px Verdana',
-	    	    text: text, // getText(feature),
-	    	    fill: new ol.style.Fill({color: 'black'}),
-	    	    stroke: new ol.style.Stroke({color: 'white', width: 2.0})
-    	  	});
-    	};
+		    var createTextStyle = function(feature, text) {
+		    	return new ol.style.Text({
+		    	    textAlign: 'center',
+		    	    textBaseline: 'middle',
+		    	    font: '10px Verdana',
+		    	    text: text, // getText(feature),
+		    	    fill: new ol.style.Fill({color: 'black'}),
+		    	    stroke: new ol.style.Stroke({color: 'white', width: 2.0})
+	    	  	});
+	    	};
 
-    	var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
-    	var colFormatter = $scope.columnFormatFunction(ag);
+	    	var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+	    	var colFormatter = $scope.columnFormatFunction(ag);
 
-    	var numRows = dataRows.length;
-	    $(dataRows).each(function(idx, e) {
-	    	for (var i = 1; i < columnDefs.length; i++) {
-	    		if (columnDefs[i].field in e) {
+	    	var numRows = dataRows.length;
+		    $(dataRows).each(function(idx, e) {
+		    	for (var i = 1; i < columnDefs.length; i++) {
+		    		if (columnDefs[i].field in e) {
 
 
-	    			var value = e[columnDefs[i].field];
-	    			var valueFormatted = colFormatter(value);
-	    			var label = e._cell['geo.geo_label'];
+		    			var value = e[columnDefs[i].field];
+		    			var valueFormatted = colFormatter(value);
+		    			var label = e._cell['geo.geo_label'];
 
-//	    			console.debug(e._cell);
-
-	    			if (value !== undefined) {
-	    				//serie.push( { "x": i, "y":  (value != undefined) ? value : 0 } );
-	    				$($scope.layerVector.getSource().getFeatures()).each(function(idx, feature) {
-//	    					console.debug(feature);
-	    					if (feature.getProperties().iso_a2 == e._cell['geo.geo_code']) {
-//	    						console.debug("Match");
-	    						var colorScale = d3.scale.linear().range(['white', 'red']);
-	    						var color = colorScale(d3.scale.quantize().domain([d3.min(allValues), d3.max(allValues)]).range([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])(value));
-	    						feature.setStyle(
-	    							new ol.style.Style({
-	    								fill: new ol.style.Fill({color: color, opacity: 0.7}),  // colorArr[colorindex]
-	    								stroke: new ol.style.Stroke({color: color, width: 0.0, opacity: 0.7} ),   // "#ffffff"
-	    								text: createTextStyle(feature, label + "\n" + valueFormatted)
-	    							})
-	    						);
-	    					}
-	    				});
-	    			}
-	    		}
-	    	}
-	    });
+	//	    			console.debug(e._cell);
+		    			if (value !== undefined) {
+		    				var found = false;
+		    				$($scope.layerFeature.getSource().getFeatures()).each(function(idx, feature) {
+		    					// Using only first feature found, if there are more than one
+		    					if ((feature.getProperties()[$scope.refLayerAttribute] == e._cell[$scope.refModelAttribute])) {
+		    						found = true;
+		    						var colorScale = d3.scale.linear().range(['white', 'red']);
+		    						var color = colorScale(d3.scale.quantize().domain([d3.min(allValues), d3.max(allValues)]).range([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])(value));
+		    						feature.setStyle(
+		    							new ol.style.Style({
+		    								fill: new ol.style.Fill({color: color, opacity: 0.7}),  // colorArr[colorindex]
+		    								stroke: new ol.style.Stroke({color: color, width: 0.0, opacity: 0.7} ),   // "#ffffff"
+		    								text: createTextStyle(feature, label + "\n" + valueFormatted)
+		    							})
+		    						);
+		    					}
+		    				});
+		    				if (!found) {
+		    					console.debug("Could not found referended feature in map while drawing map data: " + $scope.refLayerAttribute + " = " + e._cell[$scope.refModelAttribute]);
+		    				}
+		    			}
+		    		}
+		    	}
+		    });
 	    }, 2000);
 
 	    /*
