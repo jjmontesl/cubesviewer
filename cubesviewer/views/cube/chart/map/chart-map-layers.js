@@ -46,70 +46,6 @@ var defineMapControllerLayerMethods = function($scope) {
 		return layer;
 	};
 
-	/**
-	 * Creates a WMTS layer. This provides a set of default parameters.
-	 * @returns The created layer.
-	 */
-	$scope.createLayerWMTS = function(mapLayer) {
-
-		// Generate resolutions and matrixIds arrays for this WMTS (having seen capabilities)
-		// Note: Grid may be built also by: ol.tilegrid.WMTS.createFromCapabilitiesMatrixSet(matrixSet, opt_extent)
-		var projection = ol.proj.get('EPSG:3857');
-		var projectionExtent = projection.getExtent();
-		var size = ol.extent.getWidth(projectionExtent) / 256;
-		var resolutions = new Array(20);
-		var matrixIds = new Array(20);
-		for (var z = 0; z < 20; ++z) {
-		  resolutions[z] = size / Math.pow(2, z);
-		  matrixIds[z] = z;
-		}
-
-		var sourceParamsBase = {
-			//url: 'http://www.ign.es/wmts/pnoa-ma?service=WMTS',
-		  	//layer: 'OI.OrthoimageCoverage',
-		  	matrixSet: 'GoogleMapsCompatible',  // 'EPSG:3857',
-	        format: 'image/png',
-	        projection: projection,
-	        tileGrid: new ol.tilegrid.WMTS({
-	          origin: ol.extent.getTopLeft(projectionExtent),
-	          resolutions: resolutions,
-	          matrixIds: matrixIds
-	        }),
-	        style: 'default'
-		};
-
-		var sourceParams = {};
-		angular.extend(sourceParams, sourceParamsBase);
-		angular.extend(sourceParams, mapLayer.params);
-		if (mapLayer.attribution) sourceParams['attributions'] = [ new ol.Attribution({ 'html': "" + mapLayer.attribution }) ];
-
-		var layer = new ol.layer.Tile({
-			source: new ol.source.WMTS(sourceParams),
-			opacity: mapLayer.opacity ? mapLayer.opacity : 1.0,
-			visible: true
-			//extent: projectionExtent,
-		})
-
-		return layer;
-	};
-
-	/**
-	 * Creates a KML layer.
-	 * @returns The created layer.
-	 */
-	$scope.createLayerKML = function (mapLayer) {
-
-		var sourceParams = {};
-		angular.extend(sourceParams, { format: new ol.format.KML() });
-		angular.extend(sourceParams, mapLayer.params);
-		if (mapLayer.attribution) sourceParams['attributions'] = [ new ol.Attribution({ 'html': "" + mapLayer.attribution }) ];
-
-		var layer = new ol.layer.Vector({
-			source: new ol.source.Vector(sourceParams)
-		});
-
-		return layer;
-	};
 
 	/**
 	 * Creates a GeoJSON layer.
@@ -122,6 +58,7 @@ var defineMapControllerLayerMethods = function($scope) {
 
 		if (mapLayer.attribution) sourceParams['attributions'] = [ new ol.Attribution({ 'html': "" + mapLayer.attribution }) ];
 		if (sourceParams['format'] == "geojson") sourceParams['format'] = new ol.format.GeoJSON();
+		if (sourceParams['format'] == "kml") sourceParams['format'] = new ol.format.KML();
 
 		/*
 		var style = function(feature, resolution) {

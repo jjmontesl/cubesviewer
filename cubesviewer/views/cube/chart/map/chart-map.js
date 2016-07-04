@@ -158,6 +158,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	    	var colFormatter = $scope.columnFormatFunction(ag);
 
 	    	var numRows = dataRows.length;
+	    	var colorScale = d3.scale.linear().range(['white', 'red']);
 		    $(dataRows).each(function(idx, e) {
 		    	for (var i = 1; i < columnDefs.length; i++) {
 		    		if (columnDefs[i].field in e) {
@@ -167,19 +168,16 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 		    			var valueFormatted = colFormatter(value);
 		    			var label = e._cell['geo.geo_label'];
 
-	//	    			console.debug(e._cell);
 		    			if (value !== undefined) {
 		    				var found = false;
 		    				$($scope.layerFeature.getSource().getFeatures()).each(function(idx, feature) {
-		    					// Using only first feature found, if there are more than one
 		    					if ((feature.getProperties()[$scope.refLayerAttribute] == e._cell[$scope.refModelAttribute])) {
 		    						found = true;
-		    						var colorScale = d3.scale.linear().range(['white', 'red']);
 		    						var color = colorScale(d3.scale.quantize().domain([d3.min(allValues), d3.max(allValues)]).range([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])(value));
 		    						feature.setStyle(
 		    							new ol.style.Style({
-		    								fill: new ol.style.Fill({color: color, opacity: 0.7}),  // colorArr[colorindex]
-		    								stroke: new ol.style.Stroke({color: color, width: 0.0, opacity: 0.7} ),   // "#ffffff"
+		    								fill: new ol.style.Fill({color: color, opacity: 0.7}),
+		    								stroke: new ol.style.Stroke({color: "#ffffff", width: 1.0, opacity: 0.7} ),
 		    								text: createTextStyle(feature, label + "\n" + valueFormatted)
 		    							})
 		    						);
