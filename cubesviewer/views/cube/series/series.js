@@ -191,6 +191,7 @@ cubesviewer._seriesAddRows = function($scope, data) {
 
 		var row = [];
 		var key = [];
+		var nid = [];
 
 		// For the drilldown level, if present
 		for (var i = 0; i < drilldown.length; i++) {
@@ -209,13 +210,13 @@ cubesviewer._seriesAddRows = function($scope, data) {
 			});
 
 			key.push (drilldownLevelLabels.join(" / "));
-
+			nid.push(drilldownLevelValues.join('-'));
 		}
 
 		// Set key
 		var colKey = (view.params.xaxis == null) ? view.params.yaxis : key[0];
 		var value = (e[view.params.yaxis]);
-		var rowKey = (view.params.xaxis == null) ? key.join (' / ') : key.slice(1).join (' / ');
+		var rowKey = (view.params.xaxis == null) ? nid.join ('-') : nid.slice(1).join ('-');
 
 		// Search or introduce
 		var row = $.grep(rows, function(ed) { return ed["key"] == rowKey; });
