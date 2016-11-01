@@ -7,22 +7,22 @@ how data will be represented on them.
 Features
 --------
 
-- Support geographic data in dimension attributes and fact details
+- Support geographic data in dimension attributes ~~and fact details~~
 - Geographic feature types: points, lines, polygons
-- Sources: latitude/longitude (x/y), WKT, GeoJSON, reference to layer feature
+- Sources: reference to layer feature, ~~latitude/longitude (x/y), WKT, GeoJSON~~
 - Multiple layers
-- Layer types: GeoJson, WMTS
-- Selectable CRS
+- Layer types: GeoJSON, KML, XYZ
 
 - Configurable view:
-  - Automatic bounding box, fixed bounding box, free view
-  - Configurable min/max zoom level
+  - ~~Automatic bounding box, fixed bounding box, free view~~
+  - ~~Configurable min/max zoom level~~
 
 - Representation:
   - Cloropleth
-  - Points
-  - Bubbles (measure as radius)
-  - Legends
+  - ~~Points~~
+  - ~~Bubbles (measure as radius)~~
+  - ~~Legends~~
+
 
 Model configuration
 -------------------
@@ -40,24 +40,48 @@ Key | Description
 --- | -----------
 cv-geo-source | Define how the data in the dimension will be mapped to map features. Possible values are 'ref'.
 cv-geo-ref-layer | (When using 'ref' as source) Name of the layer with the geographic features to use for representation.
-cv-geo-ref-model-attribute | (When using 'ref' as source) Dimension attribute which value will be searched along map features
-cv-geo-ref-layer-attribute | (When using 'ref' as source) Map feature metadata key to use when matching dimension values
+cv-geo-ref-model-attribute | (When using 'ref' as source) Dimension attribute which value will be searched along map features (must be one of the level attributes).
+cv-geo-ref-layer-attribute | (When using 'ref' as source) Map feature metadata key to use when matching dimension values.
 cv-geo-map-layers | Array of layer definitions. See the *Layers* section below.
 
 Layers
 ------
 
-Layers are defined inside the `cv-geo-map-layers` metadata attribute. This is an ordered list of layers
-which will be drawn bottom to top, though many maps will need just a single layer.
+Layers are defined inside the `cv-geo-map-layers` metadata attribute, which is an ordered list of layers
+which will be drawn bottom to top. Each layer is defined as a dictionary of options (key/value).
 
 There are different *providers* for map layers. Some providers require a web service, others can
 work with a simple file (like GeoJSON or KML). The provider type is defined in the `type` attribute.
 
-You need to provide your own map files or services, though  the `html/maps` directory contains a few samples.
+You need to provide your own map files or services, but the `html/maps` directory contains a few samples.
+
+
+*Vector (GeoJSON, KML)*
+
+Vector map layers usually contain features. *Features* are the polygons, lines or points that belong
+to the layer. Features can have attributes, and where appropriate, they can be used for representation.
+(ie. a world map where features are countries can be colored based on CubesViewer data).
+
+```
+    {
+        "name": "countries",
+        "type": "vector",
+        "attribution": "&copy; NaturalEarth",
+        "params": {
+            "url": "maps/ne_110m_admin_0_countries.geo.json",
+            "format": "geojson",
+            "wrapX": true
+        }
+    }
+```
+
+Vector layers can be read from a variety of formats. Currently, supported `format` values are `geojson` and `kml`.
 
 *XYZ*
 
-XYZ
+XYZ layers require a tile server available to serve map imagery. There are a number of servers
+available on the Internet (please note most public servers have usage policies), but you
+shall use your own tile server for serious purposes.
 
 ```
     {
@@ -69,22 +93,6 @@ XYZ
         }
     }
 ```
-
-*Vector (GeoJSON, KML)*
-
-```
-    {
-        "name": "countries",
-        "type": "vector",
-        "attribution": "&copy; NaturalEarth",
-        "params": {
-            "url": "maps/ne_110m_admin_0_countries.geo.json",
-            "format": "geojson"
-        }
-    }
-```
-
-Format can be `geojson` or `kml`.
 
 
 Examples

@@ -40,7 +40,7 @@ var defineMapControllerLayerMethods = function($scope) {
 		var layer = new ol.layer.Tile({
 			source: new ol.source.XYZ(sourceParams),
 			opacity: mapLayer.opacity ? mapLayer.opacity : 1.0,
-	        visible: true
+	        visible: "visible" in mapLayer ? mapLayer.visible : true
 	    });
 
 		return layer;
@@ -53,7 +53,7 @@ var defineMapControllerLayerMethods = function($scope) {
 	 */
 	$scope.createLayerVector = function(mapLayer) {
 
-		var sourceParams = {};
+		var sourceParams = { };
 		angular.extend(sourceParams, mapLayer.params);
 
 		if (mapLayer.attribution) sourceParams['attributions'] = [ new ol.Attribution({ 'html': "" + mapLayer.attribution }) ];
@@ -78,7 +78,7 @@ var defineMapControllerLayerMethods = function($scope) {
 		var layer = new ol.layer.Vector({
 	        title: mapLayer.label,
 	        source: new ol.source.Vector(sourceParams),
-	        visible: true,
+	        visible: "visible" in mapLayer ? mapLayer.visible : true
 
 	        // TODO: Layer styles shall be optional and chosen from several possibilities (if applied)
 	        //style: style
@@ -110,9 +110,7 @@ var defineMapControllerLayerMethods = function($scope) {
 				layer = $scope.createLayerXYZ(mapLayer);
 			} else if (mapLayer.type == 'vector') {
 				layer = $scope.createLayerVector(mapLayer);
-			} /*else if (mapLayer.type == 'kml') {
-				layer = $scope.createLayerKML(mapLayer);
-			} */ else {
+			} else {
 				console.error('Wrong map settings. Could not create map layer of source type: ' + mapLayer.type);
 				return;
 			}

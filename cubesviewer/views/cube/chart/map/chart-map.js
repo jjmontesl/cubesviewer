@@ -30,8 +30,8 @@
     "cv-geo-feature-mode": "cloropleth"
  *
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapController", ['$rootScope', '$scope', '$element', '$timeout', 'cvOptions', 'cubesService', 'viewsService',
-                                                     function ($rootScope, $scope, $element, $timeout, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapController", ['$rootScope', '$scope', '$element', '$timeout', '$log','cvOptions', 'cubesService', 'viewsService',
+                                                     function ($rootScope, $scope, $element, $timeout, $log, cvOptions, cubesService, viewsService) {
 
 	$scope.map = null;
 
@@ -85,24 +85,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 		var mapLayers = $scope.geoLevel.info['cv-geo-map-layers'];
 		$scope.mapLayers = $scope.createLayers(mapLayers);
 
-	    /*
-		var raster = new ol.layer.Tile({
-	    	source: new ol.source.XYZ({
-	    		url: 'http://tile.openstreetmap.org/{z}/{x}/{y}.png'
-	        })
-	    });
-
-	    var vector = new ol.layer.Vector({
-	    	title: "Features layer",
-	    	source: new ol.source.Vector({
-	    		url: 'maps/ne_110m_admin_0_countries.geo.json',
-	    		format: new ol.format.GeoJSON(),
-	    		projection: projection,
-	        }),
-	        projection: projection
-	    });
-	    */
-
 	    $scope.map = new ol.Map({
 	    	layers: $scope.mapLayers['_order'],
 	        target: container,
@@ -117,6 +99,16 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	    var layerFeatureId = $scope.geoLevel.info['cv-geo-ref-layer'];
 	    $scope.layerFeature = $scope.mapLayers[layerFeatureId];
 
+	    $scope.layerFeature.getSource().setState("undefined");
+	    var listenerKey = $scope.layerFeature.getSource().on('change', function(e) {
+	    	console.debug($scope.layerFeature.getSource().getState());
+			if ($scope.layerFeature.getSource().getState() == 'ready') {
+				ol.Observable.unByKey(listenerKey);
+				$scope.layerFeature.getSource().unByKey(listenerKey); //if you don't use the current master branch of ol3
+				$scope.drawData();
+			}
+    	});
+
 	    // Geo ref attributes
 	    var refAttributes = $.grep($scope.geoLevel.attributes, function(e) {
 	    	return e.name == $scope.geoLevel.info['cv-geo-ref-model-attribute'];
@@ -128,112 +120,82 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	    $scope.refModelAttribute = refAttributes[0].ref;
 	    $scope.refLayerAttribute = $scope.geoLevel.info['cv-geo-ref-layer-attribute'];
 
+	    //$timeout($scope.drawData, 2000);
 
-	    // Data rendering
-	    $timeout(function() {
+	};
 
-	    	// Walk rows to define features
-		    var allValues = [];
-		    $(dataRows).each(function(idx, e) {
-		    	for (var i = 1; i < columnDefs.length; i++) {
-		    		if (columnDefs[i].field in e) {
-		    			var value = e[columnDefs[i].field];
-		    			allValues.push(value);
-		    		}
-		    	}
-		    });
+	$scope.drawData = function() {
 
-		    var createTextStyle = function(feature, text) {
-		    	return new ol.style.Text({
-		    	    textAlign: 'center',
-		    	    textBaseline: 'middle',
-		    	    font: '10px Verdana',
-		    	    text: text, // getText(feature),
-		    	    fill: new ol.style.Fill({color: 'black'}),
-		    	    stroke: new ol.style.Stroke({color: 'white', width: 2.0})
-	    	  	});
-	    	};
+		var view = $scope.view;
+		var dataRows = $scope.view.grid.data;
+		var columnDefs = view.grid.columnDefs;
 
-	    	var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
-	    	var colFormatter = $scope.columnFormatFunction(ag);
-
-	    	var numRows = dataRows.length;
-	    	var colorScale = d3.scale.linear().range(['white', 'red']);
-		    $(dataRows).each(function(idx, e) {
-		    	for (var i = 1; i < columnDefs.length; i++) {
-		    		if (columnDefs[i].field in e) {
-
-
-		    			var value = e[columnDefs[i].field];
-		    			var valueFormatted = colFormatter(value);
-		    			var label = e._cell['geo.geo_label'];
-
-		    			if (value !== undefined) {
-		    				var found = false;
-		    				$($scope.layerFeature.getSource().getFeatures()).each(function(idx, feature) {
-		    					if ((feature.getProperties()[$scope.refLayerAttribute] == e._cell[$scope.refModelAttribute])) {
-		    						found = true;
-		    						var color = colorScale(d3.scale.quantize().domain([d3.min(allValues), d3.max(allValues)]).range([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])(value));
-		    						feature.setStyle(
-		    							new ol.style.Style({
-		    								fill: new ol.style.Fill({color: color, opacity: 0.7}),
-		    								stroke: new ol.style.Stroke({color: "#ffffff", width: 1.0, opacity: 0.7} ),
-		    								text: createTextStyle(feature, label + "\n" + valueFormatted)
-		    							})
-		    						);
-		    					}
-		    				});
-		    				if (!found) {
-		    					console.debug("Could not found referended feature in map while drawing map data: " + $scope.refLayerAttribute + " = " + e._cell[$scope.refModelAttribute]);
-		    				}
-		    			}
-		    		}
-		    	}
-		    });
-	    }, 2000);
-
-	    /*
-	    var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
-	    var colFormatter = $scope.columnFormatFunction(ag);
-
-	    nv.addGraph(function() {
-	    	var chart = nv.models.lineChart()
-	    		.useInteractiveGuideline(true)
-	    		.showLegend(!!view.params.chartoptions.showLegend)
-	    		.margin({left: 120});
-
-	    	chart.xAxis
-	    		.axisLabel(xAxisLabel)
-	    		.tickFormat(function(d,i) {
-	    			return (columnDefs[d].name);
-			    });
-
-    		chart.yAxis.tickFormat(function(d,i) {
-	        	return colFormatter(d);
-	        });
-
-	    	d3.select(container)
-	    		.datum(d)
-	    		.call(chart);
-
-	    	nv.utils.windowResize(chart.update);
-
-	    	  // Handler for state change
-	          chart.dispatch.on('stateChange', function(newState) {
-	        	  view.params["chart-disabledseries"] = {
-	        			  "key": view.params.drilldown.join(","),
-	        			  "disabled": {}
-	        	  };
-	        	  for (var i = 0; i < newState.disabled.length; i++) {
-	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
-	        	  }
-	          });
-
-	        $scope.$parent.$parent.chart = chart;
-	    	return chart;
+	    // Collect values to calculate data range
+    	var allValues = [];
+	    $(dataRows).each(function(idx, e) {
+	    	for (var i = 1; i < columnDefs.length; i++) {
+	    		if (columnDefs[i].field in e) {
+	    			var value = e[columnDefs[i].field];
+	    			allValues.push(value);
+	    		}
+	    	}
 	    });
-		*/
 
+	    var createTextStyle = function(feature, text) {
+	    	return new ol.style.Text({
+	    	    textAlign: 'center',
+	    	    textBaseline: 'middle',
+	    	    font: '10px Verdana',
+	    	    text: text, // getText(feature),
+	    	    fill: new ol.style.Fill({color: 'black'}),
+	    	    stroke: new ol.style.Stroke({color: 'white', width: 2.0})
+    	  	});
+    	};
+
+    	var ag = $.grep(view.cube.aggregates, function(ag) { return ag.ref == view.params.yaxis })[0];
+    	var colFormatter = $scope.columnFormatFunction(ag);
+
+    	var numRows = dataRows.length;
+    	var colorScale = d3.scale.linear().range(['white', 'red']);
+    	// Walk rows to define features
+	    $(dataRows).each(function(idx, e) {
+	    	for (var i = 1; i < columnDefs.length; i++) {
+	    		if (columnDefs[i].field in e) {
+
+	    			var value = e[columnDefs[i].field];
+	    			var valueFormatted = colFormatter(value);
+
+	    			var infos = $scope.geoLevel.readCell(e._cell);
+	    			var label = infos.label;
+
+	    			if (value !== undefined) {
+
+	    				var found = false;
+	    				$($scope.layerFeature.getSource().getFeatures()).each(function(idx, feature) {
+	    					if ((feature.getProperties()[$scope.refLayerAttribute] == e._cell[$scope.refModelAttribute])) {
+	    						found = true;
+	    						var color = colorScale(d3.scale.quantize().domain([d3.min(allValues), d3.max(allValues)]).range([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])(value));
+	    						feature.setStyle(
+	    							new ol.style.Style({
+	    								fill: new ol.style.Fill({color: color, opacity: 0.5}),
+	    								stroke: new ol.style.Stroke({color: "#3A9CCD", width: 1.0, opacity: 1.0} ),
+	    								text: createTextStyle(feature, label + "\n" + valueFormatted)
+	    								/* geometry: function(feature) {
+	    							        // Expecting a MultiPolygon here
+	    							        var interiorPoints = feature.getGeometry().getInteriorPoints();
+	    							        return interiorPoints.getPoint(0);
+	    							    }*/
+	    							})
+	    						);
+	    					}
+	    				});
+	    				if (!found) {
+	    					console.debug("Could not found referenced feature in map while drawing map data: " + $scope.refLayerAttribute + " = " + e._cell[$scope.refModelAttribute]);
+	    				}
+	    			}
+	    		}
+	    	}
+	    });
 	};
 
 	defineMapControllerLayerMethods($scope);

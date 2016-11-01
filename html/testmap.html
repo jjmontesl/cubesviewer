@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
+<head>
+
+    <title>CubesViewer Embedded View Example</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" type="image/png" href="img/favicon/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-194x194.png" sizes="194x194">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-96x96.png" sizes="96x96">
+    <link rel="shortcut icon" href="img/favicon/favicon.ico">
+
+    <link rel="stylesheet" href="lib/angular-ui-grid/ui-grid.css" />
+    <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="lib/nvd3/nv.d3.css" />
+    <link rel="stylesheet" href="lib/openlayers/ol.css" />
+    <link rel="stylesheet" href="../dist/cubesviewer.css" />
+    <link rel="stylesheet" href="lib/bootstrap-submenu/css/bootstrap-submenu.css" /> <!-- after cubesviewer.css! -->
+
+    <link rel="stylesheet" href="cvapp.css" />
+
+    <script src="lib/jquery/jquery.js"></script>
+    <script src="lib/bootstrap/bootstrap.js"></script>
+    <script src="lib/bootstrap-submenu/js/bootstrap-submenu.js"></script>
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/angular-cookies/angular-cookies.js"></script>
+    <script src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="lib/angular-ui-grid/ui-grid.js"></script>
+    <script src="lib/d3/d3.js"></script>
+    <script src="lib/nvd3/nv.d3.js"></script>
+    <script src="lib/flotr2/flotr2.min.js"></script>
+    <script src="lib/openlayers/ol-debug.js"></script>
+    <script src="../dist/cubesviewer.js"></script>
+
+</head>
+
+<body>
+
+<script type="text/javascript">
+
+    // Reference to the created view
+    var view1 = null;
+
+    // Initialize CubesViewer when document is ready
+    $(document).ready(function() {
+
+        // Get user Cubes information for the example
+        //var cubesUrl = prompt ("Enter your Cubes Server URL", "http://cubesdemo.cubesviewer.com");
+        var cubesUrl = "http://localhost:5000";
+
+        // Initialize CubesViewer system
+        cubesviewer.init({
+            cubesUrl: cubesUrl,
+            debug: true
+        });
+
+        // Create views
+
+        // Sample serialized view (based on cubes-examples project data)
+        var serializedView =
+        {"charttype":"map","chartoptions":{"showLegend":true},"mode":"chart","drilldown":["geo"],"cuts":[{"dimension":"indic_et","value":"EXP_VAL","invert":null}],"datefilters":[],"columnHide":{},"columnWidths":{"2008":111.219,"2009":111.219,"OBS_VALUE_sum":191,"key0":294,"United Kingdom":202,"AT":131},"columnSort":{"series":{"OBS_VALUE_sum":{"direction":"desc","priority":0}}},"xaxis":"TIME_PERIOD","yaxis":"OBS_VALUE_sum","cubename":"estat_eip","name":"Eurostat / Entrepreneurship Indicator Programme (1)","chart-barsvertical-stacked":false,"chart-disabledseries":{"key":"geo","disabled":{"Austria":false,"Belgium":false,"Bulgaria":false,"Croatia":false,"Cyprus":false,"Czech Republic":false,"Denmark":false,"Estonia":false,"Finland":false,"France":false,"Germany (until 1990 former territory of the FRG)":false,"Greece":false,"Hungary":false,"Ireland":false,"Italy":false,"Latvia":false,"Lithuania":false,"Luxembourg":false,"Malta":false,"Netherlands":false,"Norway":false,"Poland":false,"Portugal":false,"Romania":false,"Slovakia":false,"Slovenia":false,"Spain":false,"Sweden":false,"United Kingdom":false}}}
+;
+
+        // Using a JSON string for view parameters:
+        cubesviewer.apply(function() {
+        	view1 = cubesviewer.createView("#cv-view-1", "cube", serializedView);
+        });
+
+        // Using a Javascript object for view parameters:
+        //cubesviewer.apply(function() {
+        //    view2 = cubesviewer.createView('#cv-view-1', "cube", { "cubename": "webshop_visits" });
+        //});
+    });
+
+    function switchMode(mode) {
+    	cubesviewer.apply(function() {
+    		view1.setViewMode(mode);
+    	});
+    }
+
+    function toggleControls() {
+        cubesviewer.apply(function() {
+            view1.setControlsHidden(! view1.params.controlsHidden);
+        });
+    }
+
+</script>
+
+
+<div>
+
+    <div class="header">
+        <div style="float: left;">
+            <img class="cv-logo" title="CubesViewer" src="img/cubesviewer-logo.png" />
+        </div>
+
+        <h1>CubesViewer Static Views example</h1>
+        <small>Shows how CubesViewer views can be embedded in other web pages.</small>
+
+    </div>
+
+    <div style="clear: both;"></div>
+
+    <div>
+        <h2>Example Embedded View</h2>
+
+        <p>
+        This is an example CubesView inserted in this page. It loads a serialized view which uses the
+        Cubes <a href="https://github.com/jjmontesl/cubes-examples/tree/master/webshop">example webshop</a> project.
+        </p>
+
+        <div style="border: none; margin-top: 22px; margin-bottom: 22px;">
+            <div id="cv-view-1" style="width: 100%; min-height: 120px;">Loading CubesViewer...</div>
+        </div>
+
+        <h2>Scripting</h2>
+
+        <p>
+        The view above can be scripted using CubesViewer View API.
+        </p>
+        <p>
+        Click to switch to <a href="" onclick="switchMode('series'); return false;">series table</a> mode or
+        <a href="" onclick="switchMode('chart'); return false;">chart mode</a>, or
+        <a href="" onclick="toggleControls(); return false;">toggle controls visibility</a>.
+        </p>
+
+        <h2>Code</h2>
+
+        <p>Check the <a href="https://github.com/jjmontesl/cubesviewer/blob/master/src/html/views.html">source code of this page</a> to see how this CubesViewer view is initialized.</p>
+
+        <p>More information can be found in the documentation page
+        <a href="">Embedding CubesViewer static views</a>.
+        </p>
+    </div>
+
+
+    <div class="footer" style="clear: both; padding-top: 20px;">
+        <div style="height: 1px; border-top: 1px solid #DDDDDD; padding-top: 4px;"></div>
+        <div style="float: right; white-space: nowrap;">
+            <p style="vertical-align: middle; margin: 2px;">
+            <a href="http://databrewery.org/" target="_blank"><img title="Powered by Databrewery Cubes" style="width: 70px; height: 25px;" src="img/cubes-logo.png" /></a>
+            <a href="https://github.com/jjmontesl/cubesviewer" target="_blank"><img title="Powered by CubesViewer" style="width: 50px; height: 25px;" src="img/cubesviewer-logo.png" /></a>
+            </p>
+        </div>
+        <div>
+            <p><a href="https://github.com/jjmontesl/cubesviewer" target="_blank">CubesViewer</a> <span class="cv-version"></span> - Cubes OLAP explorer</p>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

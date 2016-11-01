@@ -131,6 +131,7 @@ angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeou
 	/**
 	 * Grab page styles as a string to embed them into the SVG source
 	 * From: https://github.com/NYTimes/svg-crowbar/blob/gh-pages/svg-crowbar.js
+	 * @returns A list of CSS styles applied to the document.
 	 */
 	this.getDocumentStyles = function() {
 

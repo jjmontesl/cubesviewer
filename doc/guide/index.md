@@ -12,6 +12,8 @@ CubesViewer Documentation
 
 * [Quick Start](cubesviewer-quickstart.md)
 * [Configuring your Cubes data model](cubesviewer-model.md)
+* [Configuring your Cubes model for map charts](cubesviewer-maps.md)
+
 * [Installing CubesViewer Server](cubesviewer-server-installation.md)
 * [Integrating CubesViewer views in other web applications](cubesviewer-embed.md)
 

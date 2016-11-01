@@ -21,12 +21,12 @@ Features:
 
 * Dimension hierarchies, date filtering
 * Several charts and diagrams can be created
-* Explore, create data series, draw charts, see raw facts
+* Map charts
+* Explore, aggregate, create series, draw charts, see raw facts
 * Export data and images
 * Responsive design, tablet friendly
-* Undo / redo
-* Views can be embedded in other web sites
-* User Interface allows for multiple views on-screen
+* Undo / redo / clone views
+* Views can be embedded in other webs
 * Optional multi-user server-side backend for saving/sharing views
 
 
@@ -50,13 +50,10 @@ Latest CubesViewer stable release is 2.0.2:
   * [cubesviewer-server-v2.0.2.zip](https://github.com/jjmontesl/cubesviewer-server/archive/v2.0.2.zip)
   * [Changelog](http://github.com/jjmontesl/cubesviewer/blob/v2.0.2/CHANGES.txt)
   * [Release Notes](http://github.com/jjmontesl/cubesviewer/blob/v2.0.2/RELEASE-NOTES.txt)
-  * Works with *Cubes 1.0.x* and *Cubes 1.1.x*
+  * Works with *Cubes 1.0.x* and *Cubes 1.1.x* (Cubes 1.1.x recommended).
 
-CubesViewer Server already includes the CubesViewer library so you just need that package
-if you plan to deploy the server-side application.
-
-If you do modifications to the project, cloning both repositories via `git` is encouraged, so you can
-easily contribute your fixes and improvements back.
+*CubesViewer Server includes CubesViewer* so you just need one package
+if you plan to deploy the full server-side application.
 
 Requirements
 ------------
@@ -73,8 +70,8 @@ This project lives on a separate repository: [CubesViewer Server](http://github.
 (not to be confused with Cubes Server itself).
 
 You need a configured and running [Cubes Server](http://databrewery.org/cubes.html) version 1.0.x or later.
-Your Cubes model may use some extra configuration if you wish to use features like date
-filters and range filters (see Documentation below).
+Your Cubes model may need some extra configuration if you wish to use features like date
+filters or maps (see Documentation below).
 
 For CubesViewer clients to connect to Cubes server ("slicer"), your Cubes server possibly needs to allow
 cross origin resource sharing (CORS). To enable it, add `allow_cors_origin: *`
