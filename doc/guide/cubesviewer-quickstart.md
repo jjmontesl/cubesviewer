@@ -75,6 +75,8 @@ needs *Python*, *PIP* and *virtualenv* installed:
 Refer to [Cubes](https://pythonhosted.org/cubes/index.html) site for download
 and installation instructions.
 
+Note: If you are on Windows and you get an error (_Your platform does not support forking_),
+you may need to remove or comment the `processes: 6` line from the `slicer.ini` file.
 
 Put it all together
 -------------------

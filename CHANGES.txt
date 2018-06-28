@@ -1,6 +1,6 @@
 [2.0.3]
 
-
+    * Fixed series missing data with same label but different key value.
 
 [2.0.2]
 
