@@ -226,17 +226,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartController"
 		  $(img).remove();
 		  $(canvas).remove();
 
-		  // this is now the base64 encoded version of our PNG! you could optionally
-		  // redirect the user to download the PNG by sending them to the url with
-		  // `window.location.href= canvasUrl`.
-		  /*
-		  var img2 = d3.select('body').append('img')
-		    .attr('width', svgSel.width())
-		    .attr('height', svgSel.height())
-		    .node();
-		   */
-		  //img2.src = canvasUrl;
-		  exportService.saveAs(canvasUrl, $scope.view.cube.name + "-" + $scope.view.params.charttype + ".png");
+		  // As per issue #93 and https://stackoverflow.com/questions/17332071/trying-to-save-canvas-png-data-url-to-disk-with-html5-filesystem-but-when-i-ret
+		  var data = atob( canvasUrl.substring( "data:image/png;base64,".length ) ), asArray = new Uint8Array(data.length);
+		  for( var i = 0, len = data.length; i < len; ++i ) {asArray[i] = data.charCodeAt(i);}
+		  var blob = new Blob( [ asArray.buffer ], {type: "image/png"} );
+
+		  exportService.saveAs(blob, "image/png", $scope.view.cube.name + "-" + $scope.view.params.charttype + ".png");
 		}
 		// start loading the image.
 		img.src = url;
