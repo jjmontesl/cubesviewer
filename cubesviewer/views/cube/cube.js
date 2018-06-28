@@ -380,6 +380,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	 */
 	$scope.selectMeasure = function(measure) {
 		$scope.view.params.yaxis = measure;
+		$scope.view.params.aggregates = measure;
 		$scope.refreshView();
 	};
 

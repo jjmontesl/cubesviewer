@@ -174,8 +174,10 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 		var cuts = this.buildQueryCuts(view);
 		if (cuts.length > 0) args.cut = new cubes.Cell(view.cube, cuts);
 
-		return args;
+		//aggregates
+		args.aggregates = view.params.aggregates;
 
+		return args;
 	};
 
 	/*

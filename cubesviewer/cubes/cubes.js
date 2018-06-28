@@ -240,8 +240,6 @@
      */
 
     cubes.Cube = function(metadata) {
-        var i, obj;
-
         this.name = metadata.name;
         !metadata.label || (this.label = metadata.label);
         !metadata.description || (this.description = metadata.description);
@@ -316,7 +314,7 @@
         }
         // Return a hierarchy with given name
         return this.hierarchies[name];
-    }
+    };
 
     cubes.Dimension.prototype.level = function(name) {
         if ( _.isObject(name) )
@@ -353,12 +351,11 @@
 
     cubes.Hierarchy.prototype.parse = function(desc, dim) {
         var hier = this;
-        var i;
 
         hier.name = desc.name;
         hier.label = hier.name;
-        !desc.label || (hier.label = desc.label)
-        !desc.description || (hier.description = desc.description)
+        !desc.label || (hier.label = desc.label);
+        !desc.description || (hier.description = desc.description);
         !desc.info || (hier.info = desc.info);
 
         var level_names = desc.levels || [];
@@ -522,7 +519,7 @@
         var http_args = {};
 
         if (args.cut) http_args.cut = args.cut.toString();
-        if (args.measure) http_args.measure = args.measure.toString();
+        if (args.aggregates) http_args.aggregates = args.aggregates.toString();
         if (args.drilldown) http_args.drilldown = args.drilldown.toString();
         if (args.split) http_args.split = args.split.toString();
         if (args.order) http_args.order = args.order.toString();
@@ -567,14 +564,14 @@
         var saw_this_level = false;
         var levels_to_look_for = _.filter(drill.hierarchy.levels, function(lvl) { return ( lvl.key() === drill.level.key() && (saw_this_level = true) ) || ( ! saw_this_level ); });
         return _.map(levels_to_look_for, function(lvl) { return lvl.key().ref });
-    }
+    };
 
     cubes.Drilldown.prototype.labelsInResultCell = function() {
         var drill = this;
         var saw_this_level = false;
         var levels_to_look_for = _.filter(drill.hierarchy.levels, function(lvl) { return ( lvl.key() === drill.level.key() && (saw_this_level = true) ) || ( ! saw_this_level ); });
         return _.map(levels_to_look_for, function(lvl) { return lvl.label_attribute().ref });
-    }
+    };
 
     cubes.Cell = function(cube, cuts) {
         this.cube = cube;
@@ -597,8 +594,7 @@
         if ( ! new_cut_pushed ) {
           cuts.push(new_cut);
         }
-        var cell = new cubes.Cell(this.cube, cuts);
-        return cell;
+        return new cubes.Cell(this.cube, cuts);
     };
 
     cubes.Cell.prototype.toString = function() {
@@ -684,8 +680,8 @@
     cubes.PATH_PART_ESCAPE_PATTERN = /([\\!|:;,-])/g;
     cubes.PATH_PART_UNESCAPE_PATTERN = /\\([\\!|:;,-])/g;
 
-    cubes.CUT_PARSE_REGEXP = new RegExp("^(" + cubes.CUT_INVERSION_CHAR + "?)(\\w+)(?:" + cubes.HIERARCHY_PREFIX_CHAR + "(\\w+))?" + cubes.DIMENSION_STRING_SEPARATOR_CHAR + "(.*)$")
-    cubes.DRILLDOWN_PARSE_REGEXP = new RegExp("^(\\w+)(?:" + cubes.HIERARCHY_PREFIX_CHAR + "(\\w+))?(?:" + cubes.DIMENSION_STRING_SEPARATOR_CHAR + "(\\w+))?$")
+    cubes.CUT_PARSE_REGEXP = new RegExp("^(" + cubes.CUT_INVERSION_CHAR + "?)(\\w+)(?:" + cubes.HIERARCHY_PREFIX_CHAR + "(\\w+))?" + cubes.DIMENSION_STRING_SEPARATOR_CHAR + "(.*)$");
+    cubes.DRILLDOWN_PARSE_REGEXP = new RegExp("^(\\w+)(?:" + cubes.HIERARCHY_PREFIX_CHAR + "(\\w+))?(?:" + cubes.DIMENSION_STRING_SEPARATOR_CHAR + "(\\w+))?$");
     cubes.NULL_PART_STRING = '__null__';
     cubes.SPLIT_DIMENSION_STRING = '__within_split__';
 
@@ -715,7 +711,7 @@
       }
       splits.push(string);
       return splits;
-    }
+    };
 
     cubes._escape_path_part = function(part) {
         if ( part == null ) {
@@ -732,14 +728,12 @@
     };
 
     cubes.string_from_path = function(path){
-        var fixed_path = _.map(path || [], function(element) {return cubes._escape_path_part(element);}).join(cubes.PATH_STRING_SEPARATOR_CHAR);
-        return fixed_path;
+        return _.map(path || [], function(element) {return cubes._escape_path_part(element);}).join(cubes.PATH_STRING_SEPARATOR_CHAR);
     };
 
     cubes.path_from_string = function(path_string) {
         var paths = cubes._split_with_negative_lookbehind(path_string, cubes.PATH_STRING_SEPARATOR, '\\');
-        var parsed = _.map(paths || [], function(e) { return cubes._unescape_path_part(e); });
-        return parsed;
+        return _.map(paths || [], function(e) { return cubes._unescape_path_part(e); });
     };
 
     cubes.cut_from_string = function(cube_or_model, cut_string) {
