@@ -15,9 +15,7 @@ CubesViewer is a visual interface for the
 open source [Cubes server](http://databrewery.org/cubes.html) (an OLAP server in Python).
 Purpose is to keep it simple while leveraging the web services provided by Cubes.
 
-**CubesViewer 2.0 is out** with tons of new features! Check the
-[official site](http://www.cubesviewer.com/) and
-the [release notes](http://github.com/jjmontesl/cubesviewer/blob/master/RELEASE-NOTES.md)!
+See it live: [CubesViewer site](http://www.cubesviewer.com/).
 
 Features:
 
@@ -143,6 +141,19 @@ You can collaborate:
 * You can also help improving the documentation or writing about Cubes/CubesViewer, and spreading the love.
 
 If you are using or trying CubesViewer, we'd love to hear from you (please tweet #cubesviewer !).
+
+Development
+-----------
+
+Run:
+
+    grunt watch
+
+This is the `grunt` task that watches the cubesviewer directory and generates the built
+library in the `dist` directory.
+
+Can be tested using the `html/studio.html` application.
+
 
 Authors
 =======
