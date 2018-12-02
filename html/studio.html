@@ -39,14 +39,32 @@
 
 <script type="text/javascript">
 
+    function getUrlParameter(sParam) {
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : sParameterName[1];
+            }
+        }
+    };
+
     // Initialize CubesViewer when document is ready
     $(document).ready(function() {
 
-    	var cubesUrl = prompt ("Enter your Cubes Server URL\n(or try http://cubesdemo.cubesviewer.com)", "http://localhost:5000");
+        var cubesUrl = getUrlParameter("cubes_url");
+        if (!cubesUrl) {
+            cubesUrl = prompt ("Enter your Cubes Server URL\n(or try http://cubesdemo.cubesviewer.com)", "http://localhost:5000");
+        }
         //var cubesUrl = "http://localhost:5000";
 
         cubesviewerStudio.init({
-        	cubesUrl: cubesUrl,
+            cubesUrl: cubesUrl,
             container: $('#cubesviewer').get(0),
             debug: true
         });
@@ -76,16 +94,16 @@
 
 
     <div class="footer" style="clear: both; padding-top: 20px;">
-    	<div style="height: 1px; border-top: 1px solid #DDDDDD; padding-top: 4px;"></div>
-    	<div style="float: right; white-space: nowrap;">
-    		<p style="vertical-align: middle; margin: 2px;">
-    		<a href="http://databrewery.org/" target="_blank"><img title="Powered by Databrewery Cubes" style="width: 70px; height: 25px;" src="img/cubes-logo.png" /></a>
+        <div style="height: 1px; border-top: 1px solid #DDDDDD; padding-top: 4px;"></div>
+        <div style="float: right; white-space: nowrap;">
+            <p style="vertical-align: middle; margin: 2px;">
+            <a href="http://databrewery.org/" target="_blank"><img title="Powered by Databrewery Cubes" style="width: 70px; height: 25px;" src="img/cubes-logo.png" /></a>
             <a href="https://github.com/jjmontesl/cubesviewer" target="_blank"><img title="Powered by CubesViewer" style="width: 50px; height: 25px;" src="img/cubesviewer-logo.png" /></a>
-    		</p>
-    	</div>
-    	<div>
-    		<p><a href="https://github.com/jjmontesl/cubesviewer" target="_blank">CubesViewer</a> <span class="cv-version"></span> - Cubes OLAP explorer</p>
-    	</div>
+            </p>
+        </div>
+        <div>
+            <p><a href="https://github.com/jjmontesl/cubesviewer" target="_blank">CubesViewer</a> <span class="cv-version"></span> - Cubes OLAP explorer</p>
+        </div>
     </div>
 
 </div>
