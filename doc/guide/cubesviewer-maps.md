@@ -41,7 +41,7 @@ Key | Description
 cv-geo-source | Define how the data in the dimension will be mapped to map features. Possible values are 'ref'.
 cv-geo-ref-layer | (When using 'ref' as source) Name of the layer with the geographic features to use for representation.
 cv-geo-ref-model-attribute | (When using 'ref' as source) Dimension attribute which value will be searched along map features (must be one of the level attributes).
-cv-geo-ref-layer-attribute | (When using 'ref' as source) Map feature metadata key to use when matching dimension values.
+cv-geo-ref-feature-attribute | (When using 'ref' as source) Map feature metadata key to use when matching dimension values.
 cv-geo-map-layers | Array of layer definitions. See the *Layers* section below.
 
 Layers
@@ -119,7 +119,7 @@ Examples
                         "cv-geo-source": "ref",
                         "cv-geo-ref-layer": "countries",
                         "cv-geo-ref-model-attribute": "geo_code",
-                        "cv-geo-ref-layer-attribute": "iso_a2",
+                        "cv-geo-ref-feature-attribute": "iso_a2",
                         "cv-geo-map-layers": [ {
                             "name": "ortophotos",
                             "type": "xyz",

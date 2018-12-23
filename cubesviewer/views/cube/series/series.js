@@ -210,7 +210,7 @@ cubesviewer._seriesAddRows = function($scope, data) {
 				drilldownLevelLabels.push(info.label);
 			});
 
-			nid.push(drilldownLevelValues.join('-'));
+			nid.push(drilldownLevelKeys.join('-'));
 			label.push(drilldownLevelLabels.join(" / "));
 			//key.push (drilldownLevelLabels.join(" / "));
 			key.push(drilldownLevelKeys.join("_"));
