@@ -83,8 +83,8 @@ angular.module('cv.views.cube', []);
  *
  * FIXME: Some of this code shall be on a parent generic "view" directive.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$log', '$window','$injector', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService', 'rowSorter', 'dialogService',
-                                                                               function ($rootScope, $log, $window, $injector, $scope, $timeout, cvOptions, cubesService, viewsService, exportService, rowSorter, dialogService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$log', '$window','$injector', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService', 'rowSorter', 'dialogService', 'seriesOperationsService',
+                                                                               function ($rootScope, $log, $window, $injector, $scope, $timeout, cvOptions, cubesService, viewsService, exportService, rowSorter, dialogService, seriesOperationsService) {
 
 	// TODO: Functions shall be here?
 	$scope.viewController = {};
@@ -94,6 +94,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	$scope.cvOptions = cvOptions;
 	$scope.cubesService = cubesService;
 	$scope.exportService = exportService;
+	$scope.seriesOperationsService = seriesOperationsService;
 
 	$scope.reststoreService = null;
 
@@ -262,7 +263,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 		$scope.refreshView();
 	};
-
 
 	/**
 	 * Accepts an aggregation or a measure and returns the formatter function.

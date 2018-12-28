@@ -78,6 +78,17 @@ angular.module('cv.views').service("seriesOperationsService", ['$rootScope', 'cv
 
 	this.calculateAccum = function(view, rows, columnDefs) {
 
+		$(rows).each(function(idx, e) {
+			var accum = 0.0;
+			for (var i = view.params.drilldown.length; i < columnDefs.length; i++) {
+	    		var value = e[columnDefs[i].field];
+	    		if (value != null && !isNaN(value)) {
+	    			accum = accum + value;
+	    		}
+	    		e[columnDefs[i].field] = accum;
+	    	}
+		});
+
 	};
 
 	this.applyCalculations = function(view, rows, columnDefs) {
@@ -87,7 +98,17 @@ angular.module('cv.views').service("seriesOperationsService", ['$rootScope', 'cv
 		if (view.params.calculation == "percentage") {
 			this.calculateDifferentialsPercent(view, rows, columnDefs);
 		}
+		if (view.params.calculation == "accum") {
+			this.calculateAccum(view, rows, columnDefs);
+		}
 	};
+
+	this.selectOperation = function(view, calculation) {
+		// TODO: Move to cube controller, which has access to the view?
+		console.warn("View needs manual refresh (note the series calculations feature is still experimental).")
+		view.params.calculation = calculation;
+		//view.refreshView();
+	}
 
 
 }]);

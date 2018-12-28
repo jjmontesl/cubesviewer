@@ -1,3 +1,7 @@
+[HEAD]
+
+    * Fixed Fact List not showing columns that had the same labels in different dimensions.
+
 [2.1.1]
 
     * Fixed chart figure export (was not working). Chart images can again be exported as PNG.

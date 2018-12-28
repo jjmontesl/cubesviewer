@@ -121,9 +121,9 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 			for (var i = 0; i < dimension.levels.length; i++) {
 				var level = dimension.levels[i];
 				var col = {
-					name: level.label,
+					name: dimension.label + "/" + level.label, // level.label, //
 					field: level.key().ref,
-					index : level.key().ref,
+					index : dimension.ref + "_" + level.key().ref,
 					headerCellClass: "cv-grid-header-dimension",
 					//cellClass : "text-right",
 					//sorttype : "number",
@@ -146,7 +146,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFactsController"
 						var col = {
 							name: e.name,
 							field: e.ref,
-							index : e.ref,
+							index : dimension.ref + "_" + level.key().ref + "_" + e.ref,
 							headerCellClass: "cv-grid-header-dimensionattribute",
 							//cellClass : "text-right",
 							//sorttype : "number",
