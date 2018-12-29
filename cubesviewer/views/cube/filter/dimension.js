@@ -180,18 +180,32 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDimensionC
 			// Values and Labels
 			var drilldownLevelValues = [];
 			var drilldownLevelLabels = [];
+			var drilldownLevelOrderValues = [];
 
 			$(infos).each(function(idx, info) {
 				drilldownLevelValues.push(info.key);
 				drilldownLevelLabels.push(info.label);
+				drilldownLevelOrderValues.push(info.orderValue);
 			});
 
 			dimensionValues.push({
 				'label': drilldownLevelLabels.join(' / '),
 				'value': drilldownLevelValues.join (','),
-				'selected': filterValues.indexOf(drilldownLevelValues.join (',')) >= 0
+				'selected': filterValues.indexOf(drilldownLevelValues.join (',')) >= 0,
+				'orderValue': drilldownLevelOrderValues,
 			});
 
+		});
+
+		// Sort columns according to their dimension order
+		dimensionValues = dimensionValues.sort(function(a, b) {
+			for (var i = 0; i < a.orderValue.length; i++) {
+				var va = a.orderValue[i];
+				var vb = b.orderValue[i];
+				var res = $scope.sortValues(va, vb);
+				if (res != 0) return res;
+			}
+			return 0;
 		});
 
 		$scope.dimensionValues = dimensionValues;

@@ -193,6 +193,7 @@ cubesviewer._seriesAddRows = function($scope, data) {
 		var key = [];
 		var nid = [];
 		var label = [];
+		var order = [];
 
 		// For the drilldown level, if present
 		for (var i = 0; i < drilldown.length; i++) {
@@ -204,21 +205,25 @@ cubesviewer._seriesAddRows = function($scope, data) {
 			// Values and Labels
 			var drilldownLevelKeys = [];
 			var drilldownLevelLabels = [];
+			var drilldownLevelOrderValues = [];
 
 			$(infos).each(function(idx, info) {
 				drilldownLevelKeys.push(info.key);
 				drilldownLevelLabels.push(info.label);
+				drilldownLevelOrderValues.push(info.orderValue);
 			});
 
 			nid.push(drilldownLevelKeys.join('-'));
 			label.push(drilldownLevelLabels.join(" / "));
 			//key.push (drilldownLevelLabels.join(" / "));
 			key.push(drilldownLevelKeys.join("_"));
+			order.push(drilldownLevelOrderValues);
 		}
 
 		// Set key
 		var colKey = (view.params.xaxis == null) ? view.params.yaxis : key[0];  // key[0] because that's the horizontal dimension key
 		var colLabel = (view.params.xaxis == null) ? ag.label : label[0];
+		var colOrderValue = order[0];
 		var value = (e[view.params.yaxis]);
 		//var rowKey = (view.params.xaxis == null) ? key.join (' / ') : key.slice(1).join(' / ');
 		var rowKey = (view.params.xaxis == null) ? nid.join ('-') : nid.slice(1).join ('-');
@@ -242,16 +247,15 @@ cubesviewer._seriesAddRows = function($scope, data) {
 			rows.push ( newrow );
 		}
 
-
 		// Add column definition if the column hasn't been added yet
 		if (addedCols.indexOf(colKey) < 0) {
 			addedCols.push(colKey);
-
 
 			var col = {
 				name: colLabel,
 				field: colKey,
 				index: colKey,
+				colOrderValue: colOrderValue,
 				cellClass : "text-right",
 				//sorttype : "number",
 				cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP">{{ col.colDef.formatter(COL_FIELD, row, col) }}</div>',
@@ -266,6 +270,17 @@ cubesviewer._seriesAddRows = function($scope, data) {
 			};
 			view.grid.columnDefs.push(col);
 		}
+	});
+
+	// Sort columns according to their dimension order
+	view.grid.columnDefs = view.grid.columnDefs.sort(function(a, b) {
+		for (var i = 0; i < a.colOrderValue.length; i++) {
+			var va = a.colOrderValue[i];
+			var vb = b.colOrderValue[i];
+			var res = $scope.sortValues(va, vb);
+			if (res != 0) return res;
+		}
+		return 0;
 	});
 
 	//var label = [];

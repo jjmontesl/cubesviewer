@@ -1,9 +1,8 @@
-[HEAD]
+[HEAD (2.1.0)]
 
+    * Fixed order_attribute not working for dimension filter (fixes #95).
+    * Fixed incorrect sort order (ignored sort attribute) of series and charts horizontal dimension.
     * Fixed Fact List not showing columns that had the same labels in different dimensions.
-
-[2.1.1]
-
     * Fixed chart figure export (was not working). Chart images can again be exported as PNG.
     * Fixed series missing data with same label but different key value.
     * Fixed #71 for cases where more than one grid was on screen.
