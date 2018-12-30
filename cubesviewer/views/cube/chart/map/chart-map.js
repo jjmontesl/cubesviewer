@@ -99,7 +99,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	    var layerFeatureId = $scope.geoLevel.info['cv-geo-ref-layer'];
 	    $scope.layerFeature = $scope.mapLayers[layerFeatureId];
 
-	    $scope.layerFeature.getSource().setState("undefined");
+	    //$scope.layerFeature.getSource().setState("undefined");
 	    var listenerKey = $scope.layerFeature.getSource().on('change', function(e) {
 	    	console.debug($scope.layerFeature.getSource().getState());
 			if ($scope.layerFeature.getSource().getState() == 'ready') {
@@ -118,7 +118,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartMapControll
 	    	return;
 	    }
 	    $scope.refModelAttribute = refAttributes[0].ref;
-	    $scope.refLayerAttribute = $scope.geoLevel.info['cv-geo-ref-layer-attribute'];
+	    $scope.refLayerAttribute = $scope.geoLevel.info['cv-geo-ref-feature-attribute'];
 
 	    //$timeout($scope.drawData, 2000);
 
