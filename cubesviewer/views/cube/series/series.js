@@ -35,8 +35,8 @@
  * a dimension to use as horizontal axis of a table. This is later used to generate
  * charts.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesOperationsService',
-                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, seriesOperationsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeSeriesController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'viewsService', 'seriesOperationsService',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, viewsService, seriesOperationsService) {
 
 	$scope.view.grid.enableRowSelection = false;
 	$scope.view.grid.enableRowHeaderSelection = false;

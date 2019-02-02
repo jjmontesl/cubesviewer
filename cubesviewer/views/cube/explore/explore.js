@@ -27,8 +27,8 @@
 
 "use strict";
 
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService', 'uiGridConstants',
-                                                     function ($rootScope, $scope, $timeout, cvOptions, cubesService, viewsService, dialogService, uiGridConstants) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreController", ['$rootScope', '$scope', '$timeout', 'cvOptions', 'viewsService', 'dialogService', 'uiGridConstants',
+                                                     function ($rootScope, $scope, $timeout, cvOptions, viewsService, dialogService, uiGridConstants) {
 
 	$scope.view.grid.enableRowSelection = true;
 	$scope.view.grid.enableRowHeaderSelection = true;
@@ -43,18 +43,17 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeExploreControlle
 
 	$scope.loadData = function() {
 
-		//$scope.view.cubesviewer.views.blockViewLoading(view);
-		var browser_args = cubesService.buildBrowserArgs($scope.view, false, false);
-		var browser = new cubes.Browser(cubesService.cubesserver, $scope.view.cube);
+		var provider = cvcore.cv.providers.get($scope.view.params.providername);
 		var viewStateKey = $scope.newViewStateKey();
-		var jqxhr = browser.aggregate(browser_args, $scope._loadDataCallback(viewStateKey));
 
 		$scope.view.pendingRequests++;
-		jqxhr.always(function() {
+		provider.aggregate($scope.view.params.cubename, viewStateKey).then((viewStateKey) => {
+			$scope._loadDataCallback(viewStateKey);
 			$scope.view.pendingRequests--;
 			$rootScope.$apply();
+		}, () => {
+			$scope.requestErrorHandler();
 		});
-		jqxhr.error($scope.requestErrorHandler);
 
 	};
 

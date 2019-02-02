@@ -28,8 +28,8 @@
 "use strict";
 
 
-angular.module('cv.views.cube').controller("CubesViewerViewsUndoController", ['$rootScope', '$scope', '$timeout', '$element', 'cvOptions', 'cubesService', 'viewsService',
-                                                                                   function ($rootScope, $scope, $timeout, $element, cvOptions, cubesService, viewsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsUndoController", ['$rootScope', '$scope', '$timeout', '$element', 'cvOptions', 'viewsService',
+                                                                                   function ($rootScope, $scope, $timeout, $element, cvOptions, viewsService) {
 
   	$scope.initialize = function() {
   		// Add chart view parameters to view definition

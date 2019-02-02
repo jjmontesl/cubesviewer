@@ -24,24 +24,55 @@
 
 import {Provider} from '../provider'
 
+
 export class CubesProvider extends Provider {
 
 	initialize() {
 		// Initialize Cubes service
 		//this.cubesCacheService.initialize();
+		console.debug("Initializing Cubes provider: ", this.config.name);
 		this.cubesService = CubesService(this.config);
-		this.cubesService.connect();
+		var connectPromise = new Promise((resolve, reject) => {
+			this.cubesService.connect().then(() => {
+				this.cubes = this.cubesService.cubesclient._cube_list;
+				for (var cube of this.cubes) cube.provider = this;
+				resolve();
+			});
+		});
+		return connectPromise;
 	}
 
-	finalize() {
+	cubeinfo(name) {
+		console.debug(this.cubesService.cubesclient.cubeinfo(name));
+		return this.cubesService.cubesclient.cubeinfo(name);
+	}
+
+	cubeschema(name) {
+		var schemaPromise = new Promise((resolve, reject) => {
+			var jqxhr = this.cubesService.cubesclient.get_cube(name, (schema) => {
+				resolve(schema);
+			});
+			jqxhr.fail(function(req) {
+				var data = req.responseJSON;
+				console.debug(data);
+				reject(data);
+			});
+		});
+
+		return schemaPromise;
+	}
+
+	items(cube) {
 
 	}
 
-	items() {
+	aggregate(cubename, viewStateKey) {
+		var browser_args = this.cubesService.buildBrowserArgs($scope.view, false, false);
+		var browser = new cubes.Browser(this.cubesService.cubesserver, cubename);
 
-	}
-
-	aggregate() {
+		var cubesPromise = new Promise((resolve, reject) => {
+			browser.aggregate(browser_args, () => $scope._loadDataCallback(viewStateKey));
+		});
 
 	}
 

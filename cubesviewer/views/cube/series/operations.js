@@ -29,8 +29,8 @@
 
 "use strict";
 
-angular.module('cv.views').service("seriesOperationsService", ['$rootScope', 'cvOptions', 'cubesService',
-                                                               function ($rootScope, cvOptions, cubesService) {
+angular.module('cv.views').service("seriesOperationsService", ['$rootScope', 'cvOptions',
+                                                               function ($rootScope, cvOptions) {
 
 	this.calculateDifferentials = function(view, rows, columnDefs) {
 

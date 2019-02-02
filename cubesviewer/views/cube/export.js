@@ -35,8 +35,8 @@
  * @class exportService
  * @memberof cv.views.cube
  */
-angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'seriesOperationsService',
-                                                         function ($rootScope, $timeout, cvOptions, cubesService, viewsService, seriesOperationsService) {
+angular.module('cv.views.cube').service("exportService", ['$rootScope', '$timeout', 'cvOptions', 'viewsService', 'seriesOperationsService',
+                                                         function ($rootScope, $timeout, cvOptions, viewsService, seriesOperationsService) {
 
 	/**
 	 * Download facts in CSV format from Cubes Server

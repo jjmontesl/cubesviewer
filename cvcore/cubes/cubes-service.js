@@ -34,7 +34,7 @@ function CubesService(config) {
 
 	this.config = config;
 
-	this.cubesserver = null;
+	this.cubesclient = null;
 
 	this.state = cubesviewer.VIEW_STATE_INITIALIZING;
 
@@ -48,31 +48,33 @@ function CubesService(config) {
 	 */
 	this.connect = function() {
 		// Initialize Cubes client library
-		this.cubesserver = new cubes.Server(this._cubesAjaxHandler);
+		this.cubesclient = new cubes.Server(this._cubesAjaxHandler);
 		console.debug("Cubes client connecting to: " + this.config.url);
-		this.cubesserver.connect (cubesService.config.url, function() {
-			console.debug('Cubes client initialized (server version: ' + cubesService.cubesserver.server_version + ')');
-			cubesService.state = cubesviewer.VIEW_STATE_INITIALIZED;
-			//$rootScope.$apply();
-		}, function(xhr) {
+		var connectPromise = new Promise(function(resolve, reject) {
+			this.cubesclient.connect(cubesService.config.url, function() {
+				console.debug('Cubes client initialized (server version: ' + cubesService.cubesclient.server_version + ')');
+				cubesService.state = cubesviewer.VIEW_STATE_INITIALIZED;
+				resolve();
+			}, function(xhr) {
 
-			console.debug(xhr);
-			console.debug('Could not connect to Cubes server [code=' + xhr.status + "]");
-			cubesService.state = cubesviewer.VIEW_STATE_ERROR;
+				console.debug(xhr);
+				console.debug('Could not connect to Cubes server [code=' + xhr.status + "]");
+				cubesService.state = cubesviewer.VIEW_STATE_ERROR;
 
-			if (xhr.status == 401) {
-				cubesService.stateText = "Unauthorized.";
-			} else if (xhr.status == 403) {
-				cubesService.stateText = "Forbidden.";
-			} else if (xhr.status == 400) {
-				cubesService.stateText = "Bad request: " + ($.parseJSON(xhr.responseText).message);
-			} else {
-				cubesService.stateText = "Unknown error.";
-			}
+				if (xhr.status == 401) {
+					cubesService.stateText = "Unauthorized.";
+				} else if (xhr.status == 403) {
+					cubesService.stateText = "Forbidden.";
+				} else if (xhr.status == 400) {
+					cubesService.stateText = "Bad request: " + ($.parseJSON(xhr.responseText).message);
+				} else {
+					cubesService.stateText = "Unknown error.";
+				}
 
-
-			//$rootScope.$apply();
-		} );
+				reject(new Error(cubesService.stateText));
+			} )
+		});
+		return connectPromise;
 	};
 
 
@@ -107,7 +109,7 @@ function CubesService(config) {
 		try {
 			gaService.trackRequest(path);
 		} catch(e) {
-			console.error("An error happened during CubesViewer event tracking: " + e)
+			console.debug("An error happened during CubesViewer event tracking: " + e)
 		}
 
 		return jqxhr;

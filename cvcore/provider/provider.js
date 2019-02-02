@@ -28,13 +28,17 @@ export class Provider {
 	constructor(config) {
 		//super()
 		this.config = config;
+		this.name = config.name;
 		this.cubes = {};
 	}
 
+	/**
+	 * This method returns a Promise.
+	 */
 	initialize() {
 	}
 
-	finalize() {
+	cubeinfo(name) {
 	}
 
 	items() {
@@ -49,13 +53,21 @@ export class Provider {
 export class ProviderManager {
 
 	constructor() {
-		this.providers = [];
+		this.providers = {};
+		this.cubes = [];
 	}
 
 	add(provider) {
 		console.debug("Adding CubesViewer provider: " + provider.config.url);
-		this.providers.push(provider);
-		provider.initialize();
+		this.providers[provider.name] = provider;
+		provider.initialize().then(() => {
+			console.debug("Initialized: " + provider.name);
+			this.cubes.splice(0, this.cubes.length, ...this.cubes.concat(provider.cubes));
+		});
+	}
+
+	get(providername) {
+		return this.providers[providername];
 	}
 
 }

@@ -4,7 +4,7 @@
 
         <div class="dropdown m-b" style="display: inline-block;">
           <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" data-submenu>
-            <i class="fa fa-fw fa-cube"></i> Cubes <span class="caret"></span>
+            <i class="fa fa-fw fa-cube"></i> Datasets <span class="caret"></span>
           </button>
 
           <ul class="dropdown-menu cv-gui-cubeslist-menu">
@@ -13,7 +13,7 @@
             <li ng-show="cubesService.state === 2 && cubesService.cubesserver._cube_list.length === 0" class="disabled"><a>No cubes found</a></li>
             <li ng-show="cubesService.state === 3" class="disabled text-danger"><a>Loading failed</a></li>
 
-            <li ng-repeat="cube in cubesService.cubesserver._cube_list | orderBy:'label'" ng-click="studioViewsService.addViewCube(cube.name)"><a>{{ cube.label }}</a></li>
+            <li ng-repeat="cube in cubes | orderBy:'label'" ng-click="studioViewsService.addViewCube(cube.provider.name, cube.name)"><a>{{ cube.label }}</a></li>
 
           </ul>
         </div>

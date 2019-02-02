@@ -70,8 +70,8 @@
             container: $('#cubesviewer').get(0),
             seriesOperationsEnabled: true,
             providers: [
-                {'type': 'cubes', 'url': cubesUrl},
-                {'type': 'csv', 'url': '/test.csv'},
+                {'name': 'cubes', 'type': 'cubes', 'url': cubesUrl},
+                {'name': 'csv', 'type': 'csv', 'url': '/test.csv'},
             ],
             debug: true
         });
@@ -104,7 +104,6 @@
         <div style="height: 1px; border-top: 1px solid #DDDDDD; padding-top: 4px;"></div>
         <div style="float: right; white-space: nowrap;">
             <p style="vertical-align: middle; margin: 2px;">
-            <a href="http://databrewery.org/" target="_blank"><img title="Powered by Databrewery Cubes" style="width: 70px; height: 25px;" src="img/cubes-logo.png" /></a>
             <a href="https://github.com/jjmontesl/cubesviewer" target="_blank"><img title="Powered by CubesViewer" style="width: 50px; height: 25px;" src="img/cubesviewer-logo.png" /></a>
             </p>
         </div>

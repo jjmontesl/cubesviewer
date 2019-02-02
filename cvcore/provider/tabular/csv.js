@@ -21,20 +21,30 @@
  * SOFTWARE.
  */
 
+
 import {TabularProvider} from './tab'
+
 
 export class CSVProvider extends TabularProvider {
 
 	initialize() {
-		this.cubes = {};
+		this.cubes = [{
+			'provider': this,
+			'name': this.name,
+			'info': {},
+			'label': "CSV / " + this.name
+		}];
+
+		return new Promise((resolve, reject) => {
+			resolve();
+		});
 	}
 
-	finalize() {
-
+	cubeinfo(name) {
+		return this.cubes[0];
 	}
 
 	items() {
-
 	}
 
 	aggregate() {

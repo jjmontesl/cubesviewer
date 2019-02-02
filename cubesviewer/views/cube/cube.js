@@ -83,8 +83,8 @@ angular.module('cv.views.cube', []);
  *
  * FIXME: Some of this code shall be on a parent generic "view" directive.
  */
-angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$log', '$window','$injector', '$scope', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'exportService', 'rowSorter', 'dialogService', 'seriesOperationsService',
-                                                                               function ($rootScope, $log, $window, $injector, $scope, $timeout, cvOptions, cubesService, viewsService, exportService, rowSorter, dialogService, seriesOperationsService) {
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$rootScope', '$log', '$window','$injector', '$scope', '$timeout', 'cvOptions', 'viewsService', 'exportService', 'rowSorter', 'dialogService', 'seriesOperationsService',
+                                                                               function ($rootScope, $log, $window, $injector, $scope, $timeout, cvOptions, viewsService, exportService, rowSorter, dialogService, seriesOperationsService) {
 
 	// TODO: Functions shall be here?
 	$scope.viewController = {};
@@ -92,7 +92,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	$scope.$rootScope = $rootScope;
 	$scope.viewsService = viewsService;
 	$scope.cvOptions = cvOptions;
-	$scope.cubesService = cubesService;
+	//$scope.cubesService = cubesService;
 	$scope.exportService = exportService;
 	$scope.seriesOperationsService = seriesOperationsService;
 
@@ -134,7 +134,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 			"columnSort": {},
 		};
 
-		var jqxhr = cubesService.cubesserver.get_cube($scope.view.params.cubename, function(cube) {
+		cvcore.cv.providers.get($scope.view.params.providername).cubeschema($scope.view.params.cubename).then((cube) => {
 
 			$scope.view.cube = cube;
 
@@ -153,14 +153,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 			$rootScope.$apply();
 
-		});
-		jqxhr.fail(function(req) {
-			var data = req.responseJSON;
+		}, function(data) {
 			$scope.view.state = cubesviewer.VIEW_STATE_ERROR;
 			$scope.view.error = "Error loading model: " + data.message + " (" + data.error + ")";
-			console.debug(data);
-			$rootScope.$apply();
+			//$rootScope.$apply();
 		});
+
 	};
 
 	$scope.requestErrorHandler = function() {

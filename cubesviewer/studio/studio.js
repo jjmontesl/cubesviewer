@@ -60,16 +60,16 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 	 * @memberof cv.studio.studioViewsService
 	 * @returns The created view object.
 	 */
-	this.addViewCube = function(cubename) {
+	this.addViewCube = function(providername, cubename) {
 
 		// Find cube name
-		var cubeinfo = cubesService.cubesserver.cubeinfo(cubename);
+		var cubeinfo = cvcore.cv.providers.get(providername).cubeinfo(cubename);
 
 		//var container = this.createContainer(viewId);
 		//$('.cv-gui-viewcontent', container),
 
 		var name = cubeinfo.label + " (" + (viewsService.lastViewId + 1) + ")";
-		var view = viewsService.createView("cube", { "cubename": cubename, "name": name });
+		var view = viewsService.createView("cube", {"cubename": cubename, "name": name, "providername": providername});
 		this.views.push(view);
 
 		$timeout(function() {
@@ -190,6 +190,7 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 	//$scope.cubesService = cubesService;
 	$scope.studioViewsService = studioViewsService;
 	$scope.reststoreService = reststoreService;
+	$scope.cubes = cvcore.cv.providers.cubes;
 
 	$scope.studioViewsService.studioScope = $scope;
 
