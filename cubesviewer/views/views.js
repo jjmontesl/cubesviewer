@@ -90,8 +90,8 @@ angular.module('cv.views', ['cv.views.cube']);
  * @class viewsService
  * @memberof cv.views
  */
-angular.module('cv.views').service("viewsService", ['$rootScope', '$window', 'cvOptions', 'cubesService', 'dialogService',
-                                                    function ($rootScope, $window, cvOptions, cubesService, dialogService) {
+angular.module('cv.views').service("viewsService", ['$rootScope', '$window', 'cvOptions', 'dialogService',
+                                                    function ($rootScope, $window, cvOptions, dialogService) {
 
 	this.views = [];
 

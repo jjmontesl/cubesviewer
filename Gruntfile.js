@@ -5,15 +5,19 @@ module.exports = function(grunt) {
 
     concat: {
       options: {
-        separator: ';'
+        separator: ';',
+        sourceMap: true
       },
       dist: {
         src: [
-              'cubesviewer/angular-bootstrap-submenu/angular-bootstrap-submenu.js',
-              'cubesviewer/cubes/cubes.js',
-              'cubesviewer/cubes/cubes-cvextensions.js',
-              'cubesviewer/cubes/cubes-service.js',
-              'cubesviewer/cubes/cache.js',
+        	  'cvcore/cubes/cubes.js',
+        	  'cvcore/cubes/cubes-cvextensions.js',
+        	  'cvcore/cubes/cubes-service.js',
+        	  'cvcore/cubes/cache.js',
+
+        	  'build/cvcore.js',  // ES6 -> Webpack module
+
+        	  'cubesviewer/angular-bootstrap-submenu/angular-bootstrap-submenu.js',
               'cubesviewer/core/cubesviewer.js',
               'cubesviewer/views/views.js',
               'cubesviewer/dialog/dialog.js',
@@ -50,6 +54,26 @@ module.exports = function(grunt) {
       }
     },
 
+    webpack: {
+    	options: {
+            stats: !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+        },
+        dist: require('./webpack.config'),
+        //dev: Object.assign({ watch: true }, require('./webpack.config'))
+    },
+    /*
+    babel: {
+        options: {
+            sourceMap: true,
+            inputSourceMap: grunt.file.readJSON('build/cubesviewer-es6.js.map')
+        },
+        dist: {
+            files: {
+              'dist/<%= pkg.name %>.js': 'build/<%= pkg.name %>-es6.js'
+            }
+        }
+    },
+    */
     less: {
     	options: {
     	},
@@ -65,7 +89,8 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+          //'dist/<%= pkg.name %>-ui.min.js': ['dist/<%= pkg.name %>-ui.js'],
+          'dist/<%= pkg.name %>.min.js': ['dist/<%= pkg.name %>.js']
         }
       }
     },
@@ -75,7 +100,14 @@ module.exports = function(grunt) {
     		    { expand: true, cwd: 'dist', src: '*', dest: '../cubesviewer-page/lib/cubesviewer/' },
     		    { expand: true, cwd: 'dist', src: '*', dest: '../cubesviewer-server/cvapp/cubesviewer/static/lib/cubesviewer/' }
 	        ]
-    	}
+    	},
+    	build: {
+    	    expand: true,
+    	    //recursive: true,
+    		cwd: './cubesviewer',
+    	    src: './**',
+    	    dest: './build/',
+    	},
     },
     qunit: {
       files: ['test/**/*.html']
@@ -131,7 +163,7 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      files: ['<%= jshint.files %>', 'bower.json', 'cubesviewer/**/**.*'],
+      files: ['<%= jshint.files %>', 'bower.json', 'webpack.config.js', 'cvcore/**/**.*', 'cubesviewer/**/**.*'],
       tasks: ['default']  // 'copy'
     },
     ngtemplates:  {
@@ -153,14 +185,18 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-less');
-  grunt.loadNpmTasks('grunt-bower-task')
+  grunt.loadNpmTasks('grunt-webpack');
+  grunt.loadNpmTasks('grunt-bower-task');
   //grunt.loadNpmTasks('grunt-wiredep');
   grunt.loadNpmTasks('grunt-angular-templates');
   grunt.loadNpmTasks('grunt-jsdoc');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
   grunt.registerTask('test', ['jshint']);  // 'qunit'
 
-  grunt.registerTask('default', ['less', 'ngtemplates', 'concat', 'uglify', 'jsdoc']);  // 'bower',
+  grunt.registerTask('cvcore', ['webpack']);
+  grunt.registerTask('cubesviewer', ['less', 'ngtemplates', 'concat', 'uglify']);
+  grunt.registerTask('default', ['cvcore', 'cubesviewer', 'jsdoc']);  // 'bower', 'copy:build', 'copy:dist',
 
 };
 

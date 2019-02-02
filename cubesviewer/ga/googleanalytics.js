@@ -36,7 +36,14 @@
 
 "use strict";
 
-angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookies', '$log', 'cvOptions',
+/**
+ * CubesViewer GA module. Provides analytics through Google Analytics.
+ *
+ * @namespace cv.ga
+ */
+angular.module('cv.ga', []);
+
+angular.module('cv.ga').service("gaService", ['$rootScope', '$http', '$cookies', '$log', 'cvOptions',
                                                   function ($rootScope, $http, $cookies, $log, cvOptions) {
 
 	var gaService = this;

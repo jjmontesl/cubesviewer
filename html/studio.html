@@ -66,9 +66,13 @@
         //var cubesUrl = "http://localhost:5000";
 
         cubesviewerStudio.init({
-            cubesUrl: cubesUrl,
+            //cubesUrl: cubesUrl,
             container: $('#cubesviewer').get(0),
             seriesOperationsEnabled: true,
+            providers: [
+                {'type': 'cubes', 'url': cubesUrl},
+                {'type': 'csv', 'url': '/test.csv'},
+            ],
             debug: true
         });
 

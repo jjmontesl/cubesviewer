@@ -23,8 +23,8 @@
 
 "use strict";
 
-angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', '$cookies', 'cvOptions', 'cubesService', 'viewsService', 'dialogService', 'studioViewsService',
-                                                           function ($rootScope, $http, $cookies, cvOptions, cubesService, viewsService, dialogService, studioViewsService) {
+angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', '$cookies', 'cvOptions', 'viewsService', 'dialogService', 'studioViewsService',
+                                                           function ($rootScope, $http, $cookies, cvOptions, viewsService, dialogService, studioViewsService) {
 
 	var reststoreService = this;
 

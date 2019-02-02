@@ -32,12 +32,11 @@
  * which is handy when these are going to be instantiated from code later on
  * (ie. when embedding views on a web site).
  */
-angular.module('cv.studio').controller("CubesViewerSerializeViewController", ['$rootScope', '$scope', '$timeout', '$uibModalInstance', 'element', 'cvOptions', 'cubesService', 'studioViewsService', 'viewsService', 'view',
-                                                                             function ($rootScope, $scope, $timeout, $uibModalInstance, element, cvOptions, cubesService, studioViewsService, viewsService, view) {
+angular.module('cv.studio').controller("CubesViewerSerializeViewController", ['$rootScope', '$scope', '$timeout', '$uibModalInstance', 'element', 'cvOptions', 'studioViewsService', 'viewsService', 'view',
+                                                                             function ($rootScope, $scope, $timeout, $uibModalInstance, element, cvOptions, studioViewsService, viewsService, view) {
 
 	$scope.cvVersion = cubesviewer.version;
 	$scope.cvOptions = cvOptions;
-	$scope.cubesService = cubesService;
 	$scope.studioViewsService = studioViewsService;
 
 	$scope.serializedView = "";
@@ -65,12 +64,11 @@ angular.module('cv.studio').controller("CubesViewerSerializeViewController", ['$
 }]);
 
 
-angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$rootScope', '$scope', '$uibModalInstance', 'cvOptions', 'cubesService', 'studioViewsService',
-                                                                             function ($rootScope, $scope, $uibModalInstance, cvOptions, cubesService, studioViewsService) {
+angular.module('cv.studio').controller("CubesViewerSerializeAddController", ['$rootScope', '$scope', '$uibModalInstance', 'cvOptions', 'studioViewsService',
+                                                                             function ($rootScope, $scope, $uibModalInstance, cvOptions, studioViewsService) {
 
 	$scope.cvVersion = cubesviewer.version;
 	$scope.cvOptions = cvOptions;
-	$scope.cubesService = cubesService;
 	$scope.studioViewsService = studioViewsService;
 
 	$scope.serializedView = null;

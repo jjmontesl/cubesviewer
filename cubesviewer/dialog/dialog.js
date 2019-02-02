@@ -23,8 +23,8 @@
 
 "use strict";
 
-angular.module('cv.views').service("dialogService", ['$rootScope', '$uibModal', 'cvOptions', 'cubesService',
-                                                    function ($rootScope, $uibModal, cvOptions, cubesService) {
+angular.module('cv.views').service("dialogService", ['$rootScope', '$uibModal', 'cvOptions',
+                                                    function ($rootScope, $uibModal, cvOptions) {
 
 	var dialogService = this;
 

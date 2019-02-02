@@ -44,8 +44,8 @@ angular.module('cv.studio', ['cv' /*'ui.bootstrap-slider', 'ui.validate', 'ngAni
  * @class studioViewsService
  * @memberof cv.studio
  */
-angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$anchorScroll', '$timeout', 'cvOptions', 'cubesService', 'viewsService', 'dialogService',
-                                                            function ($rootScope, $anchorScroll, $timeout, cvOptions, cubesService, viewsService, dialogService) {
+angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$anchorScroll', '$timeout', 'cvOptions', 'viewsService', 'dialogService',
+                                                            function ($rootScope, $anchorScroll, $timeout, cvOptions, viewsService, dialogService) {
 
 	this.views = [];
 
@@ -149,10 +149,11 @@ angular.module('cv.studio').service("studioViewsService", ['$rootScope', '$ancho
 /**
  * cvStudioView directive. Shows a Studio panel containing the corresponding view.
  */
-angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$rootScope', '$scope', 'cvOptions', 'cubesService', 'studioViewsService', 'reststoreService',
-                                                     function ($rootScope, $scope, cvOptions, cubesService, studioViewsService, reststoreService) {
+angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$rootScope', '$scope', 'cvOptions', 'studioViewsService', 'reststoreService',
+                                                     function ($rootScope, $scope, cvOptions, studioViewsService, reststoreService) {
 
-	$scope.cubesService = cubesService;
+	//$scope.cubesService = cubesService;
+
 	$scope.studioViewsService = studioViewsService;
 	$scope.cvOptions = cvOptions;
 	$scope.reststoreService = reststoreService;
@@ -181,12 +182,12 @@ angular.module('cv.studio').controller("CubesViewerStudioViewController", ['$roo
 
 
 
-angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', '$uibModal', '$element', '$timeout', 'cvOptions', 'cubesService', 'studioViewsService', 'viewsService', 'reststoreService',
-                                                                       function ($rootScope, $scope, $uibModal, $element, $timeout, cvOptions, cubesService, studioViewsService, viewsService, reststoreService) {
+angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootScope', '$scope', '$uibModal', '$element', '$timeout', 'cvOptions', 'studioViewsService', 'viewsService', 'reststoreService',
+                                                                       function ($rootScope, $scope, $uibModal, $element, $timeout, cvOptions, studioViewsService, viewsService, reststoreService) {
 
 	$scope.cvVersion = cubesviewer.version;
 	$scope.cvOptions = cvOptions;
-	$scope.cubesService = cubesService;
+	//$scope.cubesService = cubesService;
 	$scope.studioViewsService = studioViewsService;
 	$scope.reststoreService = reststoreService;
 
@@ -303,12 +304,11 @@ angular.module('cv.studio').controller("CubesViewerStudioController", ['$rootSco
 
 
 
-angular.module('cv.studio').controller("CubesViewerRenameController", ['$rootScope', '$scope', '$uibModalInstance', 'cvOptions', 'cubesService', 'studioViewsService', 'view',
-                                                                       function ($rootScope, $scope, $uibModalInstance, cvOptions, cubesService, studioViewsService, view) {
+angular.module('cv.studio').controller("CubesViewerRenameController", ['$rootScope', '$scope', '$uibModalInstance', 'cvOptions', 'studioViewsService', 'view',
+                                                                       function ($rootScope, $scope, $uibModalInstance, cvOptions, studioViewsService, view) {
 
 	$scope.cvVersion = cubesviewer.version;
 	$scope.cvOptions = cvOptions;
-	$scope.cubesService = cubesService;
 	$scope.studioViewsService = studioViewsService;
 
 	$scope.viewName = view.params.name;

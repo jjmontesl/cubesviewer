@@ -469,7 +469,40 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
+    "    <div ng-if=\"view.params.charttype == 'map'\">\n" +
+    "        <h3><i class=\"fa fa-fw fa-globe\"></i> Map chart\n" +
+    "            <i ng-show=\"view.pendingRequests > 0\" class=\"fa fa-circle-o-notch fa-spin fa-fw margin-bottom text-info pull-right\"></i>\n" +
+    "        </h3>\n" +
+    "        <div ng-if=\"view.pendingRequests > 0\" class=\"loadingbar-content\">\n" +
+    "            <span class=\"loadingbar-expand\"></span>\n" +
+    "        </div>\n" +
+    "        <div ng-controller=\"CubesViewerViewsCubeChartMapController\">\n" +
+    "            <div ng-include=\"'views/cube/chart/map/chart-map.html'\"></div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "\n" +
     "</div>\n"
+  );
+
+
+  $templateCache.put('views/cube/chart/map/chart-map.html',
+    "<div ng-show=\"view.grid.data.length > 0\">\n" +
+    "    <div>\n" +
+    "        <div class=\"cv-chart-container\">\n" +
+    "            <div class=\"cv-map-container\" style=\"height: 400px;\" ></div>\n" +
+    "        </div>\n" +
+    "        <div ng-hide=\"view.getControlsHidden()\" style=\"font-size: 8px; float: right;\">\n" +
+    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(400);\">Small</a>\n" +
+    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(550);\">Medium</a>\n" +
+    "            <a href=\"\" class=\"cv-chart-height\" ng-click=\"resizeChart(700);\">Tall</a>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "\n" +
+    "<div ng-if=\"gridOptions.data.length == 0\" class=\"alert alert-info\" style=\"margin-bottom: 0px;\">\n" +
+    "    Cannot present chart: <b>no rows returned</b> by the current filtering, horizontal dimension, and drilldown combination.\n" +
+    "</div>\n" +
+    "\n"
   );
 
 
@@ -652,11 +685,8 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "          <li ng-click=\"selectChartType('sunburst')\"><a href=\"\"><i class=\"fa fa-fw fa-sun-o\"></i> Sunburst</a></li>\n" +
     "          -->\n" +
     "\n" +
-    "          <!--\n" +
     "          <div class=\"divider\"></div>\n" +
-    "\n" +
-    "          <li><a href=\"\"><i class=\"fa fa-fw fa-globe\"></i> Map</a></li>\n" +
-    "           -->\n" +
+    "          <li ng-click=\"selectChartType('map')\"><a href=\"\"><i class=\"fa fa-fw fa-globe\"></i> Map</a></li>\n" +
     "\n" +
     "        </ul>\n" +
     "    </li>\n" +
@@ -754,15 +784,15 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "    <li ng-show=\"cvOptions.seriesOperationsEnabled && (view.params.mode == 'series' || view.params.mode == 'chart')\" class=\"dropdown-submenu\">\n" +
     "        <a tabindex=\"0\" ><i class=\"fa fa-fw fa-calculator\"></i> Series operations</a>\n" +
     "        <ul class=\"dropdown-menu\">\n" +
-    "          <li ng-click=\"selectOperation('difference')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Difference</a></li>\n" +
-    "          <li ng-click=\"selectOperation('percentage')\"><a href=\"\"><i class=\"fa fa-fw fa-percent\"></i> Change rate</a></li>\n" +
+    "          <li ng-click=\"seriesOperationsService.selectOperation(view, 'difference')\"><a href=\"\"><i class=\"fa fa-fw fa-line-chart\"></i> Difference</a></li>\n" +
+    "          <li ng-click=\"seriesOperationsService.selectOperation(view, 'percentage')\"><a href=\"\"><i class=\"fa fa-fw fa-percent\"></i> Change rate</a></li>\n" +
+    "          <li ng-click=\"seriesOperationsService.selectOperation(view, 'accum')\"><a href=\"\"><i class=\"fa fa-fw\">&sum;</i> Accumulated</a></li>\n" +
     "          <!--\n" +
-    "          <li ng-click=\"selectOperation('accum')\"><a href=\"\"><i class=\"fa fa-fw\">&sum;</i> Accumulated</a></li>\n" +
     "          <div class=\"divider\"></div>\n" +
     "          <li ng-click=\"selectOperation('fill-zeros')\"><a href=\"\"><i class=\"fa fa-fw\">0</i> Replace blanks with zeroes</a></li>\n" +
     "           -->\n" +
     "          <div class=\"divider\"></div>\n" +
-    "          <li ng-click=\"selectOperation(null)\"><a href=\"\"><i class=\"fa fa-fw fa-times\"></i> Clear operations</a></li>\n" +
+    "          <li ng-click=\"seriesOperationsService.selectOperation(view, null)\"><a href=\"\"><i class=\"fa fa-fw fa-times\"></i> Clear operations</a></li>\n" +
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +
@@ -1058,7 +1088,7 @@ angular.module('cv').run(['$templateCache', function($templateCache) {
     "\n" +
     "              <div class=\"form-group has-feedback\" style=\"display: inline-block; margin-bottom: 0; vertical-align: middle; margin-bottom: 2px;\">\n" +
     "                <!-- <label for=\"search\">Search:</label>  -->\n" +
-    "                <input type=\"text\" class=\"form-control\" ng-model=\"searchString\" ng-model-options=\"{ debounce: 300 }\" placeholder=\"Search...\" style=\"width: 16em;\">\n" +
+    "                <input type=\"text\" class=\"form-control\" ng-model=\"searchString\" ng-model-options=\"{ debounce: 1000 }\" placeholder=\"Search...\" style=\"width: 16em;\">\n" +
     "                <i class=\"fa fa-fw fa-times-circle form-control-feedback\" ng-click=\"searchString = ''\" style=\"cursor: pointer; pointer-events: inherit;\"></i>\n" +
     "              </div>\n" +
     "\n" +

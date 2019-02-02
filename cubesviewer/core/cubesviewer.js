@@ -21,7 +21,6 @@
  * SOFTWARE.
  */
 
-
 "use strict";
 
 /**
@@ -35,7 +34,7 @@ angular.module('cv', ['ui.bootstrap', 'bootstrapSubmenu',
                       'ui.grid', 'ui.grid.resizeColumns', 'ui.grid.selection', 'ui.grid.autoResize',
                       'ui.grid.pagination', 'ui.grid.pinning', /*'ui.grid.exporter',*/
                       'ngCookies',
-                      'cv.cubes', 'cv.views']);
+                      'cv.views']);
 
 // Configure moment.js
 /*
@@ -55,37 +54,39 @@ angular.module('cv').config([ '$logProvider', 'cvOptions', /* 'editableOptions',
 
     var defaultOptions = {
 
-    		cubesUrl : null,
-            //cubesLang : null,
-    		jsonRequestType: "json", // "json | jsonp"
+    	//cubesUrl : null,
+        //cubesLang : null,
+		jsonRequestType: "json", // "json | jsonp"
 
-    		pagingOptions: [15, 30, 100, 250],
+		providers: [],
 
-            cacheEnabled: true,
-            cacheDuration: 30 * 60,
-            cacheNotice: 10 * 60,
-            cacheSize: 32,
+		pagingOptions: [15, 30, 100, 250],
 
-			datepickerShowWeeks: true,
-		    datepickerFirstDay: 1,  // Starting day of the week from 0-6 (0=Sunday, ..., 6=Saturday).
+        cacheEnabled: true,
+        cacheDuration: 30 * 60,
+        cacheNotice: 10 * 60,
+        cacheSize: 32,
 
-            undoEnabled: true,
-            undoSize: 32,
+		datepickerShowWeeks: true,
+	    datepickerFirstDay: 1,  // Starting day of the week from 0-6 (0=Sunday, ..., 6=Saturday).
 
-            seriesOperationsEnabled: false,
+        undoEnabled: true,
+        undoSize: 32,
 
-        	hideControls: false,
+        seriesOperationsEnabled: false,
 
-            gaTrackEvents: false,
+    	hideControls: false,
 
-            geoMapLayers: {
-            	"world-osm": { label: "OpenStreetMap", source: "xyz", opacity: 1.0, attribution: "&copy; OpenStreetMap contributors", params: { url: 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' } },
-            	"world-continents": { label: "World Continents", source: "geojson", opacity: 0.7, attribution: "&copy; Resolve attribution", params: { url: 'maps/world-continents.geo.json' } },
-            	"world-countries": { label: "World Countries", source: "geojson", opacity: 0.7, attribution: "&copy; Resolve attribution", params: { url: 'maps/world-palestine.geo.json' } },
-            	"spain-ign-ortho": { label: "Spain IGN Orthophotos", source: "wmts", opacity: 1.0, attribution: "IGN Spain", params: { url: 'http://www.ign.es/wmts/pnoa-ma?service=WMTS', layer: 'OI.OrthoimageCoverage' } }
-            },
+        gaTrackEvents: false,
 
-            debug: false
+        geoMapLayers: {
+        	"world-osm": { label: "OpenStreetMap", source: "xyz", opacity: 1.0, attribution: "&copy; OpenStreetMap contributors", params: { url: 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' } },
+        	"world-continents": { label: "World Continents", source: "geojson", opacity: 0.7, attribution: "&copy; Resolve attribution", params: { url: 'maps/world-continents.geo.json' } },
+        	"world-countries": { label: "World Countries", source: "geojson", opacity: 0.7, attribution: "&copy; Resolve attribution", params: { url: 'maps/world-palestine.geo.json' } },
+        	"spain-ign-ortho": { label: "Spain IGN Orthophotos", source: "wmts", opacity: 1.0, attribution: "IGN Spain", params: { url: 'http://www.ign.es/wmts/pnoa-ma?service=WMTS', layer: 'OI.OrthoimageCoverage' } }
+        },
+
+        debug: false
     };
 
 	$.extend(defaultOptions, cvOptions);
@@ -113,16 +114,11 @@ angular.module('cv').config([ '$logProvider', 'cvOptions', /* 'editableOptions',
 /*
  *
  */
-angular.module('cv').run([ '$timeout', '$log', 'cvOptions', 'cubesService', 'cubesCacheService', /* 'editableOptions', 'editableThemes', */
-	                           function($timeout, $log, cvOptions, cubesService, cubesCacheService /*, editableOptions, editableThemes */) {
+angular.module('cv').run([ '$timeout', '$log', 'cvOptions',  /* 'cubesService', 'cubesCacheService', 'editableOptions', 'editableThemes', */
+	                           function($timeout, $log, cvOptions  /*, cubesService, cubesCacheService, editableOptions, editableThemes */) {
 
 	$log.debug("CubesViewer debug mode is enabled.");
-
-	// Initialize cache service
-	cubesCacheService.initialize();
-
-	// Initialize Cubes service
-	cubesService.connect();
+	cvcore.cv.initialize(cvOptions);
 
 }]);
 
@@ -140,7 +136,7 @@ angular.module('cv').run([ '$timeout', '$log', 'cvOptions', 'cubesService', 'cub
 function CubesViewer() {
 
 	// CubesViewer version
-	this.version = "2.0.3-devel";
+	this.version = cvcore.CV_VERSION;
 
 	/**
 	 * State of a view that has not yet been fully initialized, and cannot be interacted with.
